@@ -1,6 +1,14 @@
 Administrationsoberfläche für Standortkoordinator.
 
 Erste Version:
+- Erster Aufruf:
+-- Zertifikatserzeugung bei Angabe von C,S,L,O,OE,CN,EMAIL
+-- Senden des CSR per Email
+-- Integration der Zertifikatsantwort.
+
+- Zeigt Art der Kontaktaufnahme mit Broker an (HTTPS Polling, EMail, HTTPS Push)
+- Zeigt Status zu letztem Kontakt mit Broker an.
+- Zeigt Zeitpunkt für nächsten planmäßigen Kontakt mit Broker an.
 
 - Zeigt Übersicht/Liste aller Anfragen an (ohne Interaktion).
 
