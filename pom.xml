@@ -47,8 +47,6 @@
 	</licenses>
 	
 	<modules>
-		<module>report-manager</module>
-		<module>report-aktin</module>
 		<module>admin-gui</module>
 	</modules>
 	<build>
