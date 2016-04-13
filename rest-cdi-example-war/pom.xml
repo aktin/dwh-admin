@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.aktin</groupId>
+	<artifactId>rest-cdi-example-war</artifactId>
+	<version>1</version>
+	<packaging>war</packaging>
+
+	<description>
+		Execute `mvn clean compile jetty:run` and go to `http://localhost:8080/x/entry-point/test` in a
+		web browser. The output should look like `Testoo:api.MyImpl@7968a639`.
+		TODO: modify and test if this also runs in Wildfly
+		TODO: write error report to jetty-maven-plugin developers: moving dependencies to plugin/dependencies produces errors in jetty:run
+	</description>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<version.jetty>9.3.8.v20160314</version.jetty> 	<!-- any 9.x appears to work -->
+		<version.jersey>2.14</version.jersey> 	<!-- latest for which 'jersey-gf-cdi-ban-custom-hk2-binding' exists -->
+		<version.weld>2.2.5.Final</version.weld> <!-- same version used in stand-alone Jetty as the 'cdi' module -->
+
+		<!-- where needed, use the following: -->
+		<version.servlet-api>3.0.1</version.servlet-api>	<!-- based on what 'jersey-container-servlet' uses -->
+	</properties>
+
+	<dependencies>
+
+		<!-- Jersey -->
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet</artifactId>
+			<version>${version.jersey}</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Weld for Jersey -->
+		<dependency>
+			<groupId>org.glassfish.jersey.containers.glassfish</groupId>
+			<artifactId>jersey-gf-cdi</artifactId>
+			<version>${version.jersey}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.containers.glassfish</groupId>
+			<artifactId>jersey-gf-cdi-ban-custom-hk2-binding</artifactId>
+			<version>${version.jersey}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.weld.servlet</groupId>
+			<artifactId>weld-servlet-core</artifactId>
+			<version>${version.weld}</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>2.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.inject</groupId>
+			<artifactId>javax.inject</artifactId>
+			<version>1</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.2</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.6</version>
+			</plugin>
+
+			<!-- to execute: mvn clean package jetty:run -->
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>${version.jetty}</version>
+				<configuration>
+					<useProvidedScope>true</useProvidedScope>
+					<scanIntervalSeconds>2</scanIntervalSeconds>
+					<contextXml>${project.basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
+					<webApp>
+						<defaultsDescriptor>${project.basedir}/src/main/webapp/WEB-INF/jetty-defaults-web.xml</defaultsDescriptor>
+						<jettyEnvXml>${project.basedir}/src/main/webapp/WEB-INF/jetty-env.xml</jettyEnvXml>
+					</webApp>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
