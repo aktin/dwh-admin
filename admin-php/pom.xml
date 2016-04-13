@@ -1,19 +1,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<name>AKTIN : DWH Admin : Admin GUI</name>
+	<name>AKTIN : DWH Admin : Admin PHP</name>
 	<packaging>pom</packaging>
 
-	<groupId>org.aktin</groupId>
-	<artifactId>admin-gui</artifactId>
+	<groupId>org.aktin.dwh</groupId>
+	<artifactId>admin-php</artifactId>
 	<version>0.1-SNAPSHOT</version>
 
 	<description>
-		XXX Bitte schreiben
+		Demo-Project for PHP code. Will be assembled as Zip file.
 	</description>
 	
 	
 	<parent>
-		<groupId>org.aktin</groupId>
+		<groupId>org.aktin.dwh</groupId>
 		<artifactId>dwh-admin</artifactId>
 		<version>0.1-SNAPSHOT</version>
 	</parent>
