@@ -21,6 +21,7 @@
 	</scm>
 	
 	<modules>
+		<module>dwh-db</module>
 		<module>dwh-prefs</module>
 		<module>admin-gui</module>
 	</modules>
