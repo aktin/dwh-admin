@@ -1,5 +1,7 @@
 package org.aktin.dwh.admin;
 
+import java.io.IOException;
+
 import javax.inject.Singleton;
 
 import org.aktin.prefs.Preference;
@@ -39,6 +41,10 @@ public class MockPreferences implements Preferences {
 	public Preference<?> get(String key) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public void flush() throws IOException {
+		// TODO Auto-generated method stub
 	}
 
 }
