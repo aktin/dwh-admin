@@ -3,6 +3,7 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID"
 	version="3.0">
 	<!-- this will only be used for jetty (hence in jetty-override-web.xml -->
+	<display-name>CDA import web application</display-name>
 	<servlet>
 		<servlet-name>javax.ws.rs.core.Application</servlet-name>
 		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
@@ -12,4 +13,8 @@
 	    </init-param>
 	    <load-on-startup>1</load-on-startup>
 	</servlet>
+	<servlet-mapping>
+		<servlet-name>javax.ws.rs.core.Application</servlet-name>
+		<url-pattern>/aktin/admin/*</url-pattern>
+	</servlet-mapping>
 </web-app>

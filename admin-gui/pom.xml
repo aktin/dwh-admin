@@ -32,7 +32,7 @@
 							<scanIntervalSeconds>5</scanIntervalSeconds>
 							<contextXml>${project.basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
 							<webApp>
-								<defaultsDescriptor>${project.basedir}/src/main/webapp/WEB-INF/jetty-defaults-web.xml</defaultsDescriptor>
+								<descriptor>${project.basedir}/src/main/webapp/WEB-INF/jetty-defaults-web.xml</descriptor>
 								<jettyEnvXml>${project.basedir}/src/main/webapp/WEB-INF/jetty-env.xml</jettyEnvXml>
 							</webApp>
 						</configuration>
