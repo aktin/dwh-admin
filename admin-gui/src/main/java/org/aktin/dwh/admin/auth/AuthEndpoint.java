@@ -19,7 +19,8 @@ import org.aktin.dwh.Authenticator;
  * 
  * Example usage:
  * <pre>
- * 
+ *   curl -H "Content-Type: application/json" -X POST -d '{"username":"admin","password":"xyz"}' http://localhost:8080/aktin/admin/auth/login
+ *   
  * </pre>
  * @author R.W.Majeed
  *
