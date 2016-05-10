@@ -34,6 +34,10 @@ the following steps are recommended:
   
 - You are ready to go!
 
+TODO Unit tests using only JAXRS and CDI:
+For Weld-CDI see http://memorynotfound.com/java-se-unit-testing-cdi-junit-jboss-weld-se/
+try to combine JAX-RS with above Weld
+
 Additional notes in German
 --------------------------
 
