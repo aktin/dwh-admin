@@ -33,10 +33,11 @@ public class JAXRSPrefs {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Map<String,String> getAll(){
-		Map<String, String> ret = new HashMap<>();
+	public Map<String,Object> getAll(){
+		Map<String, Object> ret = new HashMap<>();
 		ret.put("a", "b");
 		ret.put("c", "d");
+		ret.put("d", 123);
 		return ret;
 	}
 	
