@@ -1,0 +1,11 @@
+<div class="ui main text container">
+    <div class="ui relaxed divided list">
+        <!--  Product Container  -->
+        <div class="item" ng-repeat="property in properties.properties"> 
+            <h3 class="ui header">{{property.name}} </h3>
+            <p>{{property.descr}}</p>
+            <input type="{{property.field}}" name="{{property.name}}" value="{{property.value}}">
+        </div>
+
+    </div>
+</div>
