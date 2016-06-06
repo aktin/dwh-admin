@@ -2,9 +2,12 @@
     var app = angular.module('aktin.properties', []);
 
     app.controller('PropertiesController', ['$http', function($http){
-        var adminApp = this;
-        adminApp.properties = properties;
-        console.log(properties, this, adminApp);
+        var app = this;
+        app.properties = properties;
+
+        app.isWriteOnly = function (prop) {
+            return prop.right === propertyRights.WO;
+        };
 
     }]);
 

@@ -3,7 +3,10 @@
 
     app.controller('HomeController', [function($http){
         var app = this;
-        app.hallo = "willkommen";
+        app.properties = {
+        	routing : 'properties',
+        	name : 'Properties',
+        };
 
     }]);
 

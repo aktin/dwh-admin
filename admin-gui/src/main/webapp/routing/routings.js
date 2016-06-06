@@ -4,31 +4,13 @@
         'aktin.home',
     ]);
 
+    // HEADER 
     app.directive('headerPanel', function () {
         return {
             restrict: 'E', 
-            templateUrl: 'home/header.html',
+            templateUrl: 'layout/header.html',
         }
     });
-    var navigations = [
-        {
-            name: 'Home',
-            routing: 'home',
-            parent: 'site',
-            url: "/",
-            templateUrl: 'home/home.html',
-            controller: 'HomeController',
-            controllerAs: 'homeCtrl',
-        },
-        {
-            name: 'Properties',
-            routing: 'properties',
-            url: "/properties",
-            templateUrl: 'properties/properties.html',
-            controller: 'PropertiesController',
-            controllerAs: 'properties',
-        },
-    ];
     app.controller('HeaderController', ['$state', function($state){
         var app = this;
         app.navigations = navigations;
@@ -40,12 +22,35 @@
 
     }]);
 
+    // FOOTER
     app.directive('footerPanel', function () {
         return {
             restrict: 'E', 
-            templateUrl: 'home/footer.html',
+            templateUrl: 'layout/footer.html',
         }
     });
+
+    // ROUTING and STATEMACHINE
+    var navigations = [
+        {
+            name: 'Home',
+            routing: 'home',
+            parent: 'site',
+            url: "/",
+            templateUrl: 'home/home.html',
+            controller: 'HomeController',
+            controllerAs: 'home',
+        },
+        {
+            name: 'Properties',
+            routing: 'properties',
+            url: "/properties/",
+            templateUrl: 'properties/properties.html',
+            controller: 'PropertiesController',
+            controllerAs: 'properties',
+        },
+    ];
+
     app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
 
         // For any unmatched url, redirect to home state
@@ -61,28 +66,6 @@
                     
                 }
             });
-        // $stateProvider
-        //     .state('home', {
-        //         name: 'home',
-        //         parent: 'site',
-        //         url: "/",
-        //         data: {
-        //             roles : []
-        //         },
-        //         templateUrl: 'home/home.html',
-        //         controller: 'HomeController',
-        //         controllerAs: 'home',
-        //     })
-        //     .state('properties', {
-        //         name: 'properties',
-        //         url: "/properties",
-        //         data: {
-        //             roles : []
-        //         },
-        //         templateUrl: 'properties/properties.html',
-        //         controller: 'PropertiesController',
-        //         controllerAs: 'properties',
-        //     });
 
             _.each (navigations, function (elem, ind, list) {
                 var makeState = function (elem) {
