@@ -1,25 +1,54 @@
 (function() {
-    var app = angular.module('aktin.properties', []);
+    var propApp = angular.module('aktin.properties', []);
 
-    app.controller('PropertiesController', ['$http', function($http){
-        var app = this;
-        app.properties = _.map(properties, function (prop, index, properties){
+    propApp.controller('PropertiesController', ['$http', '$scope', function($http, $scope){
+        var propApp = this;
+        propApp.properties = _.map(properties, function (prop, index, properties){
             prop.inputField = prop.field;
             if (prop.type && prop.type === "timestamp") {
                 prop.inputField = "date";
                 if (prop.value)
                     prop.value = new Date(+prop.value);
             }
+            if (prop.inputField === "number") {
+                prop.value = parseInt(prop.value);
+            }
+            if (prop.valueset) {
+                prop.inputField = "select";
+            }
+            prop.fieldClass = "prpoperty-input-" + prop.name.split('.').join('-');
             prop.template = "layout/input_" + prop.inputField + "_template.html";
+
+            // if (prop.valueset) {
+            //     console.log(prop.valueset);
+            //     $('.top-'+prop.fieldClass).search({
+            //         source: _.map(prop.valueset, function (item, index, list) {
+            //             return {title : item};
+            //         } ),
+            //     });
+            // }
             console.log(prop)
             return prop;
         });
 
-        app.isWriteOnly = function (prop) {
+        propApp.setValue = function (prop, value) {
+            prop.value = value;
+        }
+
+        propApp.isSelected = function (prop, value) {
+            console.log(value, prop.value === value);
+            return prop.value === value;
+        }
+
+        propApp.isWriteOnly = function (prop) {
             return prop.right === propertyRights.WO;
         };
 
+
+
     }]);
+
+
 
     var propertyRights = {
         NONE : 0,
@@ -111,7 +140,6 @@
             name : "smtp.auth",
             descr : "SMTP Server Authentifizierung",
             field : "select",
-            value : "SSL",
             right : propertyRights.W,
             valueset : ['SSL', 'Plain', 'TLS', ], // and more
         },

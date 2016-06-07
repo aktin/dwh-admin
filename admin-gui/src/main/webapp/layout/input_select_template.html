@@ -1,1 +1,19 @@
-hier ist select 123<br />
+<p>select: {{property.descr}} </p>
+
+<div class="ui input">
+	<select class="ui search dropdown">
+	    <option value="">Bitte Auswählen</option>
+	    <option ng-repeat="val in property.valueset" ng-selected="property.value === val" value="{{val}}">{{val}}</option>
+	</select>
+</div>
+
+<!-- <br />
+
+<div class="ui search selection dropdown">
+	<input type="hidden" name="{{property.name}}">
+	<i class="dropdown icon"></i>
+	<div class="default text">Bitte Auswählen</div>
+	<div class="menu">
+		<div class="item" ng-repeat="val in property.valueset"  data-value="{{val}}">{{val}}</div>
+	</div>
+</div> -->

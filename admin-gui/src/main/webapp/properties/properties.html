@@ -13,10 +13,11 @@
 	<div class="ui relaxed divided list">
 		<!--  Product Container  -->
 		<div class="item" ng-repeat="property in properties.properties"> 
-			<h3 class="ui header">{{property.name}} </h3>
-			<ng-include src="property.template"></ng-include>
-			<input ng-attr-type="property.inputField" name="{{property.name}}" value="{{property.value}}">
-			<input ng-if="properties.isWriteOnly(property)" ng-attr-type="{{property.inputField}}" name="{{property.name}} repeat" value="" placeholder="repeat">
+			<h3 class="ui header">{{property.name}} </h3> {{property.template}}
+			<ng-include src="property.template" onload=""></ng-include>
+			<div class="ui input">
+				<input type="{{property.inputField}}" name="{{property.name}}" value="{{property.value}}">
+			</div>
 		</div>
 
 	</div>
