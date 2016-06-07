@@ -3,7 +3,17 @@
 
     app.controller('PropertiesController', ['$http', function($http){
         var app = this;
-        app.properties = properties;
+        app.properties = _.map(properties, function (prop, index, properties){
+            prop.inputField = prop.field;
+            if (prop.type && prop.type === "timestamp") {
+                prop.inputField = "date";
+                if (prop.value)
+                    prop.value = new Date(+prop.value);
+            }
+            prop.template = "layout/input_" + prop.inputField + "_template.html";
+            console.log(prop)
+            return prop;
+        });
 
         app.isWriteOnly = function (prop) {
             return prop.right === propertyRights.WO;
@@ -65,6 +75,7 @@
             name : "i2b2.lastimport",
             descr : "Timestamp des letzten Imports",
             field : "text",
+            type : "timestamp",
             value : "1463134191370",
             right : propertyRights.R,
         },
@@ -122,6 +133,7 @@
             name : "exchange.lastcontact",
             descr : "timestamp of last contact to broker via direct connection or received email timestamp",
             field : "text",
+            type : "timestamp",
             value : "1463134191370",
             right : propertyRights.R,
         },

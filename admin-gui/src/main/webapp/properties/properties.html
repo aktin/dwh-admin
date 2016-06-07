@@ -1,24 +1,24 @@
 <div class="ui main text container">
 
-	<div class="ui styled accordion">
+	<!-- <div class="ui styled accordion">
 		<div class="title" ng-repeat-start="property in properties.properties">
 			<i class="dropdown icon"></i>
 			{{property.descr}}
 		</div>
 		<div class="content" ng-repeat-end>
 			{{property.name}}
-			<input type="text" name="{{property.name}}" value="{{property.value}}"> <!--{{property.field}}-->
+			<input type="{{property.field}}" name="{{property.name}}" value="{{property.value}}"> 
 		</div>
-	</div>
-
+	</div> -->
 	<div class="ui relaxed divided list">
 		<!--  Product Container  -->
 		<div class="item" ng-repeat="property in properties.properties"> 
-			<h3 class="ui header">{{property.name}} </h3> {{properties.isWriteOnly(property)}}
-			<p>{{property.descr}} </p>
-			<input type="text" name="{{property.name}}" value="{{property.value}}">
-			<input ng-if="properties.isWriteOnly(property)" type="text" name="{{property.name}} repeat" value="" placeholder="repeat">
+			<h3 class="ui header">{{property.name}} </h3>
+			<ng-include src="property.template"></ng-include>
+			<input ng-attr-type="property.inputField" name="{{property.name}}" value="{{property.value}}">
+			<input ng-if="properties.isWriteOnly(property)" ng-attr-type="{{property.inputField}}" name="{{property.name}} repeat" value="" placeholder="repeat">
 		</div>
 
 	</div>
+
 </div>
