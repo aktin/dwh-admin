@@ -49,6 +49,14 @@
             controller: 'PropertiesController',
             controllerAs: 'properties',
         },
+        {
+            name: 'Logs',
+            routing: 'logs',
+            url: "/logs/",
+            templateUrl: 'logs/logs.html',
+            controller: 'logsController',
+            controllerAs: 'logs',
+        },
     ];
 
     app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {

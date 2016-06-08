@@ -1,33 +1,31 @@
 (function() {
-    var propApp = angular.module('aktin.properties', []);
+    var propApp = angular.module('aktin.properties', ['aktin.input']);
 
-    propApp.controller('PropertiesController', ['$http', '$scope', function($http, $scope){
+    propApp.controller('PropertiesController', ['$http', '$scope', '$filter', function($http, $scope, $filter){
         var propApp = this;
         propApp.properties = _.map(properties, function (prop, index, properties){
             prop.inputField = prop.field;
             if (prop.type && prop.type === "timestamp") {
-                prop.inputField = "date";
                 if (prop.value)
-                    prop.value = new Date(+prop.value);
+                    prop.value = $filter('date')(new Date(+prop.value), 'EEE dd.MM.yyyy HH:mm:ss,sss') + " @" + prop.value;
             }
             if (prop.inputField === "number") {
                 prop.value = parseInt(prop.value);
+                console.log(prop.value);
             }
             if (prop.valueset) {
                 prop.inputField = "select";
             }
             prop.fieldClass = "prpoperty-input-" + prop.name.split('.').join('-');
-            prop.template = "layout/input_" + prop.inputField + "_template.html";
+            if (prop.inputField === "select" || prop.inputField === "password")
+                prop.template = "properties/input_" + prop.inputField + "_template.html";
+            else 
+                prop.template = "properties/input_" + "text" + "_template.html";
 
-            // if (prop.valueset) {
-            //     console.log(prop.valueset);
-            //     $('.top-'+prop.fieldClass).search({
-            //         source: _.map(prop.valueset, function (item, index, list) {
-            //             return {title : item};
-            //         } ),
-            //     });
-            // }
-            console.log(prop)
+            if (!propertyRights.readAble(prop.right)) {
+                delete prop.value;
+            }
+
             return prop;
         });
 
@@ -40,11 +38,12 @@
             return prop.value === value;
         }
 
-        propApp.isWriteOnly = function (prop) {
-            return prop.right === propertyRights.WO;
+        propApp.writeAble = function (prop) {
+            return propertyRights.writeAble(prop.right);
         };
-
-
+        propApp.readAble = function (prop) {
+            return propertyRights.readAble(prop.right);
+        };
 
     }]);
 
@@ -55,6 +54,12 @@
         R : 1,
         WO : 2,
         W : 3,
+        readAble : function (right) {
+            return right === propertyRights.R || right === propertyRights.W;
+        },
+        writeAble : function (right) {
+            return right === propertyRights.W || right === propertyRights.WO;
+        },
     }
 
     var properties = [

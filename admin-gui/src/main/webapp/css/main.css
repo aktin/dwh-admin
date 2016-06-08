@@ -1,0 +1,24 @@
+body {
+	/*create flex box for body*/
+	display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+
+	flex-direction: column;
+}
+.flex-panel {
+	-webkit-flex: 1 0 auto; /* Safari 6.1+ */
+    -ms-flex:  1 0 auto; /* IE 10 */ 
+    flex:  1 0 auto;
+}
+
+.property-fields {
+	width: 100%;
+}
+
+.property-fields select.ui.dropdown {
+	width: 100%;
+	height: auto;
+}

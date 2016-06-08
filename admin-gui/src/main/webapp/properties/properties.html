@@ -1,5 +1,3 @@
-<div class="ui main text container">
-
 	<!-- <div class="ui styled accordion">
 		<div class="title" ng-repeat-start="property in properties.properties">
 			<i class="dropdown icon"></i>
@@ -13,13 +11,13 @@
 	<div class="ui relaxed divided list">
 		<!--  Product Container  -->
 		<div class="item" ng-repeat="property in properties.properties"> 
-			<h3 class="ui header">{{property.name}} </h3> {{property.template}}
-			<ng-include src="property.template" onload=""></ng-include>
-			<div class="ui input">
-				<input type="{{property.inputField}}" name="{{property.name}}" value="{{property.value}}">
+			<h3 class="ui header">{{property.name}} </h3>
+			<p> {{property.descr}} </p>
+			<div class="ui input property-fields" ng-include="property.template">
 			</div>
+
+			<!-- <div type="{{property.inputField}}" fieldclass="{{property.fieldClass}}" class="varied-input"> </div> -->
 		</div>
 
-	</div>
 
-</div>
+	</div>

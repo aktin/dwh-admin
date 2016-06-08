@@ -1,0 +1,4 @@
+<select class="ui dropdown" ng-disabled="!properties.writeAble(property)">
+    <option value="" disabled="" ng-selected="!property.value">Bitte Auswählen</option>
+    <option ng-repeat="val in property.valueset" value="{{val}}" ng-selected="property.value === val">{{val}}</option>
+</select>
