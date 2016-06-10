@@ -28,6 +28,20 @@
 
             return prop;
         });
+        propApp.sortedProps = {};
+        _.each(properties, function (prop, index, properties){
+            _.reduce (prop.name.split('.'), function (memo, value, index, list){
+                if (index == list.length-1) {
+                    memo[value] = prop;
+                } else {
+                    if (!memo[value]) {
+                        memo[value] = {};
+                    }
+                    return memo[value];
+                }
+            }, propApp.sortedProps);
+        });
+        console.log(propApp.sortedProps);
 
         propApp.setValue = function (prop, value) {
             prop.value = value;
@@ -85,7 +99,7 @@
             right : propertyRights.W,
         },
         {
-            name : "contact.email",
+            name : "local.contact.email",
             descr : "Kontaktemail",
             field : "email",
             value : "oberarzt@oldenburg.de",
