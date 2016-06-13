@@ -22,3 +22,24 @@ body {
 	width: 100%;
 	height: auto;
 }
+
+
+/*logs*/
+.ui.list > .item.log-item-level {
+	padding: 10px;
+	margin-bottom: 3px;
+}
+.log-item-level.info {
+	background-color: #808080;
+}
+.log-item-level.debug {
+	background-color: #FFA500;
+}
+.log-item-level.error {
+	background-color: #800000;
+}
+
+.log-text-box {
+	padding: 5px; 
+	background-color: rgba(255,255,255,0.5);
+}

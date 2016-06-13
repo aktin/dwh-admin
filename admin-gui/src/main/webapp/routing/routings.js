@@ -2,6 +2,7 @@
     var app = angular.module('aktin.routing', [
         'ui.router',
         'aktin.home',
+        'aktin.logs',
     ]);
 
     // HEADER 
@@ -54,7 +55,7 @@
             routing: 'logs',
             url: "/logs/",
             templateUrl: 'logs/logs.html',
-            controller: 'logsController',
+            controller: 'LogsController',
             controllerAs: 'logs',
         },
     ];

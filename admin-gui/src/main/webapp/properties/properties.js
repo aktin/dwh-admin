@@ -35,7 +35,7 @@
                     memo[value] = prop;
                 } else {
                     if (!memo[value]) {
-                        memo[value] = {};
+                        memo[value] = {isList : true};
                     }
                     return memo[value];
                 }

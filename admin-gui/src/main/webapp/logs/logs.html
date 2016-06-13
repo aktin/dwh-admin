@@ -1,1 +1,14 @@
 logs get here
+
+
+<div class="ui relaxed divided list">
+	<!--  Product Container  -->
+	<div ng-repeat="log in logs.logs" class="item log-item-level {{logs.getLevel(log.level)}}"> 
+		<div class="log-text-box">
+			<h3 class="ui header">{{log.source}} - {{logs.getLevel(log.level)}}</h3>
+			<p> {{logs.showTime(log.timestamp)}} </p>
+			<div class="log-text-box"> <small>{{log.text}}</small> </div>
+		</div>
+	</div>
+
+</div>
