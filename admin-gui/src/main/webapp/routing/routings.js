@@ -3,6 +3,7 @@
         'ui.router',
         'aktin.home',
         'aktin.logs',
+        'aktin.users',
     ]);
 
     // HEADER 
@@ -57,6 +58,22 @@
             templateUrl: 'logs/logs.html',
             controller: 'LogsController',
             controllerAs: 'logs',
+        },
+        {
+            name: 'Users',
+            routing: 'users',
+            url: "/users/",
+            templateUrl: 'users/users.html',
+            controller: 'UsersController',
+            controllerAs: 'users',
+        },
+        {
+            name: 'Login',
+            routing: 'login',
+            url: "/users/login",
+            templateUrl: 'users/login.html',
+            controller: 'UsersController',
+            controllerAs: 'users',
         },
     ];
 

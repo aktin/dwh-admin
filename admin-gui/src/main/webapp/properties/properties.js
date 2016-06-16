@@ -1,47 +1,112 @@
 (function() {
     var propApp = angular.module('aktin.properties', ['aktin.input']);
 
-    propApp.controller('PropertiesController', ['$http', '$scope', '$filter', function($http, $scope, $filter){
+    propApp.controller('PropertiesController', ['$http', '$scope', '$filter', '$timeout', function($http, $scope, $filter, $timeout){
         var propApp = this;
-        propApp.properties = _.map(properties, function (prop, index, properties){
-            prop.inputField = prop.field;
-            if (prop.type && prop.type === "timestamp") {
-                if (prop.value)
-                    prop.value = $filter('date')(new Date(+prop.value), 'EEE dd.MM.yyyy HH:mm:ss,sss') + " @" + prop.value;
-            }
-            if (prop.inputField === "number") {
-                prop.value = parseInt(prop.value);
-                console.log(prop.value);
-            }
-            if (prop.valueset) {
-                prop.inputField = "select";
-            }
-            prop.fieldClass = "prpoperty-input-" + prop.name.split('.').join('-');
-            if (prop.inputField === "select" || prop.inputField === "password")
-                prop.template = "properties/input_" + prop.inputField + "_template.html";
-            else 
-                prop.template = "properties/input_" + "text" + "_template.html";
 
-            if (!propertyRights.readAble(prop.right)) {
-                delete prop.value;
-            }
+        propApp.currentCategory = "";
+        propApp.setCategory = function (cat) {
+            console.log(cat);
+            propApp.currentCategory = cat.value;
+        };
 
-            return prop;
-        });
-        propApp.sortedProps = {};
-        _.each(properties, function (prop, index, properties){
-            _.reduce (prop.name.split('.'), function (memo, value, index, list){
-                if (index == list.length-1) {
-                    memo[value] = prop;
-                } else {
-                    if (!memo[value]) {
-                        memo[value] = {isList : true};
+        var predefinedCats = { 
+            "" : {
+                value : "",
+                name : "Show All",
+            },
+            "tls" : {
+                value : "tls",
+                name : "TLS",
+            }, 
+            "i2b2" : {
+                value : "i2b2",
+                name : "I2B2",
+            }, 
+            "local" : {
+                value : "local",
+                name : "Lokal",
+            }, 
+            "smtp" : {
+                value : "smtp",
+                name : "SMTP",
+            }, 
+            "query" : {
+                value : "query",
+                name : "Anfragen",
+            }, 
+            "exchange" : {
+                value : "exchange",
+                name : "Exchange",
+            }, 
+        };
+
+        propApp.categories = _.uniq(_.reduce(
+                properties, 
+                function (memo, prop) {
+                    var val = prop.name.split('.')[0];
+                    var obj = {};
+                    if (predefinedCats[val]){
+                        obj = predefinedCats[val];
+                    } else {
+                        obj = {value : val, name : val};
                     }
-                    return memo[value];
+                    memo.push(obj);
+                    return memo;
+                }, 
+                [predefinedCats[""]]
+            ), true);
+
+        propApp.properties = function () { 
+            return _.filter(_.map(properties, function (prop, index, properties){
+                prop.inputField = prop.field;
+                if (prop.type && prop.type === "timestamp") {
+                    if (prop.value)
+                        prop.value = $filter('date')(new Date(+prop.value), 'EEE dd.MM.yyyy HH:mm:ss,sss') + " @" + prop.value;
                 }
-            }, propApp.sortedProps);
-        });
-        console.log(propApp.sortedProps);
+                if (prop.inputField === "number") {
+                    prop.value = parseInt(prop.value);
+                    // console.log(prop.value);
+                }
+                if (prop.valueset) {
+                    prop.inputField = "select";
+                }
+                prop.fieldClass = "prpoperty-input-" + prop.name.split('.').join('-');
+                if (prop.inputField === "select" || prop.inputField === "password")
+                    prop.template = "properties/input_" + prop.inputField + "_template.html";
+                else 
+                    prop.template = "properties/input_" + "text" + "_template.html";
+
+                if (!propertyRights.readAble(prop.right)) {
+                    delete prop.value;
+                }
+
+                return prop;
+            }), function (prop) {
+                console.log("currentCategory", propApp.currentCategory);
+                if (propApp.currentCategory === "") 
+                    return true;
+                var val = prop.name.split('.')[0];
+                return val === propApp.currentCategory;
+            });
+        };
+
+        /*
+        propApp.sortedProps = function () {
+            var sortedProps = {};
+            _.each(properties, function (prop, index, properties){
+                _.reduce (prop.name.split('.'), function (memo, value, index, list){
+                    if (index == list.length-1) {
+                        memo[value] = prop;
+                    } else {
+                        if (!memo[value]) {
+                            memo[value] = {isList : true};
+                        }
+                        return memo[value];
+                    }
+                }, sortedProps);
+            });
+        }; */
 
         propApp.setValue = function (prop, value) {
             prop.value = value;
@@ -59,9 +124,11 @@
             return propertyRights.readAble(prop.right);
         };
 
+        $timeout(function () {
+            $('.ui.accordion').accordion();
+        }, 0);
+
     }]);
-
-
 
     var propertyRights = {
         NONE : 0,

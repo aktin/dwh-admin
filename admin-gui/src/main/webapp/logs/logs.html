@@ -1,14 +1,42 @@
-logs get here
+<i class="filter icon"></i>
+select log level to display: 
+<div class="ui floating dropdown icon button">
+	<input name="selectedLevel" type="hidden" value="{{logApp.selectedLevel}}" ng-model="logApp.selectedLevel">
+	<div class="text"><!-- Filter Logs   -->
+    	<div class="ui blue empty circular label"></div>
+    	show all
+	</div>
+	<div class="menu">
+		<!-- <div class="ui icon search input">
+			<i class="search icon"></i>
+			<input type="text" placeholder="Search tags...">
+		</div>
+		<div class="divider"></div>
+		<div class="header">
+			<i class="tags icon"></i>
+			Tag Label
+		</div> -->
+		<div class="scrolling menu">
+			<div class="item" ng-click="logs.selectLevel(-1)"  data-value="{{-1}}">
+	        	<div class="ui blue empty circular label"></div>
+	        	show all
+	      	</div>
+			<div class="item" ng-repeat="(name, value) in logs.logLevels" ng-click="logs.selectLevel(value)" data-value="{{value}}">
+	        	<div class="ui {{logs.colorCode(value)}} empty circular label"></div>
+	        	{{name}}
+	      	</div>
+		</div>
+	</div>
+</div>
 
 
 <div class="ui relaxed divided list">
 	<!--  Product Container  -->
-	<div ng-repeat="log in logs.logs" class="item log-item-level {{logs.getLevel(log.level)}}"> 
+	<div ng-repeat="log in logs.logs()" class="item log-item-level {{logs.getLevel(log.level)}}"> 
 		<div class="log-text-box">
 			<h3 class="ui header">{{log.source}} - {{logs.getLevel(log.level)}}</h3>
 			<p> {{logs.showTime(log.timestamp)}} </p>
 			<div class="log-text-box"> <small>{{log.text}}</small> </div>
 		</div>
 	</div>
-
 </div>

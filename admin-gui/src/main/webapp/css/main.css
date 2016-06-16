@@ -8,10 +8,23 @@ body {
 
 	flex-direction: column;
 }
+
 .flex-panel {
+	-webkit-flex: 0 0 auto; /* Safari 6.1+ */
+    -ms-flex:  0 0 auto; /* IE 10 */ 
+    flex:  0 0 auto;
+}
+.flex-panel.content {
 	-webkit-flex: 1 0 auto; /* Safari 6.1+ */
     -ms-flex:  1 0 auto; /* IE 10 */ 
     flex:  1 0 auto;
+}
+
+header-panel {
+	margin-bottom: 5px;
+}
+footer-panel {
+	margin-top: 5px;
 }
 
 .property-fields {

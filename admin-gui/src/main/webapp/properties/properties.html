@@ -8,22 +8,35 @@
 			<input type="{{property.field}}" name="{{property.name}}" value="{{property.value}}"> 
 		</div>
 	</div> -->
+
+
+	<div class="ui secondary  menu">
+
+		<a class="item" ng-repeat="cat in properties.categories" ng-click="properties.setCategory(cat)" 
+			ng-class="{active: cat.value == properties.currentCategory}">
+			{{cat.name}}
+		</a>
+	</div>
+
+
 	<div class="ui relaxed divided list">
 		<!--  Product Container  -->
-		<div class="item" ng-repeat="property in properties.properties"> 
-			<h3 class="ui header">{{property.name}} </h3>
-			<p> {{property.descr}} </p>
-			<div class="ui input property-fields" ng-include="property.template">
+		<div class="item ui styled accordion" ng-repeat="property in properties.properties()"> 
+			<h3 class="ui header title"> {{property.name}} </h3>
+			<div class="content">
+				<p> {{property.descr}} </p>
+				<div class="ui input property-fields" ng-include="property.template">
+				</div>
 			</div>
 
 			<!-- <div type="{{property.inputField}}" fieldclass="{{property.fieldClass}}" class="varied-input"> </div> -->
 		</div>
 
-		<ng-repeat ng-repeat="(key, value) in properties.sortedProps">
+<!-- 		<ng-repeat ng-repeat="(key, value) in properties.sortedProps">
 			<div ng-if="value.isList">
 				
 			</div> 
 
-		</ng-repeat>
+		</ng-repeat> -->
 
 	</div>
