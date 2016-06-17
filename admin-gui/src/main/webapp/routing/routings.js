@@ -44,7 +44,7 @@
             controllerAs: 'home',
         },
         {
-            name: 'Properties',
+            name: 'Konfiguration', 
             routing: 'properties',
             url: "/properties/",
             templateUrl: 'properties/properties.html',
@@ -60,7 +60,7 @@
             controllerAs: 'logs',
         },
         {
-            name: 'Users',
+            name: 'Benutzeradministration',
             routing: 'users',
             url: "/users/",
             templateUrl: 'users/users.html',
@@ -70,6 +70,22 @@
         {
             name: 'Login',
             routing: 'login',
+            url: "/users/login",
+            templateUrl: 'users/login.html',
+            controller: 'UsersController',
+            controllerAs: 'users',
+        },
+        {
+            name: 'Zentrale Abfragen',
+            routing: 'querying',
+            url: "/users/login",
+            templateUrl: 'users/login.html',
+            controller: 'UsersController',
+            controllerAs: 'users',
+        },
+        {
+            name: 'Berichtswesen',
+            routing: 'reports',
             url: "/users/login",
             templateUrl: 'users/login.html',
             controller: 'UsersController',

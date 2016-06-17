@@ -1,13 +1,13 @@
 (function() {
-    var propApp = angular.module('aktin.properties', ['aktin.input']);
+    var propApp = angular.module('aktin.properties', []);
 
     propApp.controller('PropertiesController', ['$http', '$scope', '$filter', '$timeout', function($http, $scope, $filter, $timeout){
         var propApp = this;
 
         propApp.currentCategory = "";
         propApp.setCategory = function (cat) {
-            console.log(cat);
             propApp.currentCategory = cat.value;
+            propApp.properties = filterProp();
         };
 
         var predefinedCats = { 
@@ -42,7 +42,7 @@
         };
 
         propApp.categories = _.uniq(_.reduce(
-                properties, 
+                dummyProperties, 
                 function (memo, prop) {
                     var val = prop.name.split('.')[0];
                     var obj = {};
@@ -57,8 +57,7 @@
                 [predefinedCats[""]]
             ), true);
 
-        propApp.properties = function () { 
-            return _.filter(_.map(properties, function (prop, index, properties){
+        var fullProperties = _.map(dummyProperties, function (prop, index){
                 prop.inputField = prop.field;
                 if (prop.type && prop.type === "timestamp") {
                     if (prop.value)
@@ -82,19 +81,25 @@
                 }
 
                 return prop;
-            }), function (prop) {
-                console.log("currentCategory", propApp.currentCategory);
+            });
+
+        var filterProp = function () {
+            $timeout(function () {
+                $('.ui.accordion').accordion();
+            }, 0);
+            return _.filter(fullProperties, function (prop) {
                 if (propApp.currentCategory === "") 
                     return true;
                 var val = prop.name.split('.')[0];
                 return val === propApp.currentCategory;
             });
-        };
+        }
 
-        /*
-        propApp.sortedProps = function () {
+        propApp.properties = filterProp();
+
+/*        propApp.sortedProps = function () {
             var sortedProps = {};
-            _.each(properties, function (prop, index, properties){
+            _.each(dummyProperties, function (prop, index){
                 _.reduce (prop.name.split('.'), function (memo, value, index, list){
                     if (index == list.length-1) {
                         memo[value] = prop;
@@ -113,7 +118,6 @@
         }
 
         propApp.isSelected = function (prop, value) {
-            console.log(value, prop.value === value);
             return prop.value === value;
         }
 
@@ -124,9 +128,6 @@
             return propertyRights.readAble(prop.right);
         };
 
-        $timeout(function () {
-            $('.ui.accordion').accordion();
-        }, 0);
 
     }]);
 
@@ -143,7 +144,7 @@
         },
     }
 
-    var properties = [
+    var dummyProperties = [
         {
             name : "tls.keystore.path",
             descr : "Keystore für Key und Zertifikate für TLS",

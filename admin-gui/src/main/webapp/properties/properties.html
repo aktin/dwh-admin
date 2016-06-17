@@ -21,22 +21,15 @@
 
 	<div class="ui relaxed divided list">
 		<!--  Product Container  -->
-		<div class="item ui styled accordion" ng-repeat="property in properties.properties()"> 
-			<h3 class="ui header title"> {{property.name}} </h3>
+		<div class="item ui styled accordion" ng-repeat="property in properties.properties"> 
+			<h3 class="ui header title"> {{property.descr}} </h3>
 			<div class="content">
-				<p> {{property.descr}} </p>
+				<!-- <p> {{property.name}} </p> -->
 				<div class="ui input property-fields" ng-include="property.template">
 				</div>
 			</div>
-
-			<!-- <div type="{{property.inputField}}" fieldclass="{{property.fieldClass}}" class="varied-input"> </div> -->
 		</div>
 
-<!-- 		<ng-repeat ng-repeat="(key, value) in properties.sortedProps">
-			<div ng-if="value.isList">
-				
-			</div> 
 
-		</ng-repeat> -->
 
 	</div>
