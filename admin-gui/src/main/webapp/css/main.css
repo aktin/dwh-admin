@@ -8,7 +8,6 @@ body {
 
 	flex-direction: column;
 }
-
 .flex-panel {
 	-webkit-flex: 0 0 auto; /* Safari 6.1+ */
     -ms-flex:  0 0 auto; /* IE 10 */ 
@@ -25,6 +24,24 @@ header-panel {
 }
 footer-panel {
 	margin-top: 5px;
+}
+
+/* menu item */
+.ui.inverted.menu .item::before {
+	background: none;
+}
+.ui.inverted.menu .item {
+	-webkit-flex: 1 0 auto; /* Safari 6.1+ */
+    -ms-flex:  1 0 auto; /* IE 10 */ 
+    flex:  1 0 auto;
+}
+
+footer-panel .ui.list {
+	margin-top: 0;
+}
+#footer-divider {
+	margin-top: 21px;
+	margin-bottom: 6px;
 }
 
 .property-fields {

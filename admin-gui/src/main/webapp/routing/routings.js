@@ -1,6 +1,7 @@
 (function() {
     var app = angular.module('aktin.routing', [
         'ui.router',
+        'aktin.helpers',
         'aktin.home',
         'aktin.logs',
         'aktin.users',
@@ -13,9 +14,12 @@
             templateUrl: 'layout/header.html',
         }
     });
-    app.controller('HeaderController', ['$state', function($state){
+    app.controller('HeaderController', ['$state', 'number2word', function($state, number2word){
         var app = this;
         app.navigations = navigations;
+        app.navLength = function () {
+            // return number2word(navigations.length) + " item";
+        }
         app.active = function (nav) {
             if ($state.$current,$state.$current.self.name === nav.routing) {
                 return 'active';
@@ -78,10 +82,10 @@
         {
             name: 'Zentrale Abfragen',
             routing: 'querying',
-            url: "/users/login",
-            templateUrl: 'users/login.html',
-            controller: 'UsersController',
-            controllerAs: 'users',
+            url: "/querying/",
+            templateUrl: 'querying/querying.html',
+            controller: 'QueryController',
+            controllerAs: 'query',
         },
         {
             name: 'Berichtswesen',
@@ -164,5 +168,6 @@
             });
         }
     ]);
+
 
 })();
