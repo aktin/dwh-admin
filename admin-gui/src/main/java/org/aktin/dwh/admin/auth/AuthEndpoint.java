@@ -36,7 +36,7 @@ public class AuthEndpoint {
 	
 	@POST
 	@Path("login")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response authenticateUser(Credentials cred){
 		if( authenticator == null ){
