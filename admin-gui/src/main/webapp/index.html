@@ -9,6 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <title>AKTIN Admin Konfigurationsinterface</title>
 
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/reset.css">
 
     <script type="text/javascript" src="lib/jquery-1.12.4/jquery-1.12.4.min.js"></script>
 
@@ -36,14 +38,13 @@
     <script type="text/javascript" src="properties/properties_input.js"></script>
     <script type="text/javascript" src="logs/logs.js"></script>
     <script type="text/javascript" src="users/users.js"></script>
+    <script type="text/javascript" src="reports/reports.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="css/main.css">
-    <link rel="stylesheet" type="text/css" href="css/reset.css">
 </head>
 <body>
     <header-panel ng-controller="HeaderController as header" class="flex-panel">header</header-panel>
 
-    <div class="ui main text container flex-panel content" ui-view>
+    <div class="ui main container flex-panel content" ui-view>
         main view
     </div>
 

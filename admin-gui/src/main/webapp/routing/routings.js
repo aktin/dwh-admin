@@ -5,6 +5,7 @@
         'aktin.home',
         'aktin.logs',
         'aktin.users',
+        'aktin.reports',
     ]);
 
     // HEADER 
@@ -90,10 +91,10 @@
         {
             name: 'Berichtswesen',
             routing: 'reports',
-            url: "/users/login",
-            templateUrl: 'users/login.html',
-            controller: 'UsersController',
-            controllerAs: 'users',
+            url: "/reports/",
+            templateUrl: 'reports/reports.html',
+            controller: 'ReportsController',
+            controllerAs: 'reports',
         },
     ];
 

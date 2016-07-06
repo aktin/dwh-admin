@@ -19,17 +19,28 @@
 	</div>
 
 
-	<div class="ui relaxed divided list">
+	<div class="ui stackable relaxed two column grid">
 		<!--  Product Container  -->
-		<div class="item ui styled accordion" ng-repeat="property in properties.properties"> 
-			<h3 class="ui header title"> {{property.descr}} </h3>
-			<div class="content">
-				<!-- <p> {{property.name}} </p> -->
-				<div class="ui input property-fields" ng-include="property.template">
+		<!-- <div class="item ui styled accordion" ng-repeat="property in properties.properties">  -->
+		<div class="column" ng-repeat="property in properties.properties">
+			<div class="ui segment property-block">
+				<h3 class="ui header title"> {{property.descr}} </h3>		
+				<button class="ui icon button property-edit-button" ng-click="properties.editProperty(property)" data-name="{{property.name}}">
+				  	<i class="edit icon"></i>
+				</button>
+				<div class="content">
+					<!-- <p> {{property.name}} </p> -->
+					<!-- <div class="ui input property-fields" ng-include="property.template"></div> -->
+					<span>{{property.value}}</span> 
 				</div>
 			</div>
 		</div>
+		<!-- </div> -->
 
 
 
 	</div>
+
+<div class="ui modal">
+  <div class="header">Header</div>
+</div>

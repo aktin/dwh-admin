@@ -128,6 +128,13 @@
             return propertyRights.readAble(prop.right);
         };
 
+        propApp.editProperty = function (prop) {
+            console.log(prop);
+            $('.ui.modal')
+              .modal('show')
+            ;
+        }
+
 
     }]);
 

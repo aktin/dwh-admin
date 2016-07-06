@@ -2,7 +2,8 @@
 <div class="ui fluid {{header.navLength()}} inverted menu stackable">
 <div class="ui container">
 		<a ng-repeat="nav in header.navigations" class="item {{header.active(nav)}}" ui-sref="{{nav.routing}}">
-			{{nav.name}}
+		<span class="header-menu-item-content">
+			{{nav.name}}</span>
 		</a>
 		<!-- <div class="right menu">
 			<div class="item">
