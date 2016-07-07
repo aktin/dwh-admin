@@ -7,26 +7,24 @@
 	</div> -->
 <div class="ui text container">
 
-<div class="header"><h1>Hospital zum heiligen St. Actinus</h1></div>
+	<div class="header"><h1>Hospital zum heiligen St. Actinus</h1></div>
 
-<div>Zentrale Notaufnahme<br/>
-Leitung: Schwester Donata<br/>
-Monatsbericht: Oktober 2015<br/>
-Datenstand: 05.11.2015</div>
-
-<div class="ui relaxed list reports-container">
-	<div ng-repeat="(ind, report) in reports.reports" class="item reports-list-item">
-		<div class="header">{{report.name}}</div>
-		<div class="description">
-			{{report.description}}
-		</div>
-		<img class="ui centered image" src="reports/img/{{report.svg}}" />
+	<div>
+		Zentrale Notaufnahme<br/>
+		Leitung: Schwester Donata<br/>
+		Monatsbericht: Oktober 2015<br/>
+		Datenstand: 05.11.2015
 	</div>
 
-</div>
+	<div class="ui relaxed list reports-container">
+		<div ng-repeat="(ind, report) in reports.reports" class="item reports-list-item">
+			<div class="header">{{report.name}}</div>
+			<div class="description">
+				{{report.description}}
+			</div>
+			<img class="ui centered image" src="reports/img/{{report.svg}}" />
+		</div>
 
-<object data="reports/Monatsbericht-Draft1.pdf" type="application/pdf" style="width:100%;height:600px">
-  <a href="reports/Monatsbericht-Draft1.pdf">PDF laden</a>
-</object>
+	</div>
 
 </div>
