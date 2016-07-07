@@ -22,16 +22,16 @@
 	<div class="ui stackable relaxed two column grid">
 		<!--  Product Container  -->
 		<!-- <div class="item ui styled accordion" ng-repeat="property in properties.properties">  -->
-		<div class="column" ng-repeat="property in properties.properties">
+		<div class="column" ng-repeat="prop in properties.properties">
 			<div class="ui segment property-block">
-				<h3 class="ui header title"> {{property.descr}} </h3>		
-				<button class="ui icon button property-edit-button" ng-click="properties.editProperty(property)" data-name="{{property.name}}">
+				<h3 class="ui header title"> {{prop.descr}} </h3>		
+				<button class="ui icon button property-edit-button" ng-click="properties.editProperty(prop)" data-name="{{prop.name}}" ng-disabled="!properties.writeAble(prop)">
 				  	<i class="edit icon"></i>
 				</button>
 				<div class="content">
-					<!-- <p> {{property.name}} </p> -->
-					<!-- <div class="ui input property-fields" ng-include="property.template"></div> -->
-					<span>{{property.value}}</span> 
+					<!-- <p> {{prop.name}} </p> -->
+					<!-- <div class="ui input property-fields" ng-include="prop.template"></div> -->
+					<span ng-bind="prop.value"></span> 
 				</div>
 			</div>
 		</div>
@@ -42,9 +42,14 @@
 	</div>
 
 <div class="ui modal field-edit">
-  	<div class="header">{{properties.currentInput.descr}}</div>
+  	<div class="header">{{property.descr}}</div>
   	<div class="content">
-  		{{properties.currentInput.name}}
-  		<div class="ui input property-fields" ng-include="properties.currentInput.template"></div>
+  		{{property.name}}
+  		<div class="ui input property-fields" ng-include="property.template"></div>
   	</div>
+	<div class="actions">
+  		<div class="ui approve button" ng-disabled="!properties.writeAble(property)">Approve</div>
+	    <div class="ui cancel button">Cancel</div>
+  		<div class="ui close button">Close</div>
+	</div>
 </div>
