@@ -97,21 +97,7 @@
 
         propApp.properties = filterProp();
 
-/*        propApp.sortedProps = function () {
-            var sortedProps = {};
-            _.each(dummyProperties, function (prop, index){
-                _.reduce (prop.name.split('.'), function (memo, value, index, list){
-                    if (index == list.length-1) {
-                        memo[value] = prop;
-                    } else {
-                        if (!memo[value]) {
-                            memo[value] = {isList : true};
-                        }
-                        return memo[value];
-                    }
-                }, sortedProps);
-            });
-        }; */
+        propApp.currentInput = {};
 
         propApp.setValue = function (prop, value) {
             prop.value = value;
@@ -128,13 +114,17 @@
             return propertyRights.readAble(prop.right);
         };
 
+        var fieldModal = $('.ui.modal.field-edit');
+
         propApp.editProperty = function (prop) {
-            console.log(prop);
-            $('.ui.modal')
-              .modal('show')
+            fieldModal
+                .modal('show')
             ;
+            propApp.currentInput = prop;
+            $scope.property=prop;
         }
 
+        
 
     }]);
 

@@ -41,6 +41,10 @@
 
 	</div>
 
-<div class="ui modal">
-  <div class="header">Header</div>
+<div class="ui modal field-edit">
+  	<div class="header">{{properties.currentInput.descr}}</div>
+  	<div class="content">
+  		{{properties.currentInput.name}}
+  		<div class="ui input property-fields" ng-include="properties.currentInput.template" onInclude="property=properties.currentInput; blub='hallo'"></div>
+  	</div>
 </div>
