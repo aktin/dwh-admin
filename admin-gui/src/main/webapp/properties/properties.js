@@ -84,9 +84,6 @@
             });
 
         var filterProp = function () {
-            $timeout(function () {
-                $('.ui.accordion').accordion();
-            }, 0);
             return _.filter(fullProperties, function (prop) {
                 if (propApp.currentCategory === "") 
                     return true;
@@ -96,22 +93,11 @@
         }
 
         propApp.properties = filterProp();
-
-/*        propApp.sortedProps = function () {
-            var sortedProps = {};
-            _.each(dummyProperties, function (prop, index){
-                _.reduce (prop.name.split('.'), function (memo, value, index, list){
-                    if (index == list.length-1) {
-                        memo[value] = prop;
-                    } else {
-                        if (!memo[value]) {
-                            memo[value] = {isList : true};
-                        }
-                        return memo[value];
-                    }
-                }, sortedProps);
+        var propertiesChanged = function() {
+            $scope.$apply(function(){ //let angular know the changes
+                propApp.properties = filterProp();
             });
-        }; */
+        }
 
         propApp.setValue = function (prop, value) {
             prop.value = value;
@@ -122,12 +108,60 @@
         }
 
         propApp.writeAble = function (prop) {
-            return propertyRights.writeAble(prop.right);
+            return prop && propertyRights.writeAble(prop.right);
         };
         propApp.readAble = function (prop) {
             return propertyRights.readAble(prop.right);
         };
 
+        var fieldModal = $('.ui.modal.field-edit');
+
+        var fieldChanged = false;
+        propApp.editProperty = function (prop) {
+            $scope.property = prop;
+            fieldModal
+                .modal({
+                closable  : false,
+                    onHide      : function () {
+                        prop = {};
+                    },
+                    onVisible   : function (event) {
+                        fieldChanged = false;
+                        $('.'+prop.fieldClass)[0].value = prop.value;
+                        $('.'+prop.fieldClass).on('change keypress paste focus textInput input', function () {
+                            var val = this.value;
+                            // console.log(!prop, val, prop.value, typeof val, typeof prop.value, val !== prop.value, !fieldChanged);
+                            if (prop && !fieldChanged && val !== ""+prop.value) {
+                                // console.log("changed");
+                                fieldChanged = true;
+                            }
+                        });
+                    },
+                    onDeny      : function() {
+                        if (fieldChanged) return confirm("Daten wurden geändert, verwerfen?");
+                    },
+                    onApprove   : function() {
+                        if (! fieldChanged) return true;
+
+                        var field0 = $('.'+prop.fieldClass)[0];
+                        if (prop.field === "password") {
+                            var field1 = $('.'+prop.fieldClass)[1];
+                            console.log("password", field0.value, field1.value);
+                            if (field1.value !== field0.value) {
+                                return false;
+                            }
+                        }
+                        $scope.property.value = field0.value;
+                        // console.log(prop);
+                        // propApp.properties = filterProp();
+                        propertiesChanged();
+                    }
+                })
+                .modal('attach events', '.actions .ui.close', 'hide')
+                .modal('show');
+        }
+
+        
 
     }]);
 

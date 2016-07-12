@@ -3,12 +3,10 @@
 <html ng-app="aktin">
 <head>
     <base href="/">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="img/favicon.png" rel="icon" type="image/x-icon" />
+    <meta charset="utf-8" />
+    <link href="img/favicon.ico" rel="icon" type="image/x-icon" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <title>AKTIN Admin Konfigurationsinterface</title>
 
     <link rel="stylesheet" type="text/css" href="css/main.css">
@@ -33,17 +31,20 @@
     <script type="text/javascript" src="lib/semantic/semantic.min.js"></script>
 
     <script type="text/javascript" src="app.js"></script>
+    <script type="text/javascript" src="routing/helpers.js"></script>
     <script type="text/javascript" src="routing/routings.js"></script>
     <script type="text/javascript" src="home/home.js"></script>
     <script type="text/javascript" src="properties/properties.js"></script>
     <script type="text/javascript" src="properties/properties_input.js"></script>
     <script type="text/javascript" src="logs/logs.js"></script>
     <script type="text/javascript" src="users/users.js"></script>
+    <script type="text/javascript" src="reports/reports.js"></script>
+
 </head>
 <body>
     <header-panel ng-controller="HeaderController as header" class="flex-panel">header</header-panel>
 
-    <div class="ui main text container flex-panel content" ui-view>
+    <div class="ui main container flex-panel content" ui-view>
         main view
     </div>
 

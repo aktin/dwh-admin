@@ -1,0 +1,30 @@
+<!-- 	<div class="ui secondary  menu">
+
+		<a class="item" ng-repeat="cat in properties.categories" ng-click="properties.setCategory(cat)" 
+			ng-class="{active: cat.value == properties.currentCategory}">
+			{{cat.name}}
+		</a>
+	</div> -->
+<div class="ui text container">
+
+	<div class="header"><h1>Hospital zum heiligen St. Actinus</h1></div>
+
+	<div>
+		Zentrale Notaufnahme<br/>
+		Leitung: Schwester Donata<br/>
+		Monatsbericht: Oktober 2015<br/>
+		Datenstand: 05.11.2015
+	</div>
+
+	<div class="ui relaxed list reports-container">
+		<div ng-repeat="(ind, report) in reports.reports" class="item reports-list-item">
+			<div class="header">{{report.name}}</div>
+			<div class="description">
+				{{report.description}}
+			</div>
+			<img class="ui centered image" src="reports/img/{{report.svg}}" />
+		</div>
+
+	</div>
+
+</div>
