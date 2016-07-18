@@ -8,12 +8,13 @@ import java.time.Instant;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.sql.DataSource;
+
+import org.aktin.dwh.db.Manager;
 
 /**
  * Writes log records to the database: logger name, level, message, throwable, timestamp, source class
+ * XXX maybe move to separate project
  * @author R.W.Majeed
  *
  */
@@ -21,21 +22,34 @@ public class JdbcLogHandler extends Handler {
 	private Connection dbc;
 	private PreparedStatement publish;
 	
+	protected JdbcLogHandler(Connection dbc) throws SQLException{
+		this.dbc = dbc;
+		initialise();
+	}
+	private void initialise() throws SQLException{
+		publish = dbc.prepareStatement("INSERT INTO log_records(ts, level, source, logger, message, cause)VALUES(?,?,?,?,?,?)");
+		
+	}
+	/**
+	 * Connect to the database
+	 * @throws NamingException unable to locate the specified data source
+	 * @throws SQLException SQL error during connection or prepared statements
+	 */
 	public JdbcLogHandler() throws NamingException, SQLException {
-		InitialContext ctx = new InitialContext();
-		if( true )return; // XXX
-		String dsName = "java:/AktinDS";
-		//log.info("Connecting to i2b2 database via "+dsName);
-		DataSource ds = (DataSource)ctx.lookup(dsName);
-		// TODO open database connection
-		dbc = ds.getConnection();
-		// TODO use dependency dwh-db to get the connection
-		publish = dbc.prepareStatement("INSERT INTO log_records(ts, level, source, logger, message, cause, source)VALUES(?,?,?,?,?,?,?)");
+		this(Manager.openConnection());
 	}
 
+	public String stackTraceToString(Throwable throwable){
+		if( throwable == null ){
+			return null;
+		}else{
+			// TODO implement
+			return throwable.toString();
+		}
+	}
 	@Override
 	public void publish(LogRecord record) {
-		if( true )return; // TODO test and activate database processing
+		System.out.println("publish(level="+record.getLevel().getName()+"):"+record.getMessage());
 		try{
 			// TODO use queue for log entries while the database is blocking
 			synchronized( publish ){
@@ -43,12 +57,18 @@ public class JdbcLogHandler extends Handler {
 						Timestamp.from(Instant.ofEpochMilli(record.getMillis()))
 				);
 				publish.setString(2, record.getLevel().getName());
-				// TODO more properties
+				publish.setString(3, null);
+				publish.setString(4, record.getLoggerName());
+				publish.setString(5, record.getMessage());
+				publish.setString(6, stackTraceToString(record.getThrown()));
+
 				publish.execute();
 			}
 		}catch( SQLException e ){
-			// TODO Auto-generated method stub
-			
+			// print to stderr
+			// TODO print timestamp and more info
+			System.err.println("Unable to log message "+record.toString());
+			e.printStackTrace();
 		}		
 	}
 
