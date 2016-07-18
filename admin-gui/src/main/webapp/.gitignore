@@ -1,0 +1,4 @@
+*.txt
+*.pdf
+plantuml/*
+screens/*

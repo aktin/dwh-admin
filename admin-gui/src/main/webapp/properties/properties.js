@@ -121,7 +121,7 @@
             $scope.property = prop;
             fieldModal
                 .modal({
-                closable  : false,
+                // closable  : false,
                     onHide      : function () {
                         prop = {};
                     },
@@ -131,14 +131,14 @@
                         $('.'+prop.fieldClass).on('change keypress paste focus textInput input', function () {
                             var val = this.value;
                             // console.log(!prop, val, prop.value, typeof val, typeof prop.value, val !== prop.value, !fieldChanged);
-                            if (prop && !fieldChanged && val !== ""+prop.value) {
+                            if (prop && !fieldChanged && val !== (""+prop.value)) {
                                 // console.log("changed");
                                 fieldChanged = true;
                             }
                         });
                     },
                     onDeny      : function() {
-                        if (fieldChanged) return confirm("Daten wurden geändert, verwerfen?");
+                        // if (fieldChanged) return confirm("Daten wurden geändert, verwerfen?");
                     },
                     onApprove   : function() {
                         if (! fieldChanged) return true;
@@ -157,7 +157,7 @@
                         propertiesChanged();
                     }
                 })
-                .modal('attach events', '.actions .ui.close', 'hide')
+                // .modal('attach events', '.actions .ui.close', 'hide')
                 .modal('show');
         }
 
