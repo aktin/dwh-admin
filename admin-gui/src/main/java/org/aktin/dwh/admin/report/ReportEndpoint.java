@@ -11,7 +11,12 @@ import javax.ws.rs.core.Response;
 import org.aktin.report.Report;
 import org.aktin.report.manager.ReportManager;
 
-
+/**
+ * RESTful HTTP end point for generating reports.
+ * 
+ * @author Raphael
+ *
+ */
 @Path("report")
 public class ReportEndpoint {
 
@@ -24,7 +29,7 @@ public class ReportEndpoint {
 	public Response test(){
 		String ret = "OK:";
 		for( Report report : manager.reports() ){
-			ret += report+":";
+			ret += report+"("+report.getId()+"): ";
 		}
 
 		return Response.ok(ret).build();
