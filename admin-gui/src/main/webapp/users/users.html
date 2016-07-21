@@ -1,3 +1,40 @@
 <div class="ui text container">
-users
+	<div class="ui secondary menu">
+		<a class="item" ng-repeat="sub in users.subMenus" 
+			ng-click="users.setSubMenu(sub)" 
+			ng-class="{active: sub.value == users.currentSubmenu}">
+			{{sub.name}}
+		</a>
+	</div>
+
+	<div class="container users-list ui cards" ng-show="users.isSet('list')">
+		<div class="card" ng-repeat="user in users.users">
+		  	<div class="content">
+		  		<div class="header">
+		  			{{user.username}}
+		  		</div>
+		  		<div class="meta">
+		  			{{user._id}}
+		  		</div>
+		  		<div class="description ui list">
+		  			<div class="item" ng-repeat="role in user.roles">
+		  				{{role}}
+		  			</div>
+		  		</div>
+		  	</div>
+		  </div>
+
+	</div>
+	<div class="container users-profile" ng-show="users.isSet('profile')">
+	profile
+	</div>
+	<div class="container users-new" ng-show="users.isSet('new')">
+	new
+	</div>
+	<div class="container" ng-show="users.isSet('')">
+
+	</div>
+	<div class="container" ng-show="users.isSet('all')">
+	users all
+	</div>
 </div>
