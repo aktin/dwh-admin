@@ -16,7 +16,12 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
 /**
- * Authentication filter for RESTful interfaces
+ * Authentication filter for RESTful interfaces.
+ * <p>
+ * After authentication, security is handled by the SecurityContext
+ * interface. Since the security context has no {@code isAdmin} method,
+ * a special role "admin" is used for that purpose.
+ * </p>
  * 
  * @author R.W.Majeed
  *
@@ -70,7 +75,11 @@ public class AuthFilter implements ContainerRequestFilter{
 			
 			@Override
 			public boolean isUserInRole(String role) {
-				return token.getPayload().hasRole(role);
+				if( role.equals("admin") ){
+					return token.getPayload().isAdmin();
+				}else{
+					return token.getPayload().hasRole(role);
+				}
 			}
 			
 			@Override

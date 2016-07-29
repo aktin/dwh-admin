@@ -1,8 +1,8 @@
 package org.aktin.dwh.admin.auth;
 
-import java.security.Principal;
 import java.util.logging.Logger;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -23,8 +23,14 @@ import org.aktin.dwh.Authenticator;
  * 
  * Example usage:
  * <pre>
- *   curl -H "Content-Type: application/json" -X POST -d '{"username":"admin","password":"xyz"}' http://localhost:8080/aktin/admin/auth/login
- *   
+ curl -H "Content-Type: application/json" -X POST -d '{"username":"admin","password":"xyz"}' http://localhost:8080/aktin/admin/auth/login
+ 
+ </pre>
+ * Send token header:
+ * <pre>
+ * curl -H "Authorization: Bearer fe4798-1d90-41d4-a228-21e891d2bb65" http://localhost:8080/aktin/admin/auth/test
+ * 
+
  * </pre>
  * @author R.W.Majeed
  *
@@ -37,6 +43,9 @@ public class AuthEndpoint {
 	private Authenticator authenticator;
 	@Inject 
 	private TokenManager tokens;
+	
+	@Context 
+	private SecurityContext security;
 	
 	@POST
 	@Path("login")
@@ -51,7 +60,7 @@ public class AuthEndpoint {
 		}
 		// TODO allow access for other users
 		Authentication p = authenticator.authenticate(cred.username, cred.password.toCharArray());
-		if( p != null && p.isAdmin() ){
+		if( p != null ){
 			// generate token
 			String uid = tokens.registerToken(p);
 			return Response.ok(uid).build();
@@ -62,17 +71,35 @@ public class AuthEndpoint {
 	}
 	
 	@POST
+	@Secured
 	@Path("logout")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.TEXT_PLAIN)
-	public Response logout(String token){
-		// TODO invalidate token
-		return Response.ok().build();
+	public String logout(String token){
+		Token t = tokens.lookupToken(token);
+		t.invalidate();
+		return "{duration="+(System.currentTimeMillis()-t.issued)+"}";
 	}
 	
+	@Secured
 	@GET
-	@Path("test")
-	public String test(@Context SecurityContext sec){
-		return "Security:"+sec.getUserPrincipal();
+	@Path("test/secured")
+	public String test(){
+		return "Security:"+security.getUserPrincipal();
+	}
+
+	@GET
+	@Secured
+	@RolesAllowed("admin")
+	@Path("test/admin")
+	public String adminonly(){
+		return "You are Admin!:"+security.getUserPrincipal();
+	}
+	@GET
+	@Secured
+	@RolesAllowed("bamboo")
+	@Path("test/bamboo")
+	public String bamboo(){
+		return "You have the bamboo role: "+security.getUserPrincipal();
 	}
 }

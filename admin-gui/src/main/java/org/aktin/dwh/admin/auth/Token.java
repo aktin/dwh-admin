@@ -21,4 +21,8 @@ public class Token {
 	public Authentication getPayload(){
 		return this.payload;
 	}
+	public void invalidate(){
+		// next check for valid token will fail
+		this.renewed = 0;
+	}
 }

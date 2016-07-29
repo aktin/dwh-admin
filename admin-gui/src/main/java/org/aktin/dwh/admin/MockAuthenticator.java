@@ -15,20 +15,18 @@ public class MockAuthenticator implements Authenticator{
 			
 			@Override
 			public boolean isAdmin() {
-				// TODO Auto-generated method stub
-				return true;
+				return user.equals("admin");
 			}
-			
+
 			@Override
 			public boolean hasRole(String role) {
-				// TODO Auto-generated method stub
-				if( role.equals("bamboo") ){
+				if( role.equals("aktin") ){
 					return true;
 				}else{
 					return false;
 				}
 			}
-			
+
 			@Override
 			public String getName() {
 				return user;
