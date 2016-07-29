@@ -5,12 +5,16 @@ import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
+import org.aktin.dwh.Authentication;
 import org.aktin.dwh.Authenticator;
 
 /**
@@ -46,8 +50,8 @@ public class AuthEndpoint {
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
 		}
 		// TODO allow access for other users
-		Principal p = authenticator.authenticate(cred.username, cred.password.toCharArray());
-		if( p != null && authenticator.isUserAdmin(p) ){
+		Authentication p = authenticator.authenticate(cred.username, cred.password.toCharArray());
+		if( p != null && p.isAdmin() ){
 			// generate token
 			String uid = tokens.registerToken(p);
 			return Response.ok(uid).build();
@@ -64,5 +68,11 @@ public class AuthEndpoint {
 	public Response logout(String token){
 		// TODO invalidate token
 		return Response.ok().build();
+	}
+	
+	@GET
+	@Path("test")
+	public String test(@Context SecurityContext sec){
+		return "Security:"+sec.getUserPrincipal();
 	}
 }

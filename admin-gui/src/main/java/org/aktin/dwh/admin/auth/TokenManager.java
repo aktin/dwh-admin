@@ -1,6 +1,5 @@
 package org.aktin.dwh.admin.auth;
 
-import java.security.Principal;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +7,8 @@ import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.inject.Singleton;
+
+import org.aktin.dwh.Authentication;
 
 @Singleton
 public class TokenManager {
@@ -22,11 +23,11 @@ public class TokenManager {
 		// TODO use external configuration
 		this.expireMilliseconds = 1000*60*5; // default is 5 minutes
 	}
-	public String registerToken(Principal principal){
-		Token token = new Token(this, principal);
+	public String registerToken(Authentication data){
+		Token token = new Token(this, data);
 		UUID uuid = UUID.randomUUID();
 		tokenMap.put(uuid, token);
-		log.info("New token for user "+principal.getName()+": "+uuid.toString());
+		log.info("New token for user "+data.getName()+": "+uuid.toString());
 		return uuid.toString();
 	}
 	
@@ -44,11 +45,11 @@ public class TokenManager {
 			// check if expired
 			long now = System.currentTimeMillis();
 			if( now - token.issued > maxLifetime ){
-				log.info("Token lifetime exceeded for "+token.getPrincipal().getName()+": "+uuid);
+				log.info("Token lifetime exceeded for "+token.getPayload().getName()+": "+uuid);
 				tokenMap.remove(key);
 				token = null;
 			}else if( now - token.renewed > expireMilliseconds ){
-				log.info("Token too old ("+Instant.ofEpochMilli(token.renewed)+") for "+token.getPrincipal()+": "+uuid);
+				log.info("Token too old ("+Instant.ofEpochMilli(token.renewed)+") for "+token.getPayload().getName()+": "+uuid);
 				tokenMap.remove(key);
 				token = null;
 			}

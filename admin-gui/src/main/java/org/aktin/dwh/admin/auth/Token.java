@@ -1,15 +1,15 @@
 package org.aktin.dwh.admin.auth;
 
-import java.security.Principal;
+import org.aktin.dwh.Authentication;
 
 public class Token {
-	private Principal principal;
+	private Authentication payload;
 	//private TokenManager manager;
 	long issued;
 	long renewed;
 	
-	Token(TokenManager manager, Principal principal){
-		this.principal = principal;
+	Token(TokenManager manager, Authentication payload){
+		this.payload = payload;
 		this.issued = System.currentTimeMillis();
 		this.renewed = this.issued;
 	}
@@ -18,7 +18,7 @@ public class Token {
 		this.renewed = System.currentTimeMillis();
 	}
 	
-	public Principal getPrincipal(){
-		return this.principal;
+	public Authentication getPayload(){
+		return this.payload;
 	}
 }
