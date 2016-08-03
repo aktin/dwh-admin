@@ -57,7 +57,10 @@ public class AuthFilter implements ContainerRequestFilter{
 	private Token validateToken(String token) throws IOException{
 		Token t = tokens.lookupToken(token);
 		if( t == null ){
+			log.info("Token not found: "+token);
 			throw new IOException("Access denied");
+		}else{
+			log.info("Token found, user="+t.getPayload().getName());
 		}
 		return t;
 	}
@@ -67,7 +70,7 @@ public class AuthFilter implements ContainerRequestFilter{
 			
 			@Override
 			public boolean isUserInRole(String role) {
-				return true;
+				return token.getPayload().hasRole(role);
 			}
 			
 			@Override
@@ -78,7 +81,7 @@ public class AuthFilter implements ContainerRequestFilter{
 			
 			@Override
 			public Principal getUserPrincipal() {
-				return token.getPrincipal();
+				return token.getPayload();
 			}
 			
 			@Override
