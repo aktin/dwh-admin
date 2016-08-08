@@ -64,22 +64,42 @@
 	    			},
 	    			// change user
 	    			update : function () {
-    					console.log("commserver user check roles with ", data);
-    					var url = "/auth/check";
+    					console.log("commserver user update userdata with ", data);
+    					var url = "/auth/update";
 	    				return send2server (url, {
 	    					username : data.username,
 	    					token : data.token,
 	    					requiredRoles : data.requiredRoles,
 	    				});
+	    				// setUser
 
 	    			},
 	    			// list users
 	    			list : function () {
-
+	    				// getUsers
 	    			},
 	    			// new user
 	    			create : function () {
-
+	    				// setUser
+	    			},
+	    			delete : function () {
+	    				// deleteUser
+	    			},
+	    			// list all roles of the user
+	    			getRoles : function () {
+	    				// getRoles (user)
+	    			},
+	    			// list all roles of all user (overview)
+	    			getAllRoles : function () {
+	    				// getRoles ()
+	    			},
+	    			// add a role to a user project id will be appended
+	    			addRole : function () {
+	    				// setRole(user, role)
+	    			},
+	    			// remove a role to a user 
+	    			removeRole : function () {
+	    				// deleteRole(user, role)
 	    			},
     			},
     			// logs
