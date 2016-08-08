@@ -1,10 +1,12 @@
 (function() {
-    var usersApp = angular.module('aktin.users', []);
+    var usersApp = angular.module('aktin.users', [
+    		'aktin.communicate'
+    	]);
 
     var getUserNumber = 6;
 
-    usersApp.factory('userFactory', [ 
-        function() {
+    usersApp.factory('userFactory', [ 'CommServer',
+        function(CommServer) {
 
             userHasRole = function (user, roles) {
             	// some or every?
@@ -16,6 +18,7 @@
             };
 
             userDummyCheckLogin = function (loginData) {
+            	CommServer.users.auth(loginData);
             	if (!loginData || ! loginData.username || ! loginData.password)
             		return false;
             	getUserNumber = _.findIndex (dummyUsers, function (user) {
@@ -24,6 +27,10 @@
             	if (typeof getUserNumber === "undefined")
             		return false;
             	return true;
+            };
+
+            userLogout = function (userData) {
+            	return CommServer.users.logout(userData);
             };
 
     		getdummyuser = function () {
@@ -35,6 +42,7 @@
 
             return {
             	login : userDummyCheckLogin,
+            	logout : userLogout, 
                 checkRole: userHasRole, 
                 user: getdummyuser, 
             };
@@ -104,6 +112,7 @@
     		password : "adminsecure",
     		roles : [
     			'ADMIN',
+				'AKTIN_A',
 				'USER',
 				'MANAGER',
 				'DATA_OBFSC',
@@ -112,7 +121,6 @@
 				'DATA_DEID',
 				'DATA_LDS',
 				'EDITOR',
-				'AKTIN_A',
     		],
     	},
     	{
