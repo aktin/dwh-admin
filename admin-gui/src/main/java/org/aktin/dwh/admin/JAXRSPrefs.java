@@ -5,16 +5,14 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.aktin.Preferences;
 import org.aktin.dwh.admin.auth.Credentials;
-import org.aktin.prefs.Preference;
-import org.aktin.prefs.Preferences;
 
 /**
  * RESTful interface for reading/writing preferences
@@ -52,49 +50,21 @@ public class JAXRSPrefs {
 	}
 	/**
 	 * Get the value for a single preference
-	 * @param name preference name
+	 * @param key preference name
 	 * @return preferf
 	 */
 	@GET
-	@Path("{name}")
-	public Response get(@PathParam("name") String name) {
-		Preference<?>pref = prefs.get(name);
+	@Path("{key}")
+	public Response get(@PathParam("key") String name) {
+		String pref = prefs.get(name);
 		// check if preference is available
 		if( pref == null ){
 			return Response.status(Response.Status.NOT_FOUND)
 					.entity("Param not found: "+name)
 					.build();
 		}
-		// is it readable?
-		if( pref.isPublicReadable() == false ){
-			// not readable
-			return Response.status(Response.Status.FORBIDDEN)
-					.entity("Param not readable: "+name)
-					.build();
-		}
 		// return response
-		return Response.ok(pref.getValue().toString()).build();
+		return Response.ok(pref).build();
 	}
 	
-	@PUT
-	@Path("{name}")
-	public Response put(@PathParam("name") String name, String value){
-		Preference<?>pref = prefs.get(name);
-		// check if preference is available
-		if( pref == null ){
-			return Response.status(Response.Status.NOT_FOUND)
-					.entity("Param not found: "+name)
-					.build();
-		}
-		// is it writable?
-		if( pref.isPublicWritable() == false ){
-			// not writable
-			return Response.status(Response.Status.FORBIDDEN)
-					.entity("Param not writeable: "+name)
-					.build();
-		}
-		pref.setValueString(value, null);
-		// return response
-		return Response.ok().build();
-	}
 }
