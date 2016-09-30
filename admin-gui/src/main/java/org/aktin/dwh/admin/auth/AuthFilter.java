@@ -62,7 +62,7 @@ public class AuthFilter implements ContainerRequestFilter{
 	private Token validateToken(String token) throws IOException{
 		Token t = tokens.lookupToken(token);
 		if( t == null ){
-			log.info("Token not found: "+token);
+			log.info("Token not found: "+token);//+" (total "+tokens.getTokenCount()+")");
 			throw new IOException("Access denied");
 		}else{
 			log.info("Token found, user="+t.getPayload().getName());

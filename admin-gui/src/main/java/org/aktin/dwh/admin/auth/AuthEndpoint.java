@@ -90,14 +90,14 @@ public class AuthEndpoint {
 
 	@GET
 	@Secured
-	@RolesAllowed("admin")
+	@RolesAllowed("admin") // doesn't work yet
 	@Path("test/admin")
 	public String adminonly(){
 		return "You are Admin!:"+security.getUserPrincipal();
 	}
 	@GET
 	@Secured
-	@RolesAllowed("bamboo")
+	@RolesAllowed("bamboo") // doesn't work yet
 	@Path("test/bamboo")
 	public String bamboo(){
 		return "You have the bamboo role: "+security.getUserPrincipal();

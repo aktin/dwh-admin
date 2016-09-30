@@ -31,6 +31,11 @@ public class MockAuthenticator implements Authenticator{
 			public String getName() {
 				return user;
 			}
+
+			@Override
+			public String toString(){
+				return "MockedPrincipal(user="+getName()+", admin="+isAdmin()+")";
+			}
 		};
 	}
 

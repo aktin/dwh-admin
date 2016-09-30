@@ -13,7 +13,8 @@ import javax.ws.rs.core.Response;
 import org.aktin.dwh.db.Manager;
 
 /**
- * RESTful endpoint for log management. List log entries and delete the log.
+ * RESTful endpoint for log management. Show logfile with optional filtering.
+ * Allow downloading logfile as Zip.
  * 
  * @author R.W.Majeed
  *

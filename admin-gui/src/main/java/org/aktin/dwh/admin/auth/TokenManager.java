@@ -98,4 +98,7 @@ public class TokenManager {
 	public void renew(Token token){
 		token.renewed = System.currentTimeMillis();
 	}
+	public int getTokenCount(){
+		return tokenMap.size();
+	}
 }

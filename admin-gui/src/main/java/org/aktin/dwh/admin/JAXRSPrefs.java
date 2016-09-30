@@ -33,9 +33,9 @@ public class JAXRSPrefs {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Map<String,Object> getAll(){
 		Map<String, Object> ret = new HashMap<>();
-		ret.put("a", "b");
-		ret.put("c", "d");
-		ret.put("d", 123);
+		for( String key : prefs.keySet() ){
+			ret.put(key, prefs.get(key));
+		}
 		return ret;
 	}
 	
