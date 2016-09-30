@@ -23,6 +23,7 @@
 	<modules>
 		<module>dwh-db</module>
 		<module>dwh-prefs</module>
+		<module>dwh-node</module>
 		<module>admin-gui</module>
 	</modules>
 
