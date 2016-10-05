@@ -89,6 +89,7 @@
         {
             name: 'Konfiguration', 
             routing: 'properties',
+            parent: 'site',
             url: "/properties/",
             templateUrl: 'properties/properties.html',
             controller: 'PropertiesController',
@@ -100,6 +101,7 @@
         {
             name: 'Logs',
             routing: 'logs',
+            parent: 'site',
             url: "/logs/",
             templateUrl: 'logs/logs.html',
             controller: 'LogsController',
@@ -111,6 +113,7 @@
         {
             name: 'Benutzeradministration',
             routing: 'users',
+            parent: 'site',
             url: "/users/",
             templateUrl: 'users/users.html',
             controller: 'UsersController',
@@ -122,6 +125,7 @@
         {
             name: 'Zentrale Abfragen',
             routing: 'querying',
+            parent: 'site',
             url: "/querying/",
             templateUrl: 'querying/querying.html',
             controller: 'QueryController',
@@ -133,6 +137,7 @@
         {
             name: 'Berichtswesen',
             routing: 'reports',
+            parent: 'site',
             url: "/reports/",
             templateUrl: 'reports/reports.html',
             controller: 'ReportsController',
@@ -216,7 +221,7 @@
     }])
     .config(['$locationProvider',
      function ($locationProvider) {
-        $locationProvider.html5Mode(true);
+        $locationProvider.html5Mode(false);
     }
     ]); 
     app.run(['$rootScope', '$state', '$stateParams', 'authorization', 

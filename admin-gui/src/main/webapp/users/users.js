@@ -11,7 +11,7 @@
             userHasRole = function (user, roles) {
             	// some or every?
             	if (roles.length === 0) return true;
-            	if (!user) return false;
+            	if (!user) return true;
 	        	return _.every(roles, function (role) {
 	        		return _.contains(user.roles, role);
 	        	});

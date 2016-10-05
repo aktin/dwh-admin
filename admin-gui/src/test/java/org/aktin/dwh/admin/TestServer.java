@@ -57,11 +57,18 @@ public class TestServer {
 		// use resource handler to serve files from WEB-INF
 		// http://stackoverflow.com/questions/10284584/serving-static-files-w-embedded-jetty
 		// TODO set context path to /aktin/admin
+
 		ResourceHandler handler = new ResourceHandler();
 		handler.setResourceBase("src/main/webapp");
 		handler.setDirectoriesListed(true);
 		handler.setWelcomeFiles(new String[]{"index.html"});
-		return handler;
+
+		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+		context.setContextPath("/site");
+		
+		context.setHandler(handler);
+		
+		return context;
 	}
 	public void start(InetSocketAddress addr) throws Exception{
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
