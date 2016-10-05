@@ -12,6 +12,8 @@ import org.aktin.dwh.admin.auth.TokenManager;
 import org.aktin.dwh.prefs.impl.PreferenceProducer;
 import org.aktin.dwh.prefs.impl.PropertyFilePreferences;
 import org.aktin.report.manager.ReportManager;
+import org.aktin.report.manager.TestReportGeneration;
+import org.aktin.report.test.SimpleReport;
 import org.aktin.report.wolfsburg.WolfsburgMonthly;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
@@ -40,7 +42,8 @@ public class MyBinder extends AbstractBinder{
 //		bind(PreferenceProducer.class).to(PreferenceProducer.class);
 
 		// create singleton instance
-		ReportManager reports = new ReportManager("c:\\rscript.exe", new WolfsburgMonthly());
+		TestReportGeneration.locateR();
+		ReportManager reports = new ReportManager(TestReportGeneration.rScript.toString(), new WolfsburgMonthly(), new SimpleReport());
 		bind(reports).to(ReportManager.class);
 
 
