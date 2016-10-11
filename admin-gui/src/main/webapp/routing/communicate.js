@@ -1,8 +1,8 @@
 (function() {
     var commApp = angular.module('aktin.communicate', []);
 
-    commApp.factory('CommServer', ['$q', '$timeout', '$rootScope', '$state', 
-    	function ($q, $timeout, $rootScope, $state) {
+    commApp.factory('CommServer', ['$q', '$timeout', '$rootScope', '$state', '$http', 
+    	function ($q, $timeout, $rootScope, $state, $http) {
     		// communication service to the server. 
 			var send2server = function (url, dataObj) {
 				// full url bsp http://localhost:8080/aktin/admin/auth/login
@@ -15,7 +15,9 @@
 				var fullUrl = baseLink+baseUrl+url;
 
 				console.log(url, fullUrl, dataObj);
-				return true;
+				//return true;
+
+				$http.post(fullUrl, dataObj).then(function(response) { console.log("response: ", response)});
 			}
 
     		return {

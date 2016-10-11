@@ -1,363 +1,259 @@
 (function() {
     var propApp = angular.module('aktin.properties', []);
 
+
     propApp.controller('PropertiesController', ['$http', '$scope', '$filter', '$timeout', function($http, $scope, $filter, $timeout){
         var propApp = this;
 
-        propApp.currentCategory = "";
-        propApp.setCategory = function (cat) {
-            propApp.currentCategory = cat.value;
-            propApp.properties = filterProp();
-        };
-
-        var predefinedCats = { 
-            "" : {
-                value : "",
-                name : "Show All",
-            },
-            "tls" : {
-                value : "tls",
-                name : "TLS",
-            }, 
-            "i2b2" : {
-                value : "i2b2",
-                name : "I2B2",
-            }, 
-            "local" : {
-                value : "local",
-                name : "Lokal",
-            }, 
-            "smtp" : {
-                value : "smtp",
-                name : "SMTP",
-            }, 
-            "query" : {
-                value : "query",
-                name : "Anfragen",
-            }, 
-            "exchange" : {
-                value : "exchange",
-                name : "Exchange",
-            }, 
-        };
-
-        propApp.categories = _.uniq(_.reduce(
-                dummyProperties, 
-                function (memo, prop) {
-                    var val = prop.name.split('.')[0];
-                    var obj = {};
-                    if (predefinedCats[val]){
-                        obj = predefinedCats[val];
-                    } else {
-                        obj = {value : val, name : val};
-                    }
-                    memo.push(obj);
-                    return memo;
-                }, 
-                [predefinedCats[""]]
-            ), true);
-
-        var fullProperties = _.map(dummyProperties, function (prop, index){
-                prop.inputField = prop.field;
-                if (prop.type && prop.type === "timestamp") {
-                    if (prop.value)
-                        prop.value = $filter('date')(new Date(+prop.value), 'EEE dd.MM.yyyy HH:mm:ss,sss') + " @" + prop.value;
-                }
-                if (prop.inputField === "number") {
-                    prop.value = parseInt(prop.value);
-                    // console.log(prop.value);
-                }
-                if (prop.valueset) {
-                    prop.inputField = "select";
-                }
-                prop.fieldClass = "prpoperty-input-" + prop.name.split('.').join('-');
-                if (prop.inputField === "select" || prop.inputField === "password")
-                    prop.template = "properties/input_" + prop.inputField + "_template.html";
-                else 
-                    prop.template = "properties/input_" + "text" + "_template.html";
-
-                if (!propertyRights.readAble(prop.right)) {
-                    delete prop.value;
-                }
-
-                return prop;
+        propApp.debugout = "";
+        var filename = "properties/testprops.properties";
+        propApp.properties=predefinedCategories;
+        propApp.flatProps={};
+        $http.get(filename) //when I try to read cities.json error occurs
+            .then(function (data) {
+                propApp.debugout += data.data;
+                propApp.flatProps = parseData(data.data);
+                console.log(data.data, propApp.properties)
+            }, function (error) {
+                alert('error');
             });
 
-        var filterProp = function () {
-            return _.filter(fullProperties, function (prop) {
-                if (propApp.currentCategory === "") 
-                    return true;
-                var val = prop.name.split('.')[0];
-                return val === propApp.currentCategory;
-            });
+        var parseData = function (dataString) {
+            var dataObj = {};
+            var dataLines = dataString.split('\n');
+
+            for (var i = 0; i < dataLines.length; i++) {
+                if (dataLines[i].charAt(0) === '#' || dataLines[i].indexOf('=') < 0)
+                    continue;
+                var num = dataLines[i].indexOf('=');
+                dataObj[dataLines[i].slice(0,num)]=dataLines[i].slice(num+1);
+                var key = dataLines[i].slice(0,num);
+                var value = dataLines[i].slice(num+1);
+
+                var cat = key.split('.')[0];
+
+                var propObj = {}
+
+                if (key in predifnedProperties) {
+                    propObj = predifnedProperties[key];
+                    delete propObj.default;
+                } else {
+                    propObj.name = key;
+                }
+                propObj.value = value;
+
+                if (! (cat in predefinedCategories)) {
+                    cat = "";
+                }
+
+                if (! ('props' in propApp.properties[cat])) {
+                    propApp.properties[cat].props = [];
+                } 
+                propApp.properties[cat].props.push(propObj);
+            }
+
+            return dataObj;
         }
-
-        propApp.properties = filterProp();
-        var propertiesChanged = function() {
-            $scope.$apply(function(){ //let angular know the changes
-                propApp.properties = filterProp();
-            });
-        }
-
-        propApp.setValue = function (prop, value) {
-            prop.value = value;
-        }
-
-        propApp.isSelected = function (prop, value) {
-            return prop.value === value;
-        }
-
-        propApp.writeAble = function (prop) {
-            return prop && propertyRights.writeAble(prop.right);
-        };
-        propApp.readAble = function (prop) {
-            return propertyRights.readAble(prop.right);
-        };
-
-        var fieldModal = $('.ui.modal.field-edit');
-
-        var fieldChanged = false;
-        propApp.editProperty = function (prop) {
-            $scope.property = prop;
-            fieldModal
-                .modal({
-                // closable  : false,
-                    onHide      : function () {
-                        prop = {};
-                    },
-                    onVisible   : function (event) {
-                        fieldChanged = false;
-                        $('.'+prop.fieldClass)[0].value = prop.value;
-                        $('.'+prop.fieldClass).on('change keypress paste focus textInput input', function () {
-                            var val = this.value;
-                            // console.log(!prop, val, prop.value, typeof val, typeof prop.value, val !== prop.value, !fieldChanged);
-                            if (prop && !fieldChanged && val !== (""+prop.value)) {
-                                // console.log("changed");
-                                fieldChanged = true;
-                            }
-                        });
-                    },
-                    onDeny      : function() {
-                        // if (fieldChanged) return confirm("Daten wurden geändert, verwerfen?");
-                    },
-                    onApprove   : function() {
-                        if (! fieldChanged) return true;
-
-                        var field0 = $('.'+prop.fieldClass)[0];
-                        if (prop.field === "password") {
-                            var field1 = $('.'+prop.fieldClass)[1];
-                            console.log("password", field0.value, field1.value);
-                            if (field1.value !== field0.value) {
-                                return false;
-                            }
-                        }
-                        $scope.property.value = field0.value;
-                        // console.log(prop);
-                        // propApp.properties = filterProp();
-                        propertiesChanged();
-                    }
-                })
-                // .modal('attach events', '.actions .ui.close', 'hide')
-                .modal('show');
-        }
-
-        
 
     }]);
 
-    var propertyRights = {
-        NONE : 0,
-        R : 1,
-        WO : 2,
-        W : 3,
-        readAble : function (right) {
-            return right === propertyRights.R || right === propertyRights.W;
-        },
-        writeAble : function (right) {
-            return right === propertyRights.W || right === propertyRights.WO;
-        },
-    }
 
-    var dummyProperties = [
+    var predefinedCategories = {
+        "tls" : {
+            value : "tls",
+            name : "TLS",
+            descr : "",
+            location : "",
+        }, 
+        "i2b2" : {
+            value : "i2b2",
+            name : "I2B2",
+            descr : "",
+            location : "",
+        }, 
+        "local" : {
+            value : "local",
+            name : "Lokal",
+            descr : "Lokale Einstellungen über den Standort",
+            location : "",
+        }, 
+        "smtp" : {
+            value : "smtp",
+            name : "SMTP",
+            descr : "",
+            location : "",
+        }, 
+        "query" : {
+            value : "query",
+            name : "Anfragen",
+            descr : "",
+            location : "",
+        }, 
+        "exchange" : {
+            value : "exchange",
+            name : "Exchange",
+            descr : "",
+            location : "",
+        }, 
+        "" : {
+            value : "",
+            name : "Sonstige",
+            descr : "nicht zugeordnete Einstellungen",
+            location : "",
+        }, 
+    };
+
+    var predifnedProperties = {
+        "tls.keystore.path" : 
         {
             name : "tls.keystore.path",
             descr : "Keystore für Key und Zertifikate für TLS",
-            field : "text",
-            value : "local/secure",
-            right : propertyRights.R,
+            default : "local/secure",
         },
+        "local.name" : 
         {
             name : "local.name",
             descr : "Klinikname",
-            field : "text",
-            value : "Klinikum Oldenburg",
-            right : propertyRights.W,
+            default : "Klinikum Oldenburg",
         },
+        "local.contact.name" : 
         {
             name : "local.contact.name",
             descr : "Kontaktperson",
-            field : "text",
-            value : "Herr Oberarzt",
-            right : propertyRights.W,
+            default : "Herr Oberarzt",
         },
+        "local.contact.email" : 
         {
             name : "local.contact.email",
             descr : "Kontaktemail",
-            field : "email",
-            value : "oberarzt@oldenburg.de",
-            right : propertyRights.W,
+            default : "oberarzt@oldenburg.de",
         },
+        "i2b2.project" : 
         {
             name : "i2b2.project",
             descr : "I2B2 Projekt ID",
-            field : "text",
-            value : "Demo",
-            right : propertyRights.R,
+            default : "Demo",
         },
+        "i2b2.crc.ds" : 
         {
             name : "i2b2.crc.ds",
             descr : "I2B2 Datasource",
-            field : "text",
-            value : "java:/QueryToolDemoDS",
-            right : propertyRights.R,
+            default : "java:/QueryToolDemoDS",
         },
+        "i2b2.lastimport" : 
         {
             name : "i2b2.lastimport",
             descr : "Timestamp des letzten Imports",
-            field : "text",
-            type : "timestamp",
-            value : "1463134191370",
-            right : propertyRights.R,
+            default : "1463134191370",
         },
+        "smtp.server" : 
         {
             name : "smtp.server",
             descr : "SMTP Server Adresse",
-            field : "text",
-            value : "smtp.oldenburg.de",
-            right : propertyRights.W,
+            default : "smtp.oldenburg.de",
         },
+        "smtp.port" : 
         {
             name : "smtp.port",
             descr : "SMTP Server Port",
-            field : "number",
-            value : "495",
-            right : propertyRights.W,
+            default : "495",
         },
+        "smtp.user" : 
         {
             name : "smtp.user",
             descr : "SMTP Server Username",
-            field : "text",
-            value : "aktinOldb",
-            right : propertyRights.W,
+            default : "aktinOldb",
         },
+        "smtp.password" : 
         {
             name : "smtp.password",
             descr : "SMTP Server Passwort",
-            field : "password",
-            value : "securepassword223",
-            right : propertyRights.WO,
+            default : "securepassword223",
         },
+        "smtp.auth" : 
         {
             name : "smtp.auth",
             descr : "SMTP Server Authentifizierung",
-            field : "select",
-            right : propertyRights.W,
-            valueset : ['SSL', 'Plain', 'TLS', ], // and more
+            default : "SSL",
         },
+        "query.notification.email" : 
         {
             name : "query.notification.email",
             descr : "Anfrage für eingegangene Queries",
-            field : "email",
-            value : "oberarzt@oldenburg.de",
-            right : propertyRights.W,
+            default : "oberarzt@oldenburg.de",
         },
+        "query.result.dir" : 
         {
             name : "query.result.dir",
             descr : "Ordner für ausgeführten Anfragen",
-            field : "text",
-            value : "/var/results/",
-            right : propertyRights.R,
+            default : "/var/results/",
         },
+        "exchange.lastcontact" : 
         {
             name : "exchange.lastcontact",
             descr : "timestamp of last contact to broker via direct connection or received email timestamp",
-            field : "text",
-            type : "timestamp",
-            value : "1463134191370",
-            right : propertyRights.R,
+            default : "1463134191370",
         },
+        "exchange.method" : 
         {
             name : "exchange.method",
             descr : "method of contact",
-            field : "text",
-            value : "https",
-            right : propertyRights.W,
-            valueset : ['https', 'email'], 
+            default : "https",
         },
+        "exchange.https.interval" : 
         {
             name : "exchange.https.interval",
             descr : "interval in hours between polling connections to broker",
-            field : "text",
-            value : "5",
-            right : propertyRights.W,
+            default : "5",
         },
+        "exchange.https.broker" : 
         {
             name : "exchange.https.broker",
             descr : "server name of the AKTIN broker",
-            field : "text",
-            value : "broker.aktin.uni-oldenburg.de",
-            right : propertyRights.W,
+            default : "broker.aktin.uni-oldenburg.de",
         },
+        "exchange.https.pool" : 
         {
             name : "exchange.https.pool",
             descr : "server name of AKTIN pool",
-            field : "text",
-            value : "pool.aktin.uni-oldenburg.de",
-            right : propertyRights.W,
+            default : "pool.aktin.uni-oldenburg.de",
         },
+        "exchange.inbox.address" : 
         {
             name : "exchange.inbox.address",
             descr : "email address to receive queries",
-            field : "email",
-            value : "oberarzt@oldenburg.de",
-            right : propertyRights.W,
+            default : "oberarzt@oldenburg.de",
         },
+        "exchange.inbox.interval" : 
         {
             name : "exchange.inbox.interval",
             descr : "interval in hours between checking for new emails",
-            field : "text",
-            value : "oberarzt@oldenburg.de",
-            right : propertyRights.W,
+            default : "oberarzt@oldenburg.de",
         },
+        "exchange.inbox.port" : 
         {
             name : "exchange.inbox.port",
             descr : "Exchange Server port",
-            field : "number",
-            value : "143",
-            right : propertyRights.W,
+            default : "143",
         },
+        "exchange.inbox.protocol" : 
         {
             name : "exchange.inbox.protocol",
             descr : "Exchange Server protocol",
-            field : "text",
-            value : "imap",
-            right : propertyRights.W,
-            valueset : ['imap', 'pop3'], 
+            default : "imap",
         },
+        "exchange.inbox.user" : 
         {
             name : "exchange.inbox.user",
             descr : "Exchange Server user name",
-            field : "text",
-            value : "oberarzt",
-            right : propertyRights.W,
+            default : "oberarzt",
         },
+        "exchange.inbox.password" : 
         {
             name : "exchange.inbox.password",
             descr : "Exchange Server Passwort",
-            field : "password",
-            value : "securepassword223",
-            right : propertyRights.WO,
+            default : "securepassword223",
         },
-    ];
+    }
 
 })();

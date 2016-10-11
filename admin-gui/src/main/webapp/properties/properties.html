@@ -1,55 +1,21 @@
-	<!-- <div class="ui styled accordion">
-		<div class="title" ng-repeat-start="property in properties.properties">
-			<i class="dropdown icon"></i>
-			{{property.descr}}
-		</div>
-		<div class="content" ng-repeat-end>
-			{{property.name}}
-			<input type="{{property.field}}" name="{{property.name}}" value="{{property.value}}"> 
-		</div>
-	</div> -->
+<div class="ui list">
+	<div class="item ui segment padded" ng-repeat="(cat, catObj) in properties.properties">
 
 
-	<div class="ui secondary  menu">
-
-		<a class="item" ng-repeat="cat in properties.categories" ng-click="properties.setCategory(cat)" 
-			ng-class="{active: cat.value == properties.currentCategory}">
-			{{cat.name}}
-		</a>
-	</div>
-
-
-	<div class="ui stackable relaxed two column grid">
-		<!--  Product Container  -->
-		<!-- <div class="item ui styled accordion" ng-repeat="property in properties.properties">  -->
-		<div class="column" ng-repeat="prop in properties.properties">
-			<div class="ui segment property-block">
-				<h3 class="ui header title"> {{prop.descr}} </h3>		
-				<button class="ui icon button property-edit-button" ng-click="properties.editProperty(prop)" data-name="{{prop.name}}" ng-disabled="!properties.writeAble(prop)">
-				  	<i class="edit icon"></i>
-				</button>
-				<div class="content">
-					<!-- <p> {{prop.name}} </p> -->
-					<!-- <div class="ui input property-fields" ng-include="prop.template"></div> -->
-					<span ng-bind="prop.value"></span> 
+			<div class="ui container stackable relaxed three column padded grid">
+				<div class="row">
+				    <div class="column ui medium header">{{catObj.name}}, {{catObj.value}}, {{catObj.descr}}</div>
+				</div>
+				<div class="column" ng-repeat="prop in catObj.props" style="border:1px solid rgba(34,36,38,.15)">			
+					
+						<h4 class="ui header title"> {{prop.name}}, {{prop.descr}} </h4>		
+						
+						<div class="content">
+							<!-- <p> {{prop.name}} </p> -->
+							<!-- <div class="ui input property-fields" ng-include="prop.template"></div> -->
+							<span ng-bind="prop.value"></span> 
+						</div>
 				</div>
 			</div>
-		</div>
-		<!-- </div> -->
-
-
-
-	</div>
-
-<div class="ui modal field-edit">
-  	<div class="header">{{property.descr}}</div>
-  	<div class="content">
-  		{{property.name}}
-  		<div class="ui input property-fields" ng-include="property.template"></div>
-  	</div>
-	<div class="actions">
-  		<div class="ui approve green button" ng-disabled="!properties.writeAble(property)">Speichern</div>
-	    <div class="ui cancel red button">Abbrechen</div>
-  		<!-- <div class="ui close button">Close</div> -->
 	</div>
 </div>
