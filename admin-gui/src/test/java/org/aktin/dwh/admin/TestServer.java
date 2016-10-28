@@ -20,6 +20,8 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
+import de.sekmi.li2b2.services.PMService;
+
 /**
  * li2b2 server for unit tests
  * or demonstrations.
@@ -36,11 +38,12 @@ public class TestServer {
 	public TestServer() throws SQLException{
 		ds = new TestDataSource();
 		rc = new ResourceConfig();
+		rc.register(new MyBinder(ds));
 		rc.register(JAXRSPrefs.class);
 		rc.register(ReportEndpoint.class);
 		rc.register(AuthEndpoint.class);
-		rc.register(new MyBinder(ds));
 		rc.register(AuthFilter.class);
+		rc.register(PMService.class);
 	}
 	public void register(Class<?> componentClass){
 		rc.register(componentClass);

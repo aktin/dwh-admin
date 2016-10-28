@@ -38,6 +38,11 @@
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>de.sekmi.li2b2</groupId>
+			<artifactId>li2b2-client</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
 			<version>2.0.1</version>
@@ -134,18 +139,26 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>de.sekmi.li2b2</groupId>
+			<artifactId>li2b2-server</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.aktin.dwh</groupId>
 			<artifactId>dwh-db</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>org.aktin.reports</groupId>
-			<artifactId>wolfsburg-monthly</artifactId>
+			<artifactId>aktin-monthly</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
