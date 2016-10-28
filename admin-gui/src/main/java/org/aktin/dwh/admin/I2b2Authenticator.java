@@ -2,7 +2,10 @@ package org.aktin.dwh.admin;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -15,9 +18,11 @@ import de.sekmi.li2b2.client.Li2b2Client;
 import de.sekmi.li2b2.client.pm.UserConfiguration;
 import de.sekmi.li2b2.hive.ErrorResponseException;
 import de.sekmi.li2b2.hive.HiveException;
+import de.sekmi.li2b2.hive.pm.UserProject;
 
 @Singleton
 public class I2b2Authenticator implements Authenticator{
+	private static final Logger log = Logger.getLogger(I2b2Authenticator.class.getName());
 
 	private Preferences prefs;
 
@@ -42,17 +47,18 @@ public class I2b2Authenticator implements Authenticator{
 			client.setPM(pm);
 			client.setAuthorisation(user, new String(password), project);
 			UserConfiguration uc = client.PM().requestUserConfiguration();
-//			String[] roles = client.PM().getRoles(user, project); // FIXME
-			String[] roles = new String[]{};
+			String[] roles = null;
+			for( UserProject p : uc.getProjects() ){
+				if( p.id.equals(project) ){
+					roles = p.role;
+				}
+			}
+			log.info("Roles from config: "+Arrays.toString(roles));
 			auth = new I2b2Authentication(uc.getUserName(), uc.getSessionKey(), roles, uc.isAdmin());
 		}catch (ErrorResponseException e) {
 			// unauthorized
-		}catch( IOException e ){
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (HiveException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}catch( IOException | HiveException e ){
+			log.log(Level.SEVERE, "Authentication via i2b2 failed", e);
 		}
 		return auth;
 	}

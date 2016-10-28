@@ -18,7 +18,6 @@ import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import de.sekmi.li2b2.api.pm.ProjectManager;
 import de.sekmi.li2b2.api.pm.User;
 import de.sekmi.li2b2.services.impl.ProjectManagerImpl;
-import jdk.nashorn.internal.ir.PropertyKey;
 
 
 public class MyBinder extends AbstractBinder{
@@ -33,7 +32,7 @@ public class MyBinder extends AbstractBinder{
 		ProjectManagerImpl pm = new ProjectManagerImpl();
 		User user = pm.addUser("demo");//, "i2b2demo");
 		user.setPassword("demouser".toCharArray());
-		pm.addProject("Demo", "li2b2 Demo").addUserRoles(user, "USER","EDITOR","DATA_OBFSC");
+		pm.addProject("AKTIN", "AKTIN Data Warehouse").addUserRoles(user, "USER","EDITOR","DATA_OBFSC");
 		//pm.addProject("Demo2", "li2b2 Demo2").addUserRoles(user, "USER");
 		bind(pm).to(ProjectManager.class);
 	}
