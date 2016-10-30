@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import org.aktin.dwh.admin.auth.AuthEndpoint;
 import org.aktin.dwh.admin.auth.AuthFilter;
 import org.aktin.dwh.admin.report.ReportEndpoint;
+import org.aktin.dwh.admin.user.UserEndpoint;
 import org.aktin.dwh.db.TestDataSource;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -44,6 +45,7 @@ public class TestServer {
 		rc.register(AuthEndpoint.class);
 		rc.register(AuthFilter.class);
 		rc.register(PMService.class);
+		rc.register(UserEndpoint.class);
 	}
 	public void register(Class<?> componentClass){
 		rc.register(componentClass);
