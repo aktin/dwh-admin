@@ -54,7 +54,7 @@ public class I2b2Authenticator implements Authenticator{
 				}
 			}
 			log.info("Roles from config: "+Arrays.toString(roles));
-			auth = new I2b2Authentication(uc.getUserName(), uc.getSessionKey(), roles, uc.isAdmin());
+			auth = new I2b2Authentication(uc.getUserName(), uc.getSessionKey(), uc.getUserDomain(), roles, uc.isAdmin());
 		}catch (ErrorResponseException e) {
 			// unauthorized
 		}catch( IOException | HiveException e ){
