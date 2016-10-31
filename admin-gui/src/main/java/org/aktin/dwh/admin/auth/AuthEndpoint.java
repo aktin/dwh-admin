@@ -17,6 +17,8 @@ import javax.ws.rs.core.SecurityContext;
 import org.aktin.dwh.Authentication;
 import org.aktin.dwh.Authenticator;
 
+import de.sekmi.li2b2.services.token.Token;
+
 /**
  * RESTful authentication endpoint. Log on/off users
  * via application/json calls
@@ -62,7 +64,7 @@ public class AuthEndpoint {
 		Authentication p = authenticator.authenticate(cred.username, cred.password.toCharArray());
 		if( p != null ){
 			// generate token
-			String uid = tokens.registerToken(p);
+			String uid = tokens.registerPrincipal(p);
 			return Response.ok(uid).build();
 		}else{
 			// access denied
@@ -76,9 +78,9 @@ public class AuthEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.TEXT_PLAIN)
 	public String logout(String token){
-		Token t = tokens.lookupToken(token);
+		Token<?> t = tokens.lookupToken(token);
 		t.invalidate();
-		return "{duration="+(System.currentTimeMillis()-t.issued)+"}";
+		return "{duration="+(System.currentTimeMillis()-t.issuedTimeMillis())+"}";
 	}
 	
 	@Secured

@@ -15,6 +15,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 
+import org.aktin.dwh.Authentication;
+
+import de.sekmi.li2b2.services.token.Token;
+
 /**
  * Authentication filter for RESTful interfaces.
  * <p>
@@ -49,7 +53,7 @@ public class AuthFilter implements ContainerRequestFilter{
 
 		try{
 			log.info("Authentication token: "+token);
-			Token t = validateToken(token);
+			Token<Authentication> t = validateToken(token);
 			// renew token with every access
 			t.renew();
 			ctx.setSecurityContext(getSecurityContext(t));
@@ -59,8 +63,8 @@ public class AuthFilter implements ContainerRequestFilter{
         }
 	}
 	
-	private Token validateToken(String token) throws IOException{
-		Token t = tokens.lookupToken(token);
+	private Token<Authentication> validateToken(String token) throws IOException{
+		Token<Authentication> t = tokens.lookupToken(token);
 		if( t == null ){
 			log.info("Token not found: "+token);//+" (total "+tokens.getTokenCount()+")");
 			throw new IOException("Access denied");
@@ -69,7 +73,7 @@ public class AuthFilter implements ContainerRequestFilter{
 		}
 		return t;
 	}
-	private SecurityContext getSecurityContext(Token token){
+	private SecurityContext getSecurityContext(Token<Authentication> token){
 		// TODO serious implementation
 		return new SecurityContext() {
 			

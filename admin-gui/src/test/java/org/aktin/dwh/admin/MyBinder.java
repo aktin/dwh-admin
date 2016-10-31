@@ -2,6 +2,7 @@ package org.aktin.dwh.admin;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Principal;
 
 import javax.sql.DataSource;
 
@@ -19,6 +20,7 @@ import de.sekmi.li2b2.api.pm.Project;
 import de.sekmi.li2b2.api.pm.ProjectManager;
 import de.sekmi.li2b2.api.pm.User;
 import de.sekmi.li2b2.services.impl.ProjectManagerImpl;
+import de.sekmi.li2b2.services.token.AbstractTokenManager;
 
 
 public class MyBinder extends AbstractBinder{
@@ -39,6 +41,17 @@ public class MyBinder extends AbstractBinder{
 		user.setPassword("demouser".toCharArray());
 		project.addUserRoles(user, "MANAGER");
 		//pm.addProject("Demo2", "li2b2 Demo2").addUserRoles(user, "USER");
+		bind(new AbstractTokenManager<Principal>() {
+			@Override
+			public Principal createPrincipal(String name) {
+				return new Principal() {
+					@Override
+					public String getName() {
+						return name;
+					}
+				};
+			}
+		}).to(de.sekmi.li2b2.services.token.TokenManager.class);
 		bind(pm).to(ProjectManager.class);
 	}
 	@Override
