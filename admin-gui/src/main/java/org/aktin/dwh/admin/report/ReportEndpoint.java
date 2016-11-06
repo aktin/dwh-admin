@@ -9,12 +9,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.aktin.report.Report;
-import org.aktin.report.manager.ReportManager;
+import org.aktin.report.ReportManager;
 
 /**
  * RESTful HTTP end point for generating reports.
  * 
- * @author Raphael
+ * @author R.W.Majeed
  *
  */
 @Path("report")

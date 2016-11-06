@@ -11,7 +11,8 @@ import org.aktin.dwh.Authenticator;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.admin.auth.TokenManager;
 import org.aktin.dwh.prefs.impl.PropertyFilePreferences;
-import org.aktin.report.manager.ReportManager;
+import org.aktin.report.ReportManager;
+import org.aktin.report.manager.ReportManagerImpl;
 import org.aktin.report.manager.TestReportGeneration;
 import org.aktin.report.test.SimpleReport;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -72,7 +73,7 @@ public class MyBinder extends AbstractBinder{
 
 		// create singleton instance
 		TestReportGeneration.locateR();
-		ReportManager reports = new ReportManager(TestReportGeneration.rScript.toString(), new SimpleReport());
+		ReportManager reports = new ReportManagerImpl(TestReportGeneration.rScript.toString(), new SimpleReport());
 		bind(reports).to(ReportManager.class);
 
 
