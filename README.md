@@ -66,3 +66,8 @@ Finale Version:
 - Manuelle Kontrolle von Ergebnissen aktivieren (nicht bei geplanten Anfragen)
 - Manuelle Kontrolle von Ergebnissen durchführen
 
+User for wildfly management console
+-----------------------------------
+/opt/wildfly-9.0.2.Final/bin/add-user.sh aktin aktin2
+curl --digest -L -D - http://localhost:9990/management --header "Content-Type: application/json" -d '{"operation":"read-attribute","name":"server-state","json.pretty":1}' -u aktin:aktin2
+
