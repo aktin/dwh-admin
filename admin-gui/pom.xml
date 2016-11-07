@@ -43,6 +43,12 @@
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<!-- for token authentication -->
+			<groupId>de.sekmi.li2b2</groupId>
+			<artifactId>li2b2-server</artifactId>
+			<version>0.1-SNAPSHOT</version>
+  		</dependency>
+		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
 			<version>2.0.1</version>
@@ -136,12 +142,6 @@
 			<artifactId>report-manager</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.sekmi.li2b2</groupId>
-			<artifactId>li2b2-server</artifactId>
-			<version>0.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
