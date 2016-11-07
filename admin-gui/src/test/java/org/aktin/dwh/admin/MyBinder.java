@@ -10,6 +10,8 @@ import org.aktin.Preferences;
 import org.aktin.dwh.Authenticator;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.admin.auth.TokenManager;
+import org.aktin.dwh.admin.log.DemoLogfileReader;
+import org.aktin.dwh.admin.log.LogLineSupplierFactory;
 import org.aktin.dwh.prefs.impl.PropertyFilePreferences;
 import org.aktin.report.ReportManager;
 import org.aktin.report.manager.ReportManagerImpl;
@@ -76,6 +78,8 @@ public class MyBinder extends AbstractBinder{
 		ReportManager reports = new ReportManagerImpl(TestReportGeneration.rScript.toString(), new SimpleReport());
 		bind(reports).to(ReportManager.class);
 
+		// logging
+		bind(new DemoLogfileReader()).to(LogLineSupplierFactory.class);
 
 		// authenticator beans
 		I2b2Authenticator auth = new I2b2Authenticator();

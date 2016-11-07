@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 
 import org.aktin.dwh.admin.auth.AuthEndpoint;
 import org.aktin.dwh.admin.auth.AuthFilter;
+import org.aktin.dwh.admin.log.LogEndpoint;
 import org.aktin.dwh.admin.report.ReportEndpoint;
 import org.aktin.dwh.admin.user.UserEndpoint;
 import org.aktin.dwh.db.TestDataSource;
@@ -46,6 +47,7 @@ public class TestServer {
 		rc.register(AuthFilter.class);
 		rc.register(PMService.class);
 		rc.register(UserEndpoint.class);
+		rc.register(LogEndpoint.class);
 	}
 	public void register(Class<?> componentClass){
 		rc.register(componentClass);
