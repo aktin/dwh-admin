@@ -1,39 +1,24 @@
 package org.aktin.dwh.admin.log;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Base64;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 import javax.inject.Inject;
-import javax.naming.NamingException;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.aktin.Preferences;
-import org.aktin.dwh.PreferenceKey;
-import org.aktin.dwh.db.Manager;
-
 /**
  * RESTful endpoint for log management. Show logfile with optional filtering.
- * Allow downloading logfile as Zip.
+ * <p>
+ * Display logs e.g. via {@code GET /admin/log?level=WARNING}
+ * </p>
  * 
+ * </p>
+ * <p>
  * Calls are forwarded to the wildfly management API. E.g.
  * <pre>
  * curl -L -D - http://127.0.0.1:19990/management --header "Content-Type: application/json" -d '{"operation":"read-children-names","address":[{"subsystem":"logging"}],"child-type":"log-file","json.pretty":1}' --digest -u aktin:aktin2
@@ -42,6 +27,7 @@ import org.aktin.dwh.db.Manager;
  * <pre>
  * curl -L -D - http://127.0.0.1:19990/management --header "Content-Type: application/json" -d '{"operation":"read-log-file","address":[{"subsystem":"logging"},{"log-file":"server.log"}],"json.pretty":1}' --digest -u aktin:aktin2
  * </pre>
+ * </p>
  * @author R.W.Majeed
  *
  */
@@ -54,12 +40,20 @@ public class LogEndpoint {
 	public LogEndpoint(){
 	}
 
+	/**
+	 * To read the logfile, use {@code GET /admin/log}. For filtering, a query
+	 * parameter {@code level} can be specified. E.g. {@code GET /admin/log?level=WARNING}.
+	 * See {@link FilterLevel}.
+	 * @param level filter level. Lines with levels higher than specified are also displayed.
+	 *   E.g. a level of {@code WARNING} will also show lines with {@code ERROR} level.
+	 * @return response JSON output stream
+	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response get(){
+	public Response get(@DefaultValue("INFO") @QueryParam("level") FilterLevel level){
 		Supplier<String> log = logSupplier.readLogfile();
 		
-		return Response.ok(new LogFileFilter(log)).build();
+		return Response.ok(new LogFileFilter(log, level)).build();
 	}
 	@GET
 	@Path("test")

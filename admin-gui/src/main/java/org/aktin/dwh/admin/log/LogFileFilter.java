@@ -13,11 +13,11 @@ import javax.ws.rs.core.StreamingOutput;
 public class LogFileFilter implements StreamingOutput {
 
 	private Supplier<String> log;
-	private int filterLevel;
+	private FilterLevel filter;
 
-	public LogFileFilter(Supplier<String> log){
+	public LogFileFilter(Supplier<String> log, FilterLevel level){
 		this.log = log;
-		this.filterLevel = 4; // warn
+		this.filter = level;
 	}
 	@Override
 	public void write(OutputStream output) throws IOException, WebApplicationException {
@@ -36,19 +36,23 @@ public class LogFileFilter implements StreamingOutput {
 			}
 			switch( parts[2] ){
 			case "DEBUG":
-				if( filterLevel < 3 ){
+				if( filter.level() > FilterLevel.DEBUG.level() ){
 					continue;
 				}
 			case "INFO":
-				if( filterLevel < 2 ){
+				if( filter.level() > FilterLevel.INFO.level() ){
 					continue;
 				}
 			case "WARN":
-				if( filterLevel < 1 ){
+				if( filter.level() > FilterLevel.WARNING.level() ){
 					continue;
 				}
 			case "ERROR":
+				if( filter.level() > FilterLevel.ERROR.level() ){
+					continue;
+				}
 			default:
+				// unknown levels are always processed
 				out.write("{'ts':'");
 				out.write(parts[0]);
 				out.write(' ');
