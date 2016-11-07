@@ -55,11 +55,4 @@ public class LogEndpoint {
 		
 		return Response.ok(new LogFileFilter(log, level)).build();
 	}
-	@GET
-	@Path("test")
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response test(){
-		String ret = "OK";
-		return Response.ok(ret).build();
-	}
 }
