@@ -8,6 +8,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -16,6 +17,7 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.aktin.dwh.Authentication;
 import org.aktin.dwh.Authenticator;
+import org.aktin.dwh.admin.I2b2Authentication;
 
 import de.sekmi.li2b2.services.token.Token;
 
@@ -67,7 +69,7 @@ public class AuthEndpoint {
 			String uid = tokens.registerPrincipal(p);
 			return Response.ok(uid).build();
 		}else{
-			// access denied
+			// access denied·
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
 	}
@@ -85,23 +87,15 @@ public class AuthEndpoint {
 	
 	@Secured
 	@GET
-	@Path("test/secured")
-	public String test(){
-		return "Security:"+security.getUserPrincipal();
+	@Path("has/{role}")
+	public boolean hasRole(@PathParam("role") String role){
+		I2b2Authentication auth = (I2b2Authentication)security.getUserPrincipal();
+		if( role.equals("admin") ){
+			return auth.isAdmin();
+		}else{
+			return auth.hasRole(role);
+		}
 	}
 
-	@GET
-	@Secured
-	@RolesAllowed("admin") // doesn't work yet
-	@Path("test/admin")
-	public String adminonly(){
-		return "You are Admin!:"+security.getUserPrincipal();
-	}
-	@GET
-	@Secured
-	@RolesAllowed("bamboo") // doesn't work yet
-	@Path("test/bamboo")
-	public String bamboo(){
-		return "You have the bamboo role: "+security.getUserPrincipal();
-	}
+
 }

@@ -84,7 +84,7 @@ public class UserEndpoint {
 	 * @throws IOException communications error with i2b2
 	 */
 	@Secured
-	@POST
+	@PUT
 	@Path("{user}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createOrUpdateUser(@PathParam("user") String name, User data) throws HiveException, IOException{
