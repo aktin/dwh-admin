@@ -1,55 +1,75 @@
 (function() {
     var usersApp = angular.module('aktin.users', [
-    		'aktin.communicate'
     	]);
 
     var getUserNumber = 6;
 
-    usersApp.factory('userFactory', [ 'CommServer',
-        function(CommServer) {
+    usersApp.factory('userFactory', ['$http', 'storageHelper',
+        function($http, storageHelper) {
 
-            userHasRole = function (user, roles) {
-            	// some or every?
-            	if (roles.length === 0) return true;
+            var curUser = {};
+
+            userHasRole = function (user, requiredRoles) {
+                // console.log(user, requiredRoles)
+            	if (requiredRoles.length === 0) return true;
             	if (!user) 
-                    //*/ @@DEBUG@@ 
+                    /*/ @@DEBUG@@ 
                     return true;
                     /*/
                     return false;
                     //*/
-	        	return _.every(roles, function (role) {
+	        	return _.every(requiredRoles, function (role) {
 	        		return _.contains(user.roles, role);
 	        	});
             };
 
-            userDummyCheckLogin = function (loginData) {
-            	CommServer.users.auth(loginData);
-            	if (!loginData || ! loginData.username || ! loginData.password)
-            		return false;
-            	getUserNumber = _.findIndex (dummyUsers, function (user) {
-            		return user.username == loginData.username && user.password == loginData.password;
-            	});
-            	if (typeof getUserNumber === "undefined")
-            		return false;
-            	return true;
-            };
+            userLogin = function (loginData, callback) {
+                // login to the server
+                if (!loginData.username || !loginData.password) // data obj null or no username or password
+                    return false;
+
+                curUser.username = loginData.username;
+                storageHelper.to('user.username', loginData.username);
+
+                $http.post(getUrl("/auth/login"), {
+                    username : loginData.username,
+                    password : loginData.password,
+                }).then(function (response) {
+                    storageHelper.to('user.token', response.data);
+                    curUser.token = response.data;
+
+                    $http.get(getUrl("/auth/has/admin")).then(function (response) {
+                        curUser.isAdmin = response.data;
+                        if (!curUser.roles)
+                            curUser.roles = [];
+                        curUser.roles.push("admin");
+
+                        callback();
+                    })
+                });
+
+            }
 
             userLogout = function (userData) {
-            	return CommServer.users.logout(userData);
+                curUser = {};
+                storageHelper.delete('user.token');
+            	return false;
             };
 
-    		getdummyuser = function () {
-    			var param = getUserNumber;
-    			if (param < dummyUsers.length && param >= 0) 
-    				return dummyUsers[param];
-    			return null;
+    		getUser = function () {
+                return curUser;
             };
+
+            hasUser = function () {
+                return Object.prototype.hasOwnProperty(curUser);
+            }
 
             return {
-            	login : userDummyCheckLogin,
+            	login : userLogin,
             	logout : userLogout, 
                 checkRole: userHasRole, 
-                user: getdummyuser, 
+                user: getUser, 
+                hasUser : hasUser,
             };
         }
     ]);
@@ -62,10 +82,12 @@
 
         // login
         usersApp.login = function ($event) {
-        	if (userFactory.login({username : usersApp.loginUsername, password : usersApp.loginPassword})) {
-        		$state.reload();
-        	};
-
+        	userFactory.login(
+                {username : usersApp.loginUsername, password : usersApp.loginPassword},
+                function () {
+                    $state.reload();
+                }
+            )
         };
 
 

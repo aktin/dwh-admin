@@ -11,6 +11,42 @@
         function($q, $timeout, $rootScope, $state, userFactory) {
             function authorize ( ) {
                 var curUser = userFactory.user();
+                console.log('rout check', $rootScope.toState, curUser, $rootScope.toState.data.roles, userFactory.checkRole(curUser, $rootScope.toState.data.roles))
+
+                // is there a user?
+                if (userFactory.hasUser()) {
+                    // does the user have enough right?
+                    if (userFactory.checkRole(curUser, $rootScope.toState.data.roles)) { 
+                        // yes
+                        console.log('user, has rights', $rootScope.toState.name);
+                        if (_.contains(['login'], $rootScope.toState.name))                            
+                            $timeout(function() {
+                                console.log('going to home')
+                                return $state.go('home');
+                            })
+                        return true;
+                    } else {
+                        // no
+                        console.log('user, no rights', $rootScope.toState.name);
+                        $timeout(function() {
+                            return $state.go('accessdenied', $rootScope.toState.name);
+                        })
+                    }
+                } else {
+                    // there is no user. does the site need a user?
+                    if (userFactory.checkRole(curUser, $rootScope.toState.data.roles)) { 
+                        // no
+                        console.log('no user, no rights needed', $rootScope.toState.name);
+                        return true;
+                    } else {
+                        console.log('no user, rights needed', $rootScope.toState.name);                             
+                        $timeout(function() {
+                                console.log('going to login')
+                            return $state.go('login');
+                        })
+                    }
+                }
+
 
                 if (!userFactory.checkRole(curUser, $rootScope.toState.data.roles)) { 
                     if (curUser) {
@@ -25,9 +61,10 @@
                     return false;
                 } else {
                     if (_.contains(['login'/*, 'accessdenied', 'restricted'*/], $rootScope.toState.name))                            
-                    $timeout(function() {
-                        return $state.go('home');
-                    })
+                        $timeout(function() {
+                            console.log('going to home', userFactory.checkRole(curUser, $rootScope.toState.data.roles), curUser, $rootScope.toState.data.roles)
+                            return $state.go('home');
+                        })
                 }
                 // user rights / access rights check out. load page
                 return true;
@@ -37,6 +74,37 @@
             };
         }
     ]);
+    app.factory('BearerAuthInterceptor', function ($window, $q, storageHelper) {
+        return {
+            request: function(config) {
+                if (isServerUrl(config.url)) {
+                    config.headers = config.headers || {};
+                    console.log(config);
+                    // exclude login link
+                    if (storageHelper.from('user.token') /* && config.url === getUrl("/auth/login") */ ) {
+                        config.headers.Authorization = 'Bearer ' + storageHelper.from('user.token');
+                    }
+                }
+                return config || $q.when(config);
+            },
+            response: function(response) {
+                console.log('resp', response);
+
+                if (isServerUrl(response.config.url)) {
+                    console.log('resp server', response);
+                    if (response.status === 401) {
+                        //  Redirect user to login page / signup Page.
+                    }
+                }
+                return response || $q.when(response);
+            }
+        };
+    });
+
+    // Register the previously created AuthInterceptor.
+    app.config(function ($httpProvider) {
+        $httpProvider.interceptors.push('BearerAuthInterceptor');
+    });
 
     // HEADER 
     app.directive('headerPanel', function () {
@@ -95,7 +163,7 @@
             controller: 'PropertiesController',
             controllerAs: 'properties',
             roles : [
-                'ADMIN',
+                'admin',
             ]
         },
         {
@@ -107,7 +175,7 @@
             controller: 'LogsController',
             controllerAs: 'logs',
             roles : [
-                'ADMIN',
+                'admin',
             ]
         },
         {
@@ -119,7 +187,7 @@
             controller: 'UsersController',
             controllerAs: 'users',
             roles : [
-                'ADMIN',
+                'admin',
             ]
         },
         {
@@ -131,7 +199,7 @@
             controller: 'QueryController',
             controllerAs: 'query',
             roles : [
-                'ADMIN',
+                'admin',
             ]
         },
         {
@@ -143,7 +211,7 @@
             controller: 'ReportsController',
             controllerAs: 'reports',
             roles : [
-                'ADMIN',
+                'admin',
             ]
         },
     ];
