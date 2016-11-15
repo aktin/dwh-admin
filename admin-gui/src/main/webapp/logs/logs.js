@@ -15,7 +15,7 @@
                 });
             }
         }
-
+        // $http.get('/aktin/admin/log?level=WARNING').then(...)
         logApp.getLevel = function (level) {
             // if (level < logLevels.info) {
             //     return 'all';

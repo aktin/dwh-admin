@@ -1,21 +1,22 @@
 <div class="ui list">
 	<div class="item ui segment padded" ng-repeat="(cat, catObj) in properties.properties">
-
-
-			<div class="ui container stackable relaxed three column padded grid">
-				<div class="row">
-				    <div class="column ui medium header">{{catObj.name}}, {{catObj.value}}, {{catObj.descr}}</div>
-				</div>
-				<div class="column" ng-repeat="prop in catObj.props" style="border:1px solid rgba(34,36,38,.15)">			
-					
-						<h4 class="ui header title"> {{prop.name}}, {{prop.descr}} </h4>		
-						
-						<div class="content">
-							<!-- <p> {{prop.name}} </p> -->
-							<!-- <div class="ui input property-fields" ng-include="prop.template"></div> -->
-							<span ng-bind="prop.value"></span> 
-						</div>
-				</div>
+		<div class="ui container stackable relaxed three column padded equal width grid">
+			<div class="row">
+			    <div class="column">
+			    	<div class="ui medium header">{{catObj.name}}, {{catObj.value}}, {{catObj.descr}}</div>
+			    	<p class="">Änderbar in: {{catObj.location}}</p>
+			    </div>
 			</div>
+			<div class="column" ng-repeat="prop in catObj.props" style="border:1px solid rgba(34,36,38,.15)">			
+				
+					<h4 class="ui header title"> {{prop.name}}, {{prop.descr}} </h4>		
+					
+					<div class="content">
+						<!-- <p> {{prop.name}} </p> -->
+						<!-- <div class="ui input property-fields" ng-include="prop.template"></div> -->
+						<span ng-bind="prop.value"></span> 
+					</div>
+			</div>
+		</div>
 	</div>
 </div>
