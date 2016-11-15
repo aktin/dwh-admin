@@ -2,3 +2,4 @@
 *.pdf
 plantuml/*
 screens/*
+properties/old/*
