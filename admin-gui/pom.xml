@@ -38,15 +38,15 @@
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>de.sekmi.li2b2</groupId>
+			<groupId>de.li2b2.facade</groupId>
 			<artifactId>li2b2-client</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.1</version>
 		</dependency>
 		<dependency>
 			<!-- for token authentication -->
-			<groupId>de.sekmi.li2b2</groupId>
+			<groupId>de.li2b2.facade</groupId>
 			<artifactId>li2b2-server</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.1</version>
   		</dependency>
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
