@@ -28,16 +28,6 @@
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>org.aktin.dwh</groupId>
-			<artifactId>dwh-db</artifactId>
-			<version>0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.aktin</groupId>
-			<artifactId>report-manager</artifactId>
-			<version>0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>de.li2b2.facade</groupId>
 			<artifactId>li2b2-client</artifactId>
 			<version>0.1</version>
@@ -134,6 +124,12 @@
 		<dependency>
 			<groupId>org.aktin.dwh</groupId>
 			<artifactId>dwh-prefs</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.aktin</groupId>
+			<artifactId>report-manager</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
