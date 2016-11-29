@@ -29,6 +29,7 @@
                     return false;
 
                 curUser.username = loginData.username;
+                curUser.isLogin = true;
                 storageHelper.to('user.username', loginData.username);
 
                 $http.post(getUrl("/auth/login"), {
@@ -37,18 +38,44 @@
                 }).then(function (response) {
                     storageHelper.to('user.token', response.data);
                     curUser.token = response.data;
-
-                    $http.get(getUrl("/auth/has/admin")).then(function (response) {
-                        curUser.isAdmin = response.data;
-                        if (!curUser.roles)
-                            curUser.roles = [];
-                        curUser.roles.push("admin");
-
-                        callback();
-                    })
+                    delete curUser.isLogin;
+                    userAddRole ('USER');
+                    userIsAdmin(callback);
+                    
                 });
 
             }
+
+            userAddRole = function (role) {
+                if (!curUser.roles)
+                    curUser.roles = [];
+                curUser.roles.push('USER');
+            }
+
+            userIsAdmin = function (callback) {
+                $http.get(getUrl("/auth/has/admin")).then(function (response) {
+                    curUser.isAdmin = response.data;
+                    
+                    userAddRole ('admin');
+                    console.log(curUser)
+                    if (callback) {
+                        callback();
+                    }
+                })
+            }
+
+            userCheckRole = function (role, callback) {
+                $http.get(getUrl("/auth/has/"+role)).then(function (response) {
+                    if (role === "admin")
+                        curUser.isAdmin = response.data;
+                    userAddRole (role);
+                    console.log(curUser)
+                    if (callback) {
+                        callback();
+                    }
+                })
+            }
+
 
             userLogout = function (userData) {
                 curUser = {};
@@ -56,13 +83,53 @@
             	return false;
             };
 
-    		getUser = function () {
-                return curUser;
-            };
 
             hasUser = function () {
-                return Object.prototype.hasOwnProperty(curUser);
-            }
+                // console.log(curUser, !curUser.token , curUser.token !== null , curUser.token !== "")
+                if ( (curUser.token && curUser.token !== null && curUser.token !== "")
+                    && (curUser.username && curUser.username !== null && curUser.username !== "") ) {
+                    console.log('has user')
+                    return true;
+                }
+                console.log('no user')
+                return false;
+            };
+
+            getUser = _.throttle(function () {
+                if (!hasUser()) {
+
+                    // there is no user available. get user from localstorage if there is one stored.userFactory
+                    if (storageHelper.from('user.token') && storageHelper.from('user.username')) {
+                        curUser.token = storageHelper.from('user.token');
+                        curUser.username = storageHelper.from('user.username');
+                        console.log("get user from storage", curUser)
+                        // can user login? get user right USER
+                        
+                        $http.get(getUrl("/auth/check/")).then(function success(response) {
+                            userAddRole ('USER');
+                            // userIsAdmin();
+                        },
+                        function error(response) {
+                            curUser = {};
+                            console.log('outdated clear user')
+                            storageHelper.delete('user.username');
+                            storageHelper.delete('user.token');
+
+                            console.log(response)
+                        })
+                    } else {
+                        if (! curUser.isLogin) {
+                            console.log('clear user', curUser)
+                            curUser = {};
+                            storageHelper.delete('user.username');
+                            storageHelper.delete('user.token');
+                        } else {
+                            console.log('wait for login');
+                        }
+                    }
+                }
+                return curUser;
+            }, 300);
 
             return {
             	login : userLogin,

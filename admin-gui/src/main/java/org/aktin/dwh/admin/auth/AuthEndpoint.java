@@ -97,5 +97,12 @@ public class AuthEndpoint {
 		}
 	}
 
+	@Secured
+	@GET
+	@Path("check")
+	public boolean authCheck(){
+		return true;
+		// always true to check whether stored data is true
+	}
 
 }

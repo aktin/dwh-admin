@@ -76,7 +76,7 @@
                 $window.localStorage && $window.localStorage.setItem(key, value);
             }, 
             'delete' : function (key) {
-                $window.localStorage && $window.removeItem(key);
+                $window.localStorage && $window.localStorage.removeItem(key);
             }
         }
     }]);

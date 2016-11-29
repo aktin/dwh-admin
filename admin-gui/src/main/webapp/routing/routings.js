@@ -48,24 +48,24 @@
                 }
 
 
-                if (!userFactory.checkRole(curUser, $rootScope.toState.data.roles)) { 
-                    if (curUser) {
-                        $timeout(function() {
-                            return $state.go('accessdenied');
-                        })
-                    } else { // there is no current user so go to login / home                              
-                        $timeout(function() {
-                            return $state.go('login');
-                        })
-                    }
-                    return false;
-                } else {
-                    if (_.contains(['login'/*, 'accessdenied', 'restricted'*/], $rootScope.toState.name))                            
-                        $timeout(function() {
-                            console.log('going to home', userFactory.checkRole(curUser, $rootScope.toState.data.roles), curUser, $rootScope.toState.data.roles)
-                            return $state.go('home');
-                        })
-                }
+                // if (!userFactory.checkRole(curUser, $rootScope.toState.data.roles)) { 
+                //     if (curUser) {
+                //         $timeout(function() {
+                //             return $state.go('accessdenied');
+                //         })
+                //     } else { // there is no current user so go to login / home                              
+                //         $timeout(function() {
+                //             return $state.go('login');
+                //         })
+                //     }
+                //     return false;
+                // } else {
+                //     if (_.contains(['login'/*, 'accessdenied', 'restricted'*/], $rootScope.toState.name))                            
+                //         $timeout(function() {
+                //             console.log('going to home', userFactory.checkRole(curUser, $rootScope.toState.data.roles), curUser, $rootScope.toState.data.roles)
+                //             return $state.go('home');
+                //         })
+                // }
                 // user rights / access rights check out. load page
                 return true;
             };
