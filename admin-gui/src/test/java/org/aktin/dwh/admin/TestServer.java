@@ -2,6 +2,7 @@ package org.aktin.dwh.admin;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
@@ -39,6 +40,9 @@ public class TestServer {
 	
 	public TestServer() throws SQLException{
 		ds = new TestDataSource();
+		try( Connection dbc = ds.getConnection() ){
+			dbc.createStatement().close();
+		}
 		rc = new ResourceConfig();
 		rc.register(new MyBinder(ds));
 		rc.register(JAXRSPrefs.class);
