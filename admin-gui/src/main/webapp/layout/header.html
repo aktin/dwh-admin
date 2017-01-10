@@ -2,13 +2,13 @@
 <div class="ui fluid {{header.navLength()}} inverted menu stackable">
 	<div class="ui container">
 		<a ng-repeat="nav in header.navigations()" class="item {{header.active(nav)}}" ui-sref="{{nav.routing}}">
-		<span class="header-menu-item-content">
+			<span class="header-menu-item-content">
 			{{nav.name}}</span>
 		</a>
-		<!-- <div class="right menu">
-			<div class="item">
-				<div class="ui primary button">LOGIN</div>
-			</div>
-		</div> -->
+		<div class="right menu">
+			<a class="ui item"  ui-sref="{{header.logAction().url}}">
+				<div class="ui primary button header-menu-item-content">{{header.logAction().name}}</div>
+			</a>
+		</div>
 	</div>
 </div>

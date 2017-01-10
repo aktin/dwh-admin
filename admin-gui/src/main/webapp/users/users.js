@@ -49,7 +49,8 @@
             userAddRole = function (role) {
                 if (!curUser.roles)
                     curUser.roles = [];
-                curUser.roles.push('USER');
+                if (curUser.roles.indexOf(role) < 0)
+                    curUser.roles.push(role);
             }
 
             userIsAdmin = function (callback) {
@@ -105,11 +106,14 @@
                         console.log("get user from storage", curUser)
                         // can user login? get user right USER
                         
+                        curUser.isLogin = true;
                         $http.get(getUrl("/auth/check/")).then(function success(response) {
+                            delete curUser.isLogin;
                             userAddRole ('USER');
-                            // userIsAdmin();
+                            userIsAdmin();
                         },
                         function error(response) {
+                            delete curUser.isLogin;
                             curUser = {};
                             console.log('outdated clear user')
                             storageHelper.delete('user.username');

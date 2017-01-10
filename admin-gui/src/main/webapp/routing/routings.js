@@ -120,6 +120,24 @@
                 return userFactory.checkRole(userFactory.user(), nav.roles);
             });
         }
+        app.isLoggedIn = function () {
+            return userFactory.hasUser();
+        }
+        app.logAction = function () {
+            if (userFactory.hasUser()) {
+                // user needs logout button
+                return {
+                    name : "LogOut",
+                    url : "logout",
+                }
+            } else {
+                // user needs login button
+                return {
+                    name : "LogIn",
+                    url : "login",
+                }
+            }
+        }
         //navigations;
         app.navLength = function () {
             // return number2word(navigations.length) + " item";
@@ -280,6 +298,17 @@
                 routing: 'login',
                 url: "/login",
                 templateUrl: 'users/login.html',
+                controller: 'UsersController',
+                controllerAs: 'users',
+                data: {
+                    roles : []
+                },
+            })
+            .state('logout', {
+                name: 'LogOut',
+                routing: 'logout',
+                url: "/logout",
+                templateUrl: 'users/logout.html',
                 controller: 'UsersController',
                 controllerAs: 'users',
                 data: {
