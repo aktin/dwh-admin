@@ -135,6 +135,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.aktin</groupId>
+			<artifactId>report-archive</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.aktin</groupId>
 			<artifactId>report-manager</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<type>test-jar</type>
