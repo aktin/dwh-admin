@@ -20,6 +20,11 @@ public class TestDataSource implements DataSource{
 //	private int version;
 	
 	public TestDataSource() throws SQLException {
+		try {
+			Class.forName("org.hsqldb.jdbc.JDBCDriver");
+		} catch (ClassNotFoundException e) {
+			throw new SQLException(e);
+		}
 		try( Connection dbc = getVanillaConnection() ){
 			// TODO use version
 			TestDatabase.initializeDatabase(dbc);
