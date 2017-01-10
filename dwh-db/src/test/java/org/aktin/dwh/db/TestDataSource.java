@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
+import liquibase.exception.LiquibaseException;
+
 
 public class TestDataSource implements DataSource{
 	private static final Logger log = Logger.getLogger(TestDataSource.class.getName());
@@ -96,4 +98,12 @@ public class TestDataSource implements DataSource{
 		return getConnection();
 	}
 
+	public void dropAll() throws LiquibaseException, SQLException{
+		try( Connection dbc = getVanillaConnection() ){
+			LiquibaseWrapper w = new LiquibaseWrapper(dbc);
+			w.getLiquibase().dropAll();
+			w.close();
+		}
+		
+	}
 }
