@@ -19,10 +19,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.aktin.report.ArchivedReport;
 import org.aktin.report.GeneratedReport;
 import org.aktin.report.Report;
 import org.aktin.report.ReportArchive;
 import org.aktin.report.ReportManager;
+import org.aktin.report.ArchivedReport.Status;
 
 /**
  * RESTful HTTP end point for generating reports.
@@ -30,7 +32,7 @@ import org.aktin.report.ReportManager;
  * @author R.W.Majeed
  *
  */
-@Path("report")
+@Path("report/template")
 public class ReportEndpoint {
 
 	@Inject
@@ -47,7 +49,7 @@ public class ReportEndpoint {
 	 * @return report templates
 	 */
 	@GET
-	@Path("template")
+	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<ReportTemplate> getTemplates(){
 		ArrayList<ReportTemplate> reports = new ArrayList<>();
@@ -71,7 +73,7 @@ public class ReportEndpoint {
 	 * @throws IOException error
 	 */
 	@POST
-	@Path("template/{templateId}")
+	@Path("{templateId}")
 	//@Consumes(MediaType.APPLICATION_JSON)
 	public Response generateReport(@PathParam("templateId") String templateId, ReportRequest request) throws URISyntaxException, IOException{
 		System.out.println("Generate report: "+templateId);
@@ -103,15 +105,4 @@ public class ReportEndpoint {
 			throw new BadRequestException("From timestamp must be specified");
 		}
 	}
-	/**
-	 * List generated reports
-	 * @return generated reports
-	 */
-	@GET
-	@Path("generated")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<GeneratedReport> getGeneratedReports(){
-		return null;//(List<GeneratedReport>) archive.reports();
-	}
-	
 }
