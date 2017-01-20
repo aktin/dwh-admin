@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>broker-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de.li2b2.facade</groupId>
