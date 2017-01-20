@@ -56,6 +56,14 @@
 			<version>1.2</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<!-- XXX this probably includes most of the above EE APIs -->
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>7.0</version>
+			<scope>provided</scope>
+		</dependency>
+
 
 		<!-- test with jetty -->
 		<!-- test dependencies to run a server for testing -->

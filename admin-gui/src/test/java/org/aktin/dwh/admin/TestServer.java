@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.aktin.dwh.admin.auth.AuthEndpoint;
@@ -38,7 +39,7 @@ public class TestServer {
 	private Server jetty;
 	private DataSource ds;
 	
-	public TestServer() throws SQLException{
+	public TestServer() throws SQLException, NamingException{
 		ds = new TestDataSource();
 		try( Connection dbc = ds.getConnection() ){
 			dbc.createStatement().close();
@@ -52,6 +53,19 @@ public class TestServer {
 		rc.register(PMService.class);
 		rc.register(UserEndpoint.class);
 		rc.register(LogEndpoint.class);
+
+		setupJNDI(ds);
+	}
+
+	// XXX does that work???
+	private void setupJNDI(DataSource ds) throws NamingException{
+		// TODO implement custom initial context factory for testing
+		// e.g. http://stackoverflow.com/questions/17083142/junit-testing-jndi-initialcontext-outside-the-application-server
+//		System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.apache.naming.java.javaURLContextFactory");
+//		System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");            
+//		InitialContext ic = new InitialContext();
+//		
+//		ic.bind("java:/comp/env/jdbc/TestAKTIN", ds);
 	}
 	public void register(Class<?> componentClass){
 		rc.register(componentClass);

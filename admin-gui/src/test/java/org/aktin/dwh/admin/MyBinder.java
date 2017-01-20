@@ -91,11 +91,8 @@ public class MyBinder extends AbstractBinder{
 		ReportArchiveImpl archive = new ReportArchiveImpl();
 		archive.setPreferences(prefs);
 		archive.setDataSource(ds);
-		try {
-			archive.loadArchive();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		archive.loadArchive();
+		
 		bind(archive).to(ReportArchive.class);
 		
 		bind(new ReportTracker(reports, archive)).to(ReportTracker.class);

@@ -7,12 +7,13 @@ import org.aktin.report.ArchivedReport;
 import org.aktin.report.ArchivedReport.Status;
 
 public class ReportEntry {
-	int id;
-	Date data;
-	Date start;
-	Date end;
-	String template;
-	Status status;
+	public int id;
+	public Date data;
+	public Date start;
+	public Date end;
+	public String template;
+	public String type;
+	public Status status;
 
 	private ReportEntry(){
 	}
@@ -22,6 +23,8 @@ public class ReportEntry {
 		e.data = convertInstant(report.getDataTimestamp());
 		e.start = convertInstant(report.getStartTimestamp());
 		e.end = convertInstant(report.getEndTimestamp());
+		e.template = report.getTemplateId();
+		e.type = report.getMediaType();
 		e.status = report.getStatus();
 		return e;
 	}
