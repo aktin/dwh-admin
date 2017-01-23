@@ -7,6 +7,8 @@
 
         propApp.debugout = "";
         var filename = "properties/testprops.properties";
+        // propertyrights : PROPERTY
+
         propApp.properties=predefinedCategories;
         propApp.flatProps={};
         $http.get(filename) //when I try to read cities.json error occurs

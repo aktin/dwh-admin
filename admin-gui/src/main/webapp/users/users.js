@@ -45,7 +45,7 @@
                 });
 
             }
-
+            // USER, admin, REPORT, LOGS, QUERIES, PROPERTIES
             userAddRole = function (role) {
                 if (!curUser.roles)
                     curUser.roles = [];
@@ -65,6 +65,7 @@
                 })
             }
 
+            /*            
             userCheckRole = function (role, callback) {
                 $http.get(getUrl("/auth/has/"+role)).then(function (response) {
                     if (role === "admin")
@@ -75,11 +76,13 @@
                         callback();
                     }
                 })
-            }
+            }*/
 
 
             userLogout = function (userData) {
                 curUser = {};
+                console.log('logout clear user')
+                storageHelper.delete('user.username');
                 storageHelper.delete('user.token');
             	return false;
             };

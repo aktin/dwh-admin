@@ -5,8 +5,24 @@
 			{{cat.name}}
 		</a>
 	</div> -->
+
+<div class="ui secondary  menu">
+	<a class="item" ng-click="properties.setRoute('overview')">
+		Overview
+	</a>
+	<a class="item" ng-click="properties.setRoute('showReports')">
+		View older Reports
+	</a>
+	<a class="item" ng-click="properties.setRoute('editTemplates')">
+		Edit Templates
+	</a>
+	<a class="item" ng-click="properties.setRoute('generateReports')">
+		Create new Reports
+	</a>
+</div>
 <div class="ui text container">
 
+	<div class="header"><h1>{{properties.getRoute}}</h1></div>
 	<div class="header"><h1>Hospital zum heiligen St. Actinus</h1></div>
 
 	<div>
