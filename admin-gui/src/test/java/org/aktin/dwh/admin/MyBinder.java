@@ -2,7 +2,9 @@ package org.aktin.dwh.admin;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.security.Principal;
+import java.util.concurrent.ForkJoinPool;
 
 import javax.sql.DataSource;
 
@@ -12,9 +14,13 @@ import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.admin.auth.TokenManager;
 import org.aktin.dwh.admin.log.DemoLogfileReader;
 import org.aktin.dwh.admin.log.LogLineSupplierFactory;
+import org.aktin.dwh.admin.report.ReportTracker;
 import org.aktin.dwh.prefs.impl.PropertyFilePreferences;
+import org.aktin.report.ReportArchive;
 import org.aktin.report.ReportManager;
+import org.aktin.report.archive.ReportArchiveImpl;
 import org.aktin.report.manager.ReportManagerImpl;
+import org.aktin.report.manager.TestExport;
 import org.aktin.report.manager.TestReportGeneration;
 import org.aktin.report.test.SimpleReport;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -75,8 +81,21 @@ public class MyBinder extends AbstractBinder{
 
 		// create singleton instance
 		TestReportGeneration.locateR();
-		ReportManager reports = new ReportManagerImpl(TestReportGeneration.rScript.toString(), new SimpleReport());
+		ReportManagerImpl reports = new ReportManagerImpl(TestReportGeneration.rScript.toString(), Paths.get("target/report-temp"), new SimpleReport());
+		reports.setPreferenceManager(prefs);
+		reports.setDataExtractor(TestExport.small());
+		reports.setExecutor(ForkJoinPool.commonPool());
 		bind(reports).to(ReportManager.class);
+
+		// report archive
+		ReportArchiveImpl archive = new ReportArchiveImpl();
+		archive.setPreferences(prefs);
+		archive.setDataSource(ds);
+		archive.loadArchive();
+		
+		bind(archive).to(ReportArchive.class);
+		
+		bind(new ReportTracker(reports, archive)).to(ReportTracker.class);
 
 		// logging
 		bind(new DemoLogfileReader()).to(LogLineSupplierFactory.class);

@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>broker-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de.li2b2.facade</groupId>
@@ -56,6 +56,14 @@
 			<version>1.2</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<!-- XXX this probably includes most of the above EE APIs -->
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>7.0</version>
+			<scope>provided</scope>
+		</dependency>
+
 
 		<!-- test with jetty -->
 		<!-- test dependencies to run a server for testing -->
@@ -66,11 +74,12 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.eclipse.jetty.websocket/javax-websocket-server-impl -->
-		<dependency>
+		<!--<dependency>
 		    <groupId>org.eclipse.jetty.websocket</groupId>
 		    <artifactId>javax-websocket-server-impl</artifactId>
 		    <version>9.2.14.v20151106</version>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-servlet</artifactId>
@@ -130,6 +139,12 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>report-manager</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.aktin</groupId>
+			<artifactId>report-archive</artifactId>
 			<version>0.1-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
