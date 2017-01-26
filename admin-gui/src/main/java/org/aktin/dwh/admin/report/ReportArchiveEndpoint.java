@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -46,6 +47,7 @@ public class ReportArchiveEndpoint {
 		if( report.getStatus() == Status.Waiting ){
 			return Response.accepted().build();
 		}
+		Objects.requireNonNull(report.getLocation(),"Archived report without location:"+id);
 		return Response.ok(Files.newInputStream(report.getLocation()), report.getMediaType()).build();
 	}
 
