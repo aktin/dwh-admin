@@ -6,8 +6,11 @@
 			{{nav.name}}</span>
 		</a>
 		<div class="right menu">
-			<a class="ui item"  ui-sref="{{header.logAction().url}}">
-				<div class="ui primary button header-menu-item-content">{{header.logAction().name}}</div>
+			<a class="ui item"  ui-sref="login" ng-hide="header.isLoggedIn()">
+				<div class="ui primary button header-menu-item-content">Login</div>
+			</a>
+			<a class="ui item"  ui-sref="logout" ng-show="header.isLoggedIn()">
+				<div class="ui primary button header-menu-item-content">Logout</div>
 			</a>
 		</div>
 	</div>

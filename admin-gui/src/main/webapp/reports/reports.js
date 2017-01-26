@@ -3,12 +3,24 @@
 
     reportApp.controller('ReportsController', ['$http', '$scope', '$filter', '$timeout', function($http, $scope, $filter, $timeout){
         var reportApp = this;
+        var curRoute = 'overview';
 
         reportApp.reports = dummyreports;
 
+        reportApp.setRoute = function (routeName) {
+            curRoute = routeName;
+        }
+
+        reporting.getRoute = curRoute;
 
 
     }]);
+
+    var REPORTRIGHTS = [
+        'VIEW', // view older reports
+        'EDIT', // edit report templates
+        'CREATE', // create new reports
+    ];
 
     dummyreports = [
         {

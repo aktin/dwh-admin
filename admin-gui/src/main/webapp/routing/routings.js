@@ -13,6 +13,14 @@
                 var curUser = userFactory.user();
                 console.log('rout check', $rootScope.toState, curUser, $rootScope.toState.data.roles, userFactory.checkRole(curUser, $rootScope.toState.data.roles))
 
+                // special states
+                // logout
+                if (_.contains(['logout'], $rootScope.toState.name)) {
+                    userFactory.logout();
+                    console.log('in logout state')
+                    return $state.reload();//$state.go('home');
+                }
+
                 // is there a user?
                 if (userFactory.hasUser()) {
                     // does the user have enough right?
@@ -46,27 +54,6 @@
                         })
                     }
                 }
-
-
-                // if (!userFactory.checkRole(curUser, $rootScope.toState.data.roles)) { 
-                //     if (curUser) {
-                //         $timeout(function() {
-                //             return $state.go('accessdenied');
-                //         })
-                //     } else { // there is no current user so go to login / home                              
-                //         $timeout(function() {
-                //             return $state.go('login');
-                //         })
-                //     }
-                //     return false;
-                // } else {
-                //     if (_.contains(['login'/*, 'accessdenied', 'restricted'*/], $rootScope.toState.name))                            
-                //         $timeout(function() {
-                //             console.log('going to home', userFactory.checkRole(curUser, $rootScope.toState.data.roles), curUser, $rootScope.toState.data.roles)
-                //             return $state.go('home');
-                //         })
-                // }
-                // user rights / access rights check out. load page
                 return true;
             };
             return {
@@ -122,21 +109,6 @@
         }
         app.isLoggedIn = function () {
             return userFactory.hasUser();
-        }
-        app.logAction = function () {
-            if (userFactory.hasUser()) {
-                // user needs logout button
-                return {
-                    name : "LogOut",
-                    url : "logout",
-                }
-            } else {
-                // user needs login button
-                return {
-                    name : "LogIn",
-                    url : "login",
-                }
-            }
         }
         //navigations;
         app.navLength = function () {
@@ -308,11 +280,10 @@
                 name: 'LogOut',
                 routing: 'logout',
                 url: "/logout",
-                templateUrl: 'users/logout.html',
-                controller: 'UsersController',
-                controllerAs: 'users',
                 data: {
-                    roles : []
+                    roles : [
+                        'USER',
+                    ]
                 },
             });
     }])
