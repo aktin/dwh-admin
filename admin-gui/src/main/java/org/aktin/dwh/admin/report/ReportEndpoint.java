@@ -19,12 +19,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.aktin.report.ArchivedReport;
-import org.aktin.report.GeneratedReport;
 import org.aktin.report.Report;
 import org.aktin.report.ReportArchive;
 import org.aktin.report.ReportManager;
-import org.aktin.report.ArchivedReport.Status;
 
 /**
  * RESTful HTTP end point for generating reports.
