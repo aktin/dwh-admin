@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Test server configuration</title>
+		<style>
+		div.failure pre, div.failure button{
+			background-color: #ff8888;
+		}
+		div.success pre, div.success button{
+			background-color: lightgreen;
+		}
+		pre{
+			max-height: 100px;
+			overflow-y: scroll;
+		}
+		</style>
+		<script src="../lib/jquery-3.1.1/jquery-3.1.1.min.js"></script>
+		<script language="Javascript">
+function test_call(el, method, url){
+	var button = $(el);
+	var div = button.parents('div');
+	var pre = div.find('pre');
+	//button.css('background-color','lightgreen');
+	button.prop('disabled',true);
+	pre.text('please wait...');
+	div.removeClass('failure');
+	div.removeClass('success');
+	$.ajax({
+		type: method,
+		url: url,
+		data: '',
+		success: function(data,status,xhr){
+			button.prop('disabled',false);
+			pre.text('');
+			div.addClass('success');
+			pre.text(data);
+		},
+		error: function(xhr, status, error) {
+			button.prop('disabled',false);
+			div.addClass('failure');
+			pre.text('');
+			pre.text(xhr.responseText);
+		},
+	  dataType: "text"
+	});
+}
+		</script>
+	</head>
+	
+	<body>
+		<div>
+			<button onclick="test_call(this,'GET','/aktin/admin/rest/test/broker/status')">Test Broker</button><br/>
+			<pre></pre>
+		</div>
+		<div>
+			<button onclick="test_call(this,'POST','/aktin/admin/rest/test/email/send')">Test Email</button><br/>
+			<pre></pre>
+		</div>
+		<div>
+			<button onclick="test_call(this,'POST','/aktin/admin/rest/test/r/run')">Test R</button><br/>
+			<pre></pre>
+		</div>
+	</body>
+
+</html>

@@ -2,6 +2,8 @@ package org.aktin.dwh.admin.test;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 import javax.inject.Inject;
@@ -33,26 +35,33 @@ public class EmailTest {
 	@Path("send")
 	@POST
 	public Response sendEmail(){
-		
-
-
 		try {
 			MimeMessage msg = new MimeMessage(lookupJndiMailSession());
-			
+			// use specified time zone
+			ZoneId tz = ZoneId.of(prefs.get(PreferenceKey.timeZoneId));
+			String ts = LocalDateTime.now(tz).toString();
 			Address[] to = javax.mail.internet.InternetAddress.parse(prefs.get(PreferenceKey.email));
 			msg.setRecipients(RecipientType.TO, to);
 			// sender address
 			Address[] replyTo = InternetAddress.parse(prefs.get(PreferenceKey.emailReplyTo));
 			msg.setReplyTo(replyTo);
-			msg.setSubject("AKTIN E-mail test");
+			msg.setSubject("AKTIN E-mail test "+ts);
 			msg.setSentDate(new Date());
-			msg.setText("Sehr geehrte Damen und Herren,\ndiese E-mail wurde versendet um den Versand von E-mails zu testen.");
+			StringBuilder body = new StringBuilder();
+			body.append("Sehr geehrte Damen und Herren,\ndiese E-mail wurde versendet um den Versand von E-mails zu testen.");
+			body.append('\n');
+			body.append("Zeitstempel: "+ts);
+			body.append('\n');
+			msg.setText(body.toString());
 	
 			// TODO send attachment for testing
 	//		MimeMultipart mp = new MimeMultipart(new FileDataSource(report.getLocation().toFile()));
 	//		msg.setContent(mp);
 			Transport.send(msg);
-			return Response.noContent().build();
+			body = new StringBuilder();
+			body.append("E-Mail gesendet an ").append(prefs.get(PreferenceKey.email));
+			body.append("Bitte prüfen Sie ob die Test-E-Mail angekommen ist.");
+			return Response.ok(body.toString()).build();
 		} catch ( Throwable e ) {
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));

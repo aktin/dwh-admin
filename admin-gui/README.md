@@ -1,14 +1,5 @@
-DWH Configuration backend
-=========================
-
-Stores configuration parameters in relational database tables (SQL).
-
-Other Java modules can use the interface with dependency injection.
-
-Rapid testing using jetty plugin
---------------------------------
-Run `mvn -Pjetty jetty:run`. It will then watch src/main/webapp and target/classes for changes. Just modify any source files and any
-changes will be integrated within seconds.
+DWH Admin User Interface
+========================
 
 
 No access to secured resources without access token. The call
