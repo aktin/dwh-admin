@@ -60,7 +60,8 @@ public class EmailTest {
 			Transport.send(msg);
 			body = new StringBuilder();
 			body.append("E-Mail gesendet an ").append(prefs.get(PreferenceKey.email));
-			body.append("Bitte prüfen Sie ob die Test-E-Mail angekommen ist.");
+			body.append('\n');
+			body.append("Bitte verifizieren Sie, dass die Test-E-Mail angekommen ist.");
 			return Response.ok(body.toString()).build();
 		} catch ( Throwable e ) {
 			StringWriter errors = new StringWriter();
