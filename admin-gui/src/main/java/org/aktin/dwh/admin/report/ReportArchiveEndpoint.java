@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -37,6 +38,20 @@ public class ReportArchiveEndpoint {
 		return list;
 	}
 
+	@HEAD
+	@Path("{id}")
+	public Response getReportMetadata(@PathParam("id") int id) throws IOException{
+		ArchivedReport report = archive.get(id);
+		if( report == null ){
+			throw new NotFoundException();
+		}
+		if( report.getStatus() == Status.Waiting ){
+			return Response.accepted().build();
+		}
+		Objects.requireNonNull(report.getLocation(),"Archived report without location:"+id);
+		return Response.ok().type(report.getMediaType()).build();
+	}
+	
 	@GET
 	@Path("{id}")
 	public Response getGeneratedReport(@PathParam("id") int id) throws IOException{
