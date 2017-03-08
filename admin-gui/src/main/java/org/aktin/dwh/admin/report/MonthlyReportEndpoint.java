@@ -14,13 +14,15 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ejb.Schedule;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import org.aktin.Preferences;
+import org.aktin.dwh.EMail;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.report.ArchivedReport;
 import org.aktin.report.Report;
@@ -41,10 +43,10 @@ public class MonthlyReportEndpoint {
 	@Inject
 	private Preferences prefs;
 
-	/**
-	 * Create/overwrite a new monthly report (for the previous month)
-	 */
-	private ArchivedReport createReport(String userId, Consumer<ArchivedReport> afterCompletion) throws IOException{
+	@Inject @EMail Event<ReportInfo> sendReport;
+	
+
+	private ReportInfo createReportInfo(){
 		ZoneId zone = ZoneId.of(prefs.get(PreferenceKey.timeZoneId));
 		// calculate timestamps for previous month
 		// get current local date
@@ -56,7 +58,13 @@ public class MonthlyReportEndpoint {
 
 		Report template = manager.getReport(MONTHLY_REPORT_TEMPLATE_ID);
 		Objects.requireNonNull(template, "Monthly report template not available: "+MONTHLY_REPORT_TEMPLATE_ID);
-		ReportInfo info = template.createReportInfo(start.atZone(zone).toInstant(), end.atZone(zone).toInstant());
+		return template.createReportInfo(start.atZone(zone).toInstant(), end.atZone(zone).toInstant());
+	}
+	/**
+	 * Create/overwrite a new monthly report (for the previous month)
+	 */
+	private ArchivedReport createReport(String userId, Consumer<ArchivedReport> afterCompletion) throws IOException{
+		ReportInfo info = createReportInfo();
 		// create in archive
 		ArchivedReport report = archive.addReport(info, userId);
 		// generate report
@@ -72,6 +80,12 @@ public class MonthlyReportEndpoint {
 		return report;
 	}
 
+	@POST
+	@Path("email")
+	public Response sendReportViaEmail(){
+		sendReport.fire(createReportInfo());
+		return Response.accepted().build();
+	}
 	/**
 	 * Locate the current monthly report (previous month) or create
 	 * the report if it was generated available previously
@@ -117,17 +131,5 @@ public class MonthlyReportEndpoint {
 		return Response.temporaryRedirect(URI.create("report/archive/"+current.getId())).build();
 	}
 
-	@Schedule(dayOfMonth="3", hour="3")
-	public void sendReportViaEmail(){
-		log.info("Running scheduled monthly report");
-		try {
-			createReport("SCHEDULE", this::sendEmail);
-		} catch (IOException e) {
-			log.log(Level.SEVERE, "Report failed", e);
-		}
-	}
 
-	private void sendEmail(ArchivedReport report){
-		log.info("TODO: send monthly report via email: "+report.getLocation());
-	}
 }
