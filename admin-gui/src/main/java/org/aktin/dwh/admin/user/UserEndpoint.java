@@ -6,7 +6,6 @@ import java.net.URL;
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -78,7 +77,8 @@ public class UserEndpoint {
 
 	/**
 	 * Create or update the given user
-	 * @param user
+	 * @param name user name
+	 * @param data user data
 	 * @return response status
 	 * @throws HiveException unexpected response by i2b2
 	 * @throws IOException communications error with i2b2

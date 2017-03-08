@@ -58,10 +58,10 @@ public class ReportEndpoint {
 	 * Request a report to be generated for the specified template.
 	 * <p>
 	 *  For debugging, you can use the following command:
-	 *  <pre>
-	 *  curl -X POST http://localhost:8080/aktin/admin/report/template/org.aktin.report.test.SimpleReport --header 'Content-type: application/json' --data '{"from":"2001-01-01T00:00:00Z"}'
-	 *  </pre>
 	 * </p>
+	 * <pre>
+	 *  curl -X POST http://localhost:8080/aktin/admin/report/template/org.aktin.report.test.SimpleReport --header 'Content-type: application/json' --data '{"from":"2001-01-01T00:00:00Z"}'
+	 * </pre>
 	 *
 	 * @param templateId report template id
 	 * @param request request body

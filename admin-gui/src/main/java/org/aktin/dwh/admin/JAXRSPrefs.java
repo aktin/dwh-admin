@@ -50,8 +50,8 @@ public class JAXRSPrefs {
 	}
 	/**
 	 * Get the value for a single preference
-	 * @param key preference name
-	 * @return preferf
+	 * @param name preference name
+	 * @return preference value
 	 */
 	@GET
 	@Path("{key}")

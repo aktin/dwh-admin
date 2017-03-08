@@ -17,9 +17,9 @@ import javax.ws.rs.core.Response;
  * Display logs e.g. via {@code GET /admin/log?level=WARNING}
  * </p>
  * 
- * </p>
- * <p>
+ *
  * Calls are forwarded to the wildfly management API. E.g.
+ *
  * <pre>
  * curl -L -D - http://127.0.0.1:19990/management --header "Content-Type: application/json" -d '{"operation":"read-children-names","address":[{"subsystem":"logging"}],"child-type":"log-file","json.pretty":1}' --digest -u aktin:aktin2
  * </pre>
@@ -27,7 +27,6 @@ import javax.ws.rs.core.Response;
  * <pre>
  * curl -L -D - http://127.0.0.1:19990/management --header "Content-Type: application/json" -d '{"operation":"read-log-file","address":[{"subsystem":"logging"},{"log-file":"server.log"}],"json.pretty":1}' --digest -u aktin:aktin2
  * </pre>
- * </p>
  * @author R.W.Majeed
  *
  */
