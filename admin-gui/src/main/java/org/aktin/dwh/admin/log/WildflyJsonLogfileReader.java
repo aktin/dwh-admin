@@ -23,14 +23,15 @@ public class WildflyJsonLogfileReader implements LogLineSupplierFactory{
 
 	public WildflyJsonLogfileReader(){
 	}
-	/** Package constructor for unit tests */
+	/** Package constructor for unit tests
+	 * @param prefs preferences
+	 */
 	WildflyJsonLogfileReader(Preferences prefs){
 		this.prefs = prefs;
 	}
 	@Override
 	public Supplier<String> readLogfile() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("TODO implement");
 	}
 	private String encodeUsernamePassword() throws CharacterCodingException{
 		String user = prefs.get(PreferenceKey.wildflyManagementUser);
@@ -43,8 +44,7 @@ public class WildflyJsonLogfileReader implements LogLineSupplierFactory{
 		return StandardCharsets.ISO_8859_1.newDecoder().decode(data).toString();
 	}
 	static String digestAuth(URL url, String user, String pass){
-		// TODO
-		return null;
+		throw new UnsupportedOperationException("TODO implement");
 	}
 	
 	
