@@ -6,21 +6,27 @@
         var propApp = this;
 
         propApp.debugout = "";
+
         var filename = "properties/testprops.properties";
+
+        var propFiles = [
+            "/opt/wildfly-9.0.2.Final/standalone/configuration/aktin.properties",
+            "/root/dwh-update/email.config". // TODO get it from standalone.xml!!
+        ]
         // propertyrights : PROPERTY
 
         propApp.properties=predefinedCategories;
         propApp.flatProps={};
-        $http.get(filename) //when I try to read cities.json error occurs
+        $http.get(filename) 
             .then(function (data) {
                 propApp.debugout += data.data;
-                propApp.flatProps = parseData(data.data);
+                propApp.flatProps = parseData(data.data, filename);
                 console.log(data.data, propApp.properties)
             }, function (error) {
                 alert('error');
             });
 
-        var parseData = function (dataString) {
+        var parseData = function (dataString, location) {
             var dataObj = {};
             var dataLines = dataString.split('\n');
 
@@ -42,9 +48,12 @@
                     propObj.name = key;
                 }
                 propObj.value = value;
+                propObj.location = location;
 
                 if (! (cat in predefinedCategories)) {
                     cat = "";
+                } else {
+                    predefinedCategories[cat].location = location;
                 }
 
                 if (! ('props' in propApp.properties[cat])) {
