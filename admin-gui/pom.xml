@@ -13,14 +13,14 @@
 	<parent>
 		<groupId>org.aktin.dwh</groupId>
 		<artifactId>dwh-admin</artifactId>
-		<version>0.2-SNAPSHOT</version>
+		<version>0.3-SNAPSHOT</version>
 	</parent>
 	
 	<dependencies>
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>dwh-api</artifactId>
-			<version>0.2-SNAPSHOT</version>
+			<version>0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>de.li2b2.facade</groupId>
