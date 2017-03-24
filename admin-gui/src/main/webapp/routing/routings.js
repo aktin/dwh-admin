@@ -26,10 +26,10 @@
                     // does the user have enough right?
                     if (userFactory.checkRole(curUser, $rootScope.toState.data.roles)) { 
                         // yes
-                        console.log('user, has rights', $rootScope.toState.name);
-                        if (_.contains(['login'], $rootScope.toState.name))                            
+                        console.log('user, has rights', $rootScope.toState.name, curUser, $rootScope.toState.data.roles);
+                        if (_.contains(['login', 'accessdenied', 'restricted'], $rootScope.toState.name))                            
                             $timeout(function() {
-                                console.log('going to home')
+                                console.log('going to home');
                                 return $state.go('home');
                             })
                         return true;
@@ -37,7 +37,8 @@
                         // no
                         console.log('user, no rights', $rootScope.toState.name);
                         $timeout(function() {
-                            return $state.go('accessdenied', $rootScope.toState.name);
+                            console.log("denying!")
+                            return $state.go('restricted', $rootScope.toState.name);
                         })
                     }
                 } else {
@@ -45,6 +46,13 @@
                     if (userFactory.checkRole(curUser, $rootScope.toState.data.roles)) { 
                         // no
                         console.log('no user, no rights needed', $rootScope.toState.name);
+                        if (_.contains(['accessdenied'], $rootScope.toState.name)) {
+                            console.log('relinking -> go to login')
+                            $timeout(function() {
+                                    console.log('going to login')
+                                return $state.go('login');
+                            })
+                        }
                         return true;
                     } else {
                         console.log('no user, rights needed', $rootScope.toState.name);                             
@@ -79,12 +87,19 @@
 
                 if (isServerUrl(response.config.url)) {
                     console.log('resp server', response);
-                    if (response.status === 401) {
-                        //  Redirect user to login page / signup Page.
-                    }
                 }
                 return response || $q.when(response);
-            }
+            },
+            responseError: function (rejection) { 
+                // error codes 400+ 
+                // 401 - unquthorized - e.g. old token
+                console.log("---ERROR---", rejection);
+                if (rejection.status === 401) {
+                    console.log("401 - deleting token and now try to log on again");
+                }
+
+                return $q.reject(rejection);
+            },
         };
     });
 
@@ -141,7 +156,6 @@
             controller: 'HomeController',
             controllerAs: 'home', 
             roles : [
-                'USER',
             ]
         },
         {
@@ -153,7 +167,7 @@
             controller: 'PropertiesController',
             controllerAs: 'properties',
             roles : [
-                'admin',
+                'USER',
             ]
         },
         {
@@ -165,7 +179,7 @@
             controller: 'LogsController',
             controllerAs: 'logs',
             roles : [
-                'admin',
+                'deactivated',
             ]
         },
         {
@@ -201,7 +215,7 @@
             controller: 'ReportsController',
             controllerAs: 'reports',
             roles : [
-                'admin',
+                'USER',
             ]
         },
     ];

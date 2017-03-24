@@ -16,6 +16,8 @@ import org.aktin.dwh.admin.log.DemoLogfileReader;
 import org.aktin.dwh.admin.log.LogLineSupplierFactory;
 import org.aktin.dwh.admin.report.ReportTracker;
 import org.aktin.dwh.prefs.impl.PropertyFilePreferences;
+import org.aktin.dwh.statistics.ImportSummaryImpl;
+import org.aktin.dwh.ImportSummary;
 import org.aktin.report.ReportArchive;
 import org.aktin.report.ReportManager;
 import org.aktin.report.archive.ReportArchiveImpl;
@@ -71,7 +73,7 @@ public class MyBinder extends AbstractBinder{
 		PropertyFilePreferences prefs;
 		try( InputStream in = PropertyFilePreferences.class.getResourceAsStream("/aktin.properties") ){
 			prefs = new PropertyFilePreferences(in);
-			prefs.put(PreferenceKey.i2b2ServicePM.key(), "http://localhost:8080/aktin/admin/i2b2/services/PMService/");
+			prefs.put(PreferenceKey.i2b2ServicePM.key(), "http://localhost:8080/aktin/admin/rest/i2b2/services/PMService/");
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -94,6 +96,12 @@ public class MyBinder extends AbstractBinder{
 		archive.loadArchive();
 		
 		bind(archive).to(ReportArchive.class);
+		
+		// bind summary
+		ImportSummaryImpl summ = new ImportSummaryImpl();
+		summ.addCreated();
+		summ.addRejected(false, "CDA Error");
+		bind(summ).to(ImportSummary.class);
 		
 		bind(new ReportTracker(reports, archive)).to(ReportTracker.class);
 

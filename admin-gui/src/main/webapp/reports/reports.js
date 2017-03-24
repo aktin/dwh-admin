@@ -1,6 +1,7 @@
 (function() {
     var reportApp = angular.module('aktin.reports', []);
-
+// get reports reportsList
+// id 
     reportApp.controller('ReportsController', ['$http', '$scope', '$filter', '$timeout', function($http, $scope, $filter, $timeout){
         var reportApp = this;
         var curRoute = 'overview';
