@@ -86,7 +86,7 @@
                 console.log('resp', response);
 
                 if (isServerUrl(response.config.url)) {
-                    console.log('resp server', response);
+                    console.log('resp server');
                 }
                 return response || $q.when(response);
             },
@@ -215,7 +215,7 @@
             controller: 'ReportsController',
             controllerAs: 'reports',
             roles : [
-                'USER',
+                // 'USER',
             ]
         },
     ];

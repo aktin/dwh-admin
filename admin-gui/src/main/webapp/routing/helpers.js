@@ -80,20 +80,28 @@
             }
         }
     }]);
-// http://134.106.36.86:8087/ --> admin seite server link editieren
+
+
+    var baseUrl = "/aktin/admin/rest";
+    /*/
+    var baseLink = "http://localhost:8080";
+    /*/
+    var baseLink = "http://134.106.36.86:8087";
+    //*/
+    var endUrlObj = {
+        login : "/auth/login",
+        adminCheck : "/auth/has/admin",
+        userCheck : "/auth/check/",
+        userUpdate : "/auth/update",
+
+        prefs : "/prefs",
+
+        reportsList : "/report/archive"
+    };
+
+
     getUrl = function (partial) {
-        var baseUrl = "/aktin/admin/rest";
-        var baseLink = "http://localhost:8080";
-        var endUrlObj = {
-            login : "/auth/login",
-            adminCheck : "/auth/has/admin",
-            userCheck : "/auth/check/",
-            userUpdate : "/auth/update",
-
-            prefs : "/prefs",
-
-            reportsList : "/report/archive"
-        };
+       
 
         var partialUrl = partial;
         if (endUrlObj.hasOwnProperty(partial))
@@ -103,7 +111,6 @@
 
     isServerUrl = function (url) {
         // true if contains baselink
-        var baseLink = "http://localhost:8080";
         return url.includes(baseLink);
     }
 

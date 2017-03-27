@@ -4,16 +4,57 @@
 // id 
     reportApp.controller('ReportsController', ['$http', '$scope', '$filter', '$timeout', function($http, $scope, $filter, $timeout){
         var reportApp = this;
-        var curRoute = 'overview';
+        reportApp.curRoute = 'overview';
 
-        reportApp.reports = dummyreports;
-
-        reportApp.setRoute = function (routeName) {
-            curRoute = routeName;
+        var reportList = false;
+        reportApp.meta = {
+            lastReport : 0,
+            successCount : 0,
+            failCount : 0,
         }
 
-        reporting.getRoute = curRoute;
+        reportApp.setRoute = function (routeName) {
+            reportApp.curRoute = routeName;
+        }
 
+        reportApp.isRoute = function (routeName) { 
+            return reportApp.curRoute===routeName;
+        }
+
+        reportApp.getReports = function () {
+            if (!reportList) {
+                // reports are not loaded yet. load and then wait
+                _.throttle($http.get(getUrl('reportsList')).then(
+                    function success (response) {
+                        console.log(response);
+                        reportList = _.each(response.data, function (elem, ind) {
+                            elem.linkAble = (elem.status === "Completed");
+                            elem.link = getUrl('reportsList')+'/'+elem.id;
+                            if (elem.linkAble) {
+                                reportApp.meta.successCount ++;
+                            } else {
+                                elem.link = elem.status;
+                                reportApp.meta.failCount ++;
+                            }
+                            reportApp.meta.lastReport=elem;
+                        });
+                        // reportApp.meta.lastReport = reportList.length;
+                    }, function error (response) {
+
+                    }
+                ), 300);
+                reportList = true;
+            }
+            return reportList;
+        }
+
+        reportApp.linkAble = function (report) {
+            return report.status === "Completed";
+        }
+
+        reportApp.link = function (report) {
+
+        }
 
     }]);
 
@@ -23,32 +64,17 @@
         'CREATE', // create new reports
     ];
 
-    dummyreports = [
-        {
-            name : "Beschreibung der Patienten",
-            svg : "geschlecht.png",
-            description : "Geschlechtsverteilung",
-        },
-        {
-            name : "Beschreibung der Patienten",
-            svg : "age.svg",
-            description : "Altersverteilung",
-        },
-        {
-            name : "Fallzahlen",
-            svg : "admit.wd.svg",
-            description : "Fallzahlen nach Wochentag",
-        },
-        {
-            name : "Fallzahlen",
-            svg : "admit.h.svg",
-            description : "Fallzahlen nach Aufnahme-Uhrzeit",
-        },
-        {
-            name : "Fallzahlen",
-            svg : "admit.hwd.svg",
-            description : "Fallzahlen nach Wochentag und Aufnahmezeit",
-        },
-    ]
+    reportApp.directive('reportView', function () {
+        return {
+            restrict : 'AEC',
+            templateUrl : "reports/reportView.html",
+            scope : {
+                report : '=',
+            },
+            link: function(scope, element, attrs){
+              console.log('test', scope.report)
+            }
+        }
+    });
 
 })();

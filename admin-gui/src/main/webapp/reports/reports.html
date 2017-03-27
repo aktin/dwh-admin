@@ -1,46 +1,43 @@
-<!-- 	<div class="ui secondary  menu">
-
-		<a class="item" ng-repeat="cat in properties.categories" ng-click="properties.setCategory(cat)" 
-			ng-class="{active: cat.value == properties.currentCategory}">
-			{{cat.name}}
-		</a>
-	</div> -->
-
-<div class="ui secondary  menu">
-	<a class="item" ng-click="properties.setRoute('overview')">
-		Overview
-	</a>
-	<a class="item" ng-click="properties.setRoute('showReports')">
-		View older Reports
-	</a>
-	<a class="item" ng-click="properties.setRoute('editTemplates')">
-		Edit Templates
-	</a>
-	<a class="item" ng-click="properties.setRoute('generateReports')">
-		Create new Reports
-	</a>
-</div>
 <div class="ui text container">
-
-	<div class="header"><h1>{{properties.getRoute}}</h1></div>
-	<div class="header"><h1>Hospital zum heiligen St. Actinus</h1></div>
-
-	<div>
-		Zentrale Notaufnahme<br/>
-		Leitung: Schwester Donata<br/>
-		Monatsbericht: Oktober 2015<br/>
-		Datenstand: 05.11.2015
+	<div class="ui secondary  menu">
+		<a class="item" ng-class="{ active:reports.isRoute('overview') }" ng-click="reports.setRoute('overview')">
+			Übersicht
+		</a>
+		<a class="item" ng-class="{ active:reports.isRoute('showReports') }" ng-click="reports.setRoute('showReports')">
+			Berichte anzeigen
+		</a>
+		<a class="item" ng-class="{ active:reports.isRoute('editTemplates') }" ng-click="reports.setRoute('editTemplates')">
+			Template Bearbeiten
+		</a>
+		<a class="item" ng-class="{ active:reports.isRoute('generateReports') }" ng-click="reports.setRoute('generateReports')">
+			Neues Bericht erstellen
+		</a>
 	</div>
 
-	<div class="ui relaxed list reports-container">
-		<div ng-repeat="(ind, report) in reports.reports" class="item reports-list-item">
-			<div class="header">{{report.name}}</div>
-			<div class="description">
-				{{report.description}}
-			</div>
-			<img class="ui centered image" src="reports/img/{{report.svg}}" />
+	<div><h1>{{reports.curRoute}}</h1></div>
+
+	<div class="reports-content-wrapper" ng-show="reports.isRoute('overview')">
+		<div class="header">Hier können Sie die Berichte ansehen und neue erzeugen.</div>
+
+		<div class="description ui items">
+			<br/>
+			Sie haben {{reports.meta.successCount}} erfolgreiche und {{reports.meta.failCount}} fehlgeschlagene Berichte bis her.
+			<br/>
+			<br/>
+			<b>Hier das neuste Bericht: </b>
+			<br/>
+			<report-view report="reports.meta.lastReport" class="item reports-list-item">
+			</report-view>
 		</div>
-
 	</div>
 
+	<div class="reports-content-wrapper" ng-show="reports.isRoute('showReports')">
+		
+
+		<div class="ui relaxed list reports-container items">
+			<report-view report="report" ng-repeat="(ind, report) in reports.getReports()" class="item reports-list-item">
+			</report-view>
+		</div>
+	</div>
 </div>
+

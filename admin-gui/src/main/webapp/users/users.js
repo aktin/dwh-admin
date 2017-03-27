@@ -13,7 +13,7 @@
                 if ( curUser.isLogin ) {
                     return false;
                 }
-                console.log(user, requiredRoles)
+                // console.log(user, requiredRoles)
             	if (requiredRoles.length === 0) return true;
             	if (!user) 
                     /*/ @@DEBUG@@ 
@@ -119,6 +119,7 @@
                         console.log("get user from storage", curUser)
                         // can user login? get user right USER
                         // TODO !! dont send request if is already login in!!
+                        // curUser.state = 'checking'
                         if (! curUser.isLogin) {
                             curUser.isLogin = true;
                             $http.get(getUrl("userCheck")).then(function success(response) {
@@ -150,12 +151,17 @@
                 return curUser;
             }, 300);
 
+            isLogin = function () {
+                return curUser.isLogin;
+            }
+
             return {
             	login : userLogin,
             	logout : userLogout, 
                 checkRole: userHasRole, 
                 user: getUser, 
                 hasUser : hasUser,
+                isLogin : isLogin,
             };
         }
     ]);

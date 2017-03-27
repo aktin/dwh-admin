@@ -1,0 +1,10 @@
+<div class="content">
+	<div class="header">{{report.id}}: {{report.start}}</div>
+	<div class="description">
+		Template: {{report.template}} <br/>
+		Status: {{report.status}} <br/>
+		Zeitraum: {{report.start}} - {{report.end}} <br/>
+		Dokumenttyp: {{report.type}} <br/>
+		<span ng-if=report.linkAble> Downloadlink: <a href="{{report.link}}" target="_new">{{report.link}}</a></span>
+	</div>
+</div>

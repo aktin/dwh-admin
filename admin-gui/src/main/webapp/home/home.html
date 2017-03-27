@@ -2,7 +2,7 @@
 
     <h1>Willkommen in den Adminbackend <br/> des AKTIN-DWH Moduls</h1>
 
-    <div ng-hide="home.hasUser()">
+    <div ng-if="!home.hasUser()">
         <h3><a ui-sref="login">Login</a> </h3>
         <p>
             Bitte Loggen Sie sich unter <a ui-sref="login"><b>Anmelden</b></a> ein.
@@ -10,8 +10,8 @@
         </p>
     </div>
 
-    <div ng-show="home.hasUser()">
-        <div ng-show="home.isAdmin()">
+    <div ng-if="home.hasUser()">
+        <div ng-if="home.isAdmin()">
             <h3><a ui-sref="querying">Zentrale Abfragen</a> </h3>
             <p>
                 Es sind <a ui-sref="querying"><b>3 neue Anfragen</b></a> eingegangen. Unter <a ui-sref="querying">Zentrale Abfragen</a> können Sie diese einsehen und Freigabe für diese erteilen.
@@ -20,22 +20,22 @@
         </div>
     </div>
 
-    <div ng-show="home.hasUser()">
+    <div ng-if="home.hasUser()">
         <h3><a ui-sref="properties">Konfigurationen</a> </h3>
         <p> 
             Unter <a ui-sref="properties">Konfigurationen</a> können Sie die Einstellungen des lokalen DWH einsehen.
         </p>
     </div>
 
-    <div ng-show="false && home.hasUser()">
+    <div ng-if="false && home.hasUser()">
         <h3><a ui-sref="logs">Logs</a> </h3>
         <p> 
             Unter <a ui-sref="logs">Logs</a> werden die Logs des Servers angezeigt.
         </p>
     </div>
 
-    <div ng-show="home.hasUser()">
-        <div ng-show="home.isAdmin()">
+    <div ng-if="home.hasUser()">
+        <div ng-if="home.isAdmin()">
             <h3><a ui-sref="users">Benutzeradministration</a> </h3>
             <p> 
                 Benutzer des DWH und des Adminbackends können über <a ui-sref="users">Logs</a> verwaltet werdens
@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    <div ng-show="home.hasUser()">
+    <div ng-if="home.hasUser()">
         <h3><a ui-sref="reports">Berichtswesen</a> </h3>
         <p> 
             Unter <a ui-sref="reports">Berichtswesen</a> wird das aktuelle Bericht angezeigt. Bei Bedarf kann auch individuelle Berichte generiert werden.
