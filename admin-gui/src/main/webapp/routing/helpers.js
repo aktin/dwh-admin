@@ -80,11 +80,25 @@
             }
         }
     }]);
-
+// http://134.106.36.86:8087/ --> admin seite server link editieren
     getUrl = function (partial) {
-        var baseUrl = "/aktin/admin";
+        var baseUrl = "/aktin/admin/rest";
         var baseLink = "http://localhost:8080";
-        return baseLink + baseUrl + partial;
+        var endUrlObj = {
+            login : "/auth/login",
+            adminCheck : "/auth/has/admin",
+            userCheck : "/auth/check/",
+            userUpdate : "/auth/update",
+
+            prefs : "/prefs",
+
+            reportsList : "/report/archive"
+        };
+
+        var partialUrl = partial;
+        if (endUrlObj.hasOwnProperty(partial))
+            partialUrl=endUrlObj[partial];
+        return baseLink + baseUrl + partialUrl;
     }
 
     isServerUrl = function (url) {
@@ -92,5 +106,7 @@
         var baseLink = "http://localhost:8080";
         return url.includes(baseLink);
     }
+
+
 
 })();

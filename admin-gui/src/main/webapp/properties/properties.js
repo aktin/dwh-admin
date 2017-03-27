@@ -9,23 +9,58 @@
 
         var filename = "properties/testprops.properties";
 
-        var propFiles = [
-            "/opt/wildfly-9.0.2.Final/standalone/configuration/aktin.properties",
-            "/root/dwh-update/email.config". // TODO get it from standalone.xml!!
-        ]
+        // TODO get smtp from standalone.xml!!
         // propertyrights : PROPERTY
 
         propApp.properties=predefinedCategories;
         propApp.flatProps={};
-        $http.get(filename) 
-            .then(function (data) {
-                propApp.debugout += data.data;
-                propApp.flatProps = parseData(data.data, filename);
-                console.log(data.data, propApp.properties)
-            }, function (error) {
-                alert('error');
-            });
+        // $http.get(filename) 
+        //     .then(
+        //         function (data) {
+        //             propApp.debugout += data.data;
+        //             //propApp.flatProps = parseData(data.data, filename);
+        //             // console.log(data.data, propApp.properties)
+        //         }, function (error) {
+        //             alert('error');
+        //     });
 
+        $http.get(getUrl("prefs")).then(function (response) {
+            parseDataObj(response.data, '/opt/wildlfy/standalone/configuration/aktin.properties');
+            console.log(response.data, propApp.properties)
+        });
+
+        // zum ändern in opt wildlfy ansagen
+
+        var parseDataObj = function (dataObj, location) {
+            var keys = Object.keys(dataObj);
+            for (var i = 0; i < keys.length; i++) {
+                var key = keys[i];
+                var value = dataObj[key];
+
+                var cat = key.split('.')[0];
+
+                var propObj = {}
+
+                if (key in predifnedProperties) {
+                    propObj = predifnedProperties[key];
+                } else {
+                    propObj.name = key;
+                }
+                propObj.value = value;
+                propObj.location = location;
+
+                if (! (cat in predefinedCategories)) {
+                    cat = "";
+                } else {
+                    predefinedCategories[cat].location = location;
+                }
+
+                if (! ('props' in propApp.properties[cat])) {
+                    propApp.properties[cat].props = [];
+                } 
+                propApp.properties[cat].props.push(propObj);
+            }
+        }
         var parseData = function (dataString, location) {
             var dataObj = {};
             var dataLines = dataString.split('\n');
@@ -34,9 +69,9 @@
                 if (dataLines[i].charAt(0) === '#' || dataLines[i].indexOf('=') < 0)
                     continue;
                 var num = dataLines[i].indexOf('=');
-                dataObj[dataLines[i].slice(0,num)]=dataLines[i].slice(num+1);
                 var key = dataLines[i].slice(0,num);
                 var value = dataLines[i].slice(num+1);
+                dataObj[key]=value;
 
                 var cat = key.split('.')[0];
 
@@ -64,6 +99,8 @@
 
             return dataObj;
         }
+
+
 
     }]);
 

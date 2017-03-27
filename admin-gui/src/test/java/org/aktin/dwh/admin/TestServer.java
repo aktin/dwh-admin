@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import org.aktin.dwh.admin.auth.AuthEndpoint;
 import org.aktin.dwh.admin.auth.AuthFilter;
 import org.aktin.dwh.admin.log.LogEndpoint;
+import org.aktin.dwh.admin.report.ReportArchiveEndpoint;
 import org.aktin.dwh.admin.report.ReportEndpoint;
 import org.aktin.dwh.admin.user.UserEndpoint;
 import org.aktin.dwh.db.TestDataSource;
@@ -53,6 +54,8 @@ public class TestServer {
 		rc.register(PMService.class);
 		rc.register(UserEndpoint.class);
 		rc.register(LogEndpoint.class);
+		rc.register(ReportArchiveEndpoint.class);
+		rc.register(Summary.class);
 
 		setupJNDI(ds);
 	}
@@ -97,7 +100,7 @@ public class TestServer {
 	}
 	public void start(InetSocketAddress addr) throws Exception{
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-		context.setContextPath("/aktin/admin");
+		context.setContextPath("/aktin/admin/rest");
 
 		jetty = new Server(addr);
 		HandlerList handlers = new HandlerList();
@@ -145,7 +148,7 @@ public class TestServer {
 		TestServer server = new TestServer();
 		try{
 			server.start(new InetSocketAddress(port));
-			System.err.println("Admin endpoints at: localhost:"+server.getLocalPort()+"/aktin/admin/*");
+			System.err.println("Admin endpoints at: localhost:"+server.getLocalPort()+"/aktin/admin/rest/*");
 			server.join();
 		}finally{
 			server.destroy();

@@ -17,10 +17,8 @@
 				 * curl -s -H "Authorization: Bearer $token" -X PUT http://localhost:8080/aktin/admin/users/demo/roles/Super
 				 * curl -s -H "Authorization: Bearer $token" http://localhost:8080/aktin/admin/users/demo/roles
 				 */
-				var baseUrl = "/aktin/admin";
-				var baseLink = "http://localhost:8080";
 
-				var fullUrl = baseLink+baseUrl+url;
+				var fullUrl = getUrl(url);
 
 				//return true;
 
@@ -53,7 +51,7 @@
 						// curl -H "Content-Type: application/json" -s -X POST -d '{"username":"i2b2","password":"demouser"}' http://localhost:8080/aktin/admin/auth/login
 						// returns token 
 						console.log("commserver user auth with ", data);
-						var url = "/auth/login";
+						var url = "login";
 						if (!data || !data.username || !data.password) // data obj null or no username or password
 							return false;
 
@@ -91,7 +89,7 @@
 					// check the users auth and roles
 					check : function (data) {
 						console.log("commserver user check roles with ", data);
-						var url = "/auth/check";
+						var url = "userCheck";
 						return send2server (url, {
 							username : data.username,
 							token : data.token,
@@ -101,7 +99,7 @@
 					// change user
 					update : function () {
 						console.log("commserver user update userdata with ", data);
-						var url = "/auth/update";
+						var url = "userUpdate";
 						return send2server (url, {
 							username : data.username,
 							token : data.token,
