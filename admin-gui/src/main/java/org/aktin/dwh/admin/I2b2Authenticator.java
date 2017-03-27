@@ -38,14 +38,18 @@ public class I2b2Authenticator implements Authenticator{
 	public I2b2Authentication authenticate(String user, char[] password) {
 		// TODO Auto-generated method stub
 		I2b2Authentication auth = null;
+		String url = prefs.get(PreferenceKey.i2b2ServicePM);
+		Objects.requireNonNull(url, "Preference required: "+PreferenceKey.i2b2ServicePM.key());
+		// use literal preference name to keep old dwh-api dependency. TODO use enum for next version
+		String domain = prefs.get("i2b2.service.domain");
+		Objects.requireNonNull(domain, "i2b2.service.domain not defined");
+		String project = prefs.get(PreferenceKey.i2b2Project);
 		try{
-			String url = prefs.get(PreferenceKey.i2b2ServicePM.key());
-			Objects.requireNonNull(url, "Preference required: "+PreferenceKey.i2b2ServicePM.key());
 			URL pm = new URL(url);
-			String project = prefs.get(PreferenceKey.i2b2Project.key());
 			Li2b2Client client = new Li2b2Client();
 			client.setPM(pm);
-			client.setAuthorisation(user, new String(password), project);
+			client.setAuthorisation(user, new String(password), domain);
+			client.setProjectId(project);
 			UserConfiguration uc = client.PM().requestUserConfiguration();
 			String[] roles = null;
 			for( UserProject p : uc.getProjects() ){
