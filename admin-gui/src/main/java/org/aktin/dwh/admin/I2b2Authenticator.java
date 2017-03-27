@@ -42,10 +42,12 @@ public class I2b2Authenticator implements Authenticator{
 			String url = prefs.get(PreferenceKey.i2b2ServicePM.key());
 			Objects.requireNonNull(url, "Preference required: "+PreferenceKey.i2b2ServicePM.key());
 			URL pm = new URL(url);
-			String project = prefs.get(PreferenceKey.i2b2Project.key());
+			String project = prefs.get(PreferenceKey.i2b2Project);
+			String domain = prefs.get(PreferenceKey.i2b2ServiceDomain);
 			Li2b2Client client = new Li2b2Client();
 			client.setPM(pm);
-			client.setAuthorisation(user, new String(password), project);
+			client.setAuthorisation(user, new String(password), domain);
+			client.setProjectId(project);
 			UserConfiguration uc = client.PM().requestUserConfiguration();
 			String[] roles = null;
 			for( UserProject p : uc.getProjects() ){
