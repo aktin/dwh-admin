@@ -167,7 +167,7 @@
             controller: 'PropertiesController',
             controllerAs: 'properties',
             roles : [
-                // 'USER',
+                'USER',
             ]
         },
         {
@@ -217,7 +217,7 @@
             controller: 'ReportsController',
             controllerAs: 'reports',
             roles : [
-                // 'USER',
+                'USER',
             ]
         },
     ];
