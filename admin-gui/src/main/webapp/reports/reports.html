@@ -14,14 +14,15 @@
 		</a>
 	</div>
 
-	<div><h1>{{reports.curRoute}}</h1></div>
-
 	<div class="reports-content-wrapper" ng-show="reports.isRoute('overview')">
+
+		<div><h1>Berichtübersicht</h1></div>
 		<div class="header">Hier können Sie die Berichte ansehen und neue erzeugen.</div>
-		<div class="description ui items">
+		<div class="description">
 			Sie haben {{reports.meta.successCount}} erfolgreiche und {{reports.meta.failCount}} fehlgeschlagene Berichte bis her.
 			<br/>
 			<b>Hier das neuste Bericht: </b>
+			<br/>
 			<br/>
 			<report-view report="reports.meta.lastReport" class="item reports-list-item">
 			</report-view>
@@ -29,13 +30,15 @@
 	</div>
 
 	<div class="reports-content-wrapper" ng-show="reports.isRoute('showReports')">
+		<div><h1>Auflistung der Berichte</h1></div>
 		<div class="ui relaxed list reports-container items">
-			<report-view report="report" ng-repeat="(ind, report) in reports.getReports() | orderBy:ind:true " class="item reports-list-item">
+			<report-view report="report" ng-repeat="(ind, report) in reportList | orderBy:ind:true " class="item reports-list-item">
 			</report-view>
 		</div>
 	</div>
 
 	<div class="reports-content-wrapper" ng-show="reports.isRoute('newReport')">
+		<div><h1>Berichterstellung</h1></div>
 		<div class="header">Bericht wird erzeugt und dann an Ihrer Email versendet</div>
 		<div class="description ui items">
 			Es kann einiger Zeit dauern, ehe das neueste Bericht in der  <a class="item" ng-click="reports.setRoute('overview')"> Auflistung </a> erscheint

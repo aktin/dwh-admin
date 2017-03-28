@@ -167,7 +167,7 @@
             controller: 'PropertiesController',
             controllerAs: 'properties',
             roles : [
-                'USER',
+                // 'USER',
             ]
         },
         {
@@ -191,7 +191,8 @@
             controller: 'UsersController',
             controllerAs: 'users',
             roles : [
-                'admin',
+               // 'admin',
+                'deactivated',
             ]
         },
         {
@@ -203,7 +204,8 @@
             controller: 'QueryController',
             controllerAs: 'query',
             roles : [
-                'admin',
+               // 'admin',
+                'deactivated',
             ]
         },
         {

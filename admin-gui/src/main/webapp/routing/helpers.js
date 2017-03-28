@@ -83,7 +83,7 @@
 
 
     var baseUrl = "/aktin/admin/rest";
-    /*/
+    //*/
     var baseLink = "http://localhost:8080";
     /*/
     var baseLink = "http://134.106.36.86:8087";

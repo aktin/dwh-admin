@@ -6,10 +6,6 @@
     app.controller('HomeController', ['$http', 'userFactory',
     	function($http, userFactory){
 	        var app = this;
-	        app.properties = {
-	        	routing : 'properties',
-	        	name : 'Properties',
-	        };
 
 	        var curUser = false;
 

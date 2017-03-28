@@ -6,7 +6,7 @@
         var reportApp = this;
         reportApp.curRoute = 'overview';
 
-        var reportList = false;
+        $scope.reportList = false;
         reportApp.meta = {
             lastReport : 0,
             successCount : 0,
@@ -26,70 +26,67 @@
             return reportApp.curRoute===routeName;
         }
 
-        reportApp.getReports = function () {
-            if (!reportList) {
-                // reports are not loaded yet. load and then wait
-                getHttpReports();
-                reportList = [];
-            }
-            return reportList;
-        }
 
         var reportPromise = false;
         // throttled and timed call. everey 1 min
-        var getHttpReports = function (force) {
-            console.log('calling reports', (new Date).toLocaleString(), reportPromise)
-            if (force && typeof reportPromise === 'object') {
-                console.log('cancelling out older promise')
-                $timeout.cancel(reportPromise);
-                reportPromise = false;
-            }
+        var getHttpReports = function (once) {
+            console.log('calling reports', (new Date).toLocaleString(), $scope.reportList.length, reportPromise)
 
+            var getReportStatusCss = function (report) {
+                var cssObj = {
+                    'font-weight' : 700,
+                }
+                switch (report.status) {
+                    case 'Completed' :
+                        cssObj.color = '#0fc50f';
+                        break;
+                    case 'Waiting' : 
+                        cssObj.color = '#d37f04';
+                        break;
+                    case 'InsufficientData' : 
+                        cssObj.color = '#b22222';
+                        break;
+                }
+                return cssObj;
+            }
+            if (!reportPromise)
                 reportPromise = true;
-                // _.throttle(
-                $http.get(getUrl('reportsList')).then(
-                    function success (response) {
-                        // console.log(response);
-                        reportList = _.each(response.data, function (elem, ind) {
-                            elem.linkAble = (elem.status === "Completed");
-                            elem.link = getUrl('reportsList')+'/'+elem.id;
-                            elem.statusCss = getReportStatusCss(elem);
-                            if (elem.linkAble) {
-                                reportApp.meta.successCount ++;
-                            } else {
-                                elem.link = elem.status;
-                                reportApp.meta.failCount ++;
-                            }
-                            reportApp.meta.lastReport=elem;
-                            return elem;
-                        });
-                        // reportApp.meta.lastReport = reportList.length;
-                        reportPromise = $timeout(getHttpReports, 10000);
-                    }, function error (response) {
+            // _.throttle(
+            $http.get(getUrl('reportsList')).then(
+                function success (response) {
+                    // console.log(response);
+                    $scope.reportList = _.each(response.data, function (elem, ind) {
+                        elem.linkAble = (elem.status === "Completed");
+                        elem.link = getUrl('reportsList')+'/'+elem.id;
+                        elem.statusCss = getReportStatusCss(elem);
+                        if (elem.linkAble) {
+                            reportApp.meta.successCount ++;
+                        } else {
+                            elem.link = elem.status;
+                            reportApp.meta.failCount ++;
+                        }
+                        reportApp.meta.lastReport=elem;
+                        return elem;
+                    });
+                    // reportApp.meta.lastReport = reportList.length;
+                    if (!once)
+                        reportPromise = $timeout(getHttpReports, 60000);
+                }, function error (response) {
 
-                    }
-                )
-                // , 300);
-            
+                }
+            )
         }
 
-        var getReportStatusCss = function (report) {
-            var cssObj = {
-                'font-weight' : 700,
+        reportApp.getReports = function () {
+            if (!$scope.reportList) {
+                // reports are not loaded yet. load and then wait
+                getHttpReports(false);
+                $scope.reportList = [];
             }
-            switch (report.status) {
-                case 'Completed' :
-                    cssObj.color = '#0fc50f';
-                    break;
-                case 'Waiting' : 
-                    cssObj.color = '#d37f04';
-                    break;
-                case 'InsufficientData' : 
-                    cssObj.color = '#b22222';
-                    break;
-            }
-            return cssObj;
+            return $scope.reportList;
         }
+        reportApp.getReports();
+
 
     }]);
 

@@ -1,53 +1,59 @@
-<div class="ui text container">
+<div class="ui text container items relaxed">
 
-    <h1>Willkommen in den Adminbackend <br/> des AKTIN-DWH Moduls</h1>
+    <h1>Willkommen in den Adminbackend des AKTIN-DWH Moduls</h1>
 
-    <div ng-if="!home.hasUser()">
-        <h3><a ui-sref="login">Login</a> </h3>
-        <p>
+    <div class="item" ng-if="!home.hasUser()">
+        <div class="content">
+			<div class="header"><a ui-sref="login">Login</a> </div>
+        	<div class="description">
             Bitte Loggen Sie sich unter <a ui-sref="login"><b>Anmelden</b></a> ein.
-
-        </p>
+			</div>
+		</div>
     </div>
 
-    <div ng-if="home.hasUser()">
-        <div ng-if="home.isAdmin()">
-            <h3><a ui-sref="querying">Zentrale Abfragen</a> </h3>
-            <p>
-                Es sind <a ui-sref="querying"><b>3 neue Anfragen</b></a> eingegangen. Unter <a ui-sref="querying">Zentrale Abfragen</a> können Sie diese einsehen und Freigabe für diese erteilen.
-
-            </p>
-        </div>
-    </div>
-
-    <div ng-if="home.hasUser()">
-        <h3><a ui-sref="properties">Konfigurationen</a> </h3>
-        <p> 
+    <div class="item" ng-if="home.hasUser()">
+        <div class="content">
+			<div class="header"><a ui-sref="properties">Konfigurationen</a> </div>
+        	<div class="description"> 
             Unter <a ui-sref="properties">Konfigurationen</a> können Sie die Einstellungen des lokalen DWH einsehen.
-        </p>
+			</div>
+		</div>
     </div>
-
-    <div ng-if="false && home.hasUser()">
-        <h3><a ui-sref="logs">Logs</a> </h3>
-        <p> 
-            Unter <a ui-sref="logs">Logs</a> werden die Logs des Servers angezeigt.
-        </p>
-    </div>
-
-    <div ng-if="home.hasUser()">
-        <div ng-if="home.isAdmin()">
-            <h3><a ui-sref="users">Benutzeradministration</a> </h3>
-            <p> 
-                Benutzer des DWH und des Adminbackends können über <a ui-sref="users">Logs</a> verwaltet werdens
-            </p>
+    
+    <div class="item" ng-if="home.hasUser()">
+        <div class="content">
+            <div class="header"><a ui-sref="reports">Berichtswesen</a> </div>
+            <div class="description"> 
+            Unter <a ui-sref="reports">Berichtswesen</a> wird das aktuelle Bericht angezeigt. Bei Bedarf kann auch individuelle Berichte generiert werden.
+            </div>
         </div>
     </div>
 
-    <div ng-if="home.hasUser()">
-        <h3><a ui-sref="reports">Berichtswesen</a> </h3>
-        <p> 
-            Unter <a ui-sref="reports">Berichtswesen</a> wird das aktuelle Bericht angezeigt. Bei Bedarf kann auch individuelle Berichte generiert werden.
-        </p>
+    <div class="item" ng-if="false && home.hasUser() && home.isAdmin()">
+        <div class="content">
+            <div class="header"><a ui-sref="querying">Zentrale Abfragen</a> </div>
+            <div class="description">
+            Es sind <a ui-sref="querying"><b>3 neue Anfragen</b></a> eingegangen. Unter <a ui-sref="querying">Zentrale Abfragen</a> können Sie diese einsehen und Freigabe für diese erteilen.
+            </div>
+        </div>
+    </div>
+
+    <div class="item" ng-if="false && home.hasUser()">
+        <div class="content">
+			<div class="header"><a ui-sref="logs">Logs</a> </div>
+        	<div class="description"> 
+            Unter <a ui-sref="logs">Logs</a> werden die Logs des Servers angezeigt.
+			</div>
+		</div>
+    </div>
+
+    <div class="item" ng-if="false && home.hasUser() && home.isAdmin()">
+        <div class="content">
+			<div class="header"><a ui-sref="users">Benutzeradministration</a> </div>
+        	<div class="description"> 
+            Benutzer des DWH und des Adminbackends können über <a ui-sref="users">Logs</a> verwaltet werdens
+			</div>
+		</div>
     </div>
 
 </div>

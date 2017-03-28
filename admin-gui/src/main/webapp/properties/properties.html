@@ -1,22 +1,52 @@
-Bitte wildfly stoppen, ändern und dann neustarten
+<div class="ui list text container">
+<div><h1>Konfigurationen</h1></div>
+	<div class="ui segment padded">
+    	<div class="ui medium header">zum Ändern der Konfigurationen:</div>
 
-<div class="ui list">
-	<div class="item ui segment padded" ng-repeat="(cat, catObj) in properties.properties">
-		<div class="ui container stackable relaxed three column padded equal width grid">
-			<div class="row">
-			    <div class="column">
-			    	<div class="ui medium header">{{catObj.name}}, {{catObj.value}}, {{catObj.descr}}</div>
-			    	<p class="">Änderbar in: {{catObj.location}}</p>
-			    </div>
+		<div class="content ui relaxed list">
+			<div class="item">
+				<div class="content">
+				Bitte zuerst den Wildfly Server stoppen: (für Debian)
+				<pre>service wildfly stop</pre>
+				(für CentOs)
+				<pre>systemctl stop wildfly</pre>
+				</div>
 			</div>
-			<div class="column" ng-repeat="prop in catObj.props" style="border:1px solid rgba(34,36,38,.15)">			
-				
-					<h4 class="ui header title"> {{prop.name}}, {{prop.descr}} </h4>		
-					
+			<div class="item">
+				<div class="content">
+				Die Änderungen in der folgenden Datei vornehmen (z.B. mittels nano) 
+				<pre>nano {{properties.aktinPropFile}}</pre>
+				</div>
+			</div>
+			<div class="item">
+				<div class="content">
+				Den Wildfly Service neustarten:(für Debian)
+				<pre>service wildfly start</pre>
+				(für CentOs)
+				<pre>systemctl start wildfly</pre>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="ui segment padded" ng-repeat="(cat, catObj) in properties.properties">
+		<div class="ui container stackable relaxed two column padded equal width grid items">
+			<div class="row item">
+			    <!-- <div class="column "> -->
 					<div class="content">
-						<!-- <p> {{prop.name}} </p> -->
-						<!-- <div class="ui input property-fields" ng-include="prop.template"></div> -->
-						<span ng-bind="prop.value"></span> 
+						<div class="header">{{catObj.descr}}</div>
+						<!-- <div class="meta">{{catObj.name}}</div> -->
+						<div class="description">{{catObj.value}}</div>
+					</div>
+			    	<!-- <div class="ui medium header">{{catObj.name}}, {{catObj.value}}, {{catObj.descr}}</div> -->
+			    	<!-- <p class="">Änderbar in: {{catObj.location}}</p> -->
+			    <!-- </div> -->
+			</div>
+			<div class="column item" ng-repeat="(name,prop) in catObj.props" style="border:1px solid rgba(34,36,38,.15); margin: 0">
+					<div class="content">
+						<div class="header">{{prop.descr}}</div>
+						<div class="meta">{{prop.name}}</div>
+						<div class="description">{{prop.value}}</div>
 					</div>
 			</div>
 		</div>
