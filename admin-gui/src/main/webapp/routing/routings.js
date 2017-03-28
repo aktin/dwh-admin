@@ -74,7 +74,7 @@
             request: function(config) {
                 if (isServerUrl(config.url)) {
                     config.headers = config.headers || {};
-                    console.log(config);
+                    // console.log(config);
                     // exclude login link
                     if (storageHelper.from('user.token') /* && config.url === getUrl("/auth/login") */ ) {
                         config.headers.Authorization = 'Bearer ' + storageHelper.from('user.token');
@@ -83,11 +83,11 @@
                 return config || $q.when(config);
             },
             response: function(response) {
-                console.log('resp', response);
-
-                if (isServerUrl(response.config.url)) {
-                    console.log('resp server');
-                }
+                // if (isServerUrl(response.config.url)) {
+                //     console.log('resp server', response);
+                // } else {
+                //     console.log('resp', response);
+                // }
                 return response || $q.when(response);
             },
             responseError: function (rejection) { 

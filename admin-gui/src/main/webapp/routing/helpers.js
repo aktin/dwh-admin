@@ -96,7 +96,8 @@
 
         prefs : "/prefs",
 
-        reportsList : "/report/archive"
+        reportsList : "/report/archive",
+        newMonthlyReport : "/report/monthly/email",
     };
 
 

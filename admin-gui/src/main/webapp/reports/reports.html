@@ -6,10 +6,10 @@
 		<a class="item" ng-class="{ active:reports.isRoute('showReports') }" ng-click="reports.setRoute('showReports')">
 			Berichte anzeigen
 		</a>
-		<a class="item" ng-class="{ active:reports.isRoute('editTemplates') }" ng-click="reports.setRoute('editTemplates')">
+<!-- 		<a class="item" ng-class="{ active:reports.isRoute('editTemplates') }" ng-click="reports.setRoute('editTemplates')">
 			Template Bearbeiten
-		</a>
-		<a class="item" ng-class="{ active:reports.isRoute('generateReports') }" ng-click="reports.setRoute('generateReports')">
+		</a> -->
+		<a class="item" ng-class="{ active:reports.isRoute('newReport') }" ng-click="reports.setRoute('newReport')">
 			Neues Bericht erstellen
 		</a>
 	</div>
@@ -18,11 +18,8 @@
 
 	<div class="reports-content-wrapper" ng-show="reports.isRoute('overview')">
 		<div class="header">Hier können Sie die Berichte ansehen und neue erzeugen.</div>
-
 		<div class="description ui items">
-			<br/>
 			Sie haben {{reports.meta.successCount}} erfolgreiche und {{reports.meta.failCount}} fehlgeschlagene Berichte bis her.
-			<br/>
 			<br/>
 			<b>Hier das neuste Bericht: </b>
 			<br/>
@@ -32,11 +29,16 @@
 	</div>
 
 	<div class="reports-content-wrapper" ng-show="reports.isRoute('showReports')">
-		
-
 		<div class="ui relaxed list reports-container items">
-			<report-view report="report" ng-repeat="(ind, report) in reports.getReports()" class="item reports-list-item">
+			<report-view report="report" ng-repeat="(ind, report) in reports.getReports() | orderBy:ind:true " class="item reports-list-item">
 			</report-view>
+		</div>
+	</div>
+
+	<div class="reports-content-wrapper" ng-show="reports.isRoute('newReport')">
+		<div class="header">Bericht wird erzeugt und dann an Ihrer Email versendet</div>
+		<div class="description ui items">
+			Es kann einiger Zeit dauern, ehe das neueste Bericht in der  <a class="item" ng-click="reports.setRoute('overview')"> Auflistung </a> erscheint
 		</div>
 	</div>
 </div>
