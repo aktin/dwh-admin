@@ -171,9 +171,15 @@
 
         usersApp.loginUsername = "i2b2";
         usersApp.loginPassword = "demouser";
+        usersApp.server=getBaseUrlLink();
+        usersApp.changeServer = false;
 
         // login
         usersApp.login = function ($event) {
+
+            if (usersApp.changeServer) {
+                setBaseUrlLink(usersApp.server);
+            }
         	userFactory.login(
                 {username : usersApp.loginUsername, password : usersApp.loginPassword},
                 function () {

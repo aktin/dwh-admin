@@ -89,6 +89,18 @@
     /*/
     var baseLink = "http://134.106.36.86:8087";
     //*/
+
+    setBaseUrlLink = function (server) {
+        baseUrl = server.url;
+        baseLink = server.link;
+    }    
+    getBaseUrlLink = function () {
+        return {
+            url : baseUrl,
+            link : baseLink,
+        }
+    }
+
     var endUrlObj = {
         login : "/auth/login",
         adminCheck : "/auth/has/admin",
@@ -103,8 +115,6 @@
 
 
     getUrl = function (partial) {
-       
-
         var partialUrl = partial;
         if (endUrlObj.hasOwnProperty(partial))
             partialUrl=endUrlObj[partial];
