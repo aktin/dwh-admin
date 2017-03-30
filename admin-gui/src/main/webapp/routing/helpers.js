@@ -83,17 +83,15 @@
 
 
     var baseUrl = "/aktin/admin/rest";
-    var baseLink = "http://localhost:9090";
 
-    setBaseUrlLink = function (server) {
-        baseUrl = server.url;
-        baseLink = server.link;
-    }    
-    getBaseUrlLink = function () {
-        return {
-            url : baseUrl,
-            link : baseLink,
-        }
+    setBaseUrl = function (serverurl) {
+        baseUrl = serverurl;
+    }
+    getBaseUrlArray = function () {
+        return ["/aktin/admin/rest","http://134.106.36.86:8087/aktin/admin/rest","http://localhost:8080/aktin/admin/rest",];
+    }
+    getBaseUrl = function () {
+        return baseUrl
     }
 
     var endUrlObj = {
@@ -113,13 +111,13 @@
         var partialUrl = partial;
         if (endUrlObj.hasOwnProperty(partial))
             partialUrl=endUrlObj[partial];
-        return baseLink + baseUrl + partialUrl;
+        return baseUrl + partialUrl;
     }
 
-    isServerUrl = function (url) {
-        // true if contains baselink
-        return url.includes(baseLink);
-    }
+    // isServerUrl = function (url) {
+    //     // true if contains baselink
+    //     return url.includes(baseLink);
+    // }
 
 
 

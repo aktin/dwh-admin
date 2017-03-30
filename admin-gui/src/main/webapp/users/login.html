@@ -16,28 +16,14 @@
                             <input name="password" ng-model="users.loginPassword" placeholder="Password" type="password">
                         </div>
                     </div>
-                    <div class="two fields">
-                        <div class="field">
-                            <div class="ui left icon input">
-                                <i class="linkify icon"></i>
-                                <input name="link" ng-model="users.server.link" placeholder="Link" type="text" ng-disabled="!users.changeServer">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="ui left icon input">
-                                <i class="code icon"></i>
-                                <input name="url" ng-model="users.server.url" placeholder="Url" type="text" ng-disabled="!users.changeServer">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="ui toggle checkbox">
-                            <input type="checkbox" ng-model="users.changeServer" ng-disabled="users.changeServer">
-                            <label>change i2b2 server url</label>
-                        </div>
-                    </div>
 
                     <input class="ui fluid large submit button" type="submit" value="Login">
+
+                        <select name="serverurl" class="ui fluid search selection dropdown server-select" ng-model="users.serverurl">
+                            <option value="">ServerUrl</option>
+                            <option ng-repeat="val in users.serverurlArray" value="{{val}}">{{val}}</option>
+                        </select>
+
                 </div>
 
                 <div class="ui error message"></div>

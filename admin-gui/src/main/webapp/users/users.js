@@ -166,19 +166,28 @@
         }
     ]);
 
-    usersApp.controller('UsersController', ['$http', '$state', '$filter', 'userFactory', function($http, $state, $filter, userFactory){
+    usersApp.controller('UsersController', ['$http', '$state', '$filter', '$timeout', 'userFactory', function($http, $state, $filter, $timeout, userFactory){
         var usersApp = this;
 
         usersApp.loginUsername = "i2b2";
         usersApp.loginPassword = "demouser";
-        usersApp.server=getBaseUrlLink();
+        usersApp.serverurl=getBaseUrl();
+        usersApp.serverurlArray=getBaseUrlArray();
         usersApp.changeServer = false;
 
         // login
+        $timeout(function(){
+            $('.server-select.ui.dropdown').dropdown({
+                allowAdditions: true, 
+                onChange:function (value, text, $choice){usersApp.changeServer = true},
+                // onShow:function () {console.log(3, $('.server-select.ui.dropdown.input'));$('.server-select.ui.dropdown').dropdown('set text', '52')},
+            });
+        },0)
+        
+        
         usersApp.login = function ($event) {
-
             if (usersApp.changeServer) {
-                setBaseUrlLink(usersApp.server);
+                setBaseUrl(usersApp.serverurl);
             }
         	userFactory.login(
                 {username : usersApp.loginUsername, password : usersApp.loginPassword},
@@ -187,6 +196,7 @@
                 }
             )
         };
+
 
 
         // user untermenu 

@@ -72,14 +72,14 @@
     app.factory('BearerAuthInterceptor', function ($window, $q, storageHelper) {
         return {
             request: function(config) {
-                if (isServerUrl(config.url)) {
+                // if (isServerUrl(config.url)) {
                     config.headers = config.headers || {};
-                    // console.log(config);
+                    // console.log('TEST ', config, $window.localStorage, storageHelper.from('user.token'));
                     // exclude login link
                     if (storageHelper.from('user.token') /* && config.url === getUrl("/auth/login") */ ) {
                         config.headers.Authorization = 'Bearer ' + storageHelper.from('user.token');
                     }
-                }
+                // }
                 return config || $q.when(config);
             },
             response: function(response) {
