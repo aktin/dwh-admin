@@ -48,6 +48,10 @@ footer-panel .ui.list {
 	margin-bottom: 6px;
 }
 
+.ui.text.container {
+	margin-top: 15px;
+}
+
 
 /*properties*/
 .property-block {
@@ -91,4 +95,11 @@ footer-panel .ui.list {
 /*reports*/
 .reports-container {
 	/*text-align: center;*/
+}
+
+
+/*test page*/
+.test.row .column .segment {
+	max-height: 100px;
+	overflow-y: auto;
 }

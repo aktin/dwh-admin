@@ -3,6 +3,7 @@
         'ui.router',
         'aktin.helpers',
         'aktin.home',
+        'aktin.test',
         'aktin.logs',
         'aktin.users',
         'aktin.reports',
@@ -155,6 +156,17 @@
             templateUrl: 'home/home.html',
             controller: 'HomeController',
             controllerAs: 'home', 
+            roles : [
+            ]
+        },
+        {
+            name: 'Testpage',
+            routing: 'test',
+            parent: 'site',
+            url: "/test",
+            templateUrl: 'test/test.html',
+            controller: 'TestController',
+            controllerAs: 'test', 
             roles : [
             ]
         },

@@ -2,7 +2,7 @@
     var reportApp = angular.module('aktin.reports', []);
 // get reports reportsList
 // id 
-    reportApp.controller('ReportsController', ['$http', '$scope', '$filter', '$timeout', function($http, $scope, $filter, $timeout){
+    reportApp.controller('ReportsController', ['$http', '$scope', '$filter', '$timeout', '$sce', function($http, $scope, $filter, $timeout, $sce){
         var reportApp = this;
         reportApp.curRoute = 'overview';
 
@@ -69,6 +69,8 @@
                         return elem;
                     });
                     // reportApp.meta.lastReport = reportList.length;
+                    $scope.lastReportPdf = $sce.trustAsResourceUrl(reportApp.meta.lastReport.link);
+
                     if (!once)
                         reportPromise = $timeout(getHttpReports, 60000);
                 }, function error (response) {
@@ -76,6 +78,9 @@
                 }
             )
         }
+
+        $scope.lastReportPdf = false;
+
 
         reportApp.getReports = function () {
             if (!$scope.reportList) {

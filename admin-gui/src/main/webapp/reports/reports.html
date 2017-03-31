@@ -27,6 +27,10 @@
 			<report-view report="reports.meta.lastReport" class="item reports-list-item">
 			</report-view>
 		</div>
+			<br/>
+		<div ng-if="lastReportPdf" >
+			<iframe src="{{lastReportPdf}}" style="width: 100%; height: 700px;"></iframe>
+		</div>
 	</div>
 
 	<div class="reports-content-wrapper" ng-show="reports.isRoute('showReports')">

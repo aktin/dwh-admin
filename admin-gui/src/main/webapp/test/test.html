@@ -1,0 +1,16 @@
+
+<div class="ui text container ">
+	<div class="ui vertically divided padded middle aligned grid">
+
+
+		<div class="row test" ng-repeat="(name, moduleTest) in tests">
+			<div class="four wide column">
+				<div class="ui {{moduleTest.buttonStyle}} button" ng-click="test.test(moduleTest)">{{name}}</div>
+			</div>
+			<div class="twelve wide column">
+				<div class="ui {{moduleTest.segmentStyle}} segment" ng-show="moduleTest.message"><pre>{{moduleTest.message}}</pre></div>
+			</div>
+		</div>
+
+	</div>
+</div>
