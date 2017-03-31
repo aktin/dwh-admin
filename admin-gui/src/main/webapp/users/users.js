@@ -62,13 +62,13 @@
                     if (curUser.isAdmin) {
                         userAddRole ('admin');
                     }
-                    console.log(response,curUser)
+                    // console.log(response,curUser)
                     if (callback) {
                         callback();
                     }
                 }, function error(response) {
                    
-                    console.log(response,curUser)
+                    // console.log(response,curUser)
                 })
             }
 
@@ -78,7 +78,7 @@
                     if (role === "admin")
                         curUser.isAdmin = response.data;
                     userAddRole (role);
-                    console.log(curUser)
+                    // console.log(curUser)
                     if (callback) {
                         callback();
                     }
@@ -88,7 +88,7 @@
             // call logout on server!!
             userLogout = function (userData) {
                 curUser = {};
-                console.log('logout clear user')
+                // console.log('logout clear user')
                 storageHelper.delete('user.username');
                 storageHelper.delete('user.token');
             	return false;
@@ -116,7 +116,7 @@
                     if (storageHelper.from('user.token') && storageHelper.from('user.username')) {
                         curUser.token = storageHelper.from('user.token');
                         curUser.username = storageHelper.from('user.username');
-                        console.log("get user from storage", curUser)
+                        // console.log("get user from storage", curUser)
                         // can user login? get user right USER
                         // TODO !! dont send request if is already login in!!
                         // curUser.state = 'checking'
@@ -130,7 +130,7 @@
                             function error(response) {
                                 delete curUser.isLogin;
                                 curUser = {};
-                                console.log('outdated clear user');
+                                // console.log('outdated clear user');
                                 storageHelper.delete('user.username');
                                 storageHelper.delete('user.token');
 
@@ -144,7 +144,7 @@
                             storageHelper.delete('user.username');
                             storageHelper.delete('user.token');
                         } else {
-                            console.log('wait for login');
+                            // console.log('wait for login');
                         }
                     }
                 }

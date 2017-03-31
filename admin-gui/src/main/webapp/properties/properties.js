@@ -26,7 +26,7 @@
         propApp.aktinPropFile = "/opt/wildlfy/standalone/configuration/aktin.properties";
         $http.get(getUrl("prefs")).then(function (response) {
             parseDataObj(response.data, '/opt/wildlfy/standalone/configuration/aktin.properties');
-            console.log(response.data, propApp.properties)
+            // console.log(response.data, propApp.properties)
         });
 
         // zum ändern in opt wildlfy ansagen

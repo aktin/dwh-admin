@@ -30,7 +30,7 @@
         var reportPromise = false;
         // throttled and timed call. everey 1 min
         var getHttpReports = function (once) {
-            console.log('calling reports', (new Date).toLocaleString(), $scope.reportList.length, reportPromise)
+            // console.log('calling reports', (new Date).toLocaleString(), $scope.reportList.length, reportPromise)
 
             var getReportStatusCss = function (report) {
                 var cssObj = {

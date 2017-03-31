@@ -76,25 +76,8 @@
 	        			testObj.segmentStyle = 'violet';
 	        			testObj.buttonStyle = 'violet';
 	        	}
-	        	console.log(testObj);
 	        }
     	}
     ]);
 
 })();
-
-
-/*
-		<div>
-			<button onclick="test_call(this,'POST','/aktin/admin/rest/test/email/send')">Test Email</button><br/>
-			<pre></pre>
-		</div>
-		<div>
-			<button onclick="test_call(this,'POST','/aktin/admin/rest/test/r/run')">Test R</button><br/>
-			<pre></pre>
-		</div>
-		<div>
-			<button onclick="test_call(this,'POST','/aktin/admin/rest/report/monthly/email'); alert('Bitte nun auf E-Mail warten. Berichtserzeugung dauert einige Minuten.\nFehlermeldungen werden nur im Wildfly-Logfile angezeigt.')">Monatsbericht erzeugen und senden</button><br/>
-
-			*/
-

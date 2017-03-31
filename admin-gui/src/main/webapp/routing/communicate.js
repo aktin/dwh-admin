@@ -27,10 +27,10 @@
 					url : fullUrl,
 					data : dataObj,
 				}
-				console.log(method, url, fullUrl, dataObj, requestObj, callback);
+				// console.log(method, url, fullUrl, dataObj, requestObj, callback);
 
 				$http(requestObj).then(function(response) { 
-						console.log("response: ", response); 
+						// console.log("response: ", response); 
 						callback(response)
 					}
 				);
@@ -50,7 +50,7 @@
 					auth : function (data) {
 						// curl -H "Content-Type: application/json" -s -X POST -d '{"username":"i2b2","password":"demouser"}' http://localhost:8080/aktin/admin/auth/login
 						// returns token 
-						console.log("commserver user auth with ", data);
+						// console.log("commserver user auth with ", data);
 						var url = "login";
 						if (!data || !data.username || !data.password) // data obj null or no username or password
 							return false;
@@ -65,7 +65,7 @@
 								password : data.password,
 							},
 							function (response) {
-								console.log('this is in auth callback, ', response);
+								// console.log('this is in auth callback, ', response);
 							});
 					},
 					// logout user
@@ -88,7 +88,7 @@
 					},
 					// check the users auth and roles
 					check : function (data) {
-						console.log("commserver user check roles with ", data);
+						// console.log("commserver user check roles with ", data);
 						var url = "userCheck";
 						return send2server (url, {
 							username : data.username,
@@ -98,7 +98,7 @@
 					},
 					// change user
 					update : function () {
-						console.log("commserver user update userdata with ", data);
+						// console.log("commserver user update userdata with ", data);
 						var url = "userUpdate";
 						return send2server (url, {
 							username : data.username,

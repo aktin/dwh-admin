@@ -116,11 +116,4 @@
         return baseUrl + partialUrl;
     }
 
-    // isServerUrl = function (url) {
-    //     // true if contains baselink
-    //     return url.includes(baseLink);
-    // }
-
-
-
 })();

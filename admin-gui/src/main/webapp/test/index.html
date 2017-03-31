@@ -31,7 +31,6 @@ function test_call(el, method, url){
 		url: url,
 		data: '',
 		success: function(data,status,xhr){
-			console.log(data,status,xhr);
 			button.prop('disabled',false);
 			pre.text('');
 			div.addClass('success');

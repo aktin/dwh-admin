@@ -12,13 +12,13 @@
         function($q, $timeout, $rootScope, $state, userFactory) {
             function authorize ( ) {
                 var curUser = userFactory.user();
-                console.log('rout check', $rootScope.toState, curUser, $rootScope.toState.data.roles, userFactory.checkRole(curUser, $rootScope.toState.data.roles))
+                // console.log('rout check', $rootScope.toState, curUser, $rootScope.toState.data.roles, userFactory.checkRole(curUser, $rootScope.toState.data.roles))
 
                 // special states
                 // logout
                 if (_.contains(['logout'], $rootScope.toState.name)) {
                     userFactory.logout();
-                    console.log('in logout state')
+                    // console.log('in logout state')
                     return $state.reload();//$state.go('home');
                 }
 
@@ -27,18 +27,18 @@
                     // does the user have enough right?
                     if (userFactory.checkRole(curUser, $rootScope.toState.data.roles)) { 
                         // yes
-                        console.log('user, has rights', $rootScope.toState.name, curUser, $rootScope.toState.data.roles);
+                        // console.log('user, has rights', $rootScope.toState.name, curUser, $rootScope.toState.data.roles);
                         if (_.contains(['login', 'accessdenied', 'restricted'], $rootScope.toState.name))                            
                             $timeout(function() {
-                                console.log('going to home');
+                                // console.log('going to home');
                                 return $state.go('home');
                             })
                         return true;
                     } else {
                         // no
-                        console.log('user, no rights', $rootScope.toState.name);
+                        // console.log('user, no rights', $rootScope.toState.name);
                         $timeout(function() {
-                            console.log("denying!")
+                            // console.log("denying!")
                             return $state.go('restricted', $rootScope.toState.name);
                         })
                     }
@@ -46,19 +46,19 @@
                     // there is no user. does the site need a user?
                     if (userFactory.checkRole(curUser, $rootScope.toState.data.roles)) { 
                         // no
-                        console.log('no user, no rights needed', $rootScope.toState.name);
+                        // console.log('no user, no rights needed', $rootScope.toState.name);
                         if (_.contains(['accessdenied'], $rootScope.toState.name)) {
-                            console.log('relinking -> go to login')
+                            // console.log('relinking -> go to login')
                             $timeout(function() {
-                                    console.log('going to login')
+                                    // console.log('going to login')
                                 return $state.go('login');
                             })
                         }
                         return true;
                     } else {
-                        console.log('no user, rights needed', $rootScope.toState.name);                             
+                        // console.log('no user, rights needed', $rootScope.toState.name);                             
                         $timeout(function() {
-                                console.log('going to login')
+                                // console.log('going to login')
                             return $state.go('login');
                         })
                     }
@@ -94,9 +94,9 @@
             responseError: function (rejection) { 
                 // error codes 400+ 
                 // 401 - unquthorized - e.g. old token
-                console.log("---ERROR---", rejection);
+                // console.log("---ERROR---", rejection);
                 if (rejection.status === 401) {
-                    console.log("401 - deleting token and now try to log on again");
+                    // console.log("401 - deleting token and now try to log on again");
                 }
 
                 return $q.reject(rejection);
