@@ -24,7 +24,7 @@
 		        },
 		        'Monatsbericht erzeugen und senden' : {
 		        	method : 'POST',
-		        	url : '/test/r/run',
+		        	url : '/rest/report/monthly/email',
 		        	status : 'untested',
 		        	final : 'other',
 		        	alert : 'Bitte nun auf E-Mail warten.\nBerichtserzeugung dauert einige Minuten.\nFehlermeldungen werden nur im Wildfly-Logfile angezeigt.',
