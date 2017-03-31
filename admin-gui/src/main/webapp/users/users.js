@@ -169,8 +169,8 @@
     usersApp.controller('UsersController', ['$http', '$state', '$filter', '$timeout', 'userFactory', function($http, $state, $filter, $timeout, userFactory){
         var usersApp = this;
 
-        usersApp.loginUsername = "i2b2";
-        usersApp.loginPassword = "demouser";
+        usersApp.loginUsername = "";
+        usersApp.loginPassword = "";
         usersApp.serverurl=getBaseUrl();
         usersApp.serverurlArray=getBaseUrlArray();
         usersApp.changeServer = false;
