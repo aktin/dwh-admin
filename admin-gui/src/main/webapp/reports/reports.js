@@ -65,11 +65,13 @@
                             elem.link = elem.status;
                             reportApp.meta.failCount ++;
                         }
-                        reportApp.meta.lastReport=elem;
                         return elem;
                     });
                     // reportApp.meta.lastReport = reportList.length;
-                    $scope.lastReportPdf = $sce.trustAsResourceUrl(reportApp.meta.lastReport.link);
+                    if ($scope.reportList.length > 0){
+                        reportApp.meta.lastReport=$scope.reportList[$scope.reportList.length-1];
+                        $scope.lastReportPdf = $sce.trustAsResourceUrl(reportApp.meta.lastReport.link);
+                    }                    
 
                     if (!once)
                         reportPromise = $timeout(getHttpReports, 60000);
@@ -80,7 +82,6 @@
         }
 
         $scope.lastReportPdf = false;
-
 
         reportApp.getReports = function () {
             if (!$scope.reportList) {
