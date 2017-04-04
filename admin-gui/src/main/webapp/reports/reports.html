@@ -21,13 +21,19 @@
 		<div class="description">
 			Sie haben {{reports.meta.successCount}} erfolgreiche und {{reports.meta.failCount}} fehlgeschlagene Berichte bis her.
 			<br/>
-			<b>Hier das neuste Bericht: </b>
-			<br/>
-			<br/>
-			<report-view report="reports.meta.lastReport" class="item reports-list-item">
-			</report-view>
+
+			<div ng-if="reports.hasReports">
+				<b>Hier das neuste Bericht: </b>
+				<br/>
+				<br/>
+				<report-view report="reports.meta.lastReport" class="item reports-list-item">
+				</report-view>
+			</div>
+			<div ng-hide="reports.hasReports">
+				<b>Keine Berichte verfügbar.</b>
+			</div>
 		</div>
-			<br/>
+		<br/>
 		<div ng-if="lastReportPdf" >
 			<iframe src="{{lastReportPdf}}" style="width: 100%; height: 700px;"></iframe>
 		</div>
@@ -38,6 +44,9 @@
 		<div class="ui relaxed list reports-container items">
 			<report-view report="report" ng-repeat="(ind, report) in reportList | orderBy:ind:true " class="item reports-list-item">
 			</report-view>
+		</div>
+		<div ng-hide="reports.hasReports">
+			<b>Keine Berichte verfügbar.</b>
 		</div>
 	</div>
 

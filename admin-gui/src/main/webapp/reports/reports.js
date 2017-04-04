@@ -13,6 +13,8 @@
             failCount : 0,
         }
 
+        reportApp.hasReports = false;
+
         reportApp.setRoute = function (routeName) {
             reportApp.curRoute = routeName;
             if (routeName==='newReport') {
@@ -69,10 +71,13 @@
                     });
                     // reportApp.meta.lastReport = reportList.length;
                     if ($scope.reportList.length > 0){
+                        reportApp.hasReports = true;
                         reportApp.meta.lastReport=$scope.reportList[$scope.reportList.length-1];
                         if (reportApp.meta.lastReport.linkAble)
                             $scope.lastReportPdf = $sce.trustAsResourceUrl(reportApp.meta.lastReport.link);
-                    }                    
+                    } else {
+                        reportApp.hasReports = false;
+                    }
 
                     if (!once)
                         reportPromise = $timeout(getHttpReports, 60000);
@@ -87,8 +92,8 @@
         reportApp.getReports = function () {
             if (!$scope.reportList) {
                 // reports are not loaded yet. load and then wait
-                getHttpReports(false);
                 $scope.reportList = [];
+                getHttpReports(false);
             }
             return $scope.reportList;
         }
