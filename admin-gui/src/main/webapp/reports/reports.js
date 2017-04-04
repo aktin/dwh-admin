@@ -70,7 +70,8 @@
                     // reportApp.meta.lastReport = reportList.length;
                     if ($scope.reportList.length > 0){
                         reportApp.meta.lastReport=$scope.reportList[$scope.reportList.length-1];
-                        $scope.lastReportPdf = $sce.trustAsResourceUrl(reportApp.meta.lastReport.link);
+                        if (reportApp.meta.lastReport.linkAble)
+                            $scope.lastReportPdf = $sce.trustAsResourceUrl(reportApp.meta.lastReport.link);
                     }                    
 
                     if (!once)
