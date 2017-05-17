@@ -1,5 +1,5 @@
-*.pdf
-plantuml/*
-screens/*
-properties/old/*
-properties/testprops.properties
+node_modules
+npm-debug.log
+debug.log
+*.js
+*.js.map

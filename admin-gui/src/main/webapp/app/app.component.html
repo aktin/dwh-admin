@@ -1,0 +1,25 @@
+<div class="ui main container padded grid">
+    <a routerLink="/home" class="ui small image three wide column">
+        <img src="img/AKTIN_Logo_final_alpha.png">
+    </a>
+    <h1 class="ui header eight wide column"> AKTIN ADMIN BACKEND</h1>
+</div>
+
+<div class="ui borderless main menu" id="header-menu">
+
+    <div class="ui container">
+        <ng-container *ngFor="let route of routings">
+            <a *ngIf="visible[route.data['name']]" class="item" routerLinkActive="active" routerLink="{{route.path}}">
+                <span class="header-menu-item-content">{{route.data['name']}}</span>
+            </a>
+        </ng-container>
+        <a class="right item" routerLinkActive="active" routerLink="report">
+            <span class="header-menu-item-content">report test - here then login?</span>
+        </a>
+    </div>
+</div>
+
+<div class="ui text container" style="min-height: 800px;">
+    <router-outlet></router-outlet>
+</div>
+

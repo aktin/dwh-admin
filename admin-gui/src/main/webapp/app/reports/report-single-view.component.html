@@ -1,0 +1,37 @@
+<div
+    class="ui basic segment report-single-view column"
+    id="report-list-{{report.id}}"
+    [ngClass]="reportClass"
+>
+    <div class="ui header" [class.small]="!report.isSuccess()" routerLink="/report/{{report.id}}">
+        {{report.name}}
+    </div>
+
+    <div class="actions">
+        <a *ngIf="report.isSuccess()" class="ui circular green icon button" download="{{report.filename}}" href="{{report.url}}" title="Diesen Monatsbericht herunterladen">
+            <i class="cloud download icon"></i>
+        </a>
+        <a *ngIf="!single" class="ui circular icon button" routerLink="/report/{{report.id}}">
+            <i class="eye icon"></i>
+        </a>
+        <a *ngIf="single" class="ui circular basic green icon button" routerLink="/report" title="Zurück zum Berichtsübersicht">
+            <i class="arrow left icon"></i>
+        </a>
+    </div>
+
+    <div class="ui content grid">
+        <div *ngIf="!report.isSuccess()" class="ui compact row report-status">
+            <div class="three wide column">Status:</div>
+            <div class="eight wide column"><b>{{report.getDeStatus()}}</b></div>
+        </div>
+        <div *ngIf="report.isSuccess()" class="ui compact row report-genDate">
+            <div class="three wide column">Datenstand:</div>
+            <div class="eight wide column">{{report.generationDate | date: 'mediumDate'}}</div>
+        </div>
+        <div class="ui compact row report-timespan">
+            <div class="three wide column">Zeitraum:</div>
+            <div class="eight wide column">{{report.timespan[0] | date: 'shortDate'}} bis {{report.timespan[1] | date: 'shortDate'}}</div>
+        </div>
+    </div>
+
+</div>

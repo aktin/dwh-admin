@@ -1,0 +1,29 @@
+<div *ngIf="hasUser">
+    {{user.username}}
+    <button class="ui fluid large submit button" type="submit" (click)="userLogout()">Logout</button>
+</div>
+<div *ngIf="! hasUser" class="ui segment">
+    <form class="ui form" #loginForm="ngForm" (ngSubmit)="userLogin()" [ngClass]="logInFormClasses">
+        <div class="ui error message">
+            <div class="header">Log In fehlgeschlagen</div>
+            <ul class="list">
+                <li *ngFor="let msg of messages">{{msg}}</li>
+            </ul>
+        </div>
+        <div class="field">
+            <label>Username</label>
+            <div class="ui left icon input">
+                <i class="user icon"></i>
+                <input type="text" name="username" placeholder="Username" [(ngModel)]="username">
+            </div>
+        </div>
+        <div class="field">
+            <label>Passwort</label>
+            <div class="ui left icon input">
+                <i class="lock icon"></i>
+                <input type="password" name="password" placeholder="Passwort" [(ngModel)]="password">
+            </div>
+        </div>
+        <button class="ui fluid large submit button" type="submit">Login</button>
+    </form>
+</div>

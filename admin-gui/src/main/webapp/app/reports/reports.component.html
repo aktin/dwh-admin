@@ -1,0 +1,26 @@
+<div class="ui grid">
+    <div class="row">
+        <div class="ui breadcrumb">
+            <div class="active section">Berichtsübersicht</div>
+        </div>
+        <div class="five wide right floated column right aligned">
+            <div class="ui left labeled button" title="Neuen Bericht vom vergangen Monat erzeugen" (click)="generateReport()">
+                <a class="ui teal basic label">
+                    Neuer Bericht
+                </a>
+                <div class="ui teal icon button">
+                    <i class="book icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ui test slider checkbox reports-filter-checkbox">
+    <input type="checkbox" [checked]="showOnlySuccessful" (change)="showOnlySuccessful=!showOnlySuccessful" title="Toggeln, um fehlgeschlagene Berichte auszublenden oder anzuzeigen">
+    <label (click)="showOnlySuccessful=!showOnlySuccessful">Nur erfolgreich erstellte Berichte anzeigen</label>
+</div>
+<div *ngIf="reports" class="ui vertically divided grid">
+    <report-single-view *ngFor="let report of reports | successReports:showOnlySuccessful | orderBy: '-id'" [reportData]="report" class="row"></report-single-view>
+</div>
+
+<popup-message [head]="'Monatsbericht'" [message]="'Neuer Monatsbericht wird erzeugt und per Email verschickt.'"></popup-message>

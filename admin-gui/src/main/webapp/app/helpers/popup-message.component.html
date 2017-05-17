@@ -1,0 +1,20 @@
+<div id="popup-message-overlay" (click)="closeMessage()" *ngIf="show">
+</div>
+
+<div id="popup-message-content" class="ui text container very padded segment" *ngIf="show">
+    <div class="ui header">
+        {{head}}
+    </div>
+
+    <div class="ui content">
+        {{message}}
+    </div>
+
+    <div class="close-action">
+        <a class="ui compact  small icon red circular button" (click)="closeMessage()">
+            <i class="remove icon"></i>
+        </a>
+    </div>
+
+</div>
+
