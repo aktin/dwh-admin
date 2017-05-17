@@ -31,6 +31,8 @@ e.g. similar to `http://stackoverflow.com/questions/11396219/init-database-for-t
 TODO Webapp
 ====
 
+jquery needed?
+
 - server communication
 - user authentification
 - store token
