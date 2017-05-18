@@ -3,7 +3,6 @@
  *
  * Base App Component with layout
  */
-
 import { Component }    from '@angular/core';
 import _ = require('underscore');
 

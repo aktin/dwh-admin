@@ -14,19 +14,17 @@ import { LOCALE_ID }            from '@angular/core';
 import { AppRoutingModule }     from './app-routing.module';
 
 import { AppComponent }         from './app.component';
-import { HomeComponent }        from './home/home.component';
-import { PropertiesComponent }  from './properties/properties.component';
-import { RestrictedComponent }  from './restricted/restricted.component';
-import { RequestsComponent }    from './requests/requests.component';
 
-import { HTTPHandlerService, StorageService, UrlService, HttpInterceptorService,
-            SafePipe, SuccessReportsPipe, OrderBy,
+import { HomeComponent }                                                            from './home/index';
+import { HttpHandlerService, StorageService, UrlService, HttpInterceptorService,
+            SafeUrlPipe, OrderByPipe,
             PopUpMessageComponent, LoadingComponent }                               from './helpers/index';
 import { UsersComponent, UserLoginComponent, UserAuthGuard, UserService }           from './users/index';
-
-
-import { ReportService,
+import { ReportService, SuccessReportsPipe,
             ReportsComponent, ReportSingleViewComponent, ReportSingleComponent }    from './reports/index';
+import { PropertiesComponent }                                                      from './properties/index';
+import { RequestsComponent }                                                        from './requests/index';
+import { RestrictedComponent }  from './restricted/restricted.component';
 
 
 @NgModule({
@@ -50,8 +48,8 @@ import { ReportService,
         RestrictedComponent,
         LoadingComponent,
         PopUpMessageComponent,
-        OrderBy,
-        SafePipe,
+        OrderByPipe,
+        SafeUrlPipe,
         SuccessReportsPipe,
     ],
     bootstrap:   [
@@ -61,11 +59,11 @@ import { ReportService,
         { provide: LOCALE_ID, useValue: 'de-DE' },
         UrlService,
         StorageService,
+        HttpInterceptorService,
+        HttpHandlerService,
         UserAuthGuard,
         UserService,
         ReportService,
-        HttpInterceptorService,
-        HTTPHandlerService,
     ]
 })
 export class AppModule { }

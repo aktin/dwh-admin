@@ -7,17 +7,16 @@
 import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { HomeComponent }        from './home/home.component';
-import { PropertiesComponent }  from './properties/properties.component';
-import { RestrictedComponent }  from './restricted/restricted.component';
+import _ = require('underscore');
 
-import { RequestsComponent } from './requests/requests.component';
-
+import { HomeComponent }        from './home/index';
 import { UsersComponent, UserLoginComponent, UserAuthGuard }    from './users/index';
 import { ReportsComponent, ReportSingleComponent }              from './reports/index';
+import { PropertiesComponent }  from './properties/index';
+import { RequestsComponent }    from './requests/index';
 
+import { RestrictedComponent }  from './restricted/restricted.component';
 
-import _ = require('underscore');
 
 const routes: Routes = [// array of routes
     {
