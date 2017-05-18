@@ -13,7 +13,6 @@ export interface RawReport {
     status: string;
 }
 
-
 export class Report {
 
     public static parseReport (obj: RawReport, url?: string): Report {
@@ -93,29 +92,11 @@ export enum ReportStatus {
     'Waiting',
 }
 
+/**
+ * TODO find some better and prettier way
+ */
 export enum ReportStateParse {
     'Erfolg',
     'Datenfehler',
     'wird erstellt',
 }
-
-/*
- {
-    "id":8,
-    "data":null,
-    "start":"2017-04-01",
-    "end":"2017-05-01",
-    "template":"org.aktin.report.aktin.AktinMonthly",
-    "type":"text/vnd.error.insufficientdata",
-    "status":"InsufficientData"
-    },
- {
-    "id":9,
-    "data":"2017-05-08",
-    "start":"2017-04-01",
-    "end":"2017-05-01",
-    "template":"org.aktin.report.aktin.AktinMonthly",
-    "type":"application/pdf",
-    "status":"Completed"
- }
- */

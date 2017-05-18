@@ -1,7 +1,7 @@
 /**
  * Created by Xu on 15.05.2017.
  */
-import { Component, Input } from '@angular/core';
+import { Component, Input }     from '@angular/core';
 import { Report, ReportStatus } from './report';
 
 @Component({
@@ -12,7 +12,7 @@ import { Report, ReportStatus } from './report';
 
 export class ReportSingleViewComponent  {
     @Input() reportData: Report;
-    @Input() single: boolean = false;
+    @Input() single = false;
 
     constructor() {}
 

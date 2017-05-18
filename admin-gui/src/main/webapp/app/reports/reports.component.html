@@ -20,7 +20,7 @@
     <label (click)="showOnlySuccessful=!showOnlySuccessful">Nur erfolgreich erstellte Berichte anzeigen</label>
 </div>
 <div *ngIf="reports" class="ui vertically divided grid">
-    <report-single-view *ngFor="let report of reports | successReports:showOnlySuccessful | orderBy: '-id'" [reportData]="report" class="row"></report-single-view>
+    <report-single-view *ngFor="let report of reports | success:showOnlySuccessful | orderBy: '-id'" [reportData]="report" class="row"></report-single-view>
 </div>
 
 <popup-message [head]="'Monatsbericht'" [message]="'Neuer Monatsbericht wird erzeugt und per Email verschickt.'"></popup-message>

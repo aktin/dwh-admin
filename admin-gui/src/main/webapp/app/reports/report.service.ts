@@ -3,24 +3,23 @@
  *
  * Reports Service
  */
-import { Injectable } from '@angular/core';
-import { Response }          from '@angular/http';
-
+import { Injectable }   from '@angular/core';
+import { Response }     from '@angular/http';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
 import _ = require('underscore');
 
-import { HTTPHandlerService, StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
+import { HttpHandlerService, StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
 import { Report, RawReport } from './report';
 
 @Injectable()
 export class ReportService {
 
-    private getDataInterval: number = 3000;
+    private dataInterval = 3000;
 
     constructor(
-        private httpHandler: HTTPHandlerService,
+        private httpHandler: HttpHandlerService,
         private http: HttpInterceptorService,
         private urls: UrlService,
         private store: StorageService
@@ -29,9 +28,8 @@ export class ReportService {
     private updateReport (): void {
         this.httpHandler.debouncedGet<void> (
             'reports',
-            null,
-            null,
-            this.getDataInterval,
+            null, null,
+            this.dataInterval,
             this.urls.parse('reportsList'),
             (res: Response) => {
                 // console.log(res);

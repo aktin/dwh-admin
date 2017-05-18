@@ -1,12 +1,11 @@
 /**
  * Created by Xu on 03.05.2017.
  */
-
 import { Injectable } from '@angular/core';
 import { Http, RequestOptions, RequestOptionsArgs, Headers, Response, Request }          from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 
-import { StorageService } from './helpers.service';
+import { StorageService } from './storage.service';
 
 @Injectable()
 export class HttpInterceptorService {

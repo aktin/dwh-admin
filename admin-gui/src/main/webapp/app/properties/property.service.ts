@@ -14,8 +14,7 @@ import 'rxjs/add/operator/combineLatest';
 
 import _ = require('underscore');
 
-import { HttpInterceptorService } from '../helpers/http-interceptor.service';
-import { HTTPHandlerService, StorageService, UrlService } from '../helpers/helpers.service';
+import { HttpHandlerService, UrlService } from '../helpers/index';
 
 /**
  * Service Class for user management and LOGIN
@@ -27,9 +26,7 @@ import { HTTPHandlerService, StorageService, UrlService } from '../helpers/helpe
 @Injectable()
 export class PropertyService {
     constructor (
-        private httpHandler: HTTPHandlerService,
-        private http: HttpInterceptorService,
+        private httpHandler: HttpHandlerService,
         private urls: UrlService,
-        private store: StorageService
     ) {}
 }

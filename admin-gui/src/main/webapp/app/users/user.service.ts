@@ -15,7 +15,7 @@ import 'rxjs/add/operator/combineLatest';
 
 import _ = require('underscore');
 
-import { HTTPHandlerService, StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
+import { HttpHandlerService, StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
 
 import { User } from './user';
 
@@ -32,7 +32,7 @@ export class UserService {
     private tokenValidTrustTime: number = 3000;
 
     constructor (
-        private httpHandler: HTTPHandlerService,
+        private httpHandler: HttpHandlerService,
         private http: HttpInterceptorService,
         private urls: UrlService,
         private store: StorageService

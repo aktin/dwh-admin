@@ -3,18 +3,24 @@
  */
 
 /**
- * report class
+ * model / class
  */
 export * from './report';
 
 /**
- * report services
+ * services
  */
 export * from './report.service';
 
 /**
- * report components
+ * components
  */
-export * from './reports.component';
 export * from './report-single-view.component';
 export * from './report-single.component';
+export * from './reports.component';
+
+/**
+ * pipe
+ */
+export * from './report-success.pipe';
+
