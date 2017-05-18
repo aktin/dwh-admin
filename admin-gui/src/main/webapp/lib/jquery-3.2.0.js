@@ -505,7 +505,7 @@ jQuery.extend( {
 	now: Date.now,
 
 	// jQuery.support is not used in Core but other projects attach their
-	// properties to it so it needs to exist.
+	// preferences to it so it needs to exist.
 	support: support
 } );
 
@@ -894,7 +894,7 @@ function createCache() {
 	var keys = [];
 
 	function cache( key, value ) {
-		// Use (key + " ") to avoid collision with native prototype properties (see Issue #157)
+		// Use (key + " ") to avoid collision with native prototype preferences (see Issue #157)
 		if ( keys.push( key + " " ) > Expr.cacheLength ) {
 			// Only keep the most recent entries
 			delete cache[ keys.shift() ];
@@ -1138,7 +1138,7 @@ setDocument = Sizzle.setDocument = function( node ) {
 	---------------------------------------------------------------------- */
 
 	// Support: IE<8
-	// Verify that getAttribute really returns attributes and not properties
+	// Verify that getAttribute really returns attributes and not preferences
 	// (excepting IE8 booleans)
 	support.attributes = assert(function( el ) {
 		el.className = "i";
@@ -1558,7 +1558,7 @@ Sizzle.attr = function( elem, name ) {
 	}
 
 	var fn = Expr.attrHandle[ name.toLowerCase() ],
-		// Don't get fooled by Object.prototype properties (jQuery #13807)
+		// Don't get fooled by Object.prototype preferences (jQuery #13807)
 		val = fn && hasOwn.call( Expr.attrHandle, name.toLowerCase() ) ?
 			fn( elem, name, !documentIsHTML ) :
 			undefined;
@@ -2042,7 +2042,7 @@ Expr = Sizzle.selectors = {
 			return elem === document.activeElement && (!document.hasFocus || document.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
 		},
 
-		// Boolean properties
+		// Boolean preferences
 		"enabled": createDisabledPseudo( false ),
 		"disabled": createDisabledPseudo( true ),
 
@@ -2525,7 +2525,7 @@ function matcherFromGroupMatchers( elementMatchers, setMatchers ) {
 
 			// Add elements passing elementMatchers directly to results
 			// Support: IE<9, Safari
-			// Tolerate NodeList properties (IE: "length"; Safari: <number>) matching elements by id
+			// Tolerate NodeList preferences (IE: "length"; Safari: <number>) matching elements by id
 			for ( ; i !== len && (elem = elems[i]) != null; i++ ) {
 				if ( byElement && elem ) {
 					j = 0;
@@ -2997,7 +2997,7 @@ var rootjQuery,
 						true
 					) );
 
-					// HANDLE: $(html, props)
+					// HANDLE: $(html, prefs)
 					if ( rsingleTag.test( match[ 1 ] ) && jQuery.isPlainObject( context ) ) {
 						for ( match in context ) {
 
@@ -4076,10 +4076,10 @@ Data.prototype = {
 		if ( typeof data === "string" ) {
 			cache[ jQuery.camelCase( data ) ] = value;
 
-		// Handle: [ owner, { properties } ] args
+		// Handle: [ owner, { preferences } ] args
 		} else {
 
-			// Copy the properties one-by-one to the cache object
+			// Copy the preferences one-by-one to the cache object
 			for ( prop in data ) {
 				cache[ jQuery.camelCase( prop ) ] = data[ prop ];
 			}
@@ -4115,7 +4115,7 @@ Data.prototype = {
 		// When the key is not a string, or both a key and value
 		// are specified, set or extend (existing objects) with either:
 		//
-		//   1. An object of properties
+		//   1. An object of preferences
 		//   2. A key and value
 		//
 		this.set( owner, key, value );
@@ -4161,7 +4161,7 @@ Data.prototype = {
 		if ( key === undefined || jQuery.isEmptyObject( cache ) ) {
 
 			// Support: Chrome <=35 - 45
-			// Webkit & Blink performance suffers when deleting properties
+			// Webkit & Blink performance suffers when deleting preferences
 			// from DOM nodes, so set to undefined instead
 			// https://bugs.chromium.org/p/chromium/issues/detail?id=378607 (bug restricted)
 			if ( owner.nodeType ) {
@@ -4189,7 +4189,7 @@ var dataUser = new Data();
 //		paths to a single mechanism.
 //	3. Use the same single mechanism to support "private" and "user" data.
 //	4. _Never_ expose "private" data to user code (TODO: Drop _data, _removeData)
-//	5. Avoid exposing implementation details on user objects (eg. expando properties)
+//	5. Avoid exposing implementation details on user objects (eg. expando preferences)
 //	6. Provide a clear path for implementation upgrade to WeakMap in 2014
 
 var rbrace = /^(?:\{[\w\W]*\}|\[[\w\W]*\])$/,
@@ -4556,7 +4556,7 @@ function adjustCSS( elem, prop, valueParts, tween ) {
 		// Trust units reported by jQuery.css
 		unit = unit || initialInUnit[ 3 ];
 
-		// Make sure we update the tween properties later on
+		// Make sure we update the tween preferences later on
 		valueParts = valueParts || [];
 
 		// Iteratively approximate from a nonzero starting point
@@ -5253,7 +5253,7 @@ jQuery.event = {
 					for ( i = 0; i < delegateCount; i++ ) {
 						handleObj = handlers[ i ];
 
-						// Don't conflict with Object.prototype properties (#13203)
+						// Don't conflict with Object.prototype preferences (#13203)
 						sel = handleObj.selector + " ";
 
 						if ( matchedSelectors[ sel ] === undefined ) {
@@ -5402,7 +5402,7 @@ jQuery.Event = function( src, props ) {
 			returnTrue :
 			returnFalse;
 
-		// Create target properties
+		// Create target preferences
 		// Support: Safari <=6 - 7 only
 		// Target should not be a text node (#504, #13143)
 		this.target = ( src.target && src.target.nodeType === 3 ) ?
@@ -5417,7 +5417,7 @@ jQuery.Event = function( src, props ) {
 		this.type = src;
 	}
 
-	// Put explicitly provided properties onto the event object
+	// Put explicitly provided preferences onto the event object
 	if ( props ) {
 		jQuery.extend( this, props );
 	}
@@ -5469,7 +5469,7 @@ jQuery.Event.prototype = {
 	}
 };
 
-// Includes all common event props including KeyEvent and MouseEvent specific props
+// Includes all common event prefs including KeyEvent and MouseEvent specific prefs
 jQuery.each( {
 	altKey: true,
 	bubbles: true,
@@ -6299,7 +6299,7 @@ function augmentWidthOrHeight( elem, name, extra, isBorderBox, styles ) {
 	if ( extra === ( isBorderBox ? "border" : "content" ) ) {
 		i = 4;
 
-	// Otherwise initialize for horizontal or vertical properties
+	// Otherwise initialize for horizontal or vertical preferences
 	} else {
 		i = name === "width" ? 1 : 0;
 	}
@@ -6387,7 +6387,7 @@ jQuery.extend( {
 		}
 	},
 
-	// Don't automatically add "px" to these possibly-unitless properties
+	// Don't automatically add "px" to these possibly-unitless preferences
 	cssNumber: {
 		"animationIterationCount": true,
 		"columnCount": true,
@@ -6404,7 +6404,7 @@ jQuery.extend( {
 		"zoom": true
 	},
 
-	// Add in properties whose names you wish to fix before
+	// Add in preferences whose names you wish to fix before
 	// setting or getting the value
 	cssProps: {
 		"float": "cssFloat"
@@ -6451,12 +6451,12 @@ jQuery.extend( {
 				return;
 			}
 
-			// If a number was passed in, add the unit (except for certain CSS properties)
+			// If a number was passed in, add the unit (except for certain CSS preferences)
 			if ( type === "number" ) {
 				value += ret && ret[ 3 ] || ( jQuery.cssNumber[ origName ] ? "" : "px" );
 			}
 
-			// background-* props affect original clone's values
+			// background-* prefs affect original clone's values
 			if ( !support.clearCloneStyle && value === "" && name.indexOf( "background" ) === 0 ) {
 				style[ name ] = "inherit";
 			}
@@ -6586,7 +6586,7 @@ jQuery.cssHooks.marginLeft = addGetHookIf( support.reliableMarginLeft,
 	}
 );
 
-// These hooks are used by animate to expand properties
+// These hooks are used by animate to expand preferences
 jQuery.each( {
 	margin: "",
 	padding: "",
@@ -6716,7 +6716,7 @@ Tween.propHooks = {
 
 			// Use step hook for back compat.
 			// Use cssHook if its there.
-			// Use .style if available and use plain properties where available.
+			// Use .style if available and use plain preferences where available.
 			if ( jQuery.fx.step[ tween.prop ] ) {
 				jQuery.fx.step[ tween.prop ]( tween );
 			} else if ( tween.elem.nodeType === 1 &&
@@ -7623,7 +7623,7 @@ jQuery.extend( {
 		var ret, hooks,
 			nType = elem.nodeType;
 
-		// Don't get/set properties on text, comment and attribute nodes
+		// Don't get/set preferences on text, comment and attribute nodes
 		if ( nType === 3 || nType === 8 || nType === 2 ) {
 			return;
 		}

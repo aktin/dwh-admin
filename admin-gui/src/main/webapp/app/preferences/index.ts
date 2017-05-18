@@ -9,10 +9,11 @@
 /**
  * services
  */
+export * from './preference.service'
 
 /**
  * components
  */
-export * from './properties.component';
+export * from './preferences.component';
 
 
