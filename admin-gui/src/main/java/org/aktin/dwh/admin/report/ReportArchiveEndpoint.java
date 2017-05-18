@@ -1,6 +1,7 @@
 package org.aktin.dwh.admin.report;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,4 +67,7 @@ public class ReportArchiveEndpoint {
 		return Response.ok(Files.newInputStream(report.getLocation()), report.getMediaType()).build();
 	}
 
+	public static final URI buildReportURI(ArchivedReport report){
+		return URI.create("report/archive/"+report.getId());
+	}
 }
