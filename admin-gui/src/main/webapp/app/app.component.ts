@@ -4,10 +4,11 @@
  * Base App Component with layout
  */
 
-import {Component} from '@angular/core';
-import { routings } from './app-routing.module';
-import { UserService } from './users/user.service';
+import { Component }    from '@angular/core';
 import _ = require('underscore');
+
+import { routings }     from './app-routing.module';
+import { UserService }  from './users/index';
 
 @Component({
       selector: 'my-app',
