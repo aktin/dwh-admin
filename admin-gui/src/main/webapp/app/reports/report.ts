@@ -1,7 +1,7 @@
 /**
  * Created by Xu on 03.05.2017.
  */
-import { DateParser } from '../helpers/helpers.service';
+import { DateParser } from '../helpers/index';
 
 export interface RawReport {
     id: number;

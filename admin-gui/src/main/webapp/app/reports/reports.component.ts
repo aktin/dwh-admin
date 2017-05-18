@@ -1,7 +1,8 @@
 import { Component, Pipe, PipeTransform, ViewChild } from '@angular/core';
+import { PopUpMessageComponent } from '../helpers/index';
+
 import { Report } from './report';
 import { ReportService } from './report.service';
-import { PopUpMessageComponent } from '../helpers/popup-message.component';
 
 @Component({
     templateUrl: './reports.component.html',
@@ -26,9 +27,3 @@ export class ReportsComponent  {
 }
 
 
-@Pipe({ name: 'successReports' })
-export class SuccessReportsPipe implements PipeTransform {
-    transform(reports: Report[], usefilter: boolean) {
-        return usefilter ? reports.filter(report => report.isSuccess()) : reports;
-    }
-}
