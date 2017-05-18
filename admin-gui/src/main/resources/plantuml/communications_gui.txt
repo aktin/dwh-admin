@@ -1,0 +1,17 @@
+@startuml
+participant "Central Backend GUI" as BG
+participant "Broker" as B
+participant "Aggregator" as A
+participant "Client DWH" as D
+participant "Client Backend GUI" as DG
+
+BG -> B: Create Queries
+B -> D: Distribute Queries
+BG -> B: View / Manage Queries
+D -> DG: Await Authorization [Notification per E-Mail]
+DG -> D: Allow / Deny
+D -> D: Run Query
+D -> B: Status
+
+
+@enduml

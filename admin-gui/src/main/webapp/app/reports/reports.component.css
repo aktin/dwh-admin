@@ -1,0 +1,36 @@
+.reports-filter-checkbox {
+    z-index: 100;
+}
+.reports-filter-checkbox label {
+    cursor: pointer;
+}
+
+.report-single-view {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.report-single-view .header {
+    float: left;
+    cursor: pointer;
+}
+.report-single-view .actions {
+    float: right;
+}
+
+.report-single-view .content {
+    clear: both;
+}
+
+.report-single-view.report-failed {
+    opacity: 0.8;
+    color: rgb(24, 24, 24);
+}
+
+.report-single-view.report-failed .report-status{
+    color: rgb(140, 0, 0);
+}
+
+.report-single-view.report-waiting .report-status{
+    color: rgb(180, 130, 30);
+}

@@ -82,7 +82,7 @@ public class AuthEndpoint {
 	public String logout(String token){
 		Token<?> t = tokens.lookupToken(token);
 		t.invalidate();
-		return "{duration="+(System.currentTimeMillis()-t.issuedTimeMillis())+"}";
+		return "{duration:"+(System.currentTimeMillis()-t.issuedTimeMillis())+"}";
 	}
 	
 	@Secured

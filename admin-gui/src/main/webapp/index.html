@@ -1,54 +1,31 @@
 <!DOCTYPE html>
+<html>
+    <head>
+        <title>Aktin Admin Backend</title>
+        <base href="/">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="img/favicon.ico" rel="icon" type="image/x-icon" />
+        <link rel="stylesheet" href="styles.css">
 
-<html ng-app="aktin">
-<head>
-    <base href=".">
-    <meta charset="utf-8" />
-    <link href="img/favicon.ico" rel="icon" type="image/x-icon" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-    <title>AKTIN Admin Konfigurationsinterface</title>
+        <!-- Polyfill(s) for older browsers -->
+        <script src="node_modules/core-js/client/shim.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="css/main.css">
-    <link rel="stylesheet" type="text/css" href="css/reset.css">
+        <script src="node_modules/zone.js/dist/zone.js"></script>
+        <script src="node_modules/systemjs/dist/system.src.js"></script>
 
-    <!-- local version for development -->
-    <!-- <script type="text/javascript" src="lib/jquery-1.12.4/jquery-1.12.4.min.js"></script> -->
-    <script type="text/javascript" src="lib/jquery-3.1.1/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="lib/underscore-1.8.3/underscore.js"></script>
-    <script type="text/javascript" src="lib/angular-1.5.8/angular.js"></script>
-    <script type="text/javascript" src="lib/angular-ui-router-0.3.1/angular-ui-router.js"></script>
+        <script src="systemjs.config.js"></script>
+        <script>
+            System.import('main.js').catch(function(err){ console.error(err); });
+        </script>
 
+        <!--<script src="lib/jquery-3.2.0.js"></script>-->
+        <!--<script src="lib/semantic/semantic.js"></script>-->
+        <link rel="stylesheet" type="text/css" href="lib/semantic/semantic.css">
+        <link rel="stylesheet" type="text/css" href="lib/loading-spin.css">
+    </head>
 
-    <!-- the online links -->
-    <!-- <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script> -->
-    <!-- <script src="http://underscorejs.org/underscore-min.js"></script> -->
-    <!-- <script src="https://code.angularjs.org/1.5.8/angular.min.js"></script> -->
-    <!-- <script src="//unpkg.com/angular-ui-router/release/angular-ui-router.min.js"></script> -->
-
-    <!-- semantic ui under https://github.com/Semantic-Org -->
-    <link rel="stylesheet" type="text/css" href="lib/semantic-ui-2.2.3/semantic.min.css">
-    <script type="text/javascript" src="lib/semantic-ui-2.2.3/semantic.min.js"></script>
-
-    <script type="text/javascript" src="app.js"></script>
-    <script type="text/javascript" src="routing/helpers.js"></script>
-    <script type="text/javascript" src="routing/routings.js"></script>
-    <script type="text/javascript" src="home/home.js"></script>
-    <script type="text/javascript" src="test/test.js"></script>
-    <script type="text/javascript" src="properties/properties.js"></script>
-    <script type="text/javascript" src="logs/logs.js"></script>
-    <script type="text/javascript" src="users/users.js"></script>
-    <script type="text/javascript" src="reports/reports.js"></script>
-
-</head>
-<body>
-    <header-panel ng-controller="HeaderController as header" class="flex-panel">header</header-panel>
-
-    <div class="ui main container flex-panel content" ui-view>
-        main view
-    </div>
-
-    <footer-panel class="flex-panel">footer</footer-panel>
-
-</body>
+    <body>
+        <my-app>Aktin Backend</my-app>
+    </body>
 </html>

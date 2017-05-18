@@ -1,0 +1,13 @@
+@startuml
+participant "DWH" as D
+participant "Broker" as B
+
+D -> B: Abfragen?
+B -> D: 3 Abfragen
+D -> B: Status
+rnote right of B: Letzte Meldungen der DWHs,\nAbfragenstatus
+
+participant "Pool" as P
+D -> P: Ergebnisse
+
+@enduml
