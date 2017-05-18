@@ -15,23 +15,19 @@ import { AppRoutingModule }     from './app-routing.module';
 
 import { AppComponent }         from './app.component';
 import { HomeComponent }        from './home/home.component';
-import { UsersComponent }       from './users/users.component';
-import { ReportsComponent, SuccessReportsPipe }     from './reports/reports.component';
 import { PropertiesComponent }  from './properties/properties.component';
 import { RestrictedComponent }  from './restricted/restricted.component';
-import { UserLoginComponent }   from './users/user-login.component';
-import { LoadingComponent }     from './helpers/loading.component';
+import { RequestsComponent }    from './requests/requests.component';
 
-import { UserAuthGuard }        from './users/user-auth.guard';
-import { UserService }          from './users/user.service';
-import { HTTPHandlerService, SafePipe, StorageService, UrlService } from './helpers/helpers.service';
-import { HttpInterceptorService } from './helpers/http-interceptor.service';
-import { RequestsComponent } from './requests/requests.component';
-import { ReportService } from './reports/report.service';
-import { OrderBy } from './helpers/orderby';
-import { ReportSingleViewComponent } from './reports/report-single-view.component';
-import { ReportSingleComponent } from './reports/report-single.component';
-import { PopUpMessageComponent } from './helpers/popup-message.component';
+import { HTTPHandlerService, StorageService, UrlService, HttpInterceptorService,
+            SafePipe, SuccessReportsPipe, OrderBy,
+            PopUpMessageComponent, LoadingComponent }                               from './helpers/index';
+import { UsersComponent, UserLoginComponent, UserAuthGuard, UserService }           from './users/index';
+
+
+import { ReportService,
+            ReportsComponent, ReportSingleViewComponent, ReportSingleComponent }    from './reports/index';
+
 
 @NgModule({
     imports:      [

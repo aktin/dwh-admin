@@ -8,17 +8,16 @@ import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { HomeComponent }        from './home/home.component';
-import { UsersComponent }       from './users/users.component';
-import { ReportsComponent }     from './reports/reports.component';
 import { PropertiesComponent }  from './properties/properties.component';
 import { RestrictedComponent }  from './restricted/restricted.component';
 
-import { UserAuthGuard }        from './users/user-auth.guard';
 import { RequestsComponent } from './requests/requests.component';
-import { ReportSingleComponent } from './reports/report-single.component';
+
+import { UsersComponent, UserLoginComponent, UserAuthGuard }    from './users/index';
+import { ReportsComponent, ReportSingleComponent }              from './reports/index';
+
 
 import _ = require('underscore');
-import { UserLoginComponent } from './users/user-login.component';
 
 const routes: Routes = [// array of routes
     {
@@ -39,7 +38,7 @@ const routes: Routes = [// array of routes
         data : {
             name : 'Benutzerverwaltung',
             roles : [
-                'LOGGEDIN',
+                'ADMIN',
             ],
         },
     },
@@ -64,21 +63,13 @@ const routes: Routes = [// array of routes
         ],
     },
     {
-        path: 'restricted',
-        component: RestrictedComponent,
-        canActivate: [UserAuthGuard],
-        data : {
-            name : 'restrict',
-            roles : [
-                'ADMIN',
-            ],
-        },
-    },
-    {
         path: 'properties',
         component: PropertiesComponent,
         data : {
             name : 'Konfigurationen',
+            roles : [
+                'LOGGEDIN',
+            ],
         },
     },
     {
@@ -86,6 +77,9 @@ const routes: Routes = [// array of routes
         component: RequestsComponent,
         data : {
             name : 'Anfragen',
+            roles : [
+                'LOGGEDIN',
+            ],
         },
     },
     {
@@ -93,6 +87,9 @@ const routes: Routes = [// array of routes
         component: RequestsComponent,
         data : {
             name : 'Status',
+            roles : [
+                'LOGGEDIN',
+            ],
         },
     },
     {
