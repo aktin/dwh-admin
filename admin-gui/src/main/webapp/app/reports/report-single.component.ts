@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params }   from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 
-import { ReportService } from './report.service';
 import { Report } from './report';
+import { ReportService } from './report.service';
 /**
  * Created by Xu on 15.05.2017.
  */

@@ -1,4 +1,4 @@
-import { Component, Pipe, PipeTransform, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { PopUpMessageComponent } from '../helpers/index';
 
 import { Report } from './report';
