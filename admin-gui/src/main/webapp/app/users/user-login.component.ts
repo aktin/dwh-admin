@@ -3,7 +3,6 @@
  */
 import { Component } from '@angular/core';
 import { UserService } from './user.service';
-import { User } from './user';
 
 @Component({
     selector: 'user-login',
@@ -12,10 +11,10 @@ import { User } from './user';
 })
 export class UserLoginComponent {
 
-    username: string = 'i2b2';
-    password: string = 'demouser';
+    username = 'i2b2';
+    password = 'demouser';
 
-    loggingIn: boolean = false;
+    loggingIn = false;
     loggingInState: string;
 
     msgs: string[] = [];
@@ -43,7 +42,7 @@ export class UserLoginComponent {
                 this.loggingInState = 'success';
             },
             error => {
-                console.error('error? ',error);
+                console.error('error? ', error);
                 this.msgs.push('Authentifizierungsfehler: ' + error);
                 this.loggingInState = 'error';
             }

@@ -5,10 +5,10 @@
  */
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-
-import _ = require('underscore');
-import { UserService } from './user.service';
 import { Observable } from 'rxjs/Observable';
+import _ = require('underscore');
+
+import { UserService } from './user.service';
 
 @Injectable()
 export class UserAuthGuard implements CanActivate {

@@ -4,7 +4,7 @@
  * User Service
  */
 import { Injectable } from '@angular/core';
-import { Headers, RequestOptions, /*Http,*/ Response }          from '@angular/http';
+import { Headers, RequestOptions, Response } from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
@@ -15,9 +15,9 @@ import 'rxjs/add/operator/combineLatest';
 
 import _ = require('underscore');
 
+import { HTTPHandlerService, StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
+
 import { User } from './user';
-import { HTTPHandlerService, StorageService, UrlService } from '../helpers/helpers.service';
-import { HttpInterceptorService } from '../helpers/http-interceptor.service';
 
 /**
  * Service Class for user management and LOGIN
@@ -159,6 +159,7 @@ export class UserService {
 
         // roles not working yet ...
         // return this.userRolesCheck(roles);
+        return Observable.of(true);
     }
 
     userLocal (): User {
