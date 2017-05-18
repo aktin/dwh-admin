@@ -3,18 +3,18 @@
  */
 
 /**
- * user class
+ * class
  */
 export * from './user';
 
 /**
- * user services
+ * services
  */
 export * from './user.service';
 export * from './user-auth.guard';
 
 /**
- * user popup-message.component
+ * component
  */
 export * from './users.component';
 export * from './user-login.component';
