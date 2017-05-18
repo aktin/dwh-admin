@@ -2,12 +2,12 @@
  * Created by Xu on 03.05.2017.
  */
 import { Injectable, LOCALE_ID, Pipe, PipeTransform } from '@angular/core';
-import { HttpInterceptorService } from './http-interceptor.service';
+import { Response } from '@angular/http';
 import { DomSanitizer} from '@angular/platform-browser';
-import { Headers, RequestOptions, /*Http,*/ Response }          from '@angular/http';
 import { Observable } from 'rxjs/Observable';
-
 import _ = require('underscore');
+
+import { HttpInterceptorService } from './http-interceptor.service';
 
 @Injectable()
 export class StorageService {
@@ -99,7 +99,7 @@ export class UrlService {
 
 @Injectable()
 export class HTTPHandlerService {
-    //
+
     debouncedGet<T> (
         vlName: string,
         value: T, nullVal: T,
@@ -177,15 +177,6 @@ export class DateParser {
                 break;
         }
         return monthArray[month];
-    }
-}
-
-
-@Pipe({ name: 'safe' })
-export class SafePipe implements PipeTransform {
-    constructor(private sanitizer: DomSanitizer) {}
-    transform(url: string) {
-        return this.sanitizer.bypassSecurityTrustResourceUrl(url);
     }
 }
 
