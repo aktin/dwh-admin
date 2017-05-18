@@ -31,7 +31,9 @@ e.g. similar to `http://stackoverflow.com/questions/11396219/init-database-for-t
 TODO Webapp
 ====
 
-jquery needed?
+- Use loshdash instead of underscore
+- use webpack instead of systemjs
+- use ahead of time compilation
 
 - server communication
 - user authentification
