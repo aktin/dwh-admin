@@ -22,7 +22,7 @@ import { HttpHandlerService, StorageService, UrlService, HttpInterceptorService,
 import { UsersComponent, UserLoginComponent, UserAuthGuard, UserService }           from './users/index';
 import { ReportService, SuccessReportsPipe,
             ReportsComponent, ReportSingleViewComponent, ReportSingleComponent }    from './reports/index';
-import { PropertiesComponent }                                                      from './properties/index';
+import { PreferencesComponent, PreferenceService }                                  from './preferences/index';
 import { RequestsComponent }                                                        from './requests/index';
 import { RestrictedComponent }  from './restricted/restricted.component';
 
@@ -43,7 +43,7 @@ import { RestrictedComponent }  from './restricted/restricted.component';
         ReportsComponent,
         ReportSingleViewComponent,
         ReportSingleComponent,
-        PropertiesComponent,
+        PreferencesComponent,
         RequestsComponent,
         RestrictedComponent,
         LoadingComponent,
@@ -64,6 +64,7 @@ import { RestrictedComponent }  from './restricted/restricted.component';
         UserAuthGuard,
         UserService,
         ReportService,
+        PreferenceService,
     ]
 })
 export class AppModule { }

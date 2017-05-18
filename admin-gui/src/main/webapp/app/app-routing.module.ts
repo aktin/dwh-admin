@@ -12,7 +12,7 @@ import _ = require('underscore');
 import { HomeComponent }        from './home/index';
 import { UsersComponent, UserLoginComponent, UserAuthGuard }    from './users/index';
 import { ReportsComponent, ReportSingleComponent }              from './reports/index';
-import { PropertiesComponent }  from './properties/index';
+import { PreferencesComponent }  from './preferences/index';
 import { RequestsComponent }    from './requests/index';
 
 import { RestrictedComponent }  from './restricted/restricted.component';
@@ -63,7 +63,7 @@ const routes: Routes = [// array of routes
     },
     {
         path: 'properties',
-        component: PropertiesComponent,
+        component: PreferencesComponent,
         data : {
             name : 'Konfigurationen',
             roles : [

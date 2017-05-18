@@ -1,0 +1,54 @@
+<h1>Hello Properties</h1>
+
+{{prefs}}
+
+
+<div class="ui list text container">
+    <div><h1>Konfigurationen</h1></div>
+    <div class="ui segment padded">
+        <div class="ui medium header">zum Ändern der Konfigurationen:</div>
+
+        <div class="content ui relaxed list">
+            <div class="item">
+                <div class="content">
+                    Bitte zuerst den Wildfly Server stoppen: (für Debian)
+                    <pre>service wildfly stop</pre>
+                    (für CentOs)
+                    <pre>systemctl stop wildfly</pre>
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                    Die Änderungen in der folgenden Datei vornehmen (z.B. mittels nano)
+                    <pre>nano {{properties.aktinPropFile}}</pre>
+                </div>
+            </div>
+            <div class="item">
+                <div class="content">
+                    Den Wildfly Service neustarten:(für Debian)
+                    <pre>service wildfly start</pre>
+                    (für CentOs)
+                    <pre>systemctl start wildfly</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--<div class="ui segment padded" ng-repeat="(cat, catObj) in properties.properties">-->
+        <!--<div class="ui container stackable relaxed two column padded equal width grid items">-->
+            <!--<div class="row item">-->
+                <!--<div class="content">-->
+                    <!--<div class="header">{{catObj.descr}}</div>-->
+                    <!--<div class="description">{{catObj.value}}</div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="column item" ng-repeat="(name,prop) in catObj.props" style="border:1px solid rgba(34,36,38,.15); margin: 0">-->
+                <!--<div class="content">-->
+                    <!--<div class="header">{{prop.descr}}</div>-->
+                    <!--<div class="meta">{{prop.name}}</div>-->
+                    <!--<div class="description">{{prop.value}}</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+</div>
