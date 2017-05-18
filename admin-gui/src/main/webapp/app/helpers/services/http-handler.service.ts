@@ -1,21 +1,20 @@
 /**
  * Created by Xu on 18.05.2017.
  */
-import { Injectable, LOCALE_ID, Pipe, PipeTransform } from '@angular/core';
-import { Response }                 from '@angular/http';
-import { DomSanitizer}              from '@angular/platform-browser';
-import { Observable }               from 'rxjs/Observable';
-
+import { Injectable } from '@angular/core';
+import { Response }   from '@angular/http';
+import { Observable } from 'rxjs/Observable';
 import _ = require('underscore');
 
 import { HttpInterceptorService }   from './http-interceptor.service';
-import { StorageService }           from './helpers.service';
+import { StorageService }           from './storage.service';
 
 @Injectable()
-export class HTTPHandlerService {
+export class HttpHandlerService {
+
+    private dataInterval: 3000;
+
     constructor (
-        private http: HttpInterceptorService,
-        private store: StorageService
     ) {}
 
     debouncedGet<T> (
@@ -25,20 +24,25 @@ export class HTTPHandlerService {
         url: string,
         parseResponse: (res: Response) => T,
         parseError: (err: Response) => Response,
-        httpd: HttpInterceptorService,
+        http: HttpInterceptorService,
         store: StorageService
     ): Observable<T> {
+        console.log('here: ', vlName, value, nullVal, dbTime, url);
         // check whether logged in. if not then nada.
         if (store.getValue('user.token') === null) {
             return Observable.of(nullVal);
+        }
+        if (! dbTime ) {
+            dbTime = this.dataInterval;
         }
 
         if (Date.now() - store.getTime(vlName) <= dbTime) {
             return Observable.of(value);
         }
+        console.log('here', url, dbTime);
 
         store.setTime(vlName);
-        return this.http.get(url).map(res => {
+        return http.get(url).map(res => {
             store.setTime(vlName);
             value = parseResponse(res);
             return value;

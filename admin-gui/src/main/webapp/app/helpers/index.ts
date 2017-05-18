@@ -2,20 +2,19 @@
  * Created by Xu on 18.05.2017.
  */
 
+export * from './helpers';
 /**
- * helper services
+ * services
  */
-export * from './helpers.service';
-export * from './http-interceptor.service';
+export * from './services/index';
 
 /**
- * pipe
+ * pipes
  */
-export * from './helpers.pipe';
-export * from './orderby';
+export * from './pipes/index';
 
 /**
- * helper components
+ * helper component
  */
 export * from './loading.component';
 export * from './popup-message.component';
