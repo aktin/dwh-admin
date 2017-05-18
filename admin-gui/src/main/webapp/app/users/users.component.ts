@@ -4,8 +4,12 @@
  * User Component
  */
 import { Component, OnInit } from '@angular/core';
+
 import { UserService } from './user.service';
 
+/**
+ * TODO implement once API is open
+ */
 @Component({
   template: `<h1>Hello Users</h1>`,
 })

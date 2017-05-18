@@ -14,7 +14,7 @@ export * from './user.service';
 export * from './user-auth.guard';
 
 /**
- * user components
+ * user popup-message.component
  */
 export * from './users.component';
 export * from './user-login.component';
