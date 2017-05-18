@@ -1,7 +1,6 @@
 package org.aktin.dwh.admin.report;
 
 import java.io.IOException;
-import java.net.URI;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -128,7 +127,7 @@ public class MonthlyReportEndpoint {
 				return Response.serverError().build();
 			}
 		}
-		return Response.temporaryRedirect(URI.create("report/archive/"+current.getId())).build();
+		return Response.temporaryRedirect(ReportArchiveEndpoint.buildReportURI(current)).build();
 	}
 
 

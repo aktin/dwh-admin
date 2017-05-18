@@ -14,7 +14,6 @@ import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.admin.auth.TokenManager;
 import org.aktin.dwh.admin.log.DemoLogfileReader;
 import org.aktin.dwh.admin.log.LogLineSupplierFactory;
-import org.aktin.dwh.admin.report.ReportTracker;
 import org.aktin.dwh.prefs.impl.PropertyFilePreferences;
 import org.aktin.dwh.statistics.ImportSummaryImpl;
 import org.aktin.dwh.ImportSummary;
@@ -102,8 +101,6 @@ public class MyBinder extends AbstractBinder{
 		summ.addCreated();
 		summ.addRejected(false, "CDA Error");
 		bind(summ).to(ImportSummary.class);
-		
-		bind(new ReportTracker(reports, archive)).to(ReportTracker.class);
 
 		// logging
 		bind(new DemoLogfileReader()).to(LogLineSupplierFactory.class);

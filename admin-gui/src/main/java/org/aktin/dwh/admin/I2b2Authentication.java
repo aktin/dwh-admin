@@ -17,6 +17,7 @@ public class I2b2Authentication implements Authentication{
 		this.sessionKey = session;
 		this.roles = roles;
 		this.isAdmin = isAdmin;
+		this.domain = domain;
 	}
 	@Override
 	public String getName() {

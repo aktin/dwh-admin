@@ -2,14 +2,16 @@ package org.aktin.dwh.admin.report;
 
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
@@ -19,8 +21,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.aktin.report.ArchivedReport;
 import org.aktin.report.Report;
 import org.aktin.report.ReportArchive;
+import org.aktin.report.ReportInfo;
 import org.aktin.report.ReportManager;
 
 /**
@@ -31,15 +35,13 @@ import org.aktin.report.ReportManager;
  */
 @Path("report/template")
 public class ReportEndpoint {
+	private static final Logger log = Logger.getLogger(ReportEndpoint.class.getName());
 
 	@Inject
 	ReportManager manager;
 	
 	@Inject
 	ReportArchive archive;
-
-	@Inject // TODO no need for tracker, user archive
-	ReportTracker tracker;
 
 	/**
 	 * List all available report templates
@@ -72,23 +74,32 @@ public class ReportEndpoint {
 	@POST
 	@Path("{templateId}")
 	//@Consumes(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_XML)
 	public Response generateReport(@PathParam("templateId") String templateId, ReportRequest request) throws URISyntaxException, IOException{
 		System.out.println("Generate report: "+templateId);
-		Report report = manager.getReport(templateId);
-		if( report == null ){
+		Report template = manager.getReport(templateId);
+		if( template == null ){
 			throw new NotFoundException("There is no template "+templateId);
 		}
 		// verify request contents
-		verifyRequest(report, request);
-
-		java.nio.file.Path temp = Files.createTempFile(report.getId(), ".pdf");
-		System.out.println("Using temp file: "+temp);
-
-		// TODO determine authenticated user
-		// TODO use archive for token id
-		int token = tracker.createReport(report, request, temp);
+		verifyRequest(template, request);
 		
-		return Response.created(new URI("generated/"+token)).build();
+		ReportInfo info = template.createReportInfo(
+				Instant.ofEpochMilli(request.start.getTime()), 
+				Instant.ofEpochMilli(request.end.getTime())
+		);
+	
+		// create in archive
+		ArchivedReport report = archive.addReport(info, "TODO:authuser");
+		// generate report
+		try {
+			report.createAsync(manager);
+		} catch (IOException e) {
+			log.log(Level.WARNING, "Report creation failed, exception stored for "+report.getId(), e);
+			archive.setReportFailure(report.getId(), null, e);
+		}
+		
+		return Response.created(ReportArchiveEndpoint.buildReportURI(report)).build();
 	}
 
 	/**
@@ -98,8 +109,11 @@ public class ReportEndpoint {
 	 * @throws BadRequestException verification failure
 	 */
 	private void verifyRequest(Report report, ReportRequest request) throws BadRequestException{
-		if( request.from == null ){
-			throw new BadRequestException("From timestamp must be specified");
+		if( request.start == null ){
+			throw new BadRequestException("Start timestamp must be specified");
+		}
+		if( request.end == null ){
+			throw new BadRequestException("End timestamp must be specified");
 		}
 	}
 }
