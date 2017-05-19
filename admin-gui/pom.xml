@@ -164,9 +164,28 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.aktin.dwh</groupId>
+			<artifactId>dwh-db</artifactId>
+			<version>0.2-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-jdk14</artifactId>
+		    <version>1.7.22</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>request-manager</artifactId>
 			<version>0.3-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>2.3.3</version>
 			<scope>test</scope>
 		</dependency>
 		<!--
@@ -185,6 +204,14 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<warSourceExcludes>node_modules/**,**/*.ts,**/*.js.map</warSourceExcludes>
+				</configuration>
+			</plugin>
 		    <plugin>
 		        <groupId>com.github.eirslett</groupId>
 		        <artifactId>frontend-maven-plugin</artifactId>

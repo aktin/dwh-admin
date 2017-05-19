@@ -9,6 +9,8 @@ import java.util.concurrent.ForkJoinPool;
 import javax.sql.DataSource;
 
 import org.aktin.Preferences;
+import org.aktin.broker.request.RequestManager;
+import org.aktin.broker.request.RequestStatus;
 import org.aktin.dwh.Authenticator;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.admin.auth.TokenManager;
@@ -24,6 +26,7 @@ import org.aktin.report.manager.ReportManagerImpl;
 import org.aktin.report.manager.TestExport;
 import org.aktin.report.manager.TestReportGeneration;
 import org.aktin.report.test.SimpleReport;
+import org.aktin.request.manager.RequestManagerImpl;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
 import de.sekmi.li2b2.api.pm.Project;
@@ -64,6 +67,35 @@ public class MyBinder extends AbstractBinder{
 		}).to(de.sekmi.li2b2.services.token.TokenManager.class);
 		bind(pm).to(ProjectManager.class);
 	}
+
+	private void bindReportModules(Preferences prefs){
+		// create singleton instance
+		TestReportGeneration.locateR();
+		ReportManagerImpl reports = new ReportManagerImpl(TestReportGeneration.rScript.toString(), Paths.get("target/report-temp"), new SimpleReport());
+		reports.setPreferenceManager(prefs);
+		reports.setDataExtractor(TestExport.small());
+		reports.setExecutor(ForkJoinPool.commonPool());
+		bind(reports).to(ReportManager.class);
+
+		// report archive
+		ReportArchiveImpl archive = new ReportArchiveImpl();
+		archive.setPreferences(prefs);
+		archive.setDataSource(ds);
+		archive.loadArchive();
+		
+		bind(archive).to(ReportArchive.class);		
+	}
+	private void bindRequestModules(Preferences prefs){
+		RequestManagerImpl rm = new RequestManagerImpl(prefs);
+		rm.setDataSource(ds);
+		rm.setResultUploader( r -> {try {
+			r.changeStatus(null, RequestStatus.Submitted, null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}});
+		bind(rm).to(RequestManager.class);
+	}
+
 	@Override
 	protected void configure() {
 		// datasource singleton
@@ -79,23 +111,11 @@ public class MyBinder extends AbstractBinder{
 		bind(prefs).to(Preferences.class);
 		// producer doesn't work. TODO maybe register with jersey???
 //		bind(PreferenceProducer.class).to(PreferenceProducer.class);
-
-		// create singleton instance
-		TestReportGeneration.locateR();
-		ReportManagerImpl reports = new ReportManagerImpl(TestReportGeneration.rScript.toString(), Paths.get("target/report-temp"), new SimpleReport());
-		reports.setPreferenceManager(prefs);
-		reports.setDataExtractor(TestExport.small());
-		reports.setExecutor(ForkJoinPool.commonPool());
-		bind(reports).to(ReportManager.class);
-
-		// report archive
-		ReportArchiveImpl archive = new ReportArchiveImpl();
-		archive.setPreferences(prefs);
-		archive.setDataSource(ds);
-		archive.loadArchive();
 		
-		bind(archive).to(ReportArchive.class);
+		bindReportModules(prefs);
 		
+		bindRequestModules(prefs);
+
 		// bind summary
 		ImportSummaryImpl summ = new ImportSummaryImpl();
 		summ.addCreated();
@@ -105,6 +125,9 @@ public class MyBinder extends AbstractBinder{
 		// logging
 		bind(new DemoLogfileReader()).to(LogLineSupplierFactory.class);
 
+		// request handling
+
+		
 		// authenticator beans
 		I2b2Authenticator auth = new I2b2Authenticator();
 		auth.setPreferences(prefs);

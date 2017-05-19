@@ -92,7 +92,7 @@ public class TestServer {
 		handler.setWelcomeFiles(new String[]{"index.html"});
 
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-		context.setContextPath("/site");
+		context.setContextPath("/aktin/admin");
 		
 		context.setHandler(handler);
 		
@@ -104,8 +104,8 @@ public class TestServer {
 
 		jetty = new Server(addr);
 		HandlerList handlers = new HandlerList();
-		handlers.addHandler(createStaticResourceHandler());
 		handlers.addHandler(context);
+		handlers.addHandler(createStaticResourceHandler());
 		jetty.setHandler(handlers);
 
 		ServletHolder jersey = new ServletHolder(new ServletContainer(rc));
