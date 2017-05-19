@@ -1,3 +1,7 @@
 .preferences.table {
+    font-size: small;
+}
 
+.tiny.text {
+    font-size: tiny;
 }

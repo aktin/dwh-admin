@@ -31,7 +31,7 @@ e.g. similar to `http://stackoverflow.com/questions/11396219/init-database-for-t
 TODO Webapp
 ====
 
-
+- Container anpassen und Design erzeugen
 - Use loshdash instead of underscore
 - use webpack instead of systemjs
 - use ahead of time compilation
@@ -45,7 +45,6 @@ TODO Webapp
 
 -- breadcrumbs
 
-- prefs : show as table
 
 3. Die URLs werden falsch überschrieben: Wenn ich auf /aktin/admin/ gehe, dann ändert sich die nach dem Laden die URL in /aktin/admin/home was es nicht gibt!
 4. In url.service steht eine feste serverUrl=http://134.106.36.86:8087.  Das sollte standardmäßig leer sein bzw. im Frontend versteckt konfigurierbar.
