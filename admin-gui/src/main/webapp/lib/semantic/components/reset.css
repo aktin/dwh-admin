@@ -31,7 +31,7 @@ input[type="search"],
 input[type="password"] {
   -webkit-appearance: none;
   -moz-appearance: none;
-
+  
 /* mobile firefox too! */
 }
 
@@ -52,13 +52,13 @@ input[type="password"] {
  */
 html {
   font-family: sans-serif;
-
+  
 /* 1 */
   -ms-text-size-adjust: 100%;
-
+  
 /* 2 */
   -webkit-text-size-adjust: 100%;
-
+  
 /* 2 */
 }
 /**
@@ -98,10 +98,10 @@ canvas,
 progress,
 video {
   display: inline-block;
-
+  
 /* 1 */
   vertical-align: baseline;
-
+  
 /* 2 */
 }
 /**
@@ -251,7 +251,7 @@ samp {
 /**
  * 1. Correct color not being inherited.
  *    Known issue: affects color of disabled elements.
- * 2. Correct font preferences not being inherited.
+ * 2. Correct font properties not being inherited.
  * 3. Address margins set differently in Firefox 4+, Safari, and Chrome.
  */
 button,
@@ -260,13 +260,13 @@ optgroup,
 select,
 textarea {
   color: inherit;
-
+  
 /* 1 */
   font: inherit;
-
+  
 /* 2 */
   margin: 0;
-
+  
 /* 3 */
 }
 /**
@@ -297,10 +297,10 @@ html input[type="button"],
 input[type="reset"],
 input[type="submit"] {
   -webkit-appearance: button;
-
+  
 /* 2 */
   cursor: pointer;
-
+  
 /* 3 */
 }
 /**
@@ -335,10 +335,10 @@ input {
 input[type="checkbox"],
 input[type="radio"] {
   box-sizing: border-box;
-
+  
 /* 1 */
   padding: 0;
-
+  
 /* 2 */
 }
 /**
@@ -357,7 +357,7 @@ input[type="number"]::-webkit-outer-spin-button {
  */
 input[type="search"] {
   -webkit-appearance: textfield;
-
+  
 /* 1 */
 }
 /**
@@ -383,10 +383,10 @@ fieldset {
  */
 legend {
   border: 0;
-
+  
 /* 1 */
   padding: 0;
-
+  
 /* 2 */
 }
 /**

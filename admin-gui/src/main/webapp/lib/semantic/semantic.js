@@ -14641,7 +14641,7 @@ $.fn.shape = function(parameters) {
         },
 
         animate: function(propertyObject, callback) {
-          module.verbose('Animating box with preferences', propertyObject);
+          module.verbose('Animating box with properties', propertyObject);
           callback = callback || function(event) {
             module.verbose('Executing animation callback');
             if(event !== undefined) {
@@ -20084,7 +20084,7 @@ $.api = $.fn.api = function(parameters) {
 
           mockedXHR: function () {
             var
-              // xhr does not simulate these preferences of xhr but must return them
+              // xhr does not simulate these properties of xhr but must return them
               textStatus     = false,
               status         = false,
               httpMessage    = false,
