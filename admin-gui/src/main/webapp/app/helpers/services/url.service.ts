@@ -27,6 +27,8 @@ export class UrlService {
 
         prefs : '/prefs',
 
+        status : '/import-summary',
+
         reportsList : '/report/archive',
         newMonthlyReport : '/report/monthly/email',
     };

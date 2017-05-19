@@ -33,6 +33,31 @@
             </div>
         </div>
     </div>
+</div>
+<div class="ui container">
+    <table class="ui celled structured table">
+        <thead>
+            <tr>
+                <th rowspan="1">Kategory</th>
+                <th rowspan="1">key</th>
+                <th rowspan="1">value</th>
+                <th colspan="1">description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <ng-container *ngFor="let cat of prefCats">
+                <ng-container *ngFor="let pref of cat.prefs; let i = index">
+                <tr>
+                    <td *ngIf="i === 0"  [attr.rowspan]="cat.prefs.length">{{cat.descr}} ({{cat.value}})</td>
+                        <td>{{pref.key}}</td>
+                        <td>{{pref.value}}</td>
+                        <td>{{pref.value}}</td>
+                </tr>
+                </ng-container>
+            </ng-container>
+        </tbody>
+    </table>
+
 
     <div class="ui segment padded" *ngFor="let cat of prefCats">
         <div class="ui container stackable relaxed two column padded equal width grid items">
@@ -55,4 +80,6 @@
             </div>
         </div>
     </div>
+
+
 </div>

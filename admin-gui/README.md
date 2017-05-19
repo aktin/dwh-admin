@@ -31,6 +31,7 @@ e.g. similar to `http://stackoverflow.com/questions/11396219/init-database-for-t
 TODO Webapp
 ====
 
+
 - Use loshdash instead of underscore
 - use webpack instead of systemjs
 - use ahead of time compilation
@@ -40,23 +41,21 @@ TODO Webapp
 - store token
 - locale anfragen verwaltung
 
-
 - PATH aus der Login Maske ausblenden. (per pfeil aktivieren)
 
 -- breadcrumbs
 
+- prefs : show as table
 
-Berichte: Vereinfachen
+3. Die URLs werden falsch überschrieben: Wenn ich auf /aktin/admin/ gehe, dann ändert sich die nach dem Laden die URL in /aktin/admin/home was es nicht gibt!
+4. In url.service steht eine feste serverUrl=http://134.106.36.86:8087.  Das sollte standardmäßig leer sein bzw. im Frontend versteckt konfigurierbar.
+5. Wenn man angemeldet ist, dann ist der Reiter "Status" leer. Hier kannst du den Inhalt von /aktin/admin/rest/import-summary anzeigen.
+6. Konfiguration wird nicht angezeigt. Fehler: aktinPropFile undefined. 
+Der REST-Aufruf im Hintergrund ist aber erfolgreich.
+7. Benutzerverwaltung sehe ich auch nichts.
 
-AKTIN-Monatsbericht März 2017 
-Datenstand[Erzeugt]: 2017-04-05 
-Zeitraum: 2017-03-01 bis 2017-04-01 
-Status: Completed  -- deutsch (Status verstecken bei erfolgreich -- mit download austauschen)
-Download: [DownloadIcon]/aktin/admin/rest/report/archive/5
 
-vllt - <a download="something.txt" href="link.txt">asdf</a>​​​​​​​​​​​​​​​​​​​​​​​​​​​
 
----
 
 Neues Bericht zum Button umziehen, form button für später auch template auswahl
 
