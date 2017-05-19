@@ -20,7 +20,7 @@
             <div class="item">
                 <div class="content">
                     Die Änderungen in der folgenden Datei vornehmen (z.B. mittels nano)
-                    <pre>nano {{aktinPrefernceFile}}</pre>
+                    <pre>nano {{fileLocation}}</pre>
                 </div>
             </div>
             <div class="item">
@@ -34,21 +34,25 @@
         </div>
     </div>
 
-    <!--<div class="ui segment padded" ng-repeat="(cat, catObj) in properties.properties">-->
-        <!--<div class="ui container stackable relaxed two column padded equal width grid items">-->
-            <!--<div class="row item">-->
-                <!--<div class="content">-->
-                    <!--<div class="header">{{catObj.descr}}</div>-->
-                    <!--<div class="description">{{catObj.value}}</div>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="column item" ng-repeat="(name,prop) in catObj.props" style="border:1px solid rgba(34,36,38,.15); margin: 0">-->
-                <!--<div class="content">-->
-                    <!--<div class="header">{{prop.descr}}</div>-->
-                    <!--<div class="meta">{{prop.name}}</div>-->
-                    <!--<div class="description">{{prop.value}}</div>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
+    <div class="ui segment padded" *ngFor="let cat of prefCats">
+        <div class="ui container stackable relaxed two column padded equal width grid items">
+            <div class="row item">
+                <!-- <div class="column "> -->
+                <div class="content">
+                    <div class="header">{{cat.descr}}</div>
+                    <!-- <div class="meta">{{cat.name}}</div> -->
+                    <div class="description">{{cat.value}}</div>
+                </div>
+                <!-- <p class="">Änderbar in: {{cat.location}}</p> -->
+                <!-- </div> -->
+            </div>
+            <div class="column item" *ngFor="let pref of cat.prefs" style="border:1px solid rgba(34,36,38,.15); margin: 0">
+                <div class="content">
+                    <div class="header">{{pref.descr}}</div>
+                    <div class="meta">{{pref.key}}</div>
+                    <div class="description">{{pref.value}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

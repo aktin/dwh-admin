@@ -16,7 +16,7 @@ export class UserAuthGuard implements CanActivate {
     constructor(private router: Router, private userService: UserService) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        console.log ( route, state.url);
+        // console.log ( route, state.url);
         let data = route.data;
         if (data && data['roles'] ) {
 
