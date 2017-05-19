@@ -27,7 +27,7 @@ export class HttpHandlerService {
         http: HttpInterceptorService,
         store: StorageService
     ): Observable<T> {
-        console.log('here: ', vlName, value, nullVal, dbTime, url);
+        // console.log('here: ', vlName, value, nullVal, dbTime, url);
         // check whether logged in. if not then nada.
         if (store.getValue('user.token') === null) {
             return Observable.of(nullVal);
@@ -39,7 +39,6 @@ export class HttpHandlerService {
         if (Date.now() - store.getTime(vlName) <= dbTime) {
             return Observable.of(value);
         }
-        console.log('here', url, dbTime);
 
         store.setTime(vlName);
         return http.get(url).map(res => {
