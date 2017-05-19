@@ -5,10 +5,12 @@ import { PreferenceService } from './preference.service';
   templateUrl: './preferences.component.html',
 })
 export class PreferencesComponent  {
-    constructor (private propertyService: PreferenceService) {}
+    aktinPrefernceFile = '';
+
+    constructor (private prefService: PreferenceService) {}
 
     get prefs (): string {
-        this.propertyService.updateProperties();
+        this.prefService.updateProperties();
         return 'prefs';
     }
 }
