@@ -4,6 +4,7 @@ import { PrefCategory } from './preference';
 
 @Component({
   templateUrl: './preferences.component.html',
+    styleUrls: ['./preferences.component.css'],
 })
 export class PreferencesComponent  {
     constructor (private prefService: PreferenceService) {}

@@ -10,3 +10,7 @@ h1 {
     padding-top: 0 !important;
     padding-bottom: 0 !important;
 }
+
+.app.container {
+    min-height: 800px;
+}
