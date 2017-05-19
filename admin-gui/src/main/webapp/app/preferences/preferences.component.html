@@ -3,7 +3,7 @@
 {{prefs}}
 
 
-<div class="ui list text container">
+<div class="ui list">
     <div><h1>Konfigurationen</h1></div>
     <div class="ui segment padded">
         <div class="ui medium header">zum Ändern der Konfigurationen:</div>
@@ -33,22 +33,43 @@
             </div>
         </div>
     </div>
+    <!--<div class="ui segment padded" *ngFor="let cat of prefCats">-->
+        <!--<div class="ui container stackable relaxed two column padded equal width grid items">-->
+            <!--<div class="row item">-->
+                <!--&lt;!&ndash; <div class="column "> &ndash;&gt;-->
+                <!--<div class="content">-->
+                    <!--<div class="header">{{cat.descr}}</div>-->
+                    <!--&lt;!&ndash; <div class="meta">{{cat.name}}</div> &ndash;&gt;-->
+                    <!--<div class="description">{{cat.value}}</div>-->
+                <!--</div>-->
+                <!--&lt;!&ndash; <p class="">Änderbar in: {{cat.location}}</p> &ndash;&gt;-->
+                <!--&lt;!&ndash; </div> &ndash;&gt;-->
+            <!--</div>-->
+            <!--<div class="column item" *ngFor="let pref of cat.prefs" style="border:1px solid rgba(34,36,38,.15); margin: 0">-->
+                <!--<div class="content">-->
+                    <!--<div class="header">{{pref.descr}}</div>-->
+                    <!--<div class="meta">{{pref.key}}</div>-->
+                    <!--<div class="description">{{pref.value}}</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
 </div>
 <div class="ui container">
     <table class="ui celled structured table">
         <thead>
             <tr>
-                <th rowspan="1">Kategory</th>
-                <th rowspan="1">key</th>
-                <th rowspan="1">value</th>
-                <th colspan="1">description</th>
+                <th>Kategory</th>
+                <th>key</th>
+                <th>value</th>
+                <th>description</th>
             </tr>
         </thead>
         <tbody>
             <ng-container *ngFor="let cat of prefCats">
                 <ng-container *ngFor="let pref of cat.prefs; let i = index">
                 <tr>
-                    <td *ngIf="i === 0"  [attr.rowspan]="cat.prefs.length">{{cat.descr}} ({{cat.value}})</td>
+                    <td *ngIf="i === 0"  [attr.rowspan]="cat.prefs.length">{{cat.descr}} <span class="tiny text">({{cat.value}})</span></td>
                         <td>{{pref.key}}</td>
                         <td>{{pref.value}}</td>
                         <td>{{pref.value}}</td>
@@ -58,28 +79,6 @@
         </tbody>
     </table>
 
-
-    <div class="ui segment padded" *ngFor="let cat of prefCats">
-        <div class="ui container stackable relaxed two column padded equal width grid items">
-            <div class="row item">
-                <!-- <div class="column "> -->
-                <div class="content">
-                    <div class="header">{{cat.descr}}</div>
-                    <!-- <div class="meta">{{cat.name}}</div> -->
-                    <div class="description">{{cat.value}}</div>
-                </div>
-                <!-- <p class="">Änderbar in: {{cat.location}}</p> -->
-                <!-- </div> -->
-            </div>
-            <div class="column item" *ngFor="let pref of cat.prefs" style="border:1px solid rgba(34,36,38,.15); margin: 0">
-                <div class="content">
-                    <div class="header">{{pref.descr}}</div>
-                    <div class="meta">{{pref.key}}</div>
-                    <div class="description">{{pref.value}}</div>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
 </div>
