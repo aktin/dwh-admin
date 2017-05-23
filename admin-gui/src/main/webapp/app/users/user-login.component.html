@@ -24,6 +24,23 @@
                 <input type="password" name="password" placeholder="Passwort" [(ngModel)]="password">
             </div>
         </div>
-        <button class="ui fluid large submit button" type="submit">Login</button>
+        <button class="ui fluid large submit right labeled icon button" type="submit">
+            Login
+            <i class="caret down icon show-url"></i>
+        </button>
+
+        <select name="serverurl" class="ui fluid search selection dropdown server-select" [(ngModel)]="curServerUrl">
+            <option value="">ServerUrl</option>
+            <option *ngFor="let val of serverUrls" value="{{val}}">{{val}}</option>
+        </select>
     </form>
 </div>
+
+<script type="text/javascript">
+    $timeout(function(){
+        $('.server-select.ui.dropdown').dropdown({
+            allowAdditions: true,
+            onChange:function (value, text, $choice){usersApp.changeServer = true}
+        });
+    },200)
+</script>

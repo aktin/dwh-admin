@@ -4,6 +4,7 @@
 import { Component } from '@angular/core';
 
 import { UserService } from './user.service';
+import { UrlService } from '../helpers/index';
 
 @Component({
     selector: 'user-login',
@@ -15,12 +16,14 @@ export class UserLoginComponent {
     username = 'i2b2';
     password = 'demouser';
 
+    serverUrl: string;
+
     loggingIn = false;
     loggingInState: string;
 
     msgs: string[] = [];
 
-    constructor (private userService: UserService) {}
+    constructor (private userService: UserService, private url: UrlService) {}
 
     userLogin (): void {
         this.msgs.length = 0;
@@ -75,5 +78,12 @@ export class UserLoginComponent {
 
     get messages () {
         return this.msgs;
+    }
+
+    get serverUrls () {
+        return this.url.serverUrls;
+    }
+    get curServerUrl () {
+        return this.url.curServerUrl;
     }
 }

@@ -6,12 +6,12 @@ import _ = require('underscore');
 
 @Injectable()
 export class UrlService {
-    // /*
-    private serverUrl = 'http://134.106.36.86:8087';
-    /*/
-     private serverUrl = 'http://localhost:8080';
-     // */
-    private baseUrl =  '/aktin/admin/rest';
+    private serverUrlArray = [
+        '/aktin/admin/rest',
+        'http://localhost:8080/aktin/admin/rest',
+        'http://134.106.36.86:8087/aktin/admin/rest',
+    ];
+    private serverUrl = this.serverUrlArray[0];
     private endUrls = {
         login : '/auth/login',
         logout : '/auth/logout',
@@ -33,12 +33,16 @@ export class UrlService {
         newMonthlyReport : '/report/monthly/email',
     };
 
-    setBaseUrl (baseUrl: string): void {
-        this.baseUrl = baseUrl;
+    setServerUrl (serverUrl: string) {
+        this.serverUrl = serverUrl;
     }
 
-    getBaseUrl (): string {
-        return this.baseUrl;
+    get serverUrls (): string[] {
+        return this.serverUrlArray;
+    }
+
+    get curServerUrl (): string {
+        return this.serverUrl;
     }
 
     /**
@@ -60,7 +64,6 @@ export class UrlService {
             );
         }
 
-        return this.serverUrl + this.baseUrl + endUrl;
-        // return this.baseUrl + (this.endUrls[key] || key);
+        return this.serverUrl + endUrl;
     }
 }
