@@ -11,5 +11,9 @@
         "suppressImplicitAnyIndexErrors": true,
         "allowUnusedLabels": false,
         "noImplicitReturns": true
-    }
+    },
+    "exclude": [
+        "node_modules",
+        "lib"
+    ]
 }
