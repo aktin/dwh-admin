@@ -30,15 +30,19 @@
     "zone.js": "^0.8.4"
   },
   "devDependencies": {
+    "@types/jquery": "^2.0.45",
     "@types/lodash": "^4.14.64",
     "@types/node": "^7.0.18",
+    "@types/semantic-ui": "^2.2.3",
     "@types/underscore": "^1.8.0",
     "canonical-path": "0.0.2",
     "concurrently": "^3.2.0",
+    "jquery": "^3.2.1",
     "lite-server": "^2.2.2",
     "lodash": "^4.16.4",
     "protractor": "~5.1.2",
     "rimraf": "^2.5.4",
+    "semantic-ui": "^2.2.10",
     "tslint": "^5.2.0",
     "typescript": "~2.3.2",
     "underscore": "^1.8.3"
