@@ -1,17 +1,19 @@
 /**
  * Created by Xu on 02.05.2017.
  */
-import { Component } from '@angular/core';
+import {AfterViewInit, Component} from '@angular/core';
 
 import { UserService } from './user.service';
 import { UrlService } from '../helpers/index';
+import $ = require('jquery');
+require('semantic-ui');
 
 @Component({
     selector: 'user-login',
     templateUrl: './user-login.component.html',
     styleUrls : ['./user-login.component.css'],
 })
-export class UserLoginComponent {
+export class UserLoginComponent implements AfterViewInit{
 
     username = 'i2b2';
     password = 'demouser';
@@ -24,6 +26,14 @@ export class UserLoginComponent {
     msgs: string[] = [];
 
     constructor (private userService: UserService, private url: UrlService) {}
+
+    ngAfterViewInit () {
+        $('.server-select.ui.dropdown').dropdown({
+            allowAdditions: true,
+            onChange: function (value, text, $choice){console.log(value, text, $choice)}
+        });
+        console.log(123);
+    }
 
     userLogin (): void {
         this.msgs.length = 0;

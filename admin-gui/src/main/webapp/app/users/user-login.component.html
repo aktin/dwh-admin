@@ -36,11 +36,3 @@
     </form>
 </div>
 
-<script type="text/javascript">
-    $timeout(function(){
-        $('.server-select.ui.dropdown').dropdown({
-            allowAdditions: true,
-            onChange:function (value, text, $choice){usersApp.changeServer = true}
-        });
-    },200)
-</script>
