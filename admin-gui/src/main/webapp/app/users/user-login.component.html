@@ -3,7 +3,7 @@
     <button class="ui fluid large submit button" type="submit" (click)="userLogout()">Logout</button>
 </div>
 <div *ngIf="! hasUser" class="ui segment">
-    <form class="ui form" #loginForm="ngForm" (ngSubmit)="userLogin()" [ngClass]="logInFormClasses">
+    <form class="ui form login-form" #loginForm="ngForm" (ngSubmit)="userLogin()" [ngClass]="logInFormClasses">
         <div class="ui error message">
             <div class="header">Log In fehlgeschlagen</div>
             <ul class="list">
@@ -24,15 +24,23 @@
                 <input type="password" name="password" placeholder="Passwort" [(ngModel)]="password">
             </div>
         </div>
-        <button class="ui fluid large submit right labeled icon button" type="submit">
-            Login
-            <i class="caret down icon show-url"></i>
-        </button>
 
-        <select name="serverurl" class="ui fluid search selection dropdown server-select" [(ngModel)]="curServerUrl">
-            <option value="">ServerUrl</option>
-            <option *ngFor="let val of serverUrls" value="{{val}}">{{val}}</option>
-        </select>
+        <div class="ui fields fluid large buttons">
+            <button class="ui fifteen wide field fluid large submit button" type="submit">
+                Login
+            </button>
+            <div class="ui icon one wide field button basic blue" [class.grey]="hideSelect">
+                <i class="caret down icon show-url" (click)="toggleServerSelector($event)"></i>
+            </div>
+        </div>
+        <div class="field server-select-field" [class.hidden]="hideSelect">
+            <select name="serverUrl" class="ui fluid search selection dropdown server-select"
+                    (change)="serverChange()" [(ngModel)]="serverUrl">
+                <option value="">ServerUrl</option>
+                <option *ngFor="let val of serverUrls" [value]="val" >{{val}}</option>
+            </select>
+        </div>
+
     </form>
 </div>
 

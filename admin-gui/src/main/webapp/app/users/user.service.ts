@@ -11,6 +11,7 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/throw';
 import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/finally';
 import 'rxjs/add/operator/combineLatest';
 
 import _ = require('underscore');
@@ -71,7 +72,10 @@ export class UserService {
             console.log('token valid for ' + res.text().split('=')[1].split('}')[0] + 'ms');
             this.cleanUpStorage();
             return true;
-        }).catch(this.httpHandler.handleError);
+        })//.catch(this.httpHandler.handleError)
+        .finally(() => {
+            this.cleanUpStorage();
+        });
     }
 
     userCheck (): Observable<boolean>  {
