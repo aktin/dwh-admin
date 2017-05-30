@@ -62,7 +62,7 @@ const routes: Routes = [// array of routes
         ],
     },
     {
-        path: 'properties',
+        path: 'preferences',
         component: PreferencesComponent,
         data : {
             name : 'Konfigurationen',
@@ -111,7 +111,7 @@ export const routings = _.reduce(routes, (memo, route) => {
     }, []);
 
 @NgModule({
-    imports: [ RouterModule.forRoot(routes) ],
+    imports: [ RouterModule.forRoot(routes, { useHash: true }) ],
     exports: [ RouterModule ]
 })
 

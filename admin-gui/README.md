@@ -36,12 +36,8 @@ TODO Webapp
 - use webpack instead of systemjs
 - use ahead of time compilation
 
-- server communication
-- user authentification
-- store token
 - locale anfragen verwaltung
 
-- PATH aus der Login Maske ausblenden. (per pfeil aktivieren)
 
 -- breadcrumbs
 
