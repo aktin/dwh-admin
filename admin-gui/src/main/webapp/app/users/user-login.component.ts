@@ -77,17 +77,16 @@ export class UserLoginComponent {
         let dropDown = $('.server-select.ui.dropdown');
         if (dropDown[0] && dropDown[0].localName === 'select') {
             // first time init
-            // this.serverUrl = this.url.curServerUrl;
             dropDown.dropdown({
                 allowAdditions: true,
                 fullTextSearch: true,
                 // onChange: function (value, text, $choice){console.log(value, text, $choice)}
             });
-
-            console.log(this.serverUrl);
+            // console.log('dropdown init',this.serverUrl);
         }
-
+        // console.log('toggling select');
         this.select = !this.select;
+
     }
 
     get user() {
