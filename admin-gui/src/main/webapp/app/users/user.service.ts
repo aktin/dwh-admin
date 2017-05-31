@@ -30,84 +30,85 @@ import { User } from './user';
 @Injectable()
 export class UserService {
 
-    private tokenValidTrustTime: number = 3000;
+    private _tokenValidTrustTime = 3000;
 
     constructor (
-        private httpHandler: HttpHandlerService,
-        private http: HttpInterceptorService,
-        private urls: UrlService,
-        private store: StorageService
+        private _httpHandler: HttpHandlerService,
+        private _http: HttpInterceptorService,
+        private _urls: UrlService,
+        private _store: StorageService
     ) {}
 
     private cleanUpStorage (): void {
-        this.store.clear();
+        this._store.clear();
     }
 
     userLogin ( username: string, password: string): Observable<User> {
-        // console.log('login',  this.urls.parse('login'));
+        // console.log('login',  this._urls.parse('login'));
         this.cleanUpStorage();
-        return this.http.post(
-            this.urls.parse('login'),
+        return this._http.post(
+            this._urls.parse('login'),
             {username: username, password: password}
         ).map(res => {
             let user: User;
             if (res.ok && res.text()) {
                 user = new User(username, res.text());
-                this.store.setValue('user.auth.time', String(Date.now()));
-                this.store.setValue('user.name', user.username);
-                this.store.setValue('user.token', user.token);
+                this._store.setValue('user.auth.time', String(Date.now()));
+                this._store.setValue('user.name', user.username);
+                this._store.setValue('user.token', user.token);
                 this.adminCheck().subscribe();
                 return user;
             }
             return Observable.throw('Authentication Error, status code: ' + res.status);
-        }).catch(this.httpHandler.handleError);
+        }).catch(this._httpHandler.handleError);
     }
 
     userLogout (): Observable<boolean> {
-        return this.http.post(
-            this.urls.parse('logout'),
-            this.store.getValue('user.token'),
+        return this._http.post(
+            this._urls.parse('logout'),
+            this._store.getValue('user.token'),
             new RequestOptions({ headers: new Headers({ 'Content-Type': 'text/plain' }) })
         ).map(res => {
             console.log('token valid for ' + res.text().split('=')[1].split('}')[0] + 'ms');
             this.cleanUpStorage();
             return true;
-        })//.catch(this.httpHandler.handleError)
+        })
+        // .catch(this._httpHandler.handleError)
         .finally(() => {
             this.cleanUpStorage();
         });
     }
 
     userCheck (): Observable<boolean>  {
-        return this.httpHandler.debouncedGet<boolean> (
+        return this._httpHandler.debouncedGet<boolean> (
             'user.auth',
-            this.store.getValue('user.token') !== null,
+            this._store.getValue('user.token') !== null,
             false,
-            this.tokenValidTrustTime,
-            this.urls.parse('userCheck'),
-            (res: Response) => {
+            this._tokenValidTrustTime,
+            this._urls.parse('userCheck'),
+            ( /*res: Response*/ ) => {
                 // console.log(res);
                 this.adminCheck().subscribe();
-                return this.store.getValue('user.token') !== null;
+                return this._store.getValue('user.token') !== null;
             }, (err: Response) => {
                 if (err.status === 401) {
                     // console.log('unauthorized');
                     this.cleanUpStorage();
                 }
                 return err;
-            }, this.http, this.store
+            }, this._http, this._store
         );
     }
 
     adminCheck (): Observable<boolean> {
-        return this.httpHandler.debouncedGet<boolean> (
+        return this._httpHandler.debouncedGet<boolean> (
             'user.admin',
-            JSON.parse(this.store.getValue('user.admin') || 'false'),
+            JSON.parse(this._store.getValue('user.admin') || 'false'),
             false,
-            this.tokenValidTrustTime,
-            this.urls.parse('adminCheck'),
+            this._tokenValidTrustTime,
+            this._urls.parse('adminCheck'),
             (res: Response) => {
-                this.store.setValue('user.admin', res.text());
+                this._store.setValue('user.admin', res.text());
                 return res.text() === 'true';
             }, (err: Response) => {
                 if (err.status === 401) {
@@ -115,19 +116,19 @@ export class UserService {
                     this.cleanUpStorage();
                 }
                 return err;
-            }, this.http, this.store
+            }, this._http, this._store
         );
     }
 
     userRoles (): Observable<string[]> {
-        return this.httpHandler.debouncedGet<string[]> (
+        return this._httpHandler.debouncedGet<string[]> (
             'user.roles',
-            JSON.parse(this.store.getValue('user.roles') || '[]'),
+            JSON.parse(this._store.getValue('user.roles') || '[]'),
             null,
-            this.tokenValidTrustTime,
-            this.urls.parse('getUserRoles', {user: this.store.getValue('user.name')}),
+            this._tokenValidTrustTime,
+            this._urls.parse('getUserRoles', {user: this._store.getValue('user.name')}),
             (res: Response) => {
-                this.store.setValue('user.roles', res.text());
+                this._store.setValue('user.roles', res.text());
                 return JSON.parse(res.text() || '[]');
             }, (err: Response) => {
                 if (err.status === 401) {
@@ -135,7 +136,7 @@ export class UserService {
                     // this.cleanUpStorage();
                 }
                 return err;
-            }, this.http, this.store
+            }, this._http, this._store
         );
     }
 
@@ -168,17 +169,17 @@ export class UserService {
 
     userLocal (): User {
         if (this.userLocalCheck()) {
-            if (this.store.getValue('user.name') === null) {
+            if (this._store.getValue('user.name') === null) {
                 // some thing went wrong. user name error. we will wipe it then
                 this.cleanUpStorage();
             }
-            return new User (this.store.getValue('user.name'), this.store.getValue('user.token'));
+            return new User (this._store.getValue('user.name'), this._store.getValue('user.token'));
         }
         return null;
     }
 
     userLocalCheck (): boolean {
-        return this.store.getValue('user.token') !== null;
+        return this._store.getValue('user.token') !== null;
     }
 
     userLocalCheckRoles (roles: string[]): boolean {
@@ -186,28 +187,28 @@ export class UserService {
             return true;
         }
         if (_.contains(roles, 'ADMIN')) {
-            if ( this.store.getValue('user.token') !== null ) {
-                return JSON.parse(this.store.getValue('user.admin')) || false;
+            if ( this._store.getValue('user.token') !== null ) {
+                return JSON.parse(this._store.getValue('user.admin')) || false;
             }
             this.cleanUpStorage();
             return false;
         }
         if (_.contains(roles, 'LOGGEDIN')) {
-            return  this.store.getValue('user.token') !== null;
+            return  this._store.getValue('user.token') !== null;
         }
-        let userRoles = JSON.parse(this.store.getValue('user.roles'));
+        let userRoles = JSON.parse(this._store.getValue('user.roles'));
         return _.some(roles, function (role) {
             return _.contains(userRoles, role);
         });
     }
 
     users (): Observable<User[]> {
-        return this.http.get(this.urls.parse('getRoles', {user: 'i2b2'})).map(
+        return this._http.get(this._urls.parse('getRoles', {user: 'i2b2'})).map(
             res => {
                 console.log(res);
                 return null;
             }).catch(err => {
-            return this.httpHandler.handleError(err);
+            return this._httpHandler.handleError(err);
         });
     }
 }

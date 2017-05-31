@@ -1,7 +1,7 @@
 /**
  * Created by Xu on 02.05.2017.
  */
-import {AfterViewChecked, Component} from '@angular/core';
+import { Component } from '@angular/core';
 
 import { UserService } from './user.service';
 import { UrlService } from '../helpers/index';
@@ -19,11 +19,9 @@ export class UserLoginComponent {
     password = 'demouser';
 
     serverUrl  = this.url.curServerUrl;
-
     loggingInState: string;
-    select = true;
-
-    msgs: string[] = [];
+    private _hideSelect = true;
+    private _messages: string[] = [];
 
     constructor (private userService: UserService, private url: UrlService) {
         this.serverUrl = this.url.curServerUrl;
@@ -31,28 +29,28 @@ export class UserLoginComponent {
 
 
     userLogin (): void {
-        this.msgs.length = 0;
+        this._messages.length = 0;
         if (!this.username) {
-            this.msgs.push('Bitte Nutzername angeben');
+            this._messages.push('Bitte Nutzername angeben');
             this.loggingInState = 'error';
         }
         if (!this.password) {
-            this.msgs.push('Bitte Passwort angeben');
+            this._messages.push('Bitte Passwort angeben');
             this.loggingInState = 'error';
         }
-        if (this.msgs.length > 0) {
+        if (this._messages.length > 0) {
             return;
         }
 
         this.loggingInState = 'loading';
 
         this.userService.userLogin(this.username, this.password).subscribe(
-            user => {
+            ( /*user*/ ) => {
                 this.loggingInState = 'success';
             },
             error => {
                 console.error('error? ', error);
-                this.msgs.push('Authentifizierungsfehler: ' + error);
+                this._messages.push('Authentifizierungsfehler: ' + error);
                 this.loggingInState = 'error';
             }
         );
@@ -60,9 +58,9 @@ export class UserLoginComponent {
 
     userLogout (): void {
         this.userService.userLogout().subscribe(
-            () => {
+            ( /*user*/ ) => {
             },
-            error => {
+            ( /*error*/ ) => {
                 // console.error(error.message)
             },
         );
@@ -73,7 +71,7 @@ export class UserLoginComponent {
         this.url.setServerUrl(this.serverUrl);
     }
 
-    toggleServerSelector(event: Event) {
+    toggleServerSelector() {
         let dropDown = $('.server-select.ui.dropdown');
         if (dropDown[0] && dropDown[0].localName === 'select') {
             // first time init
@@ -85,7 +83,7 @@ export class UserLoginComponent {
             // console.log('dropdown init',this.serverUrl);
         }
         // console.log('toggling select');
-        this.select = !this.select;
+        this._hideSelect = !this._hideSelect;
 
     }
 
@@ -104,7 +102,7 @@ export class UserLoginComponent {
     }
 
     get messages () {
-        return this.msgs;
+        return this._messages;
     }
 
     get serverUrls () {
@@ -112,6 +110,6 @@ export class UserLoginComponent {
     }
 
     get hideSelect () {
-        return this.select;
+        return this._hideSelect;
     }
 }
