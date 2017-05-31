@@ -1,0 +1,81 @@
+<h1>Server CDA Import Status</h1>
+
+
+<div class="ui grid">
+    <div class="row">
+        <div class="six wide column">
+            Start (last server reset):
+        </div>
+        <div class="six wide column">
+            {{status.start | date: 'medium'}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="six wide column">
+            Letzter erfolreicher Import:
+        </div>
+        <div class="six wide column">
+            {{status.lastWrite | date: 'medium'}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="six wide column">
+            Letzter Fehlgeschlagener Import:
+        </div>
+        <div class="six wide column">
+            {{status.lastReject | date: 'medium'}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="three wide column">
+            Importiert:
+        </div>
+        <div class="three wide column">
+            {{status.imported}}
+        </div>
+        <div class="three wide column">
+            Updated:
+        </div>
+        <div class="three wide column">
+            {{status.updated}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="three wide column">
+            Invalid:
+        </div>
+        <div class="three wide column">
+            {{status.invalid}}
+        </div>
+        <div class="three wide column">
+            Failed:
+        </div>
+        <div class="three wide column">
+            {{status.failed}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="four wide column">
+            errors:
+        </div>
+    </div>
+    <div class="ui segments sixteen wide column">
+        <div class="ui segment grid" *ngFor="let err of status.error">
+            <div class="three wide column">
+                Last Date:
+            </div>
+            <div class="six wide column">
+                {{err.timestamp | date: 'medium'}}
+            </div>
+            <div class="two wide column">
+                Count:
+            </div>
+            <div class="one wide column">
+                {{err.repeats}}
+            </div>
+            <div class="sixteen wide column">
+                <pre>{{err.value}}</pre>
+            </div>
+        </div>
+    </div>
+</div>

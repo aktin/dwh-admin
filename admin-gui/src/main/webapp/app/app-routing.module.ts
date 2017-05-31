@@ -9,13 +9,14 @@ import { RouterModule, Routes } from '@angular/router';
 
 import _ = require('underscore');
 
-import { HomeComponent }        from './home/index';
+import { HomeComponent }         from './home/index';
 import { UsersComponent, UserLoginComponent, UserAuthGuard }    from './users/index';
 import { ReportsComponent, ReportSingleComponent }              from './reports/index';
 import { PreferencesComponent }  from './preferences/index';
-import { RequestsComponent }    from './requests/index';
+import { RequestsComponent }     from './requests/index';
+import { StatusComponent }       from './status/index';
 
-import { RestrictedComponent }  from './restricted/restricted.component';
+import { RestrictedComponent }   from './restricted/restricted.component';
 
 
 const routes: Routes = [// array of routes
@@ -83,7 +84,7 @@ const routes: Routes = [// array of routes
     },
     {
         path: 'status',
-        component: RequestsComponent,
+        component: StatusComponent,
         data : {
             name : 'Status',
             roles : [

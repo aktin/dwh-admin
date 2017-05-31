@@ -11,7 +11,8 @@ export class UrlService {
         'http://localhost:8080/aktin/admin/rest',
         'http://134.106.36.86:8087/aktin/admin/rest',
     ];
-    private _serverUrl = this._serverUrls[0];
+    // TODO DEBUG set server url to 2
+    private _serverUrl = this._serverUrls[2];
     private _endUrls = {
         login : '/auth/login',
         logout : '/auth/logout',
@@ -47,12 +48,12 @@ export class UrlService {
 
     /**
      *
-     * @param key
+     * @param url
      * @param args has the form {user: some user, role: some role}
      * @returns {string}
      */
-    parse (key: string, args ?: any): string {
-        let endUrl = this._endUrls[key] || key;
+    parse (url: string, args ?: any): string {
+        let endUrl = this._endUrls[url] || url;
         let keys = endUrl.match(/@\w*@/g);
         if (keys && keys.length >= 0) {
             endUrl = _.reduce(

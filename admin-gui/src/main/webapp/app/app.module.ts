@@ -24,7 +24,7 @@ import { ReportService, SuccessReportsPipe,
             ReportsComponent, ReportSingleViewComponent, ReportSingleComponent }    from './reports/index';
 import { PreferencesComponent, PreferenceService }                                  from './preferences/index';
 import { RequestsComponent }                                                        from './requests/index';
-import { StatusComponent }                                                          from './status/index';
+import { StatusComponent, StatusService }                                           from './status/index';
 import { RestrictedComponent }  from './restricted/restricted.component';
 
 
@@ -68,6 +68,7 @@ import { RestrictedComponent }  from './restricted/restricted.component';
         UserService,
         ReportService,
         PreferenceService,
+        StatusService,
     ]
 })
 export class AppModule { }
