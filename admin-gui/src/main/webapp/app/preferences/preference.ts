@@ -6,7 +6,7 @@ export interface PreferenceCategory {
     value: string,
     name: string,
     description: string,
-    preferences?: Preference[];
+    preferences?: Preference[],
     location?: string,
 }
 export interface Preference {
