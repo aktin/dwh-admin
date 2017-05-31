@@ -10,18 +10,18 @@ import { ReportService } from './report.service';
 })
 export class ReportsComponent  {
     reportsData: Report[];
-    showOnlySuccessful: boolean = false;
+    showOnlySuccessful = false;
     @ViewChild(PopUpMessageComponent) popUp: PopUpMessageComponent;
 
-    constructor (private reportService: ReportService) {}
+    constructor (private _reportService: ReportService) {}
 
     get reports (): Report[] {
-        this.reportsData = this.reportService.getReports();
+        this.reportsData = this._reportService.getReports();
         return this.reportsData;
     }
 
     generateReport (): void {
-        this.reportService.newReport();
+        this._reportService.newReport();
         this.popUp.show = true;
     }
 }

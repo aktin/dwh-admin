@@ -9,18 +9,18 @@ import { ReportService } from './report.service';
 @Component({
     templateUrl: './report-single.component.html',
 })
-export class ReportSingleComponent implements OnInit{
+export class ReportSingleComponent implements OnInit {
     report: Report;
 
     constructor(
-        private route: ActivatedRoute,
-        private reportService: ReportService
+        private _route: ActivatedRoute,
+        private _reportService: ReportService
     ) {}
 
     ngOnInit(): void {
-        this.route.params
+        this._route.params
             .map((params: Params) => {
-                return this.reportService.getReport(+params['id'] - 1);
+                return this._reportService.getReport(+params['id'] - 1);
             }).subscribe(
                 rep => {
                     this.report = rep;
