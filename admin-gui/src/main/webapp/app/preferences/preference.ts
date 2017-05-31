@@ -2,59 +2,58 @@
  * Created by Xu on 18.05.2017.
  */
 
-import _ = require('underscore');
-export interface PrefCategory {
+export interface PreferenceCategory {
     value: string,
     name: string,
-    descr: string,
-    prefs?: Preference[];
+    description: string,
+    preferences?: Preference[];
     location?: string,
 }
 export interface Preference {
     key: string,
     value: string,
-    descr?: string,
+    description?: string,
 }
 
-export const predefinedPrefCats: PrefCategory[] = [
+export const predefinedPreferenceCategories: PreferenceCategory[] = [
     {
         value : 'i2b2',
         name : 'I2B2',
-        descr : 'i2b2 Einstellungen',
+        description : 'i2b2 Einstellungen',
     },
     {
         value : 'local',
         name : 'Lokal',
-        descr : 'Lokale Einstellungen über den Standort',
+        description : 'Lokale Einstellungen über den Standort',
     },
     {
         value : 'rscript',
         name : 'R',
-        descr : 'R Installation',
+        description : 'R Installation',
     },
     {
         value : 'report',
         name : 'Report',
-        descr : 'Bericht Ablage',
+        description : 'Bericht Ablage',
     },
     {
         value : 'wildfly',
         name : 'Wildfly',
-        descr : 'Wildlfy Konfiguration',
+        description : 'Wildlfy Konfiguration',
     },
     {
         value : 'broker',
         name : 'Broker',
-        descr : 'Broker Einstellungen',
+        description : 'Broker Einstellungen',
     },
     {
         value : '',
         name : 'Sonstige',
-        descr : 'nicht zugeordnete Einstellungen',
+        description : 'nicht zugeordnete Einstellungen',
     },
 ];
 
-export const predefinedPrefs = {
+export const predefinedPreferences = {
     'local.ou': 'Abteilungsname',
     'local.o': 'Klinikname',
     'local.c': 'Staat',

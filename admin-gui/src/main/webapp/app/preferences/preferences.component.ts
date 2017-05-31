@@ -1,20 +1,20 @@
 import { Component } from '@angular/core';
 import { PreferenceService } from './preference.service';
-import { PrefCategory } from './preference';
+import { PreferenceCategory } from './preference';
 
 @Component({
   templateUrl: './preferences.component.html',
     styleUrls: ['./preferences.component.css'],
 })
 export class PreferencesComponent  {
-    constructor (private prefService: PreferenceService) {}
+    constructor (private _prefService: PreferenceService) {}
 
-    get prefCats (): PrefCategory[] {
-        console.log( this.prefService.getPrefCats());
-        return this.prefService.getPrefCats();
+    get preferenceCategories (): PreferenceCategory[] {
+        // console.log( this._prefService.getPreferenceCategories());
+        return this._prefService.getPreferenceCategories();
     }
 
     get fileLocation (): string {
-        return this.prefService.getFileLocation();
+        return this._prefService.getFileLocation();
     }
 }

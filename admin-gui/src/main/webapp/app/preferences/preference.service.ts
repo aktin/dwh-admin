@@ -2,10 +2,9 @@
  * Created by Xu on 18.05.2017.
  * Property service
  */
-import { Injectable } from '@angular/core';
-import { Headers, RequestOptions, Response } from '@angular/http';
+import { Injectable }   from '@angular/core';
+import { Response }     from '@angular/http';
 
-import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/observable/throw';
@@ -14,8 +13,8 @@ import 'rxjs/add/operator/combineLatest';
 
 import _ = require('underscore');
 
-import { HttpHandlerService, StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
-import { predefinedPrefCats, predefinedPrefs, PrefCategory, Preference } from './preference';
+import { HttpHandlerService, StorageService, UrlService, HttpInterceptorService }                from '../helpers/index';
+import { predefinedPreferenceCategories, predefinedPreferences, PreferenceCategory, Preference } from './preference';
 
 /**
  * Service Class for user management and LOGIN
@@ -26,70 +25,71 @@ import { predefinedPrefCats, predefinedPrefs, PrefCategory, Preference } from '.
  */
 @Injectable()
 export class PreferenceService {
-    private static cats: PrefCategory[] = [];
-    private dataInterval = 3000;
-    private fileLocation = '/opt/wildfly-9..0.2-Final/standalone/configuration/aktin.properties';
+    private static _categories: PreferenceCategory[] = [];
+    private _dataInterval = 3000;
+    private _fileLocation = '/opt/wildfly-9..0.2-Final/standalone/configuration/aktin.properties';
 
     constructor (
-        private httpHandler: HttpHandlerService,
-        private http: HttpInterceptorService,
-        private urls: UrlService,
-        private store: StorageService
+        private _httpHandler: HttpHandlerService,
+        private _http: HttpInterceptorService,
+        private _urls: UrlService,
+        private _store: StorageService
     ) {}
 
-    updateProperties (): void {
-        this.httpHandler.debouncedGet<void> (
-            'prefs',
+    updatePreferences (): void {
+        this._httpHandler.debouncedGet<void> (
+            'preferences',
             null, null,
-            this.dataInterval,
-            this.urls.parse('prefs'),
+            this._dataInterval,
+            this._urls.parse('preferences'),
             (res: Response) => {
                 let data = res.json();
                 let keys = Object.keys(data);
-                _.each(keys, (k: string) => this.insertPref(k, data[k]));
-                this.store.setValue('prefs', JSON.stringify(PreferenceService.cats));
+                _.each(keys, (k: string) => this.insertPreference(k, data[k]));
+                this._store.setValue('preferences', JSON.stringify(PreferenceService._categories));
                 return res.text();
             }, (err: Response) => {
                 return err;
-            }, this.http, this.store
+            }, this._http, this._store
         ).subscribe(
-            rep => {
+            ( /*rep*/ ) => {
             },
             error => console.log(error)
         );
     }
 
-    insertPref ( key: string, value: string ): [PrefCategory, Preference] {
+    insertPreference (key: string, value: string ): [PreferenceCategory, Preference] {
         let catName = key.split('.')[0];
 
-        let cat: PrefCategory = _.findWhere(PreferenceService.cats, {value : catName} )
-                            || _.findWhere(predefinedPrefCats, {value : catName} )
-                            || _.findWhere(PreferenceService.cats, {value : ''} )
-                            || _.findWhere(predefinedPrefCats, {value : ''} )
-                            || {value : catName, name : catName, descr : catName};
+        let cat: PreferenceCategory = _.findWhere(PreferenceService._categories, {value : catName} )  // is it in categories?
+                            || _.findWhere(predefinedPreferenceCategories, {value : catName} )  // is it in predefined ones?
+                            || _.findWhere(PreferenceService._categories, {value : ''} )        // is the empty one there?
+                            || _.findWhere(predefinedPreferenceCategories, {value : ''} )       // is the empty one in predefined ones?
+                            || {value : catName, name : catName, description : catName};
+                                        // insert new category. Should never arrive here if the empty one is predefined
 
-        if (! _.contains(PreferenceService.cats, cat)) {
-            cat.prefs = [];
-            cat.location = this.fileLocation;
-            PreferenceService.cats.push(cat);
+        if (! _.contains(PreferenceService._categories, cat)) {
+            cat.preferences = [];
+            cat.location = this._fileLocation;
+            PreferenceService._categories.push(cat);
         }
 
-        let pref = _.findWhere(cat.prefs, {key : key});
+        let pref = _.findWhere(cat.preferences, {key : key});
         if (pref) {
             pref.value = value;
         } else {
-            pref = {key: key, value : value, descr : predefinedPrefs[key] || key};
-            cat.prefs.push(pref);
+            pref = {key: key, value : value, description : predefinedPreferences[key] || key};
+            cat.preferences.push(pref);
         }
         return [cat, pref];
     }
 
-    getPrefCats (): PrefCategory[] {
-        this.updateProperties();
-        return PreferenceService.cats;
+    getPreferenceCategories (): PreferenceCategory[] {
+        this.updatePreferences();
+        return PreferenceService._categories;
     }
 
     getFileLocation (): string {
-        return this.fileLocation;
+        return this._fileLocation;
     }
 }
