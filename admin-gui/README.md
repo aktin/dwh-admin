@@ -42,6 +42,14 @@ TODO Webapp
 -- breadcrumbs
 
 
+Reports:
+New Report als Formular mit anfang und end datumsfelder [als popup]
+    [default letzten Monat wenn es klappt] mit zeitspann von letzter monat
+    oder letzter monat button wenn nicht
+
+    template auswahl mit rest call von allen templates [default monatsbericht (aktuell einziger)]
+
+
 5. Wenn man angemeldet ist, dann ist der Reiter "Status" leer. Hier kannst du den Inhalt von /aktin/admin/rest/import-summary anzeigen.
 6. Konfiguration wird nicht angezeigt. Fehler: aktinPropFile undefined. 
 Der REST-Aufruf im Hintergrund ist aber erfolgreich.
@@ -49,8 +57,6 @@ Der REST-Aufruf im Hintergrund ist aber erfolgreich.
 
 
 
-
-Neues Bericht zum Button umziehen, form button für später auch template auswahl
 
 
 
