@@ -11,7 +11,7 @@ import { Component, Input } from '@angular/core';
 export class PopUpMessageComponent {
     @Input() message: string;
     @Input() head: string;
-    show: boolean = false;
+    show = false;
 
     closeMessage (): void {
         this.show = false;

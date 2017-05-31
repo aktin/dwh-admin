@@ -6,13 +6,13 @@ import _ = require('underscore');
 
 @Injectable()
 export class UrlService {
-    private serverUrlArray = [
+    private _serverUrls = [
         '/aktin/admin/rest',
         'http://localhost:8080/aktin/admin/rest',
         'http://134.106.36.86:8087/aktin/admin/rest',
     ];
-    private serverUrl = this.serverUrlArray[0];
-    private endUrls = {
+    private _serverUrl = this._serverUrls[0];
+    private _endUrls = {
         login : '/auth/login',
         logout : '/auth/logout',
         adminCheck : '/auth/has/admin',
@@ -34,15 +34,15 @@ export class UrlService {
     };
 
     setServerUrl (serverUrl: string) {
-        this.serverUrl = serverUrl;
+        this._serverUrl = serverUrl;
     }
 
     get serverUrls (): string[] {
-        return this.serverUrlArray;
+        return this._serverUrls;
     }
 
-    get curServerUrl (): string {
-        return this.serverUrl;
+    get serverUrl (): string {
+        return this._serverUrl;
     }
 
     /**
@@ -52,7 +52,7 @@ export class UrlService {
      * @returns {string}
      */
     parse (key: string, args ?: any): string {
-        let endUrl = this.endUrls[key] || key;
+        let endUrl = this._endUrls[key] || key;
         let keys = endUrl.match(/@\w*@/g);
         if (keys && keys.length >= 0) {
             endUrl = _.reduce(
@@ -64,6 +64,6 @@ export class UrlService {
             );
         }
 
-        return this.serverUrl + endUrl;
+        return this._serverUrl + endUrl;
     }
 }

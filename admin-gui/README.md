@@ -31,6 +31,8 @@ e.g. similar to `http://stackoverflow.com/questions/11396219/init-database-for-t
 TODO Webapp
 ====
 
+Naming conventions: _name for private variables
+
 - Container anpassen und Design erzeugen
 - Use loshdash instead of underscore
 - use webpack instead of systemjs

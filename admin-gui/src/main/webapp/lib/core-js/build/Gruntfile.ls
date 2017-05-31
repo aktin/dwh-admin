@@ -16,7 +16,7 @@ module.exports = (grunt)->
         sourceMap: on
         banner: config.banner
     livescript: src: files:
-      './tests/helpers.js': './tests/helpers/*'
+      './tests/dateparser.helper.js': './tests/helpers/*'
       './tests/tests.js': './tests/tests/*'
       './tests/library.js': './tests/library/*'
       './tests/es.js': './tests/tests/es*'
@@ -50,7 +50,7 @@ module.exports = (grunt)->
         browsers: <[PhantomJS]>
         singleRun: on
       'default': {}
-      'library': files: <[client/library.js tests/helpers.js tests/library.js]>map -> src: it
+      'library': files: <[client/library.js tests/dateparser.helper.js tests/library.js]>map -> src: it
   grunt.registerTask \build (options)->
     done = @async!
     build {

@@ -9,27 +9,27 @@ import { StorageService } from './storage.service';
 
 @Injectable()
 export class HttpInterceptorService {
-    constructor(private http: Http, private store: StorageService) {
+    constructor(private _http: Http, private _store: StorageService) {
     }
 
     request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
-        return this.http.request(url, options);
+        return this._http.request(url, options);
     }
 
     get(url: string, options?: RequestOptionsArgs): Observable<Response> {
-        return this.http.get(url, this.getRequestOptionArgs(options));
+        return this._http.get(url, this.getRequestOptionArgs(options));
     }
 
     post(url: string, body: string | any, options?: RequestOptionsArgs): Observable<Response> {
-        return this.http.post(url, body, this.getRequestOptionArgs(options));
+        return this._http.post(url, body, this.getRequestOptionArgs(options));
     }
 
     put(url: string, body: string, options?: RequestOptionsArgs): Observable<Response> {
-        return this.http.put(url, body, this.getRequestOptionArgs(options));
+        return this._http.put(url, body, this.getRequestOptionArgs(options));
     }
 
     delete(url: string, options?: RequestOptionsArgs): Observable<Response> {
-        return this.http.delete(url, options);
+        return this._http.delete(url, options);
     }
 
     private getRequestOptionArgs(options?: RequestOptionsArgs): RequestOptionsArgs {
@@ -39,8 +39,8 @@ export class HttpInterceptorService {
         if (options.headers == null) {
             options.headers = new Headers();
         }
-        if (this.store.getValue('user.token') /* && config.url === getUrl("/auth/login") */ ) {
-            options.headers.set('Authorization', 'Bearer ' + this.store.getValue('user.token'));
+        if (this._store.getValue('user.token') /* && config.url === getUrl("/auth/login") */ ) {
+            options.headers.set('Authorization', 'Bearer ' + this._store.getValue('user.token'));
             // options.headers.append('Content-Type', 'application/json');
             // options.headers['Authorization'] = 'Bearer ' + this.store.getValue('user.token');
         }

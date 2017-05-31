@@ -12,7 +12,7 @@ import { StorageService }           from './storage.service';
 @Injectable()
 export class HttpHandlerService {
 
-    private dataInterval: 3000;
+    private _dataInterval: 3000;
 
     constructor (
     ) {}
@@ -33,7 +33,7 @@ export class HttpHandlerService {
             return Observable.of(nullVal);
         }
         if (! dbTime ) {
-            dbTime = this.dataInterval;
+            dbTime = this._dataInterval;
         }
 
         if (Date.now() - store.getTime(vlName) <= dbTime) {

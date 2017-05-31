@@ -18,13 +18,13 @@ export class UserLoginComponent {
     username = 'i2b2';
     password = 'demouser';
 
-    serverUrl  = this.url.curServerUrl;
+    serverUrl  = this.url.serverUrl;
     loggingInState: string;
     private _hideSelect = true;
     private _messages: string[] = [];
 
     constructor (private userService: UserService, private url: UrlService) {
-        this.serverUrl = this.url.curServerUrl;
+        this.serverUrl = this.url.serverUrl;
     }
 
 
