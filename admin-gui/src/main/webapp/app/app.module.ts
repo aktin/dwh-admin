@@ -24,6 +24,7 @@ import { ReportService, SuccessReportsPipe,
             ReportsComponent, ReportSingleViewComponent, ReportSingleComponent }    from './reports/index';
 import { PreferencesComponent, PreferenceService }                                  from './preferences/index';
 import { RequestsComponent }                                                        from './requests/index';
+import { StatusComponent }                                                          from './status/index';
 import { RestrictedComponent }  from './restricted/restricted.component';
 
 
@@ -45,6 +46,7 @@ import { RestrictedComponent }  from './restricted/restricted.component';
         ReportSingleComponent,
         PreferencesComponent,
         RequestsComponent,
+        StatusComponent,
         RestrictedComponent,
         LoadingComponent,
         PopUpMessageComponent,
