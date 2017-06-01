@@ -4,7 +4,7 @@
  * User Service
  */
 import { Injectable } from '@angular/core';
-import { Headers, RequestOptions, Response } from '@angular/http';
+import { Response } from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
@@ -16,7 +16,7 @@ import 'rxjs/add/operator/combineLatest';
 
 import _ = require('underscore');
 
-import { HttpHandlerService, StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
+import { StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
 
 import { User } from './user';
 
@@ -33,7 +33,6 @@ export class UserService {
     private _tokenValidTrustTime = 3000;
 
     constructor (
-        private _httpHandler: HttpHandlerService,
         private _http: HttpInterceptorService,
         private _urls: UrlService,
         private _store: StorageService
@@ -60,27 +59,27 @@ export class UserService {
                 return user;
             }
             return Observable.throw('Authentication Error, status code: ' + res.status);
-        }).catch(this._httpHandler.handleError);
+        }).catch(this._http.handleError);
     }
 
     userLogout (): Observable<boolean> {
         return this._http.post(
             this._urls.parse('logout'),
             this._store.getValue('user.token'),
-            new RequestOptions({ headers: new Headers({ 'Content-Type': 'text/plain' }) })
+            this._http.generateHeaderOptions('Content-Type', 'text/plain')
         ).map(res => {
             console.log('token valid for ' + res.text().split('=')[1].split('}')[0] + 'ms');
             this.cleanUpStorage();
             return true;
         })
-        // .catch(this._httpHandler.handleError)
+        // .catch(this._http.handleError)
         .finally(() => {
             this.cleanUpStorage();
         });
     }
 
     userCheck (): Observable<boolean>  {
-        return this._httpHandler.debouncedGet<boolean> (
+        return this._http.debouncedGet<boolean> (
             'user.auth',
             this._store.getValue('user.token') !== null,
             false,
@@ -96,12 +95,12 @@ export class UserService {
                     this.cleanUpStorage();
                 }
                 return err;
-            }, this._http, this._store
+            },
         );
     }
 
     adminCheck (): Observable<boolean> {
-        return this._httpHandler.debouncedGet<boolean> (
+        return this._http.debouncedGet<boolean> (
             'user.admin',
             JSON.parse(this._store.getValue('user.admin') || 'false'),
             false,
@@ -116,12 +115,12 @@ export class UserService {
                     this.cleanUpStorage();
                 }
                 return err;
-            }, this._http, this._store
+            },
         );
     }
 
     userRoles (): Observable<string[]> {
-        return this._httpHandler.debouncedGet<string[]> (
+        return this._http.debouncedGet<string[]> (
             'user.roles',
             JSON.parse(this._store.getValue('user.roles') || '[]'),
             null,
@@ -136,7 +135,7 @@ export class UserService {
                     // this.cleanUpStorage();
                 }
                 return err;
-            }, this._http, this._store
+            },
         );
     }
 
@@ -208,7 +207,7 @@ export class UserService {
                 console.log(res);
                 return null;
             }).catch(err => {
-            return this._httpHandler.handleError(err);
+            return this._http.handleError(err);
         });
         // "[
         // {"full_name":"i2b2 Admin","user_name":"i2b2","email":null,"password":null,"is_admin":true},

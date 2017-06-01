@@ -13,7 +13,7 @@ import 'rxjs/add/operator/combineLatest';
 
 import _ = require('underscore');
 
-import { HttpHandlerService, StorageService, UrlService, HttpInterceptorService }                from '../helpers/index';
+import { StorageService, UrlService, HttpInterceptorService }                from '../helpers/index';
 import { predefinedPreferenceCategories, predefinedPreferences, PreferenceCategory, Preference } from './preference';
 
 /**
@@ -30,14 +30,13 @@ export class PreferenceService {
     private _fileLocation = '/opt/wildfly-9..0.2-Final/standalone/configuration/aktin.properties';
 
     constructor (
-        private _httpHandler: HttpHandlerService,
         private _http: HttpInterceptorService,
         private _urls: UrlService,
         private _store: StorageService
     ) {}
 
     updatePreferences (): void {
-        this._httpHandler.debouncedGet<void> (
+        this._http.debouncedGet<void> (
             'preferences',
             null, null,
             this._dataInterval,
@@ -50,7 +49,7 @@ export class PreferenceService {
                 return res.text();
             }, (err: Response) => {
                 return err;
-            }, this._http, this._store
+            }
         ).subscribe(
             ( /*rep*/ ) => {
             },

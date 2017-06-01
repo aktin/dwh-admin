@@ -10,7 +10,7 @@ import 'rxjs/add/operator/map';
 
 import _ = require('underscore');
 
-import { HttpHandlerService, StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
+import { StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
 import { Report, RawReport } from './report';
 
 @Injectable()
@@ -19,14 +19,13 @@ export class ReportService {
     private _dataInterval = 3000;
 
     constructor(
-        private _httpHandler: HttpHandlerService,
         private _http: HttpInterceptorService,
         private _urls: UrlService,
         private _store: StorageService
     ) {}
 
     private _updateReport (): void {
-        this._httpHandler.debouncedGet<void> (
+        this._http.debouncedGet<void> (
             'reports',
             null, null,
             this._dataInterval,
@@ -38,7 +37,7 @@ export class ReportService {
                 });
             }, (err: Response) => {
                 return err;
-            }, this._http, this._store
+            }
         ).subscribe(
             rep => {
                 if (rep) {
@@ -71,7 +70,7 @@ export class ReportService {
 
     // TODO add parameters for new reports
     newReport (): void {
-        this._http.post(this._urls.parse('newMonthlyReport'), {}).catch(err => {return this._httpHandler.handleError(err); })
+        this._http.post(this._urls.parse('newMonthlyReport'), {}).catch(err => {return this._http.handleError(err); })
             .subscribe();
     }
 }
