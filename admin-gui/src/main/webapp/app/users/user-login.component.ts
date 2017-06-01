@@ -47,6 +47,7 @@ export class UserLoginComponent {
         this.userService.userLogin(this.username, this.password).subscribe(
             ( /*user*/ ) => {
                 this.loggingInState = 'success';
+                this._hideSelect = true;
             },
             error => {
                 console.error('error? ', error);
