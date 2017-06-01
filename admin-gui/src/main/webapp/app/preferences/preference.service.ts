@@ -41,7 +41,7 @@ export class PreferenceService {
             'preferences',
             null, null,
             this._dataInterval,
-            this._urls.parse('preferences'),
+            this._urls.parse('prefs'),
             (res: Response) => {
                 let data = res.json();
                 let keys = Object.keys(data);
