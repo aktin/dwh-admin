@@ -203,12 +203,17 @@ export class UserService {
     }
 
     users (): Observable<User[]> {
-        return this._http.get(this._urls.parse('getRoles', {user: 'i2b2'})).map(
+        return this._http.get(this._urls.parse('getUsers', {user: 'i2b2'})).map(
             res => {
                 console.log(res);
                 return null;
             }).catch(err => {
             return this._httpHandler.handleError(err);
         });
+        // "[
+        // {"full_name":"i2b2 Admin","user_name":"i2b2","email":null,"password":null,"is_admin":true},
+        // {"full_name":"AGG_SERVICE_ACCOUNT","user_name":"AGG_SERVICE_ACCOUNT","email":null,"password":null,"is_admin":false},
+        // {"full_name":"i2b2 User","user_name":"demo","email":null,"password":null,"is_admin":false}
+        // ]"
     }
 }
