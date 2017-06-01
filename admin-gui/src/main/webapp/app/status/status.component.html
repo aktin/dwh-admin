@@ -1,7 +1,7 @@
 <h1>Server CDA Import Status</h1>
 
 
-<div class="ui grid">
+<div class="ui grid" *ngIf="status">
     <div class="row">
         <div class="six wide column">
             Start (last server reset):
@@ -54,28 +54,30 @@
             {{status.failed}}
         </div>
     </div>
-    <div class="row">
-        <div class="four wide column">
-            errors:
-        </div>
-    </div>
-    <div class="ui segments sixteen wide column">
-        <div class="ui segment grid" *ngFor="let err of status.error">
-            <div class="three wide column">
-                Last Date:
-            </div>
-            <div class="six wide column">
-                {{err.timestamp | date: 'medium'}}
-            </div>
-            <div class="two wide column">
-                Count:
-            </div>
-            <div class="one wide column">
-                {{err.repeats}}
-            </div>
-            <div class="sixteen wide column">
-                <pre>{{err.value}}</pre>
+    <ng-container *ngIf="status.error">
+        <div class="row">
+            <div class="four wide column">
+                errors:
             </div>
         </div>
-    </div>
+        <div class="ui segments sixteen wide column">
+            <div class="ui segment grid" *ngFor="let err of status.error">
+                <div class="three wide column">
+                    Last Date:
+                </div>
+                <div class="six wide column">
+                    {{err.timestamp | date: 'medium'}}
+                </div>
+                <div class="two wide column">
+                    Count:
+                </div>
+                <div class="one wide column">
+                    {{err.repeats}}
+                </div>
+                <div class="sixteen wide column">
+                    <pre>{{err.value}}</pre>
+                </div>
+            </div>
+        </div>
+    </ng-container>
 </div>
