@@ -14,21 +14,21 @@
       'app': 'app',
 
       // angular bundles
-      '@angular/core':                      'npm:@angular/core/core.umd.js',
-      '@angular/common':                    'npm:@angular/common/common.umd.js',
-      '@angular/compiler':                  'npm:@angular/compiler/compiler.umd.js',
-      '@angular/platform-browser':          'npm:@angular/platform-browser/platform-browser.umd.js',
-      '@angular/platform-browser-dynamic':  'npm:@angular/platform-browser-dynamic/platform-browser-dynamic.umd.js',
-      '@angular/http':                      'npm:@angular/http/http.umd.js',
-      '@angular/router':                    'npm:@angular/router/router.umd.js',
-      '@angular/forms':                     'npm:@angular/forms/forms.umd.js',
+      '@angular/core':                      'npm:@angular/core/core.umd.min.js',
+      '@angular/common':                    'npm:@angular/common/common.umd.min.js',
+      '@angular/compiler':                  'npm:@angular/compiler/compiler.umd.min.js',
+      '@angular/platform-browser':          'npm:@angular/platform-browser/platform-browser.umd.min.js',
+      '@angular/platform-browser-dynamic':  'npm:@angular/platform-browser-dynamic/platform-browser-dynamic.umd.min.js',
+      '@angular/http':                      'npm:@angular/http/http.umd.min.js',
+      '@angular/router':                    'npm:@angular/router/router.umd.min.js',
+      '@angular/forms':                     'npm:@angular/forms/forms.umd.min.js',
 
       // other libraries
       'angular-in-memory-web-api': 'npm:angular-in-memory-web-api/in-memory-web-api.umd.js',
       'rxjs':                      'npm:rxjs',
       'underscore':                'npm:underscore/underscore-min.js',
-      'jquery':                    'npm:jquery-3.2.0.js',
-      'semantic-ui':               'npm:semantic-ui/semantic.js'
+      'jquery':                    'npm:jquery/jquery.slim.min.js',
+      'semantic-ui':               'npm:semantic-ui/semantic.min.js'
     },
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {
