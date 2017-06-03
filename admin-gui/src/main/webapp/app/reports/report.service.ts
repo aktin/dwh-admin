@@ -11,7 +11,7 @@ import 'rxjs/add/operator/map';
 import _ = require('underscore');
 
 import { StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
-import { Report, RawReport } from './report';
+import { Report, RawReport, ReportTemplate } from './report';
 
 @Injectable()
 export class ReportService {
@@ -48,6 +48,28 @@ export class ReportService {
         );
     }
 
+    private _updateReportTemplates (): void {
+        this._http.debouncedGet<string> (
+            'reports.templates',
+            this._store.getValue('reports.templates'), null,
+            this._dataInterval,
+            this._urls.parse('reportTemplates'),
+            (res: Response) => {
+                // console.log(res);
+                return res.text();
+            }, (err: Response) => {
+                return err;
+            }
+        ).subscribe(
+            (rep: string) => {
+                if (rep) {
+                    this._store.setValue('reports.templates', rep);
+                }
+            },
+            error => console.log(error)
+        );
+    }
+
     getReports (): Report[] {
 
         this._updateReport();
@@ -72,5 +94,10 @@ export class ReportService {
     newReport (): void {
         this._http.post(this._urls.parse('newMonthlyReport'), {}).catch(err => {return this._http.handleError(err); })
             .subscribe();
+    }
+
+    getReportTemplates (): ReportTemplate[] {
+        this._updateReportTemplates();
+        return JSON.parse(this._store.getValue('reports.templates'));
     }
 }

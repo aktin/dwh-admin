@@ -21,6 +21,7 @@ import { StorageService, UrlService, HttpInterceptorService,
             PopUpMessageComponent, LoadingComponent }                               from './helpers/index';
 import { UsersComponent, UserLoginComponent, UserAuthGuard, UserService }           from './users/index';
 import { ReportService, SuccessReportsPipe,
+            ReportNewComponent,
             ReportsComponent, ReportSingleViewComponent, ReportSingleComponent }    from './reports/index';
 import { PreferencesComponent, PreferenceService }                                  from './preferences/index';
 import { RequestsComponent }                                                        from './requests/index';
@@ -44,6 +45,7 @@ import { RestrictedComponent }  from './restricted/restricted.component';
         ReportsComponent,
         ReportSingleViewComponent,
         ReportSingleComponent,
+        ReportNewComponent,
         PreferencesComponent,
         RequestsComponent,
         StatusComponent,

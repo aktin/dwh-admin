@@ -10,8 +10,8 @@ import { RouterModule, Routes } from '@angular/router';
 import _ = require('underscore');
 
 import { HomeComponent }         from './home/index';
-import { UsersComponent, UserLoginComponent, UserAuthGuard }    from './users/index';
-import { ReportsComponent, ReportSingleComponent }              from './reports/index';
+import { UsersComponent, UserLoginComponent, UserAuthGuard } from './users/index';
+import { ReportsComponent, ReportSingleComponent, ReportNewComponent } from './reports/index';
 import { PreferencesComponent }  from './preferences/index';
 import { RequestsComponent }     from './requests/index';
 import { StatusComponent }       from './status/index';
@@ -55,6 +55,10 @@ const routes: Routes = [// array of routes
             {
                 path : '',
                 component : ReportsComponent,
+            },
+            {
+                path: 'new',
+                component: ReportNewComponent,
             },
             {
                 path: ':id',

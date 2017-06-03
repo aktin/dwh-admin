@@ -30,6 +30,7 @@
     "zone.js": "^0.8.4"
   },
   "devDependencies": {
+    "@types/daterangepicker": "^2.1.9",
     "@types/jquery": "^2.0.45",
     "@types/lodash": "^4.14.64",
     "@types/node": "^7.0.18",

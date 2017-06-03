@@ -34,3 +34,8 @@
 .report-single-view.report-waiting .report-status{
     color: rgb(180, 130, 30);
 }
+
+
+.display-calendar {
+    display: block;
+}
