@@ -8,7 +8,7 @@ import 'rxjs/add/operator/map';
 
 import _ = require('underscore');
 
-import { HttpHandlerService, StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
+import { StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
 import { ImportStatus } from './import-status';
 
 @Injectable()
@@ -17,7 +17,6 @@ export class StatusService {
     private _dataInterval = 3000;
 
     constructor(
-        private _httpHandler: HttpHandlerService,
         private _http: HttpInterceptorService,
         private _urls: UrlService,
         private _store: StorageService
@@ -25,7 +24,7 @@ export class StatusService {
 
     private _updateStatus (): void {
         // this._http.get(this._url.parse('status')).map(res => console.log(ImportStatus.parseObj(res.json()));).subscribe();
-        this._httpHandler.debouncedGet<string> (
+        this._http.debouncedGet<string> (
             'status',
             this._store.getValue('status.import') || '', '',
             this._dataInterval,
@@ -34,7 +33,7 @@ export class StatusService {
                 return res.text();
             }, (err: Response) => {
                 return err;
-            }, this._http, this._store
+            },
         ).subscribe(
             (status: string) => {
                 if (status) {

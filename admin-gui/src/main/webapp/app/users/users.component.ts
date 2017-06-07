@@ -5,7 +5,7 @@
  */
 import { Component, OnInit } from '@angular/core';
 
-// import { UserService } from './user.service';
+import { UserService } from './user.service';
 
 /**
  * TODO implement once API is open
@@ -14,9 +14,9 @@ import { Component, OnInit } from '@angular/core';
   template: `<h1>Hello Users</h1>`,
 })
 export class UsersComponent implements OnInit {
-    constructor ( /*private _userService: UserService*/ ) {}
+    constructor ( private _userService: UserService ) {}
 
     ngOnInit (): void {
-        // this.userService.users().subscribe();
+        this._userService.users().subscribe();
     }
 }

@@ -16,11 +16,12 @@ import { AppRoutingModule }     from './app-routing.module';
 import { AppComponent }         from './app.component';
 
 import { HomeComponent }                                                            from './home/index';
-import { HttpHandlerService, StorageService, UrlService, HttpInterceptorService,
+import { StorageService, UrlService, HttpInterceptorService,
             SafeUrlPipe, OrderByPipe,
             PopUpMessageComponent, LoadingComponent }                               from './helpers/index';
 import { UsersComponent, UserLoginComponent, UserAuthGuard, UserService }           from './users/index';
 import { ReportService, SuccessReportsPipe,
+            ReportNewComponent,
             ReportsComponent, ReportSingleViewComponent, ReportSingleComponent }    from './reports/index';
 import { PreferencesComponent, PreferenceService }                                  from './preferences/index';
 import { RequestsComponent }                                                        from './requests/index';
@@ -44,6 +45,7 @@ import { RestrictedComponent }  from './restricted/restricted.component';
         ReportsComponent,
         ReportSingleViewComponent,
         ReportSingleComponent,
+        ReportNewComponent,
         PreferencesComponent,
         RequestsComponent,
         StatusComponent,
@@ -63,7 +65,6 @@ import { RestrictedComponent }  from './restricted/restricted.component';
         UrlService,
         StorageService,
         HttpInterceptorService,
-        HttpHandlerService,
         UserAuthGuard,
         UserService,
         ReportService,

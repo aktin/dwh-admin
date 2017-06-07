@@ -1,0 +1,34 @@
+hello
+{{templates}}
+
+<div class="ui segment">
+    <form class="ui form new-report-form" #newReportForm="ngForm" (ngSubmit)="generateReport()" [ngClass]="newReportFormClasses">
+
+        <div class="field">
+            <label>Username</label>
+            <div class="ui left icon input">
+                <i class="user icon"></i>
+                <input type="text" name="username" placeholder="Username" [(ngModel)]="username">
+            </div>
+        </div>
+        <<!--div class="field">
+            <label>Username</label>
+            <div class="ui left icon input" (click)="showDateRangePicker()">
+                <i class="calendar icon"></i>
+                <input type="text" id="template-date-picker" name="template-date-picker" placeholder="Zeitraum" [(ngModel)]="daterange">
+            </div>
+        </div>-->
+
+        <div class="field server-select-field">
+            <select name="template" class="ui fluid search selection dropdown template-select" [(ngModel)]="template">
+                <option value="">Template</option>
+                <option *ngFor="let tem of templates" [value]="tem.id" >{{tem.description}}</option>
+            </select>
+        </div>
+
+        <button class="ui fluid large submit button" type="submit">
+            Login
+        </button>
+
+    </form>
+</div>

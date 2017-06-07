@@ -36,7 +36,7 @@ Naming conventions: _name for private variables
 - Container anpassen und Design erzeugen
 - Use loshdash instead of underscore
 - use webpack instead of systemjs
-- use ahead of time compilation
+- use ahead of time compilation      -- https://angular.io/docs/ts/latest/cookbook/aot-compiler.html
 
 - locale anfragen verwaltung
 
@@ -52,9 +52,6 @@ New Report als Formular mit anfang und end datumsfelder [als popup]
     template auswahl mit rest call von allen templates [default monatsbericht (aktuell einziger)]
 
 
-5. Wenn man angemeldet ist, dann ist der Reiter "Status" leer. Hier kannst du den Inhalt von /aktin/admin/rest/import-summary anzeigen.
-6. Konfiguration wird nicht angezeigt. Fehler: aktinPropFile undefined. 
-Der REST-Aufruf im Hintergrund ist aber erfolgreich.
 7. Benutzerverwaltung sehe ich auch nichts.
 
 

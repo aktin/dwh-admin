@@ -18,6 +18,7 @@ export * from './report.service';
 export * from './report-single-view.component';
 export * from './report-single.component';
 export * from './reports.component';
+export * from './report-new.component';
 
 /**
  * pipe

@@ -3,6 +3,12 @@
  */
 import { DateParser } from '../helpers/index';
 
+export interface ReportTemplate {
+    id: string;
+    version: string;
+    description: string;
+}
+
 export interface RawReport {
     id: number;
     data: string;

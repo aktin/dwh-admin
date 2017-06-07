@@ -14,7 +14,9 @@ export interface ImportStatusError {
 export class ImportStatus {
 
     public static parseStr(str: string): ImportStatus {
-        return ImportStatus.parseObj(JSON.parse(str));
+        if (str) {
+            return ImportStatus.parseObj(JSON.parse(str));
+        } return null;
     }
 
     public static parseObj(obj: any): ImportStatus {
