@@ -95,15 +95,10 @@ export class HttpInterceptorService {
     }
 
     private getRequestOptionArgs(options?: RequestOptionsArgs): RequestOptionsArgs {
-        options = this.generateHeaderOptions();
+        options = this.generateHeaderOptions(null, null, options);
         if (this._store.getValue('user.token') /* && config.url === getUrl("/auth/login") */ ) {
             options.headers.set('Authorization', 'Bearer ' + this._store.getValue('user.token'));
-            // options.headers.append('Content-Type', 'application/json');
-            // options.headers['Authorization'] = 'Bearer ' + this.store.getValue('user.token');
         }
-
-        // console.log('options ', options, 'Bearer ' + this.store.getValue('user.token'));
-        // options.headers.append('Content-Type', 'application/json');
         return options;
     }
 }
