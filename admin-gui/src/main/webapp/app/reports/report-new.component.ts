@@ -20,15 +20,13 @@ export class ReportNewComponent {
     constructor(private _reportService: ReportService) {
         let date = new Date();
         date.setDate(1);
-        date.setHours(2);
-        this.toDate = date.toISOString().split('T')[0];
+        this.toDate = date.toISOString().split('T')[0]; // 2017-05-01
         /*this.toDate = date.getFullYear() + '-' + this.padStart((date.getMonth() + 1).toString(), 2, '0')
                                             + '-' + this.padStart(date.getDate().toString(), 2, '0');*/
         date.setMonth(date.getMonth() - 1);
         this.fromDate = date.toISOString().split('T')[0];
         /*this.fromDate = date.getFullYear() + '-' + this.padStart((date.getMonth() + 1).toString(), 2, '0')
                                             + '-' + this.padStart(date.getDate().toString(), 2, '0');*/
-        this.template = this._reportService.getDefaultTemplate().id;
     }
 
     padStart (str: string, length: number, pad: string): string {
@@ -41,12 +39,15 @@ export class ReportNewComponent {
     }
 
     get templates(): ReportTemplate[] {
+        // console.log(this._reportService.getReportTemplates());
+        if (this._reportService.getDefaultTemplate()) {
+            this.template = this._reportService.getDefaultTemplate().id;
+        }
         return this._reportService.getReportTemplates();
     }
 
     generateReport(): void {
-        console.log(this.template, this.fromDate, this.toDate, new Date(this.fromDate), new Date(this.toDate));
-        this._reportService.newReport(this.template, new Date(this.fromDate), new Date(this.toDate));
+        this._reportService.newReport(this.template, new Date(this.fromDate + 'T00:00:00'), new Date(this.toDate + 'T00:00:00'));
         console.log('generate')
     }
 }

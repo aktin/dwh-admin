@@ -97,11 +97,10 @@ export class ReportService {
     }
 
     newReport (template: string, fromDate: Date, toDate: Date): void {
-        console.log({'from': fromDate.toISOString(), 'to': toDate.toISOString()});
+        // console.log({'from': fromDate.toISOString(), 'to': toDate.toISOString()});
         this._http.post(
             this._urls.parse('newReport', {templateId: template}),
-            // {'from': fromDate.toISOString(), 'to': toDate.toISOString()},
-            {"from":"2001-01-01T00:00:00Z"},
+            {'start': fromDate.toISOString(), 'end': toDate.toISOString()},
             this._http.generateHeaderOptions('Content-Type', 'application/json')
         ).catch(err => {return this._http.handleError(err); })
             .subscribe();
