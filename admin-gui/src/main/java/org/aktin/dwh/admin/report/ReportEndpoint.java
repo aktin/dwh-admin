@@ -69,13 +69,14 @@ public class ReportEndpoint {
 	 * @param request request body
 	 * @return response response. On success, HTTP_CREATED with location header.
 	 * @throws URISyntaxException failure to produce a report location URL
-	 * @throws IOException error
+	 * @throws IOException IO error, report could not be created
+	 * @throws NotFoundException the given {@code templateId} was not found. 
 	 */
 	@POST
 	@Path("{templateId}")
 	//@Consumes(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_XML)
-	public Response generateReport(@PathParam("templateId") String templateId, ReportRequest request) throws URISyntaxException, IOException{
+	public Response generateReport(@PathParam("templateId") String templateId, ReportRequest request) throws URISyntaxException, IOException, NotFoundException{
 		System.out.println("Generate report: "+templateId);
 		Report template = manager.getReport(templateId);
 		if( template == null ){
