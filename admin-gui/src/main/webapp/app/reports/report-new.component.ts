@@ -6,6 +6,7 @@ import { AfterContentInit, Component } from '@angular/core';
 import { Report, ReportTemplate } from './report';
 import { ReportService } from './report.service';
 import $ = require('jquery');
+import { Router } from '@angular/router';
 require('semantic-ui');
 
 @Component({
@@ -17,7 +18,7 @@ export class ReportNewComponent {
     fromDate: string;
     toDate: string;
 
-    constructor(private _reportService: ReportService) {
+    constructor(private _reportService: ReportService, private _router: Router,) {
         let date = new Date();
         date.setDate(1);
         this.toDate = date.toISOString().split('T')[0]; // 2017-05-01
@@ -47,7 +48,15 @@ export class ReportNewComponent {
     }
 
     generateReport(): void {
-        this._reportService.newReport(this.template, new Date(this.fromDate + 'T00:00:00'), new Date(this.toDate + 'T00:00:00'));
-        console.log('generate')
+        let from = new Date(this.fromDate + 'T00:00:00');
+        let to =  new Date(this.toDate + 'T00:00:00');
+        if (from >= to) {
+            alert('error');
+            to.setMonth(from.getMonth() - 1);
+            this.toDate = to.toISOString().split('T')[0];
+            return;
+        }
+        this._reportService.newReport(this.template, from, to);
+        this._router.navigate(['/report']);
     }
 }
