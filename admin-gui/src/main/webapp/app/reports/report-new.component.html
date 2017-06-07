@@ -8,10 +8,10 @@ hello
             <label>Username</label>
             <div class="ui left icon input">
                 <i class="user icon"></i>
-                <input type="text" name="username" placeholder="Username" [(ngModel)]="username">
+                <input type="date" name="username" placeholder="Username" [(ngModel)]="username">
             </div>
         </div>
-        <<!--div class="field">
+        <!--<div class="field">
             <label>Username</label>
             <div class="ui left icon input" (click)="showDateRangePicker()">
                 <i class="calendar icon"></i>
@@ -19,15 +19,15 @@ hello
             </div>
         </div>-->
 
-        <div class="field server-select-field">
+      <!--  <div class="field server-select-field">
             <select name="template" class="ui fluid search selection dropdown template-select" [(ngModel)]="template">
                 <option value="">Template</option>
                 <option *ngFor="let tem of templates" [value]="tem.id" >{{tem.description}}</option>
             </select>
-        </div>
+        </div>-->
 
         <button class="ui fluid large submit button" type="submit">
-            Login
+            Erzeugen
         </button>
 
     </form>

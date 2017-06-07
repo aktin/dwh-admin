@@ -35,7 +35,7 @@ Naming conventions: _name for private variables
 
 - Container anpassen und Design erzeugen
 - Use loshdash instead of underscore
-- use webpack instead of systemjs
+- use webpack instead of systemjs   -- https://stackoverflow.com/questions/41436370/going-from-systemjs-to-webpack-with-angular-2-2-4
 - use ahead of time compilation      -- https://angular.io/docs/ts/latest/cookbook/aot-compiler.html
 
 - locale anfragen verwaltung

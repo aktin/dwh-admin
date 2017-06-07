@@ -27,8 +27,6 @@
             'angular-in-memory-web-api':  'npm:angular-in-memory-web-api/in-memory-web-api.umd.js',
             'rxjs':                       'npm:rxjs',
             'underscore':                 'npm:underscore/underscore-min.js',
-            'daterangepicker':            'npm:daterangepicker/daterangepicker.min.js',
-            'moment':                     'npm:daterangepicker/moment.min.js',
             'jquery':                     'npm:jquery/jquery.slim.min.js',
             'semantic-ui':                'npm:semantic-ui/semantic.min.js'
         },
