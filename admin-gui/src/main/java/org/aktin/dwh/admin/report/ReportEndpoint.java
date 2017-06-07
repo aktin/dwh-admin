@@ -74,8 +74,7 @@ public class ReportEndpoint {
 	 */
 	@POST
 	@Path("{templateId}")
-	//@Consumes(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
 	public Response generateReport(@PathParam("templateId") String templateId, ReportRequest request) throws URISyntaxException, IOException, NotFoundException{
 		System.out.println("Generate report: "+templateId);
 		Report template = manager.getReport(templateId);

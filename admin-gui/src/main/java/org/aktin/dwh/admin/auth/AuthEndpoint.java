@@ -49,11 +49,11 @@ public class AuthEndpoint {
 	
 	@Context 
 	private SecurityContext security;
-	
+
 	@POST
 	@Path("login")
 	@Produces(MediaType.TEXT_PLAIN)
-	@Consumes(MediaType.APPLICATION_JSON)
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	public Response authenticateUser(Credentials cred){
 		if( authenticator == null ){
 			// no authenticator available
