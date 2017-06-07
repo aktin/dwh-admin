@@ -38,5 +38,15 @@ export class DateParser {
         }
         return monthArray[month];
     }
+
+
+    padStart (str: string, length: number, pad: string): string {
+        let curLength = str.length;
+        let res = str;
+        for (let i = curLength; i < length; i ++) {
+            res = pad + res;
+        }
+        return res;
+    }
 }
 
