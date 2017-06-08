@@ -3,13 +3,8 @@
         <div class="ui breadcrumb">
             <div class="active section">Berichtsübersicht</div>
         </div>
-        <div class="five wide right floated column">
-            <a class="ui left labeled button" routerLink="/report/new">
-                Neu
-            </a>
-        </div>
         <div class="five wide right floated column right aligned">
-            <div class="ui left labeled button" title="Neuen Bericht vom vergangen Monat erzeugen" (click)="generateReport()">
+            <div class="ui left labeled button" title="Neuen Bericht vom vergangen Monat erzeugen" routerLink="/report/new">
                 <a class="ui teal basic label">
                     Neuer Bericht
                 </a>

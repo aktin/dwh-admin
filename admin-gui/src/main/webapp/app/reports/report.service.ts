@@ -91,13 +91,28 @@ export class ReportService {
     }
 
     // TODO add parameters for new reports
-    newReport (): void {
+    newReportMonthly (): void {
         this._http.post(this._urls.parse('newMonthlyReport'), {}).catch(err => {return this._http.handleError(err); })
+            .subscribe();
+    }
+
+    newReport (template: string, fromDate: Date, toDate: Date): void {
+        // console.log({'from': fromDate.toISOString(), 'to': toDate.toISOString()});
+        this._http.post(
+            this._urls.parse('newReport', {templateId: template}),
+            {'start': fromDate.toISOString(), 'end': toDate.toISOString()},
+            this._http.generateHeaderOptions('Content-Type', 'application/json')
+        ).catch(err => {return this._http.handleError(err); })
             .subscribe();
     }
 
     getReportTemplates (): ReportTemplate[] {
         this._updateReportTemplates();
         return JSON.parse(this._store.getValue('reports.templates'));
+    }
+
+    getDefaultTemplate (): ReportTemplate {
+        this._updateReportTemplates();
+        return (JSON.parse(this._store.getValue('reports.templates')) || [])[0];
     }
 }

@@ -1,34 +1,44 @@
-hello
-{{templates}}
-
-<div class="ui segment">
-    <form class="ui form new-report-form" #newReportForm="ngForm" (ngSubmit)="generateReport()" [ngClass]="newReportFormClasses">
-
-        <div class="field">
-            <label>Username</label>
-            <div class="ui left icon input">
-                <i class="user icon"></i>
-                <input type="date" name="username" placeholder="Username" [(ngModel)]="username">
-            </div>
+<div class="ui grid">
+    <div class="row">
+        <div class="ui breadcrumb">
+            <a class="section" routerLink="/report">Berichtsübersicht</a>
+            <i class="right angle icon divider"></i>
+            <div class="active section">Neuen Bericht erzeugen</div>
         </div>
-        <!--<div class="field">
-            <label>Username</label>
-            <div class="ui left icon input" (click)="showDateRangePicker()">
-                <i class="calendar icon"></i>
-                <input type="text" id="template-date-picker" name="template-date-picker" placeholder="Zeitraum" [(ngModel)]="daterange">
+    </div>
+
+    <div class="ui segment row">
+        <form class="ui form new-report-form sixteen wide column" #newReportForm="ngForm" (ngSubmit)="generateReport()" [ngClass]="newReportFormClasses">
+
+            <div class="field template-select-field">
+                <label>Berichtsart:</label>
+                <select name="template" class="ui fluid dropdown template-select" [(ngModel)]="template" title="Bericht Templates">
+                    <option value="" disabled="disabled">Template</option>
+                    <option *ngFor="let tem of templates" [value]="tem.id" >{{tem.description}}</option>
+                </select>
             </div>
-        </div>-->
 
-      <!--  <div class="field server-select-field">
-            <select name="template" class="ui fluid search selection dropdown template-select" [(ngModel)]="template">
-                <option value="">Template</option>
-                <option *ngFor="let tem of templates" [value]="tem.id" >{{tem.description}}</option>
-            </select>
-        </div>-->
+            <div class="two fields">
+                    <div class="field">
+                        <label>Startdatum</label>
+                        <div class="ui input">
+                            <input type="date" name="fromDate" id="template-from-date" [(ngModel)]="fromDate" [max]="toDate">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Enddatum</label>
+                        <div class="ui input">
+                            <input type="date" name="toDate" id="template-to-date" [(ngModel)]="toDate" [min]="fromDate">
+                        </div>
+                    </div>
+            </div>
 
-        <button class="ui fluid large submit button" type="submit">
-            Erzeugen
-        </button>
+            <button class="ui fluid large submit button" type="submit">
+                Erzeugen
+            </button>
 
-    </form>
+        </form>
+    </div>
 </div>
+
+<popup-message [head]="alertTitle" [message]="alertMsg" [location]="redirect"></popup-message>

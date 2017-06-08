@@ -1,7 +1,7 @@
 {
   "name": "aktin-dwh-admin-gui",
   "version": "1.0.0",
-  "description": "QuickStart package.json from the documentation, supplemented with testing support",
+  "description": "AKTIN Admin Backend GUI",
   "scripts": {
     "build": "tsc",
     "build:watch": "tsc -w",

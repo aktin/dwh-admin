@@ -2,6 +2,7 @@
  * Created by Xu on 03.05.2017.
  */
 import { DateParser } from '../helpers/index';
+import { LOCALE_ID, Inject } from '@angular/core';
 
 export interface ReportTemplate {
     id: string;
@@ -21,6 +22,7 @@ export interface RawReport {
 
 export class Report {
 
+    private _locale = 'de-DE';
     public static parseReport (obj: RawReport, url?: string): Report {
         let report = new Report (
             obj.id,
@@ -80,8 +82,8 @@ export class Report {
             this.name += this.template;
             this.filename += this.template;
         }
-        this.name += ' ' + DateParser.getMonth(this.timespan[0].getMonth()) + ' ' + this.timespan[0].getFullYear();
-        this.filename += '-' + DateParser.getMonth(this.timespan[0].getMonth()) + '-' + this.timespan[0].getFullYear() + '.pdf';
+        this.name += ' ' + this.timespan[0].toLocaleDateString(this._locale, {month: 'long'}) + ' ' + this.timespan[0].getFullYear();
+        this.filename += '-' + this.timespan[0].toLocaleDateString(this._locale, {month: 'long'}) + '-' + this.timespan[0].getFullYear() + '.pdf';
         return this.name;
     }
     public getDeStatus (): string {

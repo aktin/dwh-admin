@@ -21,7 +21,7 @@ export class ReportsComponent  {
     }
 
     generateReport (): void {
-        this._reportService.newReport();
+        this._reportService.newReportMonthly();
         this.popUp.show = true;
     }
 }
