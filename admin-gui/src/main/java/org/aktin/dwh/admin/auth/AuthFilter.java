@@ -57,6 +57,7 @@ public class AuthFilter implements ContainerRequestFilter{
 			// renew token with every access
 			t.renew();
 			ctx.setSecurityContext(getSecurityContext(t));
+			ctx.setProperty(Token.class.getName(), t);
 			
         }catch( Exception e ){
         	ctx.abortWith(Response.status(Response.Status.UNAUTHORIZED).build());

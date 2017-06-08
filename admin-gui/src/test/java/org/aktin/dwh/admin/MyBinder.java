@@ -87,13 +87,30 @@ public class MyBinder extends AbstractBinder{
 	}
 	private void bindRequestModules(Preferences prefs){
 		RequestManagerImpl rm = new RequestManagerImpl(prefs);
+		// bind injection points
 		rm.setDataSource(ds);
 		rm.setResultUploader( r -> {try {
 			r.changeStatus(null, RequestStatus.Submitted, null);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}});
+		// initialize
+		rm.loadData();
+		// make sure some requests are available
+		fillDemoRequests(rm);
 		bind(rm).to(RequestManager.class);
+	}
+	private void fillDemoRequests(RequestManagerImpl rm){
+		// try to load requests from broker
+		try {
+			rm.reportStatusToBroker();
+			rm.fetchNewRequests();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Unable to load request from broker");
+		}
+		System.out.println("Local requests: "+rm.getRequests().size());
+		
 	}
 
 	@Override

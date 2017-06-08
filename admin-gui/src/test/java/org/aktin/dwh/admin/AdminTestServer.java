@@ -13,6 +13,7 @@ import org.aktin.dwh.admin.auth.AuthFilter;
 import org.aktin.dwh.admin.log.LogEndpoint;
 import org.aktin.dwh.admin.report.ReportArchiveEndpoint;
 import org.aktin.dwh.admin.report.ReportEndpoint;
+import org.aktin.dwh.admin.request.RequestEndpoint;
 import org.aktin.dwh.admin.user.UserEndpoint;
 import org.aktin.dwh.db.TestDataSource;
 import org.eclipse.jetty.server.Handler;
@@ -34,13 +35,13 @@ import de.sekmi.li2b2.services.PMService;
  * @author R.W.Majeed
  *
  */
-public class TestServer {
+public class AdminTestServer {
 
 	private ResourceConfig rc;
 	private Server jetty;
 	private DataSource ds;
 	
-	public TestServer() throws SQLException, NamingException{
+	public AdminTestServer() throws SQLException, NamingException{
 		ds = new TestDataSource();
 		try( Connection dbc = ds.getConnection() ){
 			dbc.createStatement().close();
@@ -56,6 +57,7 @@ public class TestServer {
 		rc.register(LogEndpoint.class);
 		rc.register(ReportArchiveEndpoint.class);
 		rc.register(Summary.class);
+		rc.register(RequestEndpoint.class);
 
 		setupJNDI(ds);
 	}
@@ -139,16 +141,17 @@ public class TestServer {
 			port = Integer.parseInt(args[0]);
 		}else{
 			System.err.println("Too many command line arguments!");
-			System.err.println("Usage: "+TestServer.class.getCanonicalName()+" [port]");
+			System.err.println("Usage: "+AdminTestServer.class.getCanonicalName()+" [port]");
 			System.exit(-1);
 			return;
 		}
 
 		// start server
-		TestServer server = new TestServer();
+		AdminTestServer server = new AdminTestServer();
 		try{
 			server.start(new InetSocketAddress(port));
 			System.err.println("Admin endpoints at: localhost:"+server.getLocalPort()+"/aktin/admin/rest/*");
+			//assureBrokerRequestsAvailable(server.getLocalPort()+1);
 			server.join();
 		}finally{
 			server.destroy();

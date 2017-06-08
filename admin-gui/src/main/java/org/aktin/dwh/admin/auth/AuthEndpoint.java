@@ -68,7 +68,7 @@ public class AuthEndpoint {
 			String uid = tokens.registerPrincipal(p);
 			return Response.ok(uid).build();
 		}else{
-			// access denied·
+			// access denied
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
 	}
@@ -102,6 +102,14 @@ public class AuthEndpoint {
 	public boolean authCheck(){
 		return true;
 		// always true to check whether stored data is true
+	}
+	@Secured
+	@Produces(MediaType.APPLICATION_JSON)
+	@GET
+	@Path("status")
+	public AuthStatus getStatus(){
+		// TODO use real auth status
+		return new AuthStatus();
 	}
 
 }
