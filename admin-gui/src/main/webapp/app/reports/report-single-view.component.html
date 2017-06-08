@@ -4,7 +4,7 @@
     [ngClass]="reportClass"
 >
     <div class="ui header" [class.small]="!report.isSuccess()" routerLink="/report/{{report.id}}">
-        {{report.name}}
+        {{report.name}} {{report.id}}
     </div>
 
     <div class="actions">

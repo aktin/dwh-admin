@@ -1,10 +1,9 @@
-<h1>Server CDA Import Status</h1>
-
+<h1>Status der CDA Import-Schnittstelle</h1>
 
 <div class="ui grid" *ngIf="status">
     <div class="row">
         <div class="six wide column">
-            Start (last server reset):
+            Start (letzter Server Neustart):
         </div>
         <div class="six wide column">
             {{status.start | date: 'medium'}}
@@ -20,7 +19,7 @@
     </div>
     <div class="row">
         <div class="six wide column">
-            Letzter Fehlgeschlagener Import:
+            Letzter fehlgeschlagener Import:
         </div>
         <div class="six wide column">
             {{status.lastReject | date: 'medium'}}
@@ -34,7 +33,7 @@
             {{status.imported}}
         </div>
         <div class="three wide column">
-            Updated:
+            Aktualisiert:
         </div>
         <div class="three wide column">
             {{status.updated}}
@@ -42,13 +41,13 @@
     </div>
     <div class="row">
         <div class="three wide column">
-            Invalid:
+            Ungültig:
         </div>
         <div class="three wide column">
             {{status.invalid}}
         </div>
         <div class="three wide column">
-            Failed:
+            Fehlgeschlagen:
         </div>
         <div class="three wide column">
             {{status.failed}}
@@ -57,19 +56,19 @@
     <ng-container *ngIf="status.error">
         <div class="row">
             <div class="four wide column">
-                errors:
+                Fehlermeldungen:
             </div>
         </div>
         <div class="ui segments sixteen wide column">
             <div class="ui segment grid" *ngFor="let err of status.error">
                 <div class="three wide column">
-                    Last Date:
+                    Letzter Fehler:
                 </div>
                 <div class="six wide column">
                     {{err.timestamp | date: 'medium'}}
                 </div>
                 <div class="two wide column">
-                    Count:
+                    Anzahl:
                 </div>
                 <div class="one wide column">
                     {{err.repeats}}
