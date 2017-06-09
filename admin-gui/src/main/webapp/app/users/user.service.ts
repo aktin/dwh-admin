@@ -5,6 +5,7 @@
  */
 import { Injectable } from '@angular/core';
 import { Response } from '@angular/http';
+import { Router } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
@@ -35,11 +36,17 @@ export class UserService {
     constructor (
         private _http: HttpInterceptorService,
         private _urls: UrlService,
-        private _store: StorageService
+        private _store: StorageService,
+        private _router: Router
     ) {}
 
     private cleanUpStorage (): void {
         this._store.clear();
+    }
+
+    private redirect2Home (): void {
+        console.log('redirect')
+        this._router.navigate(['']);
     }
 
     userLogin ( username: string, password: string): Observable<User> {
@@ -75,6 +82,7 @@ export class UserService {
         // .catch(this._http.handleError)
         .finally(() => {
             this.cleanUpStorage();
+            // this.redirect2Home();
         });
     }
 
@@ -93,6 +101,7 @@ export class UserService {
                 if (err.status === 401) {
                     // console.log('unauthorized');
                     this.cleanUpStorage();
+                    this.redirect2Home();
                 }
                 return err;
             },
@@ -113,6 +122,7 @@ export class UserService {
                 if (err.status === 401) {
                     // console.log('unauthorized');
                     this.cleanUpStorage();
+                    this.redirect2Home();
                 }
                 return err;
             },
@@ -190,6 +200,7 @@ export class UserService {
                 return JSON.parse(this._store.getValue('user.admin')) || false;
             }
             this.cleanUpStorage();
+            // this.redirect2Home();
             return false;
         }
         if (_.contains(roles, 'LOGGEDIN')) {

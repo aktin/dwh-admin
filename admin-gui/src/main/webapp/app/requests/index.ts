@@ -9,7 +9,7 @@
 /**
  * services
  */
-
+export * from './request.service';
 /**
  * components
  */

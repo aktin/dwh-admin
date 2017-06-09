@@ -1,9 +1,6 @@
 /**
  * Created by Xu on 03.05.2017.
  */
-import { DateParser } from '../helpers/index';
-import { LOCALE_ID, Inject } from '@angular/core';
-
 export interface ReportTemplate {
     id: string;
     version: string;

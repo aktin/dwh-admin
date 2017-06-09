@@ -19,9 +19,6 @@ export class ReportNewComponent {
     template: string;
     fromDate: string;
     toDate: string;
-    alertTitle = 'Error';
-    alertMsg = 'Error';
-    redirect: string;
     @ViewChild(PopUpMessageComponent) popUp: PopUpMessageComponent;
 
     constructor(private _reportService: ReportService, private _router: Router) {
@@ -44,18 +41,15 @@ export class ReportNewComponent {
         let from = new Date(this.fromDate + 'T00:00:00');
         let to =  new Date(this.toDate + 'T00:00:00');
         if (from >= to) {
-            this.alertTitle = 'Fehler beim Erzeugen des neuen Berichts';
-            this.alertMsg = 'Bitte wählen Sie eine passende Zeitspanne von mindestens einem Tag aus!';
-            this.popUp.show = true;
+            this.popUp.setData(true, 'Fehler beim Erzeugen des neuen Berichts',
+                    'Bitte wählen Sie eine passende Zeitspanne von mindestens einem Tag aus!');
             to.setMonth(from.getMonth() + 1);
             this.toDate = to.toISOString().split('T')[0];
             return;
         }
         this._reportService.newReport(this.template, from, to);
-        this.alertTitle = 'Neuer Bericht';
-        this.alertMsg = 'Neuer ' + this.template + 'wird erzeugt und im Übersicht angezeigt.';
-        this.redirect = '/report';
-        this.popUp.show = true;
-        // this._router.navigate(['/report']);
+        this.popUp.setData(true, 'Neuer Bericht',
+                    'Neuer ' + this.template + ' wird erzeugt und im Übersicht angezeigt.',
+                    () => {this._router.navigate(['/report'])} );
     }
 }

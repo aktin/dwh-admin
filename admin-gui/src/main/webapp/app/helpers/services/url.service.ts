@@ -12,7 +12,7 @@ export class UrlService {
         'http://134.106.36.86:8087/aktin/admin/rest/',
     ];
     // DEBUG set server url to 2 - standard is 0
-    private _serverUrl = this._serverUrls[0];
+    private _serverUrl = this._serverUrls[2];
     private _endUrls = {
         login : 'auth/login',
         logout : 'auth/logout',
@@ -34,6 +34,9 @@ export class UrlService {
         newMonthlyReport : 'report/monthly/email',
         reportTemplates : 'report/template', // get
         newReport : 'report/template/@templateId@', // post, with start and end in data, json in header
+
+        requestList : 'request',
+        request : 'request/@requestId@',
     };
 
     setServerUrl (serverUrl: string) {
