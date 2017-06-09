@@ -11,6 +11,7 @@ public class Request {
 	public int queryId;
 	public Marker marker;
 	public RequestStatus status;
+	public boolean autoSubmit;
 	public QueryRequest query;
 
 	Request(RetrievedRequest r){
@@ -19,5 +20,7 @@ public class Request {
 		this.marker = r.getMarker();
 		this.query = r.getRequest();
 		this.status = r.getStatus();
+		this.autoSubmit = r.hasAutoSubmit();
+		
 	}
 }
