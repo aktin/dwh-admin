@@ -32,6 +32,7 @@ TODO Webapp
 ====
 
 Naming conventions: _name for private variables
+Berichte nicht in zukunft stellen
 
 - Container anpassen und Design erzeugen
 - Use loshdash instead of underscore

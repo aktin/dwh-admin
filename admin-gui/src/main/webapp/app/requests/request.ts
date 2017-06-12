@@ -17,6 +17,7 @@ export interface Query {
         address?: string,
         url?: string,
     },
+    extensions: string[];
 }
 
 export interface Request {

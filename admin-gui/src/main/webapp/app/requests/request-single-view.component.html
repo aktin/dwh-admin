@@ -6,22 +6,54 @@
         {{request.query.query.title}} {{request.query.query.description}}
     </div>
     <div class="ui meta">
-         {{request.status}} -- {{request.marker}}
+        {{request.status}} &#45;&#45; {{request.marker}}
+        <br/>
     </div>
-
-    <div class="actions">
+    <div class="description">
+        Principal:
+        <br/>
+        {{request.query.query.principal.name}}
+        <br/>
+        {{request.query.query.principal.organization}}
+        <br/>
+        {{request.query.query.principal.email}}
+        <br/>
+        {{request.query.query.principal.phone}}
+    </div>
+    <br/>
+<!--    <div class="actions">
         <a *ngIf="!single" class="ui circular icon button" routerLink="/request/{{request.id}}">
             <i class="eye icon"></i>
         </a>
         <a *ngIf="single" class="ui circular basic green icon button" routerLink="/request" title="Zurück zum Berichtsübersicht">
             <i class="arrow left icon"></i>
         </a>
-    </div>
+    </div>-->
 
     <div class="ui content grid">
-        <div class="ui compact row request-status">
-            <div class="three wide column">Status:</div>
-            <div class="eight wide column">{{request.generationDate | date: 'mediumDate'}}</div>
+        <div class="ui compact row">
+            <div class="three wide column">Reference:</div>
+            <div class="eight wide column">{{request.query.referenceDate | date: 'mediumDate'}}</div>
+        </div>
+        <div class="ui compact row">
+            <div class="three wide column">published:</div>
+            <div class="eight wide column">{{request.query.published | date: 'mediumDate'}}</div>
+        </div>
+        <div class="ui compact row">
+            <div class="three wide column">scheduled:</div>
+            <div class="eight wide column">{{request.query.scheduled | date: 'mediumDate'}}</div>
+        </div>
+        <div class="ui compact row">
+            <div class="three wide column">deadline:</div>
+            <div class="eight wide column">{{request.query.deadline | date: 'mediumDate'}}</div>
+        </div>
+        <div class="ui compact row">
+            <div class="three wide column">closed:</div>
+            <div class="eight wide column">{{request.query.closed | date: 'mediumDate'}}</div>
+        </div>
+        <div class="ui compact row">
+            <div class="three wide column">canceled:</div>
+            <div class="eight wide column">{{request.query.canceled | date: 'mediumDate'}}</div>
         </div>
     </div>
 
