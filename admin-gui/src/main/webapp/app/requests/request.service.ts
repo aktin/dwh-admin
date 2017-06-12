@@ -9,6 +9,7 @@ import 'rxjs/add/operator/map';
 import _ = require('underscore');
 
 import { StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
+import { LocalRequest } from './request';
 
 @Injectable()
 export class RequestService {
@@ -21,28 +22,30 @@ export class RequestService {
     ) {}
 
     private _updateRequest (): void {
-        this._http.debouncedGet<void> (
+        this._http.debouncedGet<string> (
             'requests',
-            null, null,
+            this._store.getValue('requests.data'), null,
             this._dataInterval,
             this._urls.parse('requestList'),
             (res: Response) => {
-                console.log(res.json());
+                return res.text();
             }, (err: Response) => {
                 return err;
             }
         ).subscribe(
-            rep => {
-                if (rep) {
-                    this._store.setValue('requests.data', JSON.stringify(rep));
+            (req: string) => {
+                if (req) {
+                    this._store.setValue('requests.data', req);
                 }
             },
             error => console.log(error)
         );
     }
 
-    getRequests (): void {
-
+    getRequests (): LocalRequest[] {
         this._updateRequest();
+        return _.map(JSON.parse(this._store.getValue('requests.data')),
+                                    req => LocalRequest.parseRequest(req));
+
     }
 }

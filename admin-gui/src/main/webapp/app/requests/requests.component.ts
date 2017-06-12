@@ -4,12 +4,19 @@
 import { Component } from '@angular/core';
 
 import { RequestService } from './request.service';
+import { LocalRequest } from './request';
 
 @Component({
-    template: `<h1>Hello Anfragen</h1>`,
+    templateUrl: './requests.component.html',
 })
 export class RequestsComponent  {
+    requestsData: LocalRequest[];
+
     constructor(private _requestService: RequestService) {
-        this._requestService.getRequests();
+    }
+
+    get requests(): LocalRequest[] {
+        this.requestsData = this._requestService.getRequests();
+        return this.requestsData;
     }
 }

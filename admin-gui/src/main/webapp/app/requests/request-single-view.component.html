@@ -1,0 +1,28 @@
+<div
+        class="ui basic segment request-single-view column"
+        id="request-list-{{request.requestId}}"
+>
+    <div class="ui header" routerLink="/request/{{request.id}}">
+        {{request.query.query.title}} {{request.query.query.description}}
+    </div>
+    <div class="ui meta">
+         {{request.status}} -- {{request.marker}}
+    </div>
+
+    <div class="actions">
+        <a *ngIf="!single" class="ui circular icon button" routerLink="/request/{{request.id}}">
+            <i class="eye icon"></i>
+        </a>
+        <a *ngIf="single" class="ui circular basic green icon button" routerLink="/request" title="Zurück zum Berichtsübersicht">
+            <i class="arrow left icon"></i>
+        </a>
+    </div>
+
+    <div class="ui content grid">
+        <div class="ui compact row request-status">
+            <div class="three wide column">Status:</div>
+            <div class="eight wide column">{{request.generationDate | date: 'mediumDate'}}</div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,10 @@
+<div class="ui grid">
+    <div class="row">
+        <div class="ui breadcrumb">
+            <div class="active section">Anfragenbersicht</div>
+        </div>
+    </div>
+</div>
+<div *ngIf="requests" class="ui vertically divided grid">
+    <request-single-view *ngFor="let req of requests" [requestData]="req" class="row"></request-single-view>
+</div>

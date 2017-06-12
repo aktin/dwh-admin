@@ -37,6 +37,10 @@ export class OrderByPipe implements PipeTransform {
 
     transform(input: any, [config = '+']): any {
 
+        if (input == null) {
+            return input;
+        }
+
         if (!Array.isArray(input)) {
             return input;
         }

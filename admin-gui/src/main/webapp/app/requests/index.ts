@@ -5,7 +5,7 @@
 /**
  * model / class
  */
-
+export * from './request';
 /**
  * services
  */
@@ -14,5 +14,6 @@ export * from './request.service';
  * components
  */
 export * from './requests.component';
+export * from './request-single-view.component';
 
 
