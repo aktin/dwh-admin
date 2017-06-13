@@ -1,60 +1,67 @@
 <div
-        class="ui basic segment request-single-view column"
+        class="ui basic segment request-single-view grid column"
         id="request-list-{{request.requestId}}"
 >
-    <div class="ui header" routerLink="/request/{{request.id}}">
-        {{request.query.query.title}} {{request.query.query.description}}
-    </div>
-    <div class="ui meta">
-        {{request.status}} &#45;&#45; {{request.marker}}
-        <br/>
-    </div>
-    <div class="description">
-        Principal:
-        <br/>
-        {{request.query.query.principal.name}}
-        <br/>
-        {{request.query.query.principal.organization}}
-        <br/>
-        {{request.query.query.principal.email}}
-        <br/>
-        {{request.query.query.principal.phone}}
-    </div>
-    <br/>
-<!--    <div class="actions">
-        <a *ngIf="!single" class="ui circular icon button" routerLink="/request/{{request.id}}">
-            <i class="eye icon"></i>
-        </a>
-        <a *ngIf="single" class="ui circular basic green icon button" routerLink="/request" title="Zurück zum Berichtsübersicht">
-            <i class="arrow left icon"></i>
-        </a>
-    </div>-->
-
-    <div class="ui content grid">
-        <div class="ui compact row">
-            <div class="three wide column">Reference:</div>
-            <div class="eight wide column">{{request.query.referenceDate | date: 'mediumDate'}}</div>
-        </div>
-        <div class="ui compact row">
-            <div class="three wide column">published:</div>
-            <div class="eight wide column">{{request.query.published | date: 'mediumDate'}}</div>
-        </div>
-        <div class="ui compact row">
-            <div class="three wide column">scheduled:</div>
-            <div class="eight wide column">{{request.query.scheduled | date: 'mediumDate'}}</div>
-        </div>
-        <div class="ui compact row">
-            <div class="three wide column">deadline:</div>
-            <div class="eight wide column">{{request.query.deadline | date: 'mediumDate'}}</div>
-        </div>
-        <div class="ui compact row">
-            <div class="three wide column">closed:</div>
-            <div class="eight wide column">{{request.query.closed | date: 'mediumDate'}}</div>
-        </div>
-        <div class="ui compact row">
-            <div class="three wide column">canceled:</div>
-            <div class="eight wide column">{{request.query.canceled | date: 'mediumDate'}}</div>
+    <div class="ui row">
+        <div class="single column">
+            <div class="ui header" routerLink="/request/{{request.id}}">
+                {{request.query.query.title}} {{request.query.query.description}}
+            </div>
+            <div class="ui meta">
+                {{request.status}} &#45;&#45; {{request.marker}}
+            </div>
         </div>
     </div>
-
+    <div class="ui seven wide column">
+        <div class="description">
+            Principal:
+            <br/>
+            {{request.query.query.principal.name}}
+            <br/>
+            {{request.query.query.principal.organization}}
+            <br/>
+            {{request.query.query.principal.email}}
+            <br/>
+            {{request.query.query.principal.phone}}
+        </div>
+    </div>
+    <div class="ui meta eight wide column">
+        <!--    <div class="actions">
+                <a *ngIf="!single" class="ui circular icon button" routerLink="/request/{{request.id}}">
+                    <i class="eye icon"></i>
+                </a>
+                <a *ngIf="single" class="ui circular basic green icon button" routerLink="/request" title="Zurück zum Berichtsübersicht">
+                    <i class="arrow left icon"></i>
+                </a>
+            </div>-->
+        <div class="ui content grid">
+            <div class="ui compact row">
+                <div class="four wide column">Reference:</div>
+                <div class="eight wide column">{{request.query.referenceDate | date: 'mediumDate'}}</div>
+            </div>
+            <div class="ui compact row">
+                <div class="four wide column">published:</div>
+                <div class="eight wide column">{{request.query.published | date: 'mediumDate'}}</div>
+            </div>
+            <div class="ui compact row">
+                <div class="four wide column">scheduled:</div>
+                <div class="eight wide column">{{request.query.scheduled | date: 'mediumDate'}}</div>
+            </div>
+            <div class="ui compact row">
+                <div class="four wide column">deadline:</div>
+                <div class="eight wide column">{{request.query.deadline | date: 'mediumDate'}}</div>
+            </div>
+            <div class="ui compact row">
+                <div class="four wide column">closed:</div>
+                <div class="eight wide column">{{request.query.closed | date: 'mediumDate'}}</div>
+            </div>
+            <div class="ui compact row">
+                <div class="four wide column">canceled:</div>
+                <div class="eight wide column">{{request.query.canceled | date: 'mediumDate'}}</div>
+            </div>
+        </div>
+    </div>
+    <div class="ui segment sixteen wide column" *ngIf="single">
+        <pre>{{request.query.query.extensions[0]}}</pre>
+    </div>
 </div>

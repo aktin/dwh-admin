@@ -2,7 +2,7 @@
  * Created by Xu on 09-Jun-17.
  */
 import { Component, Input }     from '@angular/core';
-import { LocalRequest } from './request';
+import { LocalRequest, RequestMarker } from './request';
 
 @Component({
     selector: 'request-single-view',
@@ -18,5 +18,12 @@ export class RequestSingleViewComponent  {
 
     get request (): LocalRequest {
         return this.requestData;
+    }
+
+    get starred (): boolean {
+        return this.request.marker === RequestMarker[RequestMarker.STARRED];
+    }
+    get hidden (): boolean {
+        return this.request.marker === RequestMarker[RequestMarker.HIDDEN];
     }
 }
