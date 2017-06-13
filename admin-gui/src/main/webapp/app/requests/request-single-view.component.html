@@ -1,67 +1,82 @@
 <div
-        class="ui basic segment request-single-view grid column"
+        class="ui basic segment request-single-view column grid"
         id="request-list-{{request.requestId}}"
 >
-    <div class="ui row">
-        <div class="single column">
-            <div class="ui header" routerLink="/request/{{request.id}}">
-                {{request.query.query.title}} {{request.query.query.description}}
-            </div>
-            <div class="ui meta">
-                {{request.status}} &#45;&#45; {{request.marker}}
-            </div>
+    <div class="row">
+        <div class="ui header sixteen wide column" routerLink="/request/{{request.id}}">
+            {{request.query.query.title}} {{request.query.query.description}}
         </div>
     </div>
-    <div class="ui seven wide column">
-        <div class="description">
+    <!--    <div class="actions">
+            <a *ngIf="!single" class="ui circular icon button" routerLink="/request/{{request.id}}">
+                <i class="eye icon"></i>
+            </a>
+            <a *ngIf="single" class="ui circular basic green icon button" routerLink="/request" title="Zurück zum Berichtsübersicht">
+                <i class="arrow left icon"></i>
+            </a>
+        </div>-->
+    <div class="compact stretched row">
+        <div class="ui meta four wide column">
+            <div class="item">
+                QueryId: {{request.queryId}}
+            </div>
+            <div class="item">
+                RequestId: {{request.requestId}}
+            </div>
+            <div class="item">
+                Status: {{request.status}}
+            </div>
+            <div class="item">
+                Marker: {{request.marker}}
+            </div>
+        </div>
+        <div class="ui meta five wide column">
             Principal:
-            <br/>
-            {{request.query.query.principal.name}}
-            <br/>
-            {{request.query.query.principal.organization}}
-            <br/>
-            {{request.query.query.principal.email}}
-            <br/>
-            {{request.query.query.principal.phone}}
+            <div class="item">
+                {{request.query.query.principal.name}}
+            </div>
+            <div class="item" *ngIf="request.query.query.principal.organization">
+                {{request.query.query.principal.organization}}
+            </div>
+            <div class="item" *ngIf="request.query.query.principal.email">
+                {{request.query.query.principal.email}}
+            </div>
+            <div class="item" *ngIf="request.query.query.principal.phone">
+                {{request.query.query.principal.phone}}
+            </div>
         </div>
-    </div>
-    <div class="ui meta eight wide column">
-        <!--    <div class="actions">
-                <a *ngIf="!single" class="ui circular icon button" routerLink="/request/{{request.id}}">
-                    <i class="eye icon"></i>
-                </a>
-                <a *ngIf="single" class="ui circular basic green icon button" routerLink="/request" title="Zurück zum Berichtsübersicht">
-                    <i class="arrow left icon"></i>
-                </a>
-            </div>-->
-        <div class="ui content grid">
-            <div class="ui compact row">
-                <div class="four wide column">Reference:</div>
-                <div class="eight wide column">{{request.query.referenceDate | date: 'mediumDate'}}</div>
-            </div>
-            <div class="ui compact row">
-                <div class="four wide column">published:</div>
-                <div class="eight wide column">{{request.query.published | date: 'mediumDate'}}</div>
-            </div>
-            <div class="ui compact row">
-                <div class="four wide column">scheduled:</div>
-                <div class="eight wide column">{{request.query.scheduled | date: 'mediumDate'}}</div>
-            </div>
-            <div class="ui compact row">
-                <div class="four wide column">deadline:</div>
-                <div class="eight wide column">{{request.query.deadline | date: 'mediumDate'}}</div>
-            </div>
-            <div class="ui compact row">
-                <div class="four wide column">closed:</div>
-                <div class="eight wide column">{{request.query.closed | date: 'mediumDate'}}</div>
-            </div>
-            <div class="ui compact row">
-                <div class="four wide column">canceled:</div>
-                <div class="eight wide column">{{request.query.canceled | date: 'mediumDate'}}</div>
+        <div class="ui meta seven wide column">
+            <div class="ui padded grid">
+                <div class="ui compact row">
+                    <div class="six wide column">Reference:</div>
+                    <div class="ten wide column">{{request.query.referenceDate | date: 'mediumDate'}}</div>
+                </div>
+                <div class="ui compact row">
+                    <div class="six wide column">published:</div>
+                    <div class="ten wide column">{{request.query.published | date: 'mediumDate'}}</div>
+                </div>
+                <div class="ui compact row">
+                    <div class="six wide column">scheduled:</div>
+                    <div class="ten wide column">{{request.query.scheduled | date: 'mediumDate'}}</div>
+                </div>
+                <div class="ui compact row">
+                    <div class="six wide column">deadline:</div>
+                    <div class="ten wide column">{{request.query.deadline | date: 'mediumDate'}}</div>
+                </div>
+                <div class="ui compact row">
+                    <div class="six wide column">closed:</div>
+                    <div class="ten wide column">{{request.query.closed | date: 'mediumDate'}}</div>
+                </div>
+                <div class="ui compact row">
+                    <div class="six wide column">canceled:</div>
+                    <div class="ten wide column">{{request.query.canceled | date: 'mediumDate'}}</div>
+                </div>
             </div>
         </div>
     </div>
+
     <div class="ui segment sixteen wide column" *ngIf="single">
         <pre>{{request.query.query.extensions[0]}}</pre>
     </div>
+
 </div>

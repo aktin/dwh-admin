@@ -62,6 +62,7 @@ export class LocalRequest {
         public queryId: number,
         public marker: string,
         public status: string,
+        public autoSubmit: boolean,
         public query: Request
     ) {}
 }
