@@ -22,13 +22,13 @@
                     <div class="field">
                         <label>Startdatum</label>
                         <div class="ui input">
-                            <input type="date" name="fromDate" id="template-from-date" [(ngModel)]="fromDate" [max]="toDate">
+                            <input type="date" name="fromDate" id="template-from-date" [(ngModel)]="fromDate" [max]="maxFromDate">
                         </div>
                     </div>
                     <div class="field">
                         <label>Enddatum</label>
                         <div class="ui input">
-                            <input type="date" name="toDate" id="template-to-date" [(ngModel)]="toDate" [min]="fromDate">
+                            <input type="date" name="toDate" id="template-to-date" [(ngModel)]="toDate" [min]="fromDate" [max]="maxToDate">
                         </div>
                     </div>
             </div>

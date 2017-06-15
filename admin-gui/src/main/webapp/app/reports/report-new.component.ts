@@ -70,14 +70,7 @@ export class ReportNewComponent {
         return max;
     }
 
-    get minToDate(): string {
-        let today = new Date();
-        let min = this.fromDate;
-        today.setHours(0);
-
-        if (today < this.string2date(this.fromDate)) {
-            min = this.date2String(today);
-        }
-        return min;
+    get maxToDate(): string {
+        return this.date2String(new Date());
     }
 }

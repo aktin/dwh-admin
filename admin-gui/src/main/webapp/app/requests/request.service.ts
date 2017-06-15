@@ -48,17 +48,17 @@ export class RequestService {
                                     req => LocalRequest.parseRequest(req));
     }
 
-    getRequest (id: number = -1): LocalRequest {
+    getRequest (requestId: number = -1): LocalRequest {
 
         this._updateRequest();
-        let requests: LocalRequest[] = JSON.parse(this._store.getValue('reports.data'));
+        let requests: LocalRequest[] = JSON.parse(this._store.getValue('requests.data'));
 
         if (!requests) {
             return null;
         }
-        if (id < 0) {
-            id = requests.length - 1;
+        if (requestId < 0) {
+            requestId = requests.length - 1;
         }
-        return requests[id];
+        return _.find(requests, (req) => req.requestId === requestId);
     }
 }

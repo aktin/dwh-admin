@@ -20,7 +20,7 @@ export class ReportSingleComponent implements OnInit {
     ngOnInit(): void {
         this._route.params
             .map((params: Params) => {
-                return this._reportService.getReport(+params['id'] - 1);
+                return this._reportService.getReport(+params['id']);
             }).subscribe(
                 rep => {
                     this.report = rep;

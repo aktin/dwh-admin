@@ -13,7 +13,7 @@ import { HomeComponent }         from './home/index';
 import { UsersComponent, UserLoginComponent, UserAuthGuard } from './users/index';
 import { ReportsComponent, ReportSingleComponent, ReportNewComponent } from './reports/index';
 import { PreferencesComponent }  from './preferences/index';
-import { RequestsComponent }     from './requests/index';
+import { RequestsComponent, RequestSingleComponent }     from './requests/index';
 import { StatusComponent }       from './status/index';
 
 import { RestrictedComponent }   from './restricted/restricted.component';
@@ -67,7 +67,28 @@ const routes: Routes = [// array of routes
         ],
     },
     {
+        path: 'request',
+        canActivate: [UserAuthGuard],
+        data : {
+            name : 'Anfragen',
+            roles : [
+                'LOGGEDIN',
+            ],
+        },
+        children : [
+            {
+                path : '',
+                component : RequestsComponent,
+            },
+            {
+                path: ':id',
+                component: RequestSingleComponent,
+            },
+        ],
+    },
+    {
         path: 'preferences',
+        canActivate: [UserAuthGuard],
         component: PreferencesComponent,
         data : {
             name : 'Konfigurationen',
@@ -77,17 +98,8 @@ const routes: Routes = [// array of routes
         },
     },
     {
-        path: 'requests',
-        component: RequestsComponent,
-        data : {
-            name : 'Anfragen',
-            roles : [
-                'LOGGEDIN',
-            ],
-        },
-    },
-    {
         path: 'status',
+        canActivate: [UserAuthGuard],
         component: StatusComponent,
         data : {
             name : 'Status',

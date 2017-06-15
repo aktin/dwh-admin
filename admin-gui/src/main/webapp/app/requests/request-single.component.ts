@@ -21,7 +21,7 @@ export class RequestSingleComponent implements OnInit {
     ngOnInit(): void {
         this._route.params
             .map((params: Params) => {
-                return this._requestService.getRequest(+params['id'] - 1);
+                return this._requestService.getRequest(+params['id']);
             }).subscribe(
             req => {
                 this.request = req;

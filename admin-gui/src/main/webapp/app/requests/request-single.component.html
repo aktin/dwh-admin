@@ -1,0 +1,10 @@
+<div class="ui grid">
+    <div class="row">
+        <div class="ui breadcrumb">
+            <a class="section" routerLink="/request">Anfragenbersicht</a>
+            <i class="right angle icon divider"></i>
+            <div class="active section">{{request.requestId}} / {{request.queryId}}: {{request.query.query.title}} {{request.query.query.description}}</div>
+        </div>
+    </div>
+    <request-single-view [requestData]="request" [single]="true" class="row"></request-single-view>
+</div>

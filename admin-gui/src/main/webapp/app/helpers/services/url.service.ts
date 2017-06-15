@@ -63,9 +63,7 @@ export class UrlService {
         if (keys && keys.length >= 0) {
             endUrl = _.reduce(
                 keys,
-                (memo: string, item: string) => {
-                    return memo.replace(item, args[/\w+/.exec(item)[0]]);
-                },
+                (memo: string, item: string) =>  memo.replace(item, args[/\w+/.exec(item)[0]]),
                 endUrl
             );
         }

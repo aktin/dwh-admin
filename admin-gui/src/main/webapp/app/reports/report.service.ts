@@ -85,9 +85,9 @@ export class ReportService {
             return null;
         }
         if (id < 0) {
-            id = reports.length - 1;
+            id = reports.length;
         }
-        return Report.parseObj(reports[id]);
+        return Report.parseObj(_.find(reports, (rep) => rep['id'] === id));
     }
 
     // TODO add parameters for new reports
