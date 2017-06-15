@@ -18,35 +18,57 @@ export interface RawReport {
 }
 
 export class Report {
-
-    private _locale = 'de-DE';
-    public static parseReport (obj: RawReport, url?: string): Report {
-        let report = new Report (
-            obj.id,
-            (obj.data) ? new Date(obj.data) : null,
-            [new Date(obj.start), new Date(obj.end)],
-            obj.template,
-            obj.type,
-            ReportStatus[obj.status],
-        );
-        report.getLink(url);
-        report.genName();
-        return report;
+    private static _locale = 'de-DE';
+    private static parseDate (date: string) {
+        if (date) {
+            return new Date(date);
+        } return null;
+    }
+    private static getLink (obj: any, base: string): string {
+        let url = null;
+        if (obj['status'] === ReportStatus.Completed) {
+            url = base + '/' + obj['id'];
+        }
+        return url;
+    }
+    private static genName (obj: any): string {
+        let name = '';
+        if (obj['template'] === 'org.aktin.report.aktin.AktinMonthly') {
+            name += 'AKTIN-Monatsbericht';
+        } else {
+            name += obj['template'];
+        }
+        name += ' ' + obj['timespan'][0].toLocaleDateString(this._locale, {month: 'long'}) + ' ' + obj['timespan'][0].getFullYear();
+        return name;
     }
 
-    public static parseObj (obj: any): Report {
-        let timespan = obj['timespan'] || [];
-        return new Report(
-            obj['id'],
-            new Date(obj['generationDate']),
-            [new Date(timespan[0]), new Date(timespan[1])],
-            obj['template'],
-            obj['type'],
-            obj['status'],
-            obj['url'],
-            obj['name'],
-            obj['filename'],
-        );
+    public static parseObj (obj: any, url?: string): Report {
+        obj['timespan'] = obj['timespan'] || [];
+
+        if (obj.hasOwnProperty('data')) {
+            obj['generationDate'] = this.parseDate(obj['data']);
+        } else {
+
+            obj['generationDate'] = this.parseDate(obj['generationDate']);
+        }
+        if (obj.hasOwnProperty('start') && obj.hasOwnProperty('end')) {
+            obj['timespan'] = [this.parseDate(obj['start']), this.parseDate(obj['end'])];
+        } else {
+            obj['timespan'] = obj['timespan'] || [];
+            obj['timespan'] = [this.parseDate(obj['timespan'][0]), this.parseDate(obj['timespan'][1])];
+        }
+        if (obj['status'].length > 1) {
+            obj['status'] = ReportStatus[obj['status']];
+        }
+
+        if (! obj['url']) {
+            obj['url'] = this.getLink(obj, url);
+        }
+        if (! obj['name']) {
+            obj['name'] = this.genName(obj);
+        }
+        Object.setPrototypeOf(obj, Report.prototype);
+        return obj;
     }
 
     constructor(
@@ -58,31 +80,8 @@ export class Report {
         public status: ReportStatus,
         public url?: string,
         public name?: string,
-        public filename ?: string,
     ) { }
 
-
-    public getLink (base: string): string {
-        if (this.status === ReportStatus.Completed) {
-            this.url = base + '/' + this.id;
-        }
-        return this.url;
-    }
-
-    public genName (): string {
-        this.name = '';
-        this.filename = '';
-        if (this.template === 'org.aktin.report.aktin.AktinMonthly') {
-            this.name += 'AKTIN-Monatsbericht';
-            this.filename += 'AKTIN-Monatsbericht';
-        } else {
-            this.name += this.template;
-            this.filename += this.template;
-        }
-        this.name += ' ' + this.timespan[0].toLocaleDateString(this._locale, {month: 'long'}) + ' ' + this.timespan[0].getFullYear();
-        this.filename += '-' + this.timespan[0].toLocaleDateString(this._locale, {month: 'long'}) + '-' + this.timespan[0].getFullYear() + '.pdf';
-        return this.name;
-    }
     public getDeStatus (): string {
         return ReportStateParse[this.status];
     }

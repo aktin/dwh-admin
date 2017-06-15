@@ -23,8 +23,8 @@ export class ReportSingleViewComponent  {
     get reportClass () {
         return {
             'report-waiting'    : this.report.status === ReportStatus.Waiting,
-            'report-success'    : this.report.isSuccess(),
-            'report-failed'     : !this.report.isSuccess(),
+            'report-success'    : this.report.status === ReportStatus.Completed,
+            'report-failed'     : this.report.status !== ReportStatus.Completed,
         };
     }
 }

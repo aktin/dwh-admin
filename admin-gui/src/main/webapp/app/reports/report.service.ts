@@ -33,7 +33,7 @@ export class ReportService {
             (res: Response) => {
                 // console.log(res);
                 return _.map(res.json(), rawRep => {
-                    return Report.parseReport(<RawReport>rawRep, this._urls.parse('reportsList'));
+                    return Report.parseObj(rawRep, this._urls.parse('reportsList'));
                 });
             }, (err: Response) => {
                 return err;

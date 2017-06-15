@@ -21,12 +21,18 @@ export class ReportNewComponent {
     toDate: string;
     @ViewChild(PopUpMessageComponent) popUp: PopUpMessageComponent;
 
+    private date2String (d: Date): string {
+        return d.toISOString().split('T')[0];
+    }
+    private string2date (s: string): Date {
+        return new Date(s + 'T00:00:00');
+    }
     constructor(private _reportService: ReportService, private _router: Router) {
         let date = new Date();
         date.setDate(1);
-        this.toDate = date.toISOString().split('T')[0];
+        this.toDate = this.date2String(date);
         date.setMonth(date.getMonth() - 1);
-        this.fromDate = date.toISOString().split('T')[0];
+        this.fromDate = this.date2String(date);
     }
 
 
@@ -38,18 +44,40 @@ export class ReportNewComponent {
     }
 
     generateReport(): void {
-        let from = new Date(this.fromDate + 'T00:00:00');
-        let to =  new Date(this.toDate + 'T00:00:00');
+        let from = this.string2date(this.fromDate);
+        let to =  this.string2date(this.toDate);
         if (from >= to) {
             this.popUp.setData(true, 'Fehler beim Erzeugen des neuen Berichts',
                     'Bitte wählen Sie eine passende Zeitspanne von mindestens einem Tag aus!');
             to.setMonth(from.getMonth() + 1);
-            this.toDate = to.toISOString().split('T')[0];
+            this.toDate = this.date2String(to);
             return;
         }
         this._reportService.newReport(this.template, from, to);
         this.popUp.setData(true, 'Neuer Bericht',
                     'Neuer ' + this.template + ' wird erzeugt und im Übersicht angezeigt.',
                     () => {this._router.navigate(['/report'])} );
+    }
+
+    get maxFromDate(): string {
+        let today = new Date();
+        let max = this.toDate;
+        today.setHours(0);
+
+        if (today > this.string2date(this.toDate)) {
+            max = this.date2String(today);
+        }
+        return max;
+    }
+
+    get minToDate(): string {
+        let today = new Date();
+        let min = this.fromDate;
+        today.setHours(0);
+
+        if (today < this.string2date(this.fromDate)) {
+            min = this.date2String(today);
+        }
+        return min;
     }
 }
