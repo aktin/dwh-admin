@@ -46,6 +46,19 @@ export class RequestService {
         this._updateRequest();
         return _.map(JSON.parse(this._store.getValue('requests.data')),
                                     req => LocalRequest.parseRequest(req));
+    }
 
+    getRequest (id: number = -1): LocalRequest {
+
+        this._updateRequest();
+        let requests: LocalRequest[] = JSON.parse(this._store.getValue('reports.data'));
+
+        if (!requests) {
+            return null;
+        }
+        if (id < 0) {
+            id = requests.length - 1;
+        }
+        return requests[id];
     }
 }

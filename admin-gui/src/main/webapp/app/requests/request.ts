@@ -53,9 +53,8 @@ export class LocalRequest {
         rawQuery['schedule'] = rawQuery['schedule'] || {};
         rawQuery['schedule']['reference'] = this.parseDate(rawQuery['schedule']['reference']);
 
-        console.log(data);
-
-        return <LocalRequest> data;
+        Object.setPrototypeOf(data, LocalRequest.prototype);
+        return data;
     }
     constructor (
         public requestId: number,
