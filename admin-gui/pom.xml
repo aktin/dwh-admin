@@ -140,7 +140,7 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>report-manager</artifactId>
-			<version>0.2</version>
+			<version>0.3-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -152,7 +152,7 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>report-manager</artifactId>
-			<version>0.2</version>
+			<version>0.3-SNAPSHOT</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
