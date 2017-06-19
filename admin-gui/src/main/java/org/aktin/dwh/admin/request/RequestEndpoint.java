@@ -7,7 +7,9 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -17,6 +19,7 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.aktin.broker.request.RequestManager;
 import org.aktin.broker.request.RequestStatus;
+import org.aktin.broker.request.Marker;
 import org.aktin.broker.request.RetrievedRequest;
 import org.aktin.dwh.admin.auth.Secured;
 
@@ -78,6 +81,31 @@ public class RequestEndpoint {
 		}
 		String userId = security.getUserPrincipal().getName();
 		req.changeStatus(userId, newStatus, null);
+	}
+
+	@Secured
+	@POST
+	@Path("{id}/marker/{value}")
+	public void changeMarker(@PathParam("id") int id, @PathParam("value") Marker mark) throws IOException{
+		RetrievedRequest req = manager.getRequest(id);
+		if( req == null ){
+			throw new NotFoundException();
+		}
+		//TODO  how to remove marker?
+		req.setMarker(mark);
+	}
+
+	@Secured
+	@PUT
+	@Path("{id}/marker")
+	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
+	public void updateMarker(@PathParam("id") int id, Marker mark) throws IOException{
+		RetrievedRequest req = manager.getRequest(id);
+		if( req == null ){
+			throw new NotFoundException();
+		}
+		//TODO  how to remove marker?
+		req.setMarker(mark);
 	}
 
 }

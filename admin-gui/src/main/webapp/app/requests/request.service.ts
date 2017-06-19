@@ -9,7 +9,7 @@ import 'rxjs/add/operator/map';
 import _ = require('underscore');
 
 import { StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
-import { LocalRequest } from './request';
+import { LocalRequest, RequestMarker } from './request';
 
 @Injectable()
 export class RequestService {
@@ -59,6 +59,20 @@ export class RequestService {
         if (requestId < 0) {
             requestId = requests.length - 1;
         }
-        return _.find(requests, (req) => req.requestId === requestId);
+        return LocalRequest.parseRequest(_.find(requests, (req) => req.requestId === requestId));
+    }
+
+    updateMarker (requestId: number, marker: RequestMarker): void {
+        let markerString = RequestMarker[marker];
+        if (marker === null) {
+            markerString = 'HIDDEN';
+        }
+        console.log(JSON.stringify({mark: markerString}));
+        // this._http.post(this._urls.parse('setRequestMarker',
+        //     {requestId: requestId, marker: markerString}), {}).subscribe();
+        this._http.put(this._urls.parse('updateRequestMarker',
+            {requestId: requestId}), JSON.stringify(markerString),
+            this._http.generateHeaderOptions('Content-Type', 'application/json')
+        ).subscribe();
     }
 }

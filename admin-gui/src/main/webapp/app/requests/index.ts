@@ -16,5 +16,7 @@ export * from './request.service';
 export * from './requests.component';
 export * from './request-single-view.component';
 export * from './request-single.component';
-
-
+/**
+ * pipe
+ */
+export * from './request-filter.pipe';

@@ -4,13 +4,15 @@
 import { Component } from '@angular/core';
 
 import { RequestService } from './request.service';
-import { LocalRequest } from './request';
+import { LocalRequest, RequestMarker, RequestStatus } from './request';
 
 @Component({
     templateUrl: './requests.component.html',
 })
 export class RequestsComponent  {
     requestsData: LocalRequest[];
+    mark: RequestMarker = null;
+    status: RequestStatus = null;
 
     constructor(private _requestService: RequestService) {
     }
@@ -18,5 +20,12 @@ export class RequestsComponent  {
     get requests(): LocalRequest[] {
         this.requestsData = this._requestService.getRequests();
         return this.requestsData;
+    }
+
+    get markFilter (): RequestMarker {
+        return this.mark;
+    }
+    get statusFilter (): RequestStatus {
+        return this.status;
     }
 }

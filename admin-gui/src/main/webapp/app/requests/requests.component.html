@@ -6,5 +6,5 @@
     </div>
 </div>
 <div *ngIf="requests" class="ui vertically divided grid">
-    <request-single-view *ngFor="let req of requests" [requestData]="req" class="row"></request-single-view>
+    <request-single-view *ngFor="let req of requests | requestfilter:markFilter:statusFilter" [requestData]="req" class="row"></request-single-view>
 </div>

@@ -41,6 +41,8 @@ export class LocalRequest {
 
     public static parseRequest (data: any): LocalRequest {
         data['query'] = data['query'] || {};
+        data['marker'] = RequestMarker[data['marker']];
+        data['status'] = RequestStatus[data['status']];
         let rawRequest = data['query'];
         rawRequest['referenceDate'] = this.parseDate(rawRequest['referenceDate']);
         rawRequest['published']     = this.parseDate(rawRequest['published']);
@@ -59,8 +61,8 @@ export class LocalRequest {
     constructor (
         public requestId: number,
         public queryId: number,
-        public marker: string,
-        public status: string,
+        public marker: RequestMarker,
+        public status: RequestStatus,
         public autoSubmit: boolean,
         public query: Request
     ) {}

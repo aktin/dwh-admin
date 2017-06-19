@@ -6,18 +6,20 @@
         <div class="ui header ten wide column" routerLink="/request/{{request.requestId}}">
             {{request.query.query.title}} {{request.query.query.description}}
         </div>
-        <div class="actions six wide right floated column">
-
-        </div>
-    </div>
-    <!--    <div class="actions">
+        <div class="actions six wide right floated right aligned column">
+            <a class="ui circular icon button" routerLink="/request"
+               [class.basic]="!starred" (click)="toggleStarredMarker()">
+                <i class="star icon" [class.empty]="!starred"></i>
+            </a>
             <a *ngIf="!single" class="ui circular icon button" routerLink="/request/{{request.id}}">
                 <i class="eye icon"></i>
             </a>
             <a *ngIf="single" class="ui circular basic green icon button" routerLink="/request" title="Zurück zum Berichtsübersicht">
                 <i class="arrow left icon"></i>
             </a>
-        </div>-->
+        </div>
+    </div>
+
     <div class="compact stretched row">
         <div class="ui meta four wide column">
             <div class="item">
@@ -27,10 +29,10 @@
                 RequestId: {{request.requestId}}
             </div>
             <div class="item">
-                Status: {{request.status}}
+                Status: {{status}}
             </div>
             <div class="item">
-                Marker: {{request.marker}}
+                Marker: {{marker}}
             </div>
         </div>
         <div class="ui meta five wide column">

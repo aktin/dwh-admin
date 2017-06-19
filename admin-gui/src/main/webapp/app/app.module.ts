@@ -20,12 +20,11 @@ import { StorageService, UrlService, HttpInterceptorService,
             SafeUrlPipe, OrderByPipe,
             PopUpMessageComponent, LoadingComponent }                               from './helpers/index';
 import { UsersComponent, UserLoginComponent, UserAuthGuard, UserService }           from './users/index';
-import { ReportService, SuccessReportsPipe,
-            ReportNewComponent,
-            ReportsComponent, ReportSingleViewComponent, ReportSingleComponent }    from './reports/index';
+import { ReportService, SuccessReportsPipe, ReportSingleViewComponent,
+            ReportsComponent, ReportNewComponent, ReportSingleComponent }           from './reports/index';
 import { PreferencesComponent, PreferenceService }                                  from './preferences/index';
 import { RequestsComponent, RequestSingleViewComponent, RequestSingleComponent,
-            RequestService }                                                        from './requests/index';
+            RequestFilterPipe, RequestService }                                     from './requests/index';
 import { StatusComponent, StatusService }                                           from './status/index';
 import { RestrictedComponent }  from './restricted/restricted.component';
 
@@ -58,6 +57,7 @@ import { RestrictedComponent }  from './restricted/restricted.component';
         OrderByPipe,
         SafeUrlPipe,
         SuccessReportsPipe,
+        RequestFilterPipe,
     ],
     bootstrap:   [
         AppComponent
