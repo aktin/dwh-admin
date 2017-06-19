@@ -65,7 +65,7 @@ export class RequestService {
     updateMarker (requestId: number, marker: RequestMarker): void {
         let markerString = RequestMarker[marker];
         if (marker === null) {
-            markerString = 'HIDDEN';
+            markerString = '';
         }
         console.log(JSON.stringify({mark: markerString}));
         // this._http.post(this._urls.parse('setRequestMarker',
