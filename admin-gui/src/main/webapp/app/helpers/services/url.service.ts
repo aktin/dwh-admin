@@ -40,7 +40,7 @@ export class UrlService {
         setRequestAutoSubmit: 'request/@requestId@/autoSubmit/@submit@',
         setRequestStatus: 'request/@requestId@/status/@status@',
         setRequestMarker: 'request/@requestId@/marker/@marker@',
-        updateRequestMarker: 'request/@requestId@/marker',
+        updateRequestMarker: 'request/@requestId@/marker', // put / delete
     };
 
     setServerUrl (serverUrl: string) {

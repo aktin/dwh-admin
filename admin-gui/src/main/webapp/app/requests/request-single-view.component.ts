@@ -14,6 +14,8 @@ import { RequestService } from './request.service';
 export class RequestSingleViewComponent  {
     @Input() requestData: LocalRequest;
     @Input() single = false;
+    starLoading = false;
+    hiddenLoading = false;
 
     constructor(private _requestService: RequestService) {}
 
@@ -22,10 +24,24 @@ export class RequestSingleViewComponent  {
     }
 
     get starred (): boolean {
-        return this.request.marker === RequestMarker.STARRED;
+        return this.requestData.marker === RequestMarker.STARRED;
     }
     get hidden (): boolean {
-        return this.request.marker === RequestMarker.HIDDEN;
+        return this.requestData.marker === RequestMarker.HIDDEN;
+    }
+    get starMessage (): string {
+        if (this.starred) {
+            return 'Anfrage nicht mehr favorisieren';
+        } else {
+            return 'Anfrage favorisieren';
+        }
+    }
+    get hideMessage (): string {
+        if (this.hidden) {
+            return 'Anfrage wiederherstellen';
+        } else {
+            return 'Anfrage löschen';
+        }
     }
 
     get marker (): string {
@@ -35,17 +51,30 @@ export class RequestSingleViewComponent  {
         return RequestStatus[this.requestData.status];
     }
 
-    setMarker (marker: RequestMarker): void {
-        this._requestService.updateMarker(this.requestData.requestId, marker);
-    }
     toggleStarredMarker (): void {
-        if (this.requestData.marker === RequestMarker.STARRED) {
-            this.setMarker(null);
+        this.starLoading = true;
+        let newMark = this.requestData.marker;
+        if (newMark === RequestMarker.STARRED) {
+            newMark = null;
         } else {
-            this.setMarker(RequestMarker.STARRED);
+            newMark = RequestMarker.STARRED;
         }
+        this._requestService.updateMarker(this.requestData.requestId, newMark);
+        setTimeout(() => {
+            this.starLoading = false;
+        }, 500);
     }
-    setHiddenMarker (): void {
-        this.setMarker(RequestMarker.HIDDEN);
+    toggleHiddenMarker (): void {
+        this.hiddenLoading = true;
+        let newMark = this.requestData.marker;
+        if (newMark === RequestMarker.HIDDEN) {
+            newMark = null;
+        } else {
+            newMark = RequestMarker.HIDDEN;
+        }
+        this._requestService.updateMarker(this.requestData.requestId, newMark);
+        setTimeout(() => {
+            this.starLoading = false;
+        }, 500);
     }
 }

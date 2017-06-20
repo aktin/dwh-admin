@@ -11,8 +11,9 @@ import { LocalRequest, RequestMarker, RequestStatus } from './request';
 })
 export class RequestsComponent  {
     requestsData: LocalRequest[];
-    mark: RequestMarker = null;
     status: RequestStatus = null;
+    showHidden = false;
+    onlyStarred = false;
 
     constructor(private _requestService: RequestService) {
     }
@@ -20,10 +21,6 @@ export class RequestsComponent  {
     get requests(): LocalRequest[] {
         this.requestsData = this._requestService.getRequests();
         return this.requestsData;
-    }
-
-    get markFilter (): RequestMarker {
-        return this.mark;
     }
     get statusFilter (): RequestStatus {
         return this.status;

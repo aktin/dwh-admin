@@ -9,11 +9,12 @@ import 'rxjs/add/operator/map';
 import _ = require('underscore');
 
 import { StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
-import { LocalRequest, RequestMarker } from './request';
+import { LocalRequest, RequestMarker, RequestStatus } from './request';
+import { Local } from 'protractor/built/driverProviders';
 
 @Injectable()
 export class RequestService {
-    private _dataInterval = 3000;
+    private _dataInterval = 300;
 
     constructor(
         private _http: HttpInterceptorService,
@@ -21,7 +22,7 @@ export class RequestService {
         private _store: StorageService
     ) {}
 
-    private _updateRequest (): void {
+    private _updateRequests (): void {
         this._http.debouncedGet<string> (
             'requests',
             this._store.getValue('requests.data'), null,
@@ -43,15 +44,13 @@ export class RequestService {
     }
 
     getRequests (): LocalRequest[] {
-        this._updateRequest();
+        this._updateRequests();
         return _.map(JSON.parse(this._store.getValue('requests.data')),
                                     req => LocalRequest.parseRequest(req));
     }
 
     getRequest (requestId: number = -1): LocalRequest {
-
-        this._updateRequest();
-        let requests: LocalRequest[] = JSON.parse(this._store.getValue('requests.data'));
+        let requests: LocalRequest[] = this.getRequests();
 
         if (!requests) {
             return null;
@@ -59,20 +58,25 @@ export class RequestService {
         if (requestId < 0) {
             requestId = requests.length - 1;
         }
-        return LocalRequest.parseRequest(_.find(requests, (req) => req.requestId === requestId));
+
+        return _.find(requests, (req) => req.requestId === requestId);
     }
 
     updateMarker (requestId: number, marker: RequestMarker): void {
-        let markerString = RequestMarker[marker];
         if (marker === null) {
-            markerString = '';
+            this._http.delete(this._urls.parse('updateRequestMarker', {requestId: requestId}))
+            .subscribe(() => {
+                // this.updateRequest(requestId, null, null);
+                this._updateRequests();
+            });
+        } else {
+            this._http.put(this._urls.parse('updateRequestMarker', {requestId: requestId}),
+                JSON.stringify(RequestMarker[marker]),
+                this._http.generateHeaderOptions('Content-Type', 'application/json')
+            ).subscribe(() => {
+                // this.updateRequest(requestId, null, marker);
+                this._updateRequests();
+            });
         }
-        console.log(JSON.stringify({mark: markerString}));
-        // this._http.post(this._urls.parse('setRequestMarker',
-        //     {requestId: requestId, marker: markerString}), {}).subscribe();
-        this._http.put(this._urls.parse('updateRequestMarker',
-            {requestId: requestId}), JSON.stringify(markerString),
-            this._http.generateHeaderOptions('Content-Type', 'application/json')
-        ).subscribe();
     }
 }

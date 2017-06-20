@@ -41,8 +41,12 @@ export class LocalRequest {
 
     public static parseRequest (data: any): LocalRequest {
         data['query'] = data['query'] || {};
-        data['marker'] = RequestMarker[data['marker']];
-        data['status'] = RequestStatus[data['status']];
+        if (isNaN(data['marker'])) {
+            data['marker'] = RequestMarker[data['marker']];
+        }
+        if (isNaN(data['status'])) {
+            data['status'] = RequestStatus[data['status']];
+        }
         let rawRequest = data['query'];
         rawRequest['referenceDate'] = this.parseDate(rawRequest['referenceDate']);
         rawRequest['published']     = this.parseDate(rawRequest['published']);
@@ -58,6 +62,7 @@ export class LocalRequest {
         Object.setPrototypeOf(data, LocalRequest.prototype);
         return data;
     }
+
     constructor (
         public requestId: number,
         public queryId: number,

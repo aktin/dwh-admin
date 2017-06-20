@@ -5,6 +5,14 @@
         </div>
     </div>
 </div>
+<div class="ui test slider checkbox requests-filter-checkbox-starred">
+    <input type="checkbox" [checked]="onlyStarred" (change)="onlyStarred=!onlyStarred" title="Nur Favoriten anzeigen">
+    <label (click)="onlyStarred=!onlyStarred">Nur Favoriten anzeigen</label>
+</div>
+<div class="ui test slider checkbox requests-filter-checkbox-hidden">
+    <input type="checkbox" [checked]="showHidden" (change)="showHidden=!showHidden" title="Gelöschte Anfragen anzeigen">
+    <label (click)="showHidden=!showHidden">Gelöschte Anfragen anzeigen</label>
+</div>
 <div *ngIf="requests" class="ui vertically divided grid">
-    <request-single-view *ngFor="let req of requests | requestfilter:markFilter:statusFilter" [requestData]="req" class="row"></request-single-view>
+    <request-single-view *ngFor="let req of requests | requestfilter:statusFilter:onlyStarred:showHidden" [requestData]="req" class="row"></request-single-view>
 </div>

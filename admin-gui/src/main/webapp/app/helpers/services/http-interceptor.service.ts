@@ -33,9 +33,10 @@ export class HttpInterceptorService {
     }
 
     delete(url: string, options?: RequestOptionsArgs): Observable<Response> {
-        return this._http.delete(url, options);
+        return this._http.delete(url, this.getRequestOptionArgs(options));
     }
 
+    // throttled Got function.
     debouncedGet<T> (
         vlName: string,
         value: T, nullVal: T,

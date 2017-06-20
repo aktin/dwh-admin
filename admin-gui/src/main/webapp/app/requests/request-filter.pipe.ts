@@ -6,13 +6,17 @@ import { LocalRequest, RequestMarker, RequestStatus } from './request';
 
 @Pipe({ name: 'requestfilter' })
 export class RequestFilterPipe implements PipeTransform {
-    transform(requests: LocalRequest[], marker: RequestMarker, status: RequestStatus): LocalRequest[] {
+    transform(requests: LocalRequest[], status: RequestStatus, onlyStarred: boolean, showHidden: boolean): LocalRequest[] {
         let output = requests;
-        if ( marker ) {
-            output = output.filter(req => req.marker === marker);
-        }
+
         if ( status ) {
             output = output.filter(req => req.status === status);
+        }
+        if ( onlyStarred ) {
+            output = output.filter(req => req.marker === RequestMarker.STARRED);
+        }
+        if ( !showHidden ) {
+            output = output.filter(req => req.marker !== RequestMarker.HIDDEN);
         }
 
         return output;

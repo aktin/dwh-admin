@@ -7,9 +7,21 @@
             {{request.query.query.title}} {{request.query.query.description}}
         </div>
         <div class="actions six wide right floated right aligned column">
-            <a class="ui circular icon button" routerLink="/request"
-               [class.basic]="!starred" (click)="toggleStarredMarker()">
+            <a class="ui circular yellow icon button" routerLink="/request"
+               *ngIf="!hidden"
+               [ngClass]="{'basic': !starred, 'disabled': starLoading }"
+               (click)="toggleStarredMarker()"
+               title="{{starMessage}}"
+            >
                 <i class="star icon" [class.empty]="!starred"></i>
+            </a>
+            <a class="ui circular red icon button" routerLink="/request"
+               *ngIf="!starred"
+               [ngClass]="{'basic': !hidden, 'disabled': hiddenLoading }"
+               (click)="toggleHiddenMarker()"
+               title="{{hideMessage}}"
+            >
+                <i class="trash outline icon" [class.empty]="!hidden"></i>
             </a>
             <a *ngIf="!single" class="ui circular icon button" routerLink="/request/{{request.id}}">
                 <i class="eye icon"></i>
@@ -30,9 +42,6 @@
             </div>
             <div class="item">
                 Status: {{status}}
-            </div>
-            <div class="item">
-                Marker: {{marker}}
             </div>
         </div>
         <div class="ui meta five wide column">
