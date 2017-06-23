@@ -5,14 +5,51 @@
         </div>
     </div>
 </div>
-<div class="ui test slider checkbox requests-filter-checkbox-starred">
-    <input type="checkbox" [checked]="onlyStarred" (change)="onlyStarred=!onlyStarred" title="Nur Favoriten anzeigen">
-    <label (click)="onlyStarred=!onlyStarred">Nur Favoriten anzeigen</label>
-</div>
-<div class="ui test slider checkbox requests-filter-checkbox-hidden">
-    <input type="checkbox" [checked]="showHidden" (change)="showHidden=!showHidden" title="Gelöschte Anfragen anzeigen">
-    <label (click)="showHidden=!showHidden">Gelöschte Anfragen anzeigen</label>
-</div>
 <div *ngIf="requests" class="ui vertically divided grid">
+    <div class="row">
+        <div class="eight wide column">
+            <div class="ui test slider checkbox requests-filter-checkbox-starred">
+                <input type="checkbox" [checked]="onlyStarred" (change)="onlyStarred=!onlyStarred" title="Nur Favoriten anzeigen">
+                <label (click)="onlyStarred=!onlyStarred">Nur Favoriten anzeigen</label>
+            </div>
+        </div>
+        <div class="eight wide column">
+            <div class="ui test slider checkbox requests-filter-checkbox-hidden">
+                <input type="checkbox" [checked]="showHidden" (change)="showHidden=!showHidden" title="Gelöschte Anfragen anzeigen">
+                <label (click)="showHidden=!showHidden">Gelöschte Anfragen anzeigen</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui form row">
+        <div class="inline fields">
+            <label>Nach Status filtern</label>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input type="radio" name="frequency">
+                    <label>Alle Status</label>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input type="radio" name="frequency" checked="checked">
+                    <label>Completed</label>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input type="radio" name="frequency">
+                    <label>Waiting</label>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input type="radio" name="frequency">
+                    <label>New</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <request-single-view *ngFor="let req of requests | requestfilter:statusFilter:onlyStarred:showHidden" [requestData]="req" class="row"></request-single-view>
 </div>

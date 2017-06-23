@@ -3,6 +3,7 @@
  */
 import { Injectable }   from '@angular/core';
 import { Response }     from '@angular/http';
+import { Router } from '@angular/router';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
@@ -10,7 +11,8 @@ import _ = require('underscore');
 
 import { StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
 import { LocalRequest, RequestMarker, RequestStatus } from './request';
-import { Local } from 'protractor/built/driverProviders';
+import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
 
 @Injectable()
 export class RequestService {
@@ -19,11 +21,12 @@ export class RequestService {
     constructor(
         private _http: HttpInterceptorService,
         private _urls: UrlService,
-        private _store: StorageService
+        private _store: StorageService,
+        private _router: Router
     ) {}
 
-    private _updateRequests (): void {
-        this._http.debouncedGet<string> (
+    private _updateRequests (): Subscription {
+        return this._http.debouncedGet<string> (
             'requests',
             this._store.getValue('requests.data'), null,
             this._dataInterval,
@@ -63,20 +66,28 @@ export class RequestService {
     }
 
     updateMarker (requestId: number, marker: RequestMarker): void {
+        let currentRoute = this._router.url;
         if (marker === null) {
             this._http.delete(this._urls.parse('updateRequestMarker', {requestId: requestId}))
-            .subscribe(() => {
-                // this.updateRequest(requestId, null, null);
-                this._updateRequests();
-            });
+                .catch(err => {return this._http.handleError(err); })
+                .subscribe(() => {
+                    // this.updateRequest(requestId, null, null);
+                    this._updateRequests();
+                    // console.log(currentRoute);
+                    setTimeout(() => this._router.navigate([currentRoute]), 600);
+                });
         } else {
             this._http.put(this._urls.parse('updateRequestMarker', {requestId: requestId}),
-                JSON.stringify(RequestMarker[marker]),
-                this._http.generateHeaderOptions('Content-Type', 'application/json')
-            ).subscribe(() => {
-                // this.updateRequest(requestId, null, marker);
-                this._updateRequests();
-            });
+                    JSON.stringify(RequestMarker[marker]),
+                    this._http.generateHeaderOptions('Content-Type', 'application/json')
+                )
+                .catch(err => this._http.handleError(err))
+                .subscribe(() => {
+                    // this.updateRequest(requestId, null, marker);
+                    this._updateRequests();
+                    // console.log(currentRoute);
+                    setTimeout(() => this._router.navigate([currentRoute]), 600);
+                });
         }
     }
 }
