@@ -4,19 +4,32 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { LocalRequest, RequestMarker, RequestStatus } from './request';
 
-@Pipe({ name: 'requestfilter' })
+@Pipe({ name: 'requestFilter' })
 export class RequestFilterPipe implements PipeTransform {
-    transform(requests: LocalRequest[], status: RequestStatus, onlyStarred: boolean, showHidden: boolean): LocalRequest[] {
+    private reqAuthStatus: RequestStatus[] = [RequestStatus.Retrieved, RequestStatus.Seen, RequestStatus.Completed];
+
+    transform( requests: LocalRequest[], status: RequestStatus | boolean, marker: RequestMarker ): LocalRequest[] {
         let output = requests;
 
-        if ( status ) {
+        if ( status === true ) { // show all status
+            // do nothing
+        } else if ( status ) {
             output = output.filter(req => req.status === status);
+        } else {
+            output = output.filter(req => req.needAuthorization());
         }
-        if ( onlyStarred ) {
-            output = output.filter(req => req.marker === RequestMarker.STARRED);
-        }
-        if ( !showHidden ) {
-            output = output.filter(req => req.marker !== RequestMarker.HIDDEN);
+        switch ( marker ) {
+            case RequestMarker.STARRED: {
+                output = output.filter(req => req.marker === RequestMarker.STARRED);
+                break;
+            }
+            case RequestMarker.HIDDEN: {
+                // NOP - show hidden!
+                break;
+            }
+            default: { // filter our the hidden ones
+                output = output.filter(req => req.marker !== RequestMarker.HIDDEN);
+            }
         }
 
         return output;

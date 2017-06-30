@@ -14,6 +14,8 @@ export class RequestsComponent  {
     status: RequestStatus = null;
     showHidden = false;
     onlyStarred = false;
+    statiFilter = [''];
+    debug = true;
 
     constructor(private _requestService: RequestService) {
     }
@@ -24,5 +26,14 @@ export class RequestsComponent  {
     }
     get statusFilter (): RequestStatus {
         return this.status;
+    }
+    get markerFilter (): RequestMarker {
+        if (this.onlyStarred) {
+            return RequestMarker.STARRED;
+        }
+        if (this.showHidden) {
+            return RequestMarker.HIDDEN;
+        }
+        return null;
     }
 }

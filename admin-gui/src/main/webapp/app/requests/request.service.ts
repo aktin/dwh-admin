@@ -11,7 +11,6 @@ import _ = require('underscore');
 
 import { StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
 import { LocalRequest, RequestMarker, RequestStatus } from './request';
-import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 
 @Injectable()
@@ -89,5 +88,17 @@ export class RequestService {
                     setTimeout(() => this._router.navigate([currentRoute]), 600);
                 });
         }
+    }
+    updateStatus (requestId: number, status: RequestStatus): void {
+        let currentRoute = this._router.url;
+        console.log( this._urls.parse('setRequestStatus', {requestId: requestId, status: RequestStatus[status]}), {} );
+        this._http.post(this._urls.parse('setRequestStatus', {requestId: requestId, status: RequestStatus[status]}), {})
+            .catch(err => this._http.handleError(err))
+            .subscribe(() => {
+                // this.updateRequest(requestId, null, marker);
+                this._updateRequests();
+                // console.log(currentRoute);
+                setTimeout(() => this._router.navigate([currentRoute]), 600);
+            });
     }
 }

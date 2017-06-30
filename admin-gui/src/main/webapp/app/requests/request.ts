@@ -71,6 +71,10 @@ export class LocalRequest {
         public autoSubmit: boolean,
         public query: Request
     ) {}
+
+    public needAuthorization (): boolean {
+        return /*(!this.autoSubmit) && */([RequestStatus.Retrieved, RequestStatus.Seen, RequestStatus.Completed].indexOf(this.status) >= 0);
+    }
 }
 
 export enum RequestMarker {

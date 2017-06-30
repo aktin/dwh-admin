@@ -16,8 +16,12 @@ export class RequestSingleViewComponent  {
     @Input() single = false;
     starLoading = false;
     hiddenLoading = false;
+    options: string[];
 
-    constructor(private _requestService: RequestService) {}
+    constructor(private _requestService: RequestService) {
+        let tempOpt = Object.keys(RequestStatus);
+        this.options = tempOpt.slice(tempOpt.length / 2);
+    }
 
     get request (): LocalRequest {
         return this.requestData;
@@ -49,6 +53,11 @@ export class RequestSingleViewComponent  {
     }
     get status (): string {
         return RequestStatus[this.requestData.status];
+    }
+
+    updateStatus (statusIndex: number): void {
+        console.log(statusIndex, <RequestStatus> statusIndex);
+        this._requestService.updateStatus(this.requestData.requestId, <RequestStatus> statusIndex);
     }
 
     toggleStarredMarker (): void {

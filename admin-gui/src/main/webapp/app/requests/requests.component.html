@@ -26,30 +26,30 @@
             <label>Nach Status filtern</label>
             <div class="field">
                 <div class="ui radio checkbox">
-                    <input type="radio" name="frequency">
-                    <label>Alle Status</label>
+                    <input type="radio" name="status">
+                    <label>benötigt Freigabe</label>
                 </div>
             </div>
             <div class="field">
                 <div class="ui radio checkbox">
-                    <input type="radio" name="frequency" checked="checked">
+                    <input type="radio" name="status" checked="checked" value="all">
+                    <label>Alle</label>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input type="radio" name="status" value="completed">
                     <label>Completed</label>
                 </div>
             </div>
             <div class="field">
                 <div class="ui radio checkbox">
-                    <input type="radio" name="frequency">
-                    <label>Waiting</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" name="frequency">
+                    <input type="radio" name="status">
                     <label>New</label>
                 </div>
             </div>
         </div>
     </div>
 
-    <request-single-view *ngFor="let req of requests | requestfilter:statusFilter:onlyStarred:showHidden" [requestData]="req" class="row"></request-single-view>
+    <request-single-view *ngFor="let req of requests | requestFilter:statusFilter:markerFilter" [requestData]="req" class="row"></request-single-view>
 </div>

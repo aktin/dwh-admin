@@ -3,12 +3,18 @@
         id="request-list-{{request.requestId}}"
 >
     <div class="row">
-        <div class="ten wide column">
+        <div class="eight wide column">
             <div class="ui header"  routerLink="/request/{{request.requestId}}">
                 {{request.query.query.title}} {{request.query.query.description}}
             </div>
         </div>
-        <div class="actions six wide right floated right aligned column">
+        <div class="actions four wide column">
+            <button class="ui orange button" *ngIf="single && needAuthorization">
+                <i class="icon user"></i>
+                Zulassen
+            </button>
+        </div>
+        <div class="actions four wide right floated right aligned column">
             <a class="ui circular yellow icon button" routerLink="/request"
                *ngIf="!hidden"
                [ngClass]="{'basic': !starred, 'disabled': starLoading }"
@@ -72,6 +78,14 @@
             </div>
             <div class="item">
                 Status: {{status}}
+            </div>
+            <div class="item" *ngIf="single">
+                <select class="ui dropdown" (change)="updateStatus($event.target.value)">
+                    <option *ngFor="let stat of options; let i = index" value="{{i}}"
+                            [selected]="i === request.status">
+                        {{stat}}
+                    </option>
+                </select>
             </div>
         </div>
         <div class="ui meta five wide column">
