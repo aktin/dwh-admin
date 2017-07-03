@@ -16,7 +16,7 @@ export class RequestsComponent  {
     onlyStarred = false;
     statiFilter = [''];
     debug = true;
-
+// TODO add actions to the radio buttons
     constructor(private _requestService: RequestService) {
     }
 

@@ -80,6 +80,7 @@
                 Status: {{status}}
             </div>
             <div class="item" *ngIf="single">
+                <label>Status ändern:</label>
                 <select class="ui dropdown" (change)="updateStatus($event.target.value)">
                     <option *ngFor="let stat of options; let i = index" value="{{i}}"
                             [selected]="i === request.status">
