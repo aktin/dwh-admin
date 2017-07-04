@@ -4,7 +4,7 @@
 >
     <div class="row">
         <div class="eight wide column">
-            <div class="ui header"  routerLink="/request/{{request.requestId}}">
+            <div class="ui header" [routerLink]="['/request', request.requestId]">
                 {{request.query.query.title}} {{request.query.query.description}}
             </div>
         </div>
@@ -31,7 +31,7 @@
             >
                 <i class="trash outline icon" [class.empty]="!hidden"></i>
             </a>
-            <a *ngIf="!single" class="ui circular icon button" routerLink="/request/{{request.requestId}}">
+            <a *ngIf="!single" class="ui circular icon button" [routerLink]="['/request', request.requestId]">
                 <i class="eye icon"></i>
             </a>
             <a *ngIf="single" class="ui circular basic green icon button" routerLink="/request" title="Zurück zum Berichtsübersicht">

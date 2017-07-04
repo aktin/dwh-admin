@@ -18,8 +18,6 @@ export class RequestSingleViewComponent  {
     hiddenLoading = false;
     options: string[];
 
-    // TODO findout why the server is not redirecting parameterized urls
-
     constructor(private _requestService: RequestService) {
         let tempOpt = Object.keys(RequestStatus);
         this.options = tempOpt.slice(tempOpt.length / 2);
