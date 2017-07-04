@@ -15,7 +15,7 @@
             </button>
         </div>
         <div class="actions four wide right floated right aligned column">
-            <a class="ui circular yellow icon button" routerLink="/request"
+            <a class="ui circular yellow icon button"
                *ngIf="!hidden"
                [ngClass]="{'basic': !starred, 'disabled': starLoading }"
                (click)="toggleStarredMarker()"
@@ -23,7 +23,7 @@
             >
                 <i class="star icon" [class.empty]="!starred"></i>
             </a>
-            <a class="ui circular red icon button" routerLink="/request"
+            <a class="ui circular red icon button"
                *ngIf="!starred"
                [ngClass]="{'basic': !hidden, 'disabled': hiddenLoading }"
                (click)="toggleHiddenMarker()"

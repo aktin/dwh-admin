@@ -24,6 +24,7 @@ export class RequestSingleComponent implements OnInit {
                 return this._requestService.getRequest(+params['id']);
             }).subscribe(
             req => {
+                console.log(req);
                 this.request = req;
             }
         );
