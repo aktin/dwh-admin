@@ -8,7 +8,7 @@ import org.aktin.broker.request.RetrievedRequest;
 public class Request {
 
 	public int requestId;
-	public int queryId;
+	public Integer queryId;
 	public Marker marker;
 	public RequestStatus status;
 	public boolean autoSubmit;
