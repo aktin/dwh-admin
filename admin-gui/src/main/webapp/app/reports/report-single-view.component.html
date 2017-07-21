@@ -3,7 +3,7 @@
     id="report-list-{{report.id}}"
     [ngClass]="reportClass"
 >
-    <div class="ui header" [class.small]="!report.isSuccess()" routerLink="/report/{{report.id}}">
+    <div class="ui header request-single-view-header" [class.small]="!report.isSuccess()" routerLink="/report/{{report.id}}">
         {{report.name}} {{report.id}}
     </div>
 
