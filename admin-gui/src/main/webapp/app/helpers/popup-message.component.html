@@ -16,5 +16,21 @@
         </a>
     </div>
 
+    <div class="popup-message-buttons" *ngIf="mode === 'confirm'">
+        <div class="ui green animated fade button popup-message-okay-button" (click)="msgOk()">
+            <div class="visible content">{{buttonText[0]}}</div>
+            <div class="hidden content">
+                <i class="icon checkmark"></i>
+                {{buttonText[0]}}
+            </div>
+        </div>
+        <div class="ui red animated fade button popup-message-okay-button" (click)="msgCancel()">
+            <div class="visible content">{{buttonText[1]}}</div>
+            <div class="hidden content">
+                <i class="icon remove"></i>
+                {{buttonText[1]}}
+            </div>
+        </div>
+    </div>
 </div>
 

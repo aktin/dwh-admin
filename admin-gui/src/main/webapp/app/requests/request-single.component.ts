@@ -1,9 +1,10 @@
 /**
  * Created by Xu on 14-Jun-17.
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
+import { PopUpMessageComponent } from '../helpers/index';
 import { RequestService } from './request.service';
 import { LocalRequest } from './request';
 
@@ -12,6 +13,7 @@ import { LocalRequest } from './request';
 })
 export class RequestSingleComponent implements OnInit {
     request: LocalRequest;
+    @ViewChild(PopUpMessageComponent) popUp: PopUpMessageComponent;
 
     constructor(
         private _route: ActivatedRoute,

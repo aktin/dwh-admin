@@ -3,17 +3,20 @@
  */
 import { Component, Input }     from '@angular/core';
 import { LocalRequest, RequestMarker, RequestStatus } from './request';
+
+import { PopUpMessageComponent } from '../helpers/index';
 import { RequestService } from './request.service';
 
 @Component({
     selector: 'request-single-view',
     templateUrl: './request-single-view.component.html',
-    // styleUrls: ['./request.component.css'],
+    styleUrls: ['./requests.component.css'],
 })
 
 export class RequestSingleViewComponent  {
     @Input() requestData: LocalRequest;
     @Input() single = false;
+    @Input() popUp: PopUpMessageComponent = null;
     starLoading = false;
     hiddenLoading = false;
     options: string[];
@@ -57,7 +60,28 @@ export class RequestSingleViewComponent  {
 
     updateStatus (statusIndex: number): void {
         console.log(statusIndex, <RequestStatus> statusIndex);
-        this._requestService.updateStatus(this.requestData.requestId, <RequestStatus> statusIndex);
+        this.requestData.status = this._requestService.updateStatus(this.requestData.requestId, <RequestStatus> statusIndex);
+    }
+
+    authorize (allow: boolean) {
+        let title = allow ? 'Anfrage freigeben:' : 'Anfrage ablehnen:';
+        let message = allow ? 'Diese Anfrage wird freigegeben.'
+            : 'Diese Anfrage wird abgelehnt und entsprechende Antwort an den Server versendet.';
+        this.popUp.setConfirm();
+        this.popUp.setData(true, title, message,
+            (answer: boolean) => {
+                if (answer) {
+                    // console.log('confirmed');
+                    this.requestData.status = this._requestService.authorizeRequest(
+                        this.requestData.requestId,
+                        this.requestData.status,
+                        allow
+                    );
+                } else {
+                    // console.log('canceled');
+                    // do nothing
+                }
+            } );
     }
 
     toggleStarredMarker (): void {
@@ -68,6 +92,7 @@ export class RequestSingleViewComponent  {
         } else {
             newMark = RequestMarker.STARRED;
         }
+        this.requestData.marker = newMark;
         this._requestService.updateMarker(this.requestData.requestId, newMark);
         setTimeout(() => {
             this.starLoading = false;
@@ -81,9 +106,10 @@ export class RequestSingleViewComponent  {
         } else {
             newMark = RequestMarker.HIDDEN;
         }
+        this.requestData.marker = newMark;
         this._requestService.updateMarker(this.requestData.requestId, newMark);
         setTimeout(() => {
-            this.starLoading = false;
+            this.hiddenLoading = false;
         }, 500);
     }
 }

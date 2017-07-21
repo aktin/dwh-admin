@@ -12,6 +12,8 @@ export class PopUpMessageComponent {
     @Input() message: string;
     @Input() head: string;
     @Input() callback: Function;
+    @Input() mode = 'info'; // 'confirm'
+    @Input() buttonText: [string, string] = ['Weiter', 'Abbrechen'];
     show = false;
 
     constructor() {}
@@ -23,10 +25,32 @@ export class PopUpMessageComponent {
         this.callback = callback;
     }
 
+    // call after setData
+    setConfirm (buttons?: [string, string]): void {
+        this.mode = 'confirm';
+        if (buttons) {
+            this.buttonText = buttons;
+        }
+    }
+
     closeMessage (): void {
         this.show = false;
         if (this.callback) {
-            this.callback();
+            this.callback(false);
+        }
+    }
+
+    msgOk (): void {
+        this.show = false;
+        if (this.callback) {
+            this.callback(true);
+        }
+    }
+
+    msgCancel (): void {
+        this.show = false;
+        if (this.callback) {
+            this.callback(false);
         }
     }
 }

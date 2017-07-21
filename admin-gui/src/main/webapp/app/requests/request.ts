@@ -39,6 +39,18 @@ export class LocalRequest {
         } return null;
     }
 
+    public static nextStatus (status: RequestStatus, auth: boolean): RequestStatus {
+        if (auth) {
+            if (status === RequestStatus.Retrieved || status === RequestStatus.Seen) {
+                return RequestStatus.Queued;
+            }
+            if (status === RequestStatus.Completed) {
+                return RequestStatus.Sending;
+            }
+        }
+        return RequestStatus.Rejected;
+    }
+
     public static parseRequest (data: any): LocalRequest {
         data['query'] = data['query'] || {};
         if (isNaN(data['marker'])) {
@@ -75,6 +87,7 @@ export class LocalRequest {
     public needAuthorization (): boolean {
         return /*(!this.autoSubmit) && */([RequestStatus.Retrieved, RequestStatus.Seen, RequestStatus.Completed].indexOf(this.status) >= 0);
     }
+
 }
 
 export enum RequestMarker {

@@ -89,7 +89,7 @@ export class RequestService {
                 });
         }
     }
-    updateStatus (requestId: number, status: RequestStatus): void {
+    updateStatus (requestId: number, status: RequestStatus): RequestStatus {
         let currentRoute = this._router.url;
         console.log( this._urls.parse('setRequestStatus', {requestId: requestId, status: RequestStatus[status]}), {} );
         this._http.post(this._urls.parse('setRequestStatus', {requestId: requestId, status: RequestStatus[status]}), {})
@@ -100,5 +100,10 @@ export class RequestService {
                 // console.log(currentRoute);
                 setTimeout(() => this._router.navigate([currentRoute]), 600);
             });
+        return status;
+    }
+
+    authorizeRequest (requestId: number, status: RequestStatus, allow: boolean): RequestStatus {
+        return this.updateStatus(requestId, LocalRequest.nextStatus(status, allow));
     }
 }

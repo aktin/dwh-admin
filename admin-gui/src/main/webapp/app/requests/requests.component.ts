@@ -8,6 +8,7 @@ import { LocalRequest, RequestMarker, RequestStatus } from './request';
 
 @Component({
     templateUrl: './requests.component.html',
+    styleUrls: ['./requests.component.css'],
 })
 export class RequestsComponent  {
     requestsData: LocalRequest[];

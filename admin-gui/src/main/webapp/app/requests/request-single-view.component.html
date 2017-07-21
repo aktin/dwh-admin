@@ -3,16 +3,34 @@
         id="request-list-{{request.requestId}}"
 >
     <div class="row">
-        <div class="eight wide column">
-            <div class="ui header" [routerLink]="['/request', request.requestId]">
+        <div class="six wide column">
+            <div class="ui header request-single-view-header" [routerLink]="['/request', request.requestId]">
                 {{request.query.query.title}} {{request.query.query.description}}
             </div>
         </div>
-        <div class="actions four wide column">
-            <button class="ui orange button" *ngIf="single && needAuthorization">
-                <i class="icon user"></i>
-                Zulassen
-            </button>
+        <div class="actions three wide column">
+            <div class="ui green animated fade button request-allow-button"
+                 *ngIf="single && request.needAuthorization()"
+                 (click)="authorize(true)"
+            >
+                <div class="visible content">Freigabe</div>
+                <div class="hidden content">
+                    <i class="icon checkmark"></i>
+                    Zulassen
+                </div>
+            </div>
+        </div>
+        <div class="actions three wide column">
+            <div class="ui orange animated fade button request-deny-button"
+                 *ngIf="single"
+                 (click)="authorize(false)"
+            >
+                <div class="visible content">{{request.needAuthorization()? 'Ablehnen': 'Abbrechen'}}</div>
+                <div class="hidden content">
+                    <i class="icon remove"></i>
+                    {{request.needAuthorization()? 'Ablehnen': 'Abbrechen'}}
+                </div>
+            </div>
         </div>
         <div class="actions four wide right floated right aligned column">
             <a class="ui circular yellow icon button"
@@ -111,3 +129,4 @@
     </div>
 
 </div>
+
