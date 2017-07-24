@@ -51,9 +51,6 @@ export class RequestSingleViewComponent  {
         }
     }
 
-    get marker (): string {
-        return RequestMarker[this.requestData.marker];
-    }
     get status (): string {
         return RequestStatus[this.requestData.status];
     }
@@ -71,15 +68,11 @@ export class RequestSingleViewComponent  {
         this.popUp.setData(true, title, message,
             (answer: boolean) => {
                 if (answer) {
-                    // console.log('confirmed');
                     this.requestData.status = this._requestService.authorizeRequest(
                         this.requestData.requestId,
                         this.requestData.status,
                         allow
                     );
-                } else {
-                    // console.log('canceled');
-                    // do nothing
                 }
             } );
     }

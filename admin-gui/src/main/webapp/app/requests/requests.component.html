@@ -6,50 +6,44 @@
     </div>
 </div>
 <div *ngIf="requests" class="ui vertically divided grid">
+
+    <div class="ui form row">
+        <div class="inline fields">
+            <label>Nach Status filtern</label>
+            <div class="field" *ngFor="let filter of stateFilterArray">
+                <div class="ui radio checkbox">
+                    <input type="radio" name="status"
+                           [checked]="stateFilter === filter[1]"
+                           (change)="stateFilter = filter[1]"
+                    >
+                    <label>{{filter[0]}}</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="eight wide column">
             <div class="ui test slider checkbox requests-filter-checkbox-starred">
-                <input type="checkbox" [checked]="onlyStarred" (change)="onlyStarred=!onlyStarred" title="Nur Favoriten anzeigen">
+                <input type="checkbox"
+                       [checked]="onlyStarred"
+                       (change)="onlyStarred=!onlyStarred"
+                       title="Nur Favoriten anzeigen"
+                >
                 <label (click)="onlyStarred=!onlyStarred">Nur Favoriten anzeigen</label>
             </div>
         </div>
         <div class="eight wide column">
             <div class="ui test slider checkbox requests-filter-checkbox-hidden">
-                <input type="checkbox" [checked]="showHidden" (change)="showHidden=!showHidden" title="Gelöschte Anfragen anzeigen">
+                <input type="checkbox"
+                       [checked]="showHidden"
+                       (change)="showHidden=!showHidden"
+                       title="Gelöschte Anfragen anzeigen"
+                >
                 <label (click)="showHidden=!showHidden">Gelöschte Anfragen anzeigen</label>
             </div>
         </div>
     </div>
 
-    <div class="ui form row">
-        <div class="inline fields">
-            <label>Nach Status filtern</label>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" name="status" value="auth">
-                    <label>benötigt Freigabe</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" name="status" checked="checked" value="all">
-                    <label>Alle</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" name="status" value="completed">
-                    <label>Completed</label>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input type="radio" name="status" value="new">
-                    <label>New</label>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <request-single-view *ngFor="let req of requests | requestFilter:statusFilter:markerFilter" [requestData]="req" class="row"></request-single-view>
+    <request-single-view *ngFor="let req of requests | requestFilter:stateFilter:markerFilter" [requestData]="req" class="row"></request-single-view>
 </div>

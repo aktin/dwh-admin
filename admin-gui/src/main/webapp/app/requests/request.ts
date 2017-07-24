@@ -88,6 +88,10 @@ export class LocalRequest {
         return /*(!this.autoSubmit) && */([RequestStatus.Retrieved, RequestStatus.Seen, RequestStatus.Completed].indexOf(this.status) >= 0);
     }
 
+    public isFinished (): boolean {
+        return ([RequestStatus.Retrieved, RequestStatus.Submitted, RequestStatus.Failed].indexOf(this.status) >= 0);
+    }
+
 }
 
 export enum RequestMarker {

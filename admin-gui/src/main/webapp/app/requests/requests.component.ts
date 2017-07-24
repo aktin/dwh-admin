@@ -15,18 +15,21 @@ export class RequestsComponent  {
     status: RequestStatus = null;
     showHidden = false;
     onlyStarred = false;
-    statiFilter = [''];
-    debug = true;
-// TODO add actions to the radio buttons
-    constructor(private _requestService: RequestService) {
+    stateFilter: RequestStatus | string = 'all';
+    constructor(private _requestService: RequestService) { }
+
+    get stateFilterArray(): [string, RequestStatus|string][] {
+        return [
+            [ 'benötigt Freigabe', 'auth' ],
+            [ 'Alle', 'all' ],
+            [ 'Neue Anfragen', RequestStatus.Retrieved ],
+            [ 'Abgeschlosse Anfragen', 'done' ],
+        ];
     }
 
     get requests(): LocalRequest[] {
         this.requestsData = this._requestService.getRequests();
         return this.requestsData;
-    }
-    get statusFilter (): RequestStatus {
-        return this.status;
     }
     get markerFilter (): RequestMarker {
         if (this.onlyStarred) {
