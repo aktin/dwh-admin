@@ -4,6 +4,7 @@
 import { Injectable }   from '@angular/core';
 import { Response }     from '@angular/http';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
@@ -11,7 +12,6 @@ import _ = require('underscore');
 
 import { StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
 import { LocalRequest, RequestMarker, RequestStatus } from './request';
-import { Subscription } from 'rxjs/Subscription';
 
 @Injectable()
 export class RequestService {
@@ -24,8 +24,8 @@ export class RequestService {
         private _router: Router
     ) {}
 
-    private _updateRequests (): Subscription {
-        return this._http.debouncedGet<string> (
+    private _updateRequests (): void {
+        this._http.debouncedGet<string> (
             'requests',
             this._store.getValue('requests.data'), null,
             this._dataInterval,
