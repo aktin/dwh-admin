@@ -3,7 +3,7 @@
  */
 import { Component } from '@angular/core';
 
-import { UserService } from './user.service';
+import { AuthService } from './auth.service';
 import { UrlService } from '../helpers/index';
 import $ = require('jquery');
 require('semantic-ui');
@@ -18,13 +18,13 @@ export class UserLoginComponent {
     username = 'i2b2';
     password = 'demouser';
 
-    serverUrl  = this.url.serverUrl;
+    serverUrl  = this._url.serverUrl;
     loggingInState: string;
     private _hideSelect = true;
     private _messages: string[] = [];
 
-    constructor (private userService: UserService, private url: UrlService) {
-        this.serverUrl = this.url.serverUrl;
+    constructor (private _authService: AuthService, private _url: UrlService) {
+        this.serverUrl = this._url.serverUrl;
     }
 
 
@@ -44,7 +44,7 @@ export class UserLoginComponent {
 
         this.loggingInState = 'loading';
 
-        this.userService.userLogin(this.username, this.password).subscribe(
+        this._authService.userLogin(this.username, this.password).subscribe(
             ( /*user*/ ) => {
                 this.loggingInState = 'success';
                 this._hideSelect = true;
@@ -58,7 +58,7 @@ export class UserLoginComponent {
     }
 
     userLogout (): void {
-        this.userService.userLogout().subscribe(
+        this._authService.userLogout().subscribe(
             ( /*user*/ ) => {
             },
             ( /*error*/ ) => {
@@ -69,7 +69,7 @@ export class UserLoginComponent {
 
     serverChange() {
         // console.log(this.serverUrl, s)
-        this.url.setServerUrl(this.serverUrl);
+        this._url.setServerUrl(this.serverUrl);
     }
 
     toggleServerSelector() {
@@ -89,11 +89,11 @@ export class UserLoginComponent {
     }
 
     get user() {
-        return this.userService.userLocal();
+        return this._authService.userLocal();
     }
 
     get hasUser () {
-        return this.userService.userLocalCheck();
+        return this._authService.userLocalCheck();
     }
 
     get logInFormClasses() {
@@ -107,7 +107,7 @@ export class UserLoginComponent {
     }
 
     get serverUrls () {
-        return this.url.serverUrls;
+        return this._url.serverUrls;
     }
 
     get hideSelect () {

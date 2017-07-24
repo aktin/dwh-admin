@@ -8,12 +8,12 @@ import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from
 import { Observable } from 'rxjs/Observable';
 import _ = require('underscore');
 
-import { UserService } from './user.service';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class UserAuthGuard implements CanActivate {
 
-    constructor(private router: Router, private userService: UserService) { }
+    constructor(private _router: Router, private _authService: AuthService) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         // console.log ( route, state.url);
@@ -24,9 +24,9 @@ export class UserAuthGuard implements CanActivate {
                 return role.toUpperCase();
             });
 
-            return this.userService.userRolesCheckFull(roles).map( hasRole => {
+            return this._authService.userRolesCheckFull(roles).map( hasRole => {
                     if (!hasRole) {
-                        this.router.navigate(['home']);
+                        this._router.navigate(['home']);
                     } return hasRole;
                 }
             );

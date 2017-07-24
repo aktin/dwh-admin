@@ -11,27 +11,28 @@ import 'rxjs/add/operator/mergeMap';
 import _ = require('underscore');
 
 import { routings }     from './app-routing.module';
-import { UserService }  from './users/index';
+import { AuthService }  from './users/index';
 
 @Component({
       selector: 'my-app',
       templateUrl: './app.component.html',
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
     visibility: any = {};
 
 
-    constructor(private titleService: Title, private userService: UserService, private route: ActivatedRoute, private router: Router) {
-
-    };
+    constructor (private _titleService: Title,
+                 private _atuhService: AuthService,
+                 private _route: ActivatedRoute,
+                 private _router: Router) {};
 
     ngOnInit(): void {
         let title = 'AKTIN - Adminverwaltung';
-        this.titleService.setTitle(title);
+        this._titleService.setTitle(title);
 
-        this.router.events
+        this._router.events
             .filter(event => event instanceof NavigationEnd)
-            .map(() => this.route)
+            .map(() => this._route)
             .map(route => {
                 while (route.firstChild) {
                     route = route.firstChild;
@@ -45,7 +46,7 @@ export class AppComponent implements OnInit{
                 if (event['name']) {
                     moreTitle = event['name'] + ' - ' + moreTitle;
                 }
-                this.titleService.setTitle(moreTitle);
+                this._titleService.setTitle(moreTitle);
             });
 
     }
@@ -53,7 +54,7 @@ export class AppComponent implements OnInit{
 
     get routings() {
         _.each(routings, route => {
-            this.visibility[route.data['name']] = this.userService.userLocalCheckRoles(route.data['roles']);
+            this.visibility[route.data['name']] = this._atuhService.userLocalCheckRoles(route.data['roles']);
         });
 
         return routings;

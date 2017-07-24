@@ -6,17 +6,27 @@
 import { Component, OnInit } from '@angular/core';
 
 import { UserService } from './user.service';
+import { User } from './user';
 
 /**
  * TODO implement once API is open
  */
 @Component({
-  template: `<h1>Hello Users</h1>`,
+  templateUrl: './users.component.html',
 })
 export class UsersComponent implements OnInit {
+
+    usersData: User[];
+
     constructor ( private _userService: UserService ) {}
 
     ngOnInit (): void {
-        this._userService.users().subscribe();
+        // console.log(this._userService.users());
+    }
+
+
+    get users(): User[] {
+        this.usersData = this._userService.users();
+        return this.usersData;
     }
 }
