@@ -89,7 +89,7 @@ export class LocalRequest {
     }
 
     public isFinished (): boolean {
-        return ([RequestStatus.Retrieved, RequestStatus.Submitted, RequestStatus.Failed].indexOf(this.status) >= 0);
+        return ([RequestStatus.Rejected, RequestStatus.Submitted, RequestStatus.Failed].indexOf(this.status) >= 0);
     }
 
 }
