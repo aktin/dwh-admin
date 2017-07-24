@@ -57,7 +57,7 @@ export class Report {
             obj['timespan'] = obj['timespan'] || [];
             obj['timespan'] = [this.parseDate(obj['timespan'][0]), this.parseDate(obj['timespan'][1])];
         }
-        if (obj['status'].length > 1) {
+        if (obj['status'] && obj['status'].length > 0) {
             obj['status'] = ReportStatus[obj['status']];
         }
 
