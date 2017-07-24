@@ -18,7 +18,7 @@ import org.aktin.dwh.admin.auth.Credentials;
  * RESTful interface for reading/writing preferences
  * 
  * Read prefs:
- * {@code GET http://localhost:8080/aktin/admin/prefs}
+ * {@code GET http://localhost:8080/aktin/admin/rest/prefs}
  * @author R.W.Majeed
  *
  */

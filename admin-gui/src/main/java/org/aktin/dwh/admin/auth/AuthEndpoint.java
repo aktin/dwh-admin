@@ -26,12 +26,12 @@ import de.sekmi.li2b2.services.token.Token;
  * 
  * Example usage:
  * <pre>
- curl -H "Content-Type: application/json" -X POST -d '{"username":"admin","password":"xyz"}' http://localhost:8080/aktin/admin/auth/login
+ curl -H "Content-Type: application/json" -X POST -d '{"username":"admin","password":"xyz"}' http://localhost:8080/aktin/admin/rest/auth/login
  
  </pre>
  * Send token header:
  * <pre>
- * curl -H "Authorization: Bearer fe4798-1d90-41d4-a228-21e891d2bb65" http://localhost:8080/aktin/admin/auth/test
+ * curl -H "Authorization: Bearer fe4798-1d90-41d4-a228-21e891d2bb65" http://localhost:8080/aktin/admin/rest/auth/test
  * 
 
  * </pre>

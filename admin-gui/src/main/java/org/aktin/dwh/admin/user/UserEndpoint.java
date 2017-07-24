@@ -34,13 +34,13 @@ import de.sekmi.li2b2.hive.HiveException;
  * <p>
  * Command line testing (requires sh-type shell or git bash on windows):
  * <pre>
- * token=`curl -H "Content-Type: application/json" -s -X POST -d '{"username":"i2b2","password":"demouser"}' http://localhost:8080/aktin/admin/auth/login`
- * curl -s -H "Authorization: Bearer $token" http://localhost:8080/aktin/admin/users
- * curl -s -H "Authorization: Bearer $token" http://localhost:8080/aktin/admin/users/roles
- * curl -s -H "Authorization: Bearer $token" http://localhost:8080/aktin/admin/users/demo/roles
- * curl -s -H "Authorization: Bearer $token" -X DELETE http://localhost:8080/aktin/admin/users/demo/roles/Bamboo
- * curl -s -H "Authorization: Bearer $token" -X PUT http://localhost:8080/aktin/admin/users/demo/roles/Super
- * curl -s -H "Authorization: Bearer $token" http://localhost:8080/aktin/admin/users/demo/roles
+ * token=`curl -H "Content-Type: application/json" -s -X POST -d '{"username":"i2b2","password":"demouser"}' http://localhost:8080/aktin/admin/rest/auth/login`
+ * curl -s -H "Authorization: Bearer $token" http://localhost:8080/aktin/admin/rest/users
+ * curl -s -H "Authorization: Bearer $token" http://localhost:8080/aktin/admin/rest/users/roles
+ * curl -s -H "Authorization: Bearer $token" http://localhost:8080/aktin/admin/rest/users/demo/roles
+ * curl -s -H "Authorization: Bearer $token" -X DELETE http://localhost:8080/aktin/admin/rest/users/demo/roles/Bamboo
+ * curl -s -H "Authorization: Bearer $token" -X PUT http://localhost:8080/aktin/admin/rest/users/demo/roles/Super
+ * curl -s -H "Authorization: Bearer $token" http://localhost:8080/aktin/admin/rest/users/demo/roles
  * </pre>
  * @author R.W.Majeed
  *
@@ -127,7 +127,7 @@ public class UserEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Role[] getRoles() throws IOException, HiveException{
 		Li2b2Client client = initializeLi2b2Client();
-		client.setMessageLog(FormattedMessageLogger.consoleLogger());
+		// client.setMessageLog(FormattedMessageLogger.consoleLogger());
 		Role[] roles = client.PM().getRoles(client.getProjectId());
 		// clear project because it is irrelevant and redundant
 		for( int i=0; i<roles.length; i++ ){
