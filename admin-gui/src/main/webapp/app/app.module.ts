@@ -19,7 +19,7 @@ import { HomeComponent }                                                        
 import { StorageService, UrlService, HttpInterceptorService,
             SafeUrlPipe, OrderByPipe,
             PopUpMessageComponent, LoadingComponent }                               from './helpers/index';
-import { UsersComponent, UserService,
+import { UsersComponent, UserSingleComponent, UserSingleViewComponent, UserNewComponent, UserService,
             UserLoginComponent, UserAuthGuard, AuthService }                        from './users/index';
 import { ReportService, SuccessReportsPipe, ReportSingleViewComponent,
             ReportsComponent, ReportNewComponent, ReportSingleComponent }           from './reports/index';
@@ -41,8 +41,11 @@ import { RestrictedComponent }  from './restricted/restricted.component';
     declarations: [
         AppComponent,
         HomeComponent,
-        UsersComponent,
         UserLoginComponent,
+        UsersComponent,
+        UserSingleComponent,
+        UserSingleViewComponent,
+        UserNewComponent,
         ReportsComponent,
         ReportSingleViewComponent,
         ReportSingleComponent,

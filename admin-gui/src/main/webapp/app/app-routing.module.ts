@@ -10,14 +10,12 @@ import { RouterModule, Routes } from '@angular/router';
 import _ = require('underscore');
 
 import { HomeComponent }         from './home/index';
-import { UsersComponent, UserLoginComponent, UserAuthGuard } from './users/index';
+import { UsersComponent, UserSingleComponent, UserNewComponent,
+        UserLoginComponent, UserAuthGuard } from './users/index';
 import { ReportsComponent, ReportSingleComponent, ReportNewComponent } from './reports/index';
 import { PreferencesComponent }  from './preferences/index';
 import { RequestsComponent, RequestSingleComponent }     from './requests/index';
 import { StatusComponent }       from './status/index';
-
-import { RestrictedComponent }   from './restricted/restricted.component';
-
 
 const routes: Routes = [// array of routes
     {
@@ -33,7 +31,6 @@ const routes: Routes = [// array of routes
     },
     {
         path: 'users',
-        component: UsersComponent,
         canActivate: [UserAuthGuard],
         data : {
             name : 'Benutzerverwaltung',
@@ -41,6 +38,20 @@ const routes: Routes = [// array of routes
                 'ADMIN',
             ],
         },
+        children : [
+            {
+                path : '',
+                component : UsersComponent,
+            },
+            {
+                path: 'new',
+                component: UserNewComponent,
+            },
+            {
+                path: ':username',
+                component: UserSingleComponent,
+            },
+        ],
     },
     {
         path : 'report',

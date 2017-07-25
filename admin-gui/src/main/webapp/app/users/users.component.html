@@ -3,28 +3,18 @@
         <div class="ui breadcrumb">
             <div class="active section">Benutzerübersicht</div>
         </div>
-<!--        <div class="five wide right floated column right aligned">
-            <div class="ui left labeled button" title="Neuen Bericht vom vergangen Monat erzeugen" routerLink="/report/new">
+        <div class="five wide right floated column right aligned">
+            <div class="ui left labeled button" title="Neuen Benutzer anlegen" routerLink="/users/new">
                 <a class="ui teal basic label">
-                    Neuer Bericht
+                    Benutzer anlegen
                 </a>
                 <div class="ui teal icon button">
                     <i class="book icon"></i>
                 </div>
             </div>
-        </div>-->
+        </div>
     </div>
 </div>
 <div *ngIf="users" class="ui vertically divided grid">
-    <div class="row" *ngFor="let user of users">
-        <div class="ui basic segment column">
-            username: {{user.username}} <br/>
-            name: {{user.name}} <br/>
-            email: {{user.email}} <br/>
-            admin: {{user.isAdmin}} <br/>
-            <div class="ui list" *ngIf="user.roles && user.roles.length > 0">
-                <div class="item" *ngFor="let role of user.roles">- {{role}}</div>
-            </div>
-        </div>
-    </div>
+    <user-single-view class="row" *ngFor="let user of users" [userData]="user"></user-single-view>
 </div>

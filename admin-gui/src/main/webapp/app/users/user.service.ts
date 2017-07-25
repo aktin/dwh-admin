@@ -54,10 +54,8 @@ export class UserService {
         ).subscribe(
             users => {
                 if (users) {
-                    console.log(users);
                     this._updateUserRoles(users);
                 }
-
             },
             error => console.log(error)
         );
@@ -104,6 +102,21 @@ export class UserService {
         return _.map(JSON.parse(this._store.getValue('users.data')), user => {
             return <User> user;
         });
+    }
+
+    getUser (username: string): User {
+        let users: User[] = this.users();
+
+        if (!users || !username) {
+            this._router.navigate(['/users']);
+            return null;
+        }
+        let user = _.find(users, (u) => u.username === username);
+        if (user) {
+            return user;
+        }
+        this._router.navigate(['/users']);
+        return null;
     }
 
 }

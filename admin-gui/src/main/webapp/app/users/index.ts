@@ -18,4 +18,8 @@ export * from './user.service';
  * component
  */
 export * from './users.component';
+export * from './user-single.component';
+export * from './user-single-view.component';
+export * from './user-new.component';
+
 export * from './user-login.component';
