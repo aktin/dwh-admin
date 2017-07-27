@@ -1,3 +1,7 @@
+.request-header {
+    font-size: 20px;
+}
+
 .request-single-view-header {
     float: left;
     cursor: pointer;

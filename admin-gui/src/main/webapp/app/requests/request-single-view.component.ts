@@ -38,16 +38,16 @@ export class RequestSingleViewComponent  {
     }
     get starMessage (): string {
         if (this.starred) {
-            return 'Anfrage nicht mehr favorisieren';
+            return 'Anfrage aus den Favoriten entfernen';
         } else {
-            return 'Anfrage favorisieren';
+            return 'Anfrage zu Favoriten hinzufügen';
         }
     }
     get hideMessage (): string {
         if (this.hidden) {
             return 'Anfrage wiederherstellen';
         } else {
-            return 'Anfrage löschen';
+            return 'Anfrage ausblenden';
         }
     }
 

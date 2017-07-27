@@ -1,13 +1,27 @@
-<div class="ui grid">
-    <div class="row">
-        <div class="ui breadcrumb">
-            <div class="active section">Anfragenbersicht</div>
-        </div>
+
+<div class="row">
+    <div class="ui breadcrumb">
+        <div class="active section request-header">Anfragenübersicht</div>
     </div>
 </div>
+<div class="ui divider"></div>
+<div class="ui form row">
+    <div class="eight wide column">
+        Nach Status Filtern
+        <select class="ui inline dropdown">
+            <option *ngFor="let filter of stateFilterArray"
+                    value="{{filter[1]}}"
+                    [selected]="stateFilter === filter[1]"
+            >
+                {{filter[0]}}
+            </option>
+            <option> gelöschte Anfragen </option>
+        </select>
+    </div>
+</div>
+<div class="ui divider"></div>
 <div *ngIf="requests" class="ui vertically divided grid">
-
-    <div class="ui form row">
+    <!--<div class="ui form row">
         <div class="inline fields">
             <label>Nach Status filtern</label>
             <div class="field" *ngFor="let filter of stateFilterArray">
@@ -20,9 +34,9 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>-->
 
-    <div class="row">
+    <!--<div class="row">
         <div class="eight wide column">
             <div class="ui test slider checkbox requests-filter-checkbox-starred">
                 <input type="checkbox"
@@ -43,7 +57,7 @@
                 <label (click)="showHidden=!showHidden">Gelöschte Anfragen anzeigen</label>
             </div>
         </div>
-    </div>
+    </div>-->
 
-    <request-single-view *ngFor="let req of requests | requestFilter:stateFilter:markerFilter" [requestData]="req" class="row"></request-single-view>
+    <request-single-view *ngFor="let req of requests | requestFilter:stateFilter:markerFilter " [requestData]="req" class="row"></request-single-view>
 </div>

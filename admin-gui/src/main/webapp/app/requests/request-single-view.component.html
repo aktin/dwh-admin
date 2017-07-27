@@ -5,8 +5,44 @@
     <div class="row">
         <div class="six wide column">
             <div class="ui header request-single-view-header" [routerLink]="['/request', request.requestId]">
-                {{request.query.query.title}} {{request.query.query.description}}
+                {{request.query.query.title}}
             </div>
+        </div>
+        <div class="actions four wide right floated right aligned column">
+            <!--<a class="ui circular yellow icon button"
+               [ngClass]="{'basic': !starred, 'disabled': starLoading }"
+               (click)="toggleStarredMarker()"
+               title="{{starMessage}}"
+            >
+                <i class="star icon" [class.empty]="!starred"></i>
+            </a>-->
+            <a class="ui circular red icon button"
+               [ngClass]="{'basic': !hidden, 'disabled': hiddenLoading }"
+               (click)="toggleHiddenMarker()"
+               title="{{hideMessage}}"
+            >
+                <i class="trash outline icon" [class.empty]="!hidden"></i>
+            </a>
+            <a *ngIf="!single"
+               class="ui circular basic green icon button"
+               [routerLink]="['/request', request.requestId]"
+               title="Details anzeigen"
+            >
+                <i class="eye icon"></i>
+            </a>
+            <a *ngIf="single" class="ui circular basic green icon button" routerLink="/request" title="Zurück zum Berichtsübersicht">
+                <i class="arrow left icon"></i>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="sixteen wide column">
+            diagram mit fluss und reihenfolge für status
+        </div>
+    </div>
+    <div class="row" *ngIf="single">
+        <div class="ten wide column">
+            Aktion erforderlich und was passiert bei buttons
         </div>
         <div class="actions three wide column">
             <div class="ui green animated fade button request-allow-button"
@@ -32,33 +68,13 @@
                 </div>
             </div>
         </div>
-        <div class="actions four wide right floated right aligned column">
-            <a class="ui circular yellow icon button"
-               *ngIf="!hidden"
-               [ngClass]="{'basic': !starred, 'disabled': starLoading }"
-               (click)="toggleStarredMarker()"
-               title="{{starMessage}}"
-            >
-                <i class="star icon" [class.empty]="!starred"></i>
-            </a>
-            <a class="ui circular red icon button"
-               *ngIf="!starred"
-               [ngClass]="{'basic': !hidden, 'disabled': hiddenLoading }"
-               (click)="toggleHiddenMarker()"
-               title="{{hideMessage}}"
-            >
-                <i class="trash outline icon" [class.empty]="!hidden"></i>
-            </a>
-            <a *ngIf="!single" class="ui circular icon button" [routerLink]="['/request', request.requestId]">
-                <i class="eye icon"></i>
-            </a>
-            <a *ngIf="single" class="ui circular basic green icon button" routerLink="/request" title="Zurück zum Berichtsübersicht">
-                <i class="arrow left icon"></i>
-            </a>
+    </div>
+    <div class="row" *ngIf="single">
+        <div class="sixteen wide column">
+            Beschreibung: {{request.query.query.description}}
         </div>
     </div>
-
-    <div class="compact row">
+    <div class="compact row"  *ngIf="single">
         <div class="ui meta seven wide column">
             <div class="ui padded grid">
                 <div class="ui compact row">
@@ -89,16 +105,10 @@
         </div>
         <div class="ui meta four wide column">
             <div class="item">
-                QueryId: {{request.queryId}}
+                Request-ID: {{request.requestId}}
             </div>
-            <div class="item">
-                RequestId: {{request.requestId}}
-            </div>
-            <div class="item">
-                Status: {{status}}
-            </div>
-            <div class="item" *ngIf="request.hasResultFile()">
-                download: hier link einfügen und beschreibung
+            <div class="item" *ngIf="single && request.hasResultFile()">
+                download: hier link einfügen und beschreibung nur in detail
             </div>
             <!--<div class="item" *ngIf="single">
                 <label>Status ändern:</label>

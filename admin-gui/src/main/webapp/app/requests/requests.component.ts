@@ -15,15 +15,15 @@ export class RequestsComponent  {
     status: RequestStatus = null;
     showHidden = false;
     onlyStarred = false;
-    stateFilter: RequestStatus | string = 'all';
+    stateFilter: RequestStatus | string = 'auth';
     constructor(private _requestService: RequestService) { }
 
     get stateFilterArray(): [string, RequestStatus|string][] {
         return [
-            [ 'benötigt Freigabe', 'auth' ],
+            [ 'Aktion erforderlich', 'auth' ],
             [ 'Alle', 'all' ],
             [ 'Neue Anfragen', RequestStatus.Retrieved ],
-            [ 'Abgeschlosse Anfragen', 'done' ],
+            // [ 'Abgeschlosse Anfragen', 'done' ],
         ];
     }
 

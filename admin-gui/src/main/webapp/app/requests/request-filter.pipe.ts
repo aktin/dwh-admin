@@ -40,6 +40,7 @@ export class RequestFilterPipe implements PipeTransform {
             }
             case RequestMarker.HIDDEN: {
                 // NOP - show hidden!
+                output = output.filter(req => req.marker === RequestMarker.HIDDEN);
                 break;
             }
             default: { // filter our the hidden ones

@@ -10,6 +10,7 @@ import { LocalRequest } from './request';
 
 @Component({
     templateUrl: './request-single.component.html',
+    styleUrls: ['./requests.component.css'],
 })
 export class RequestSingleComponent implements OnInit {
     request: LocalRequest;
