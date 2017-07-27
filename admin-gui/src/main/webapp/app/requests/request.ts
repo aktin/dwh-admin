@@ -92,6 +92,10 @@ export class LocalRequest {
         return ([RequestStatus.Rejected, RequestStatus.Submitted, RequestStatus.Failed].indexOf(this.status) >= 0);
     }
 
+    public hasResultFile (): boolean {
+        return ([RequestStatus.Completed, RequestStatus.Submitted, RequestStatus.Sending].indexOf(this.status) >= 0);
+    }
+
 }
 
 export enum RequestMarker {
