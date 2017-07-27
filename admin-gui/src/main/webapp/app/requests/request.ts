@@ -110,11 +110,6 @@ export enum RequestStatus {
     Retrieved,
         /** A user has opened the request to review it. */
     Seen,
-        /** The request has been rejected (manually or automatically by a rule).
-         * No further processing is performed. A rejection can follow either after {@link #Seen}
-         * or manually after {@link #Completed}.
-         */
-    Rejected,
         /** Request was queued for processing. It is waiting for access to resources. Further
          * processing is done automatically.
          */
@@ -132,6 +127,11 @@ export enum RequestStatus {
     Submitted,
         /** Unexpected failure occurred at some point during processing or transfer. */
     Failed,
+        /** The request has been rejected (manually or automatically by a rule).
+         * No further processing is performed. A rejection can follow either after {@link #Seen}
+         * or manually after {@link #Completed}.
+         */
+    Rejected,
 }
 
 /*

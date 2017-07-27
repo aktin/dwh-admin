@@ -1,21 +1,16 @@
+<div class="ui divider"></div>
 <div
-        class="ui basic segment request-single-view column grid"
+        class="ui basic segment request-single-view grid container"
         id="request-list-{{request.requestId}}"
 >
-    <div class="row">
+    <div class="compact row">
         <div class="six wide column">
-            <div class="ui header request-single-view-header" [routerLink]="['/request', request.requestId]">
+            <h1 class="ui header request-single-view-header" [routerLink]="['/request', request.requestId]">
                 {{request.query.query.title}}
-            </div>
+                <div class="ui red circular label" *ngIf="request.status < 2">neu</div>
+            </h1>
         </div>
         <div class="actions four wide right floated right aligned column">
-            <!--<a class="ui circular yellow icon button"
-               [ngClass]="{'basic': !starred, 'disabled': starLoading }"
-               (click)="toggleStarredMarker()"
-               title="{{starMessage}}"
-            >
-                <i class="star icon" [class.empty]="!starred"></i>
-            </a>-->
             <a class="ui circular red icon button"
                [ngClass]="{'basic': !hidden, 'disabled': hiddenLoading }"
                (click)="toggleHiddenMarker()"
@@ -23,14 +18,7 @@
             >
                 <i class="trash outline icon" [class.empty]="!hidden"></i>
             </a>
-            <a *ngIf="!single"
-               class="ui circular basic green icon button"
-               [routerLink]="['/request', request.requestId]"
-               title="Details anzeigen"
-            >
-                <i class="eye icon"></i>
-            </a>
-            <a *ngIf="single" class="ui circular basic green icon button" routerLink="/request" title="Zurück zum Berichtsübersicht">
+            <a class="ui circular basic green icon button" routerLink="/request" title="Zurück zum Berichtsübersicht">
                 <i class="arrow left icon"></i>
             </a>
         </div>
@@ -40,13 +28,13 @@
             diagram mit fluss und reihenfolge für status
         </div>
     </div>
-    <div class="row" *ngIf="single">
+    <div class="row ui warning message" *ngIf="request.needAuthorization()">
         <div class="ten wide column">
+            <i class="huge warning sign icon"></i>
             Aktion erforderlich und was passiert bei buttons
         </div>
-        <div class="actions three wide column">
+        <div class="actions right aligned six wide column">
             <div class="ui green animated fade button request-allow-button"
-                 *ngIf="single && request.needAuthorization()"
                  (click)="authorize(true)"
             >
                 <div class="visible content">Freigabe</div>
@@ -55,26 +43,23 @@
                     Zulassen
                 </div>
             </div>
-        </div>
-        <div class="actions three wide column">
             <div class="ui orange animated fade button request-deny-button"
-                 *ngIf="single && !request.isFinished()"
                  (click)="authorize(false)"
             >
-                <div class="visible content">{{request.needAuthorization()? 'Ablehnen': 'Abbrechen'}}</div>
+                <div class="visible content">Ablehnen</div>
                 <div class="hidden content">
                     <i class="icon remove"></i>
-                    {{request.needAuthorization()? 'Ablehnen': 'Abbrechen'}}
+                    Ablehnen
                 </div>
             </div>
         </div>
     </div>
-    <div class="row" *ngIf="single">
+    <div class="row">
         <div class="sixteen wide column">
             Beschreibung: {{request.query.query.description}}
         </div>
     </div>
-    <div class="compact row"  *ngIf="single">
+    <div class="compact row">
         <div class="ui meta seven wide column">
             <div class="ui padded grid">
                 <div class="ui compact row">
@@ -107,18 +92,9 @@
             <div class="item">
                 Request-ID: {{request.requestId}}
             </div>
-            <div class="item" *ngIf="single && request.hasResultFile()">
+            <div class="item" *ngIf="request.hasResultFile()">
                 download: hier link einfügen und beschreibung nur in detail
             </div>
-            <!--<div class="item" *ngIf="single">
-                <label>Status ändern:</label>
-                <select class="ui dropdown" (change)="updateStatus($event.target.value)">
-                    <option *ngFor="let stat of options; let i = index" value="{{i}}"
-                            [selected]="i === request.status">
-                        {{stat}}
-                    </option>
-                </select>
-            </div>-->
         </div>
         <div class="ui meta five wide column">
             Principal:
@@ -137,7 +113,7 @@
         </div>
     </div>
 
-    <div class="ui segment sixteen wide column" *ngIf="single">
+    <div class="ui segment sixteen wide column">
         <pre>{{request.query.query.extensions[0]}}</pre>
     </div>
 

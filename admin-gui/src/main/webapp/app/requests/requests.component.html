@@ -1,13 +1,10 @@
-
-<div class="row">
-    <div class="ui breadcrumb">
-        <div class="active section request-header">Anfragenübersicht</div>
-    </div>
+<div class="ui breadcrumb">
+    <div class="active section breadcrumb-header">Anfragenübersicht</div>
 </div>
 <div class="ui divider"></div>
-<div class="ui form row">
-    <div class="eight wide column">
-        Nach Status Filtern
+<div class="ui form">
+    <div class="inline field">
+        <label>Nach Status Filtern</label>
         <select class="ui inline dropdown">
             <option *ngFor="let filter of stateFilterArray"
                     value="{{filter[1]}}"
@@ -20,44 +17,32 @@
     </div>
 </div>
 <div class="ui divider"></div>
-<div *ngIf="requests" class="ui vertically divided grid">
-    <!--<div class="ui form row">
-        <div class="inline fields">
-            <label>Nach Status filtern</label>
-            <div class="field" *ngFor="let filter of stateFilterArray">
-                <div class="ui radio checkbox">
-                    <input type="radio" name="status"
-                           [checked]="stateFilter === filter[1]"
-                           (change)="stateFilter = filter[1]"
-                    >
-                    <label>{{filter[0]}}</label>
+<div *ngIf="requests" class="">
+    <div class="ui vertical segment" *ngFor="let request of requests | requestFilter:stateFilter:markerFilter ">
+        <div class="ui vertical basic segment request-single-view grid container" id="request-list-{{request.requestId}}">
+            <div class="compact row">
+                <div class="six wide column">
+                    <div class="ui header request-single-view-header" [routerLink]="['/request', request.requestId]">
+                        {{request.query.query.title}}
+                        <div class="ui red circular label" *ngIf="request.status < 2">neu</div>
+                        <div class="ui gray circular label" *ngIf="!single" title="{{request.query.query.description}}">i</div>
+                    </div>
+                </div>
+                <div class="actions four wide right floated right aligned column">
+                    <a class="ui circular basic green icon button" [routerLink]="['/request', request.requestId]" title="Details anzeigen">
+                        <i class="eye icon"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="compact row">
+                <div class="sixteen wide column">
+                    diagram mit fluss und reihenfolge für status
                 </div>
             </div>
         </div>
-    </div>-->
+    </div>
 
-    <!--<div class="row">
-        <div class="eight wide column">
-            <div class="ui test slider checkbox requests-filter-checkbox-starred">
-                <input type="checkbox"
-                       [checked]="onlyStarred"
-                       (change)="onlyStarred=!onlyStarred"
-                       title="Nur Favoriten anzeigen"
-                >
-                <label (click)="onlyStarred=!onlyStarred">Nur Favoriten anzeigen</label>
-            </div>
-        </div>
-        <div class="eight wide column">
-            <div class="ui test slider checkbox requests-filter-checkbox-hidden">
-                <input type="checkbox"
-                       [checked]="showHidden"
-                       (change)="showHidden=!showHidden"
-                       title="Gelöschte Anfragen anzeigen"
-                >
-                <label (click)="showHidden=!showHidden">Gelöschte Anfragen anzeigen</label>
-            </div>
-        </div>
-    </div>-->
+    <!--<request-single-view *ngFor="let req of requests | requestFilter:stateFilter:markerFilter " [requestData]="req" class="ui vertical segment"></request-single-view>-->
 
-    <request-single-view *ngFor="let req of requests | requestFilter:stateFilter:markerFilter " [requestData]="req" class="row"></request-single-view>
+
 </div>
