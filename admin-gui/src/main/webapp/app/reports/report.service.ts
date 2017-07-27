@@ -11,7 +11,7 @@ import 'rxjs/add/operator/map';
 import _ = require('underscore');
 
 import { StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
-import { Report, RawReport, ReportTemplate } from './report';
+import { Report, ReportTemplate } from './report';
 
 @Injectable()
 export class ReportService {
