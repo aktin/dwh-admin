@@ -4,6 +4,10 @@ h1 {
   font-size: 250%;
 }
 
+.breadcrumb-header {
+    font-size: 20px;
+}
+
 
 /*Semantic UI changes*/
 .ui.grid .row.compact {

@@ -1,9 +1,12 @@
-<h1>Status der CDA Import-Schnittstelle</h1>
-
 <div class="ui grid" *ngIf="status">
     <div class="row">
+        <div class="ui breadcrumb">
+            <div class="active section breadcrumb-header">Status der CDA Import-Schnittstelle</div>
+        </div>
+    </div>
+    <div class="row">
         <div class="six wide column">
-            Start (letzter Server Neustart):
+            Start (letzter Serverneustart):
         </div>
         <div class="six wide column">
             {{status.start | date: 'medium'}}

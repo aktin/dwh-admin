@@ -1,7 +1,7 @@
 <div class="ui grid">
     <div class="row">
         <div class="ui breadcrumb">
-            <div class="active section">Berichtsübersicht</div>
+            <div class="active section breadcrumb-header">Berichtsübersicht</div>
         </div>
         <div class="five wide right floated column right aligned">
             <div class="ui left labeled button" title="Neuen Bericht vom vergangen Monat erzeugen" routerLink="/report/new">
@@ -19,6 +19,6 @@
     <input type="checkbox" [checked]="showOnlySuccessful" (change)="showOnlySuccessful=!showOnlySuccessful" title="Toggeln, um fehlgeschlagene Berichte auszublenden oder anzuzeigen">
     <label (click)="showOnlySuccessful=!showOnlySuccessful">Nur erfolgreich erstellte Berichte anzeigen</label>
 </div>
-<div *ngIf="reports" class="ui vertically divided grid">
-    <report-single-view *ngFor="let report of reports | success:showOnlySuccessful | orderBy: '-id'" [reportData]="report" class="row"></report-single-view>
+<div *ngIf="reports" class="ui">
+    <report-single-view *ngFor="let report of reports | success:showOnlySuccessful | orderBy: '-id'" [reportData]="report" class="ui vertical segment"></report-single-view>
 </div>

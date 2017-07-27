@@ -30,26 +30,22 @@ const routes: Routes = [// array of routes
         component: UserLoginComponent,
     },
     {
-        path: 'users',
+        path: 'request',
         canActivate: [UserAuthGuard],
         data : {
-            name : 'Benutzerverwaltung',
+            name : 'Anfragen',
             roles : [
-                'ADMIN',
+                'LOGGEDIN',
             ],
         },
         children : [
             {
                 path : '',
-                component : UsersComponent,
+                component : RequestsComponent,
             },
             {
-                path: 'new',
-                component: UserNewComponent,
-            },
-            {
-                path: ':username',
-                component: UserSingleComponent,
+                path: ':id',
+                component: RequestSingleComponent,
             },
         ],
     },
@@ -78,26 +74,6 @@ const routes: Routes = [// array of routes
         ],
     },
     {
-        path: 'request',
-        canActivate: [UserAuthGuard],
-        data : {
-            name : 'Anfragen',
-            roles : [
-                'LOGGEDIN',
-            ],
-        },
-        children : [
-            {
-                path : '',
-                component : RequestsComponent,
-            },
-            {
-                path: ':id',
-                component: RequestSingleComponent,
-            },
-        ],
-    },
-    {
         path: 'preferences',
         canActivate: [UserAuthGuard],
         component: PreferencesComponent,
@@ -107,6 +83,30 @@ const routes: Routes = [// array of routes
                 'LOGGEDIN',
             ],
         },
+    },
+    {
+        path: 'users',
+        canActivate: [UserAuthGuard],
+        data : {
+            name : 'Benutzerverwaltung',
+            roles : [
+                'ADMIN',
+            ],
+        },
+        children : [
+            {
+                path : '',
+                component : UsersComponent,
+            },
+            {
+                path: 'new',
+                component: UserNewComponent,
+            },
+            {
+                path: ':username',
+                component: UserSingleComponent,
+            },
+        ],
     },
     {
         path: 'status',

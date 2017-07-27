@@ -1,7 +1,7 @@
 <div class="ui grid">
     <div class="row">
         <div class="ui breadcrumb">
-            <a class="section" routerLink="/report">Berichtsübersicht</a>
+            <a class="section breadcrumb-header" routerLink="/report">Berichtsübersicht</a>
             <i class="right angle icon divider"></i>
             <div class="active section">Neuen Bericht erzeugen</div>
         </div>
@@ -11,9 +11,9 @@
         <form class="ui form new-report-form sixteen wide column" #newReportForm="ngForm" (ngSubmit)="generateReport()" [ngClass]="newReportFormClasses">
 
             <div class="field template-select-field">
-                <label>Berichtsart:</label>
+                <label>Berichtsart</label>
                 <select name="template" class="ui fluid dropdown template-select" [(ngModel)]="template" title="Bericht Templates">
-                    <option value="" disabled="disabled">Template</option>
+                    <!--<option value="" disabled="disabled">bitte Auswählen</option>-->
                     <option *ngFor="let tem of templates" [value]="tem.id" >{{tem.description}}</option>
                 </select>
             </div>
