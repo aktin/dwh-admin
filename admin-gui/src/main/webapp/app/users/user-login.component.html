@@ -1,8 +1,9 @@
-<div *ngIf="hasUser">
-    {{user.username}}
-    <button class="ui fluid large submit button" type="submit" (click)="userLogout()">Logout</button>
+<div *ngIf="menu && hasUser">
+    <i class="large user circle outline icon"></i>
+    {{user.username}} &nbsp;
+    <button class="ui submit button" type="submit" (click)="userLogout()">Logout</button>
 </div>
-<div *ngIf="! hasUser" class="ui segment">
+<div *ngIf="!menu && ! hasUser" class="ui segment">
     <form class="ui form login-form" #loginForm="ngForm" (ngSubmit)="userLogin()" [ngClass]="logInFormClasses">
         <div class="ui error message">
             <div class="header">Log In fehlgeschlagen</div>

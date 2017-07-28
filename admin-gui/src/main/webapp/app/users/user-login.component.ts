@@ -1,7 +1,7 @@
 /**
  * Created by Xu on 02.05.2017.
  */
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 import { AuthService } from './auth.service';
 import { UrlService } from '../helpers/index';
@@ -14,7 +14,7 @@ require('semantic-ui');
     styleUrls : ['./user-login.component.css'],
 })
 export class UserLoginComponent {
-
+    @Input () menu = false;
     username = 'i2b2';
     password = 'demouser';
 

@@ -13,9 +13,9 @@
                 <span class="header-menu-item-content">{{route.data['name']}}</span>
             </a>
         </ng-container>
-        <a class="right item" routerLinkActive="active" routerLink="report">
-            <span class="header-menu-item-content">report test - here then login?</span>
-        </a>
+        <div class="right item">
+            <span class="header-menu-item-content"><user-login [menu]="true"></user-login></span>
+        </div>
     </div>
 </div>
 
