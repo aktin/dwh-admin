@@ -1,0 +1,22 @@
+<div class="request-status-bar-box" [class.single]="single">
+    <div class="request-status-line">
+        <div class="request-status-line-fill" [ngStyle]="{'width': fillBar }" [class.failed]="failed"></div>
+    </div>
+    <div class="request-status-bar-item"
+         *ngFor="let item of items; let i = index"
+         [ngStyle]="(i > 0)?{'margin-left': leftSpace}:{}"
+         [class.spaced]="i > 0">
+        <div class="request-status-dot"
+             *ngIf="item.dot"
+             [ngClass]="{'visited': item.visited, 'active': item.active}"
+             title="{{item.title}}"
+        ></div>
+        <i class="circular yellow inverted warning sign icon request-status-icon interaction"
+           *ngIf="item.interaction" title="{{item.title}}"></i>
+        <i class="circular red inverted hand paper icon request-status-icon Rejected"
+           *ngIf="item.Rejected" title="{{item.title}}"></i>
+        <i class="circular red inverted warning icon request-status-icon Failed"
+           *ngIf="item.Failed" title="{{item.title}}"></i>
+        <div class="request-status-text" *ngIf="item.active">{{item.title}}</div>
+    </div>
+</div>
