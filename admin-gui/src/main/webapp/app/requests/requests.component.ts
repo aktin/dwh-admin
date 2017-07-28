@@ -13,31 +13,20 @@ import { LocalRequest, RequestMarker, RequestStatus } from './request';
 export class RequestsComponent  {
     requestsData: LocalRequest[];
     status: RequestStatus = null;
-    showHidden = false;
-    onlyStarred = false;
     stateFilter: RequestStatus | string = 'auth';
     constructor(private _requestService: RequestService) { }
 
     get stateFilterArray(): [string, RequestStatus|string][] {
         return [
+            [ 'Keine Filter', 'all' ],
             [ 'Aktion erforderlich', 'auth' ],
-            [ 'Alle', 'all' ],
-            [ 'Neue Anfragen', RequestStatus.Retrieved ],
-            // [ 'Abgeschlosse Anfragen', 'done' ],
+            [ 'Neue Anfragen', 'new' ],
+            [ 'Gelöschte Anfragen', 'hidden' ],
         ];
     }
 
     get requests(): LocalRequest[] {
         this.requestsData = this._requestService.getRequests();
         return this.requestsData;
-    }
-    get markerFilter (): RequestMarker {
-        if (this.onlyStarred) {
-            return RequestMarker.STARRED;
-        }
-        if (this.showHidden) {
-            return RequestMarker.HIDDEN;
-        }
-        return null;
     }
 }

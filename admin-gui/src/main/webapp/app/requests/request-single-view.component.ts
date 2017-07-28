@@ -17,7 +17,6 @@ export class RequestSingleViewComponent  {
     @Input() requestData: LocalRequest;
     @Input() single = false;
     @Input() popUp: PopUpMessageComponent = null;
-    starLoading = false;
     hiddenLoading = false;
     options: string[];
 
@@ -55,42 +54,55 @@ export class RequestSingleViewComponent  {
         return RequestStatus[this.requestData.status];
     }
 
-    updateStatus (statusIndex: number): void {
-        console.log(statusIndex, <RequestStatus> statusIndex);
-        this.requestData.status = this._requestService.updateStatus(this.requestData.requestId, <RequestStatus> statusIndex);
-    }
-
     authorize (allow: boolean) {
-        let title = allow ? 'Anfrage freigeben:' : 'Anfrage ablehnen:';
-        let message = allow ? 'Diese Anfrage wird freigegeben.'
-            : 'Diese Anfrage wird abgelehnt und entsprechende Antwort an den Server versendet.';
-        this.popUp.setConfirm();
-        this.popUp.setData(true, title, message,
-            (answer: boolean) => {
-                if (answer) {
-                    this.requestData.status = this._requestService.authorizeRequest(
-                        this.requestData.requestId,
-                        this.requestData.status,
-                        allow
-                    );
-                }
-            } );
+        if (this.request.isNew()) {
+            let title = allow ? 'Anfrage freigeben:' : 'Anfrage ablehnen:';
+            let message = allow ? 'Bitte bestätigen Sie, dass die Anfrage ausgeführt werden darf. '
+                : 'Bitte bestätigen Sie, dass die Anfrage abgelehnt werden soll. ' +
+                'Dieser Schritt kann nicht rückgängig gemacht werden.';
+            let buttons = [['Jetzt freigeben', 'green'], ['Zurück', 'orange']];
+            if (allow) {
+                this.popUp.setOptIn(['Ergebnisprüfung vor der Übermittlung',
+                    'Vor der Übermittlung der Ergebnisse wird erneut nachgefragt',
+                    'Nach der Berechnung werden die Ergebnisse direkt übertragen']);
+            } else {
+                buttons[0] = ['Jetzt ablehnen', 'red'];
+            }
+            this.popUp.setConfirm(buttons);
+            this.popUp.setData(true, title, message,
+                (answer: boolean, checked?: boolean) => {
+                    if (answer) {
+                        this.requestData.status = this._requestService.authorizeRequest(
+                            this.requestData.requestId,
+                            this.requestData.status,
+                            allow,
+                            checked
+                        );
+                    }
+                } );
+        } else {
+            let title = allow ? 'Ergebnise der Anfrage freigeben:' : 'Senden der Ergebnise ablehnen:';
+            let message = allow ? 'Bitte bestätigen Sie, dass die Ergebnisse der Anfrage an den zentralen Server übertragen werden dürfen.'
+                : 'Bitte bestätigen Sie, dass die Anfrage abgelehnt werden soll. Es werden keine Ergebnisse übermittelt. ' +
+                'Dieser Schritt kann nicht rückgängig gemacht werden.';
+            let buttons = [['Jetzt freigeben', 'green'], ['Zurück', 'orange']];
+            if (!allow) {
+                buttons[0] = ['Jetzt ablehnen', 'red'];
+            }
+            this.popUp.setConfirm(buttons);
+            this.popUp.setData(true, title, message,
+                (answer: boolean) => {
+                    if (answer) {
+                        this.requestData.status = this._requestService.authorizeRequest(
+                            this.requestData.requestId,
+                            this.requestData.status,
+                            allow
+                        );
+                    }
+                } );
+        }
     }
 
-    toggleStarredMarker (): void {
-        this.starLoading = true;
-        let newMark = this.requestData.marker;
-        if (newMark === RequestMarker.STARRED) {
-            newMark = null;
-        } else {
-            newMark = RequestMarker.STARRED;
-        }
-        this.requestData.marker = newMark;
-        this._requestService.updateMarker(this.requestData.requestId, newMark);
-        setTimeout(() => {
-            this.starLoading = false;
-        }, 500);
-    }
     toggleHiddenMarker (): void {
         this.hiddenLoading = true;
         let newMark = this.requestData.marker;

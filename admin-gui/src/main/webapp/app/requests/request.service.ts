@@ -61,7 +61,16 @@ export class RequestService {
             requestId = requests.length - 1;
         }
 
-        return _.find(requests, (req) => req.requestId === requestId);
+        let request = _.find(requests, (req) => req.requestId === requestId);
+
+        if (request.status === RequestStatus.Retrieved) {
+            request.status = this.authorizeRequest(
+                request.requestId,
+                request.status,
+                true);
+        }
+
+        return request;
     }
 
     updateMarker (requestId: number, marker: RequestMarker): void {
@@ -89,21 +98,29 @@ export class RequestService {
                 });
         }
     }
-    updateStatus (requestId: number, status: RequestStatus): RequestStatus {
+    updateStatus (requestId: number, status: RequestStatus, autoSubmit?: boolean): RequestStatus {
         let currentRoute = this._router.url;
-        console.log( this._urls.parse('setRequestStatus', {requestId: requestId, status: RequestStatus[status]}), {} );
-        this._http.post(this._urls.parse('setRequestStatus', {requestId: requestId, status: RequestStatus[status]}), {})
-            .catch(err => this._http.handleError(err))
-            .subscribe(() => {
-                // this.updateRequest(requestId, null, marker);
-                this._updateRequests();
-                // console.log(currentRoute);
-                setTimeout(() => this._router.navigate([currentRoute]), 600);
-            });
+        let setStatusPost = this._http.post(this._urls.parse('setRequestStatus', {requestId: requestId, status: RequestStatus[status]}), {})
+            .catch(err => this._http.handleError(err));
+        let statusCallback = () => {
+            // this.updateRequest(requestId, null, marker);
+            this._updateRequests();
+            // console.log(currentRoute);
+            setTimeout(() => this._router.navigate([currentRoute]), 600);
+        };
+        if (autoSubmit) {
+            this._http.post(this._urls.parse('setRequestAutoSubmit', {requestId: requestId, submit: autoSubmit}), {})
+                .catch(err => this._http.handleError(err))
+                .subscribe(() => {
+                    setStatusPost.subscribe(statusCallback);
+                });
+        } else {
+            setStatusPost.subscribe(statusCallback);
+        }
         return status;
     }
 
-    authorizeRequest (requestId: number, status: RequestStatus, allow: boolean): RequestStatus {
-        return this.updateStatus(requestId, LocalRequest.nextStatus(status, allow));
+    authorizeRequest (requestId: number, status: RequestStatus, allow: boolean, autoSubmit?: boolean): RequestStatus {
+         return this.updateStatus(requestId, LocalRequest.nextStatus(status, allow), autoSubmit);
     }
 }

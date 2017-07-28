@@ -41,7 +41,10 @@ export class LocalRequest {
 
     public static nextStatus (status: RequestStatus, auth: boolean): RequestStatus {
         if (auth) {
-            if (status === RequestStatus.Retrieved || status === RequestStatus.Seen) {
+            if (status === RequestStatus.Retrieved) {
+                return RequestStatus.Seen;
+            }
+            if (status === RequestStatus.Seen) {
                 return RequestStatus.Queued;
             }
             if (status === RequestStatus.Completed) {
@@ -85,15 +88,23 @@ export class LocalRequest {
     ) {}
 
     public needAuthorization (): boolean {
-        return /*(!this.autoSubmit) && */([RequestStatus.Retrieved, RequestStatus.Seen, RequestStatus.Completed].indexOf(this.status) >= 0);
+        return this.isNew() || this.status === RequestStatus.Completed;
+    }
+
+    public isNew (): boolean {
+        return ([RequestStatus.Retrieved, RequestStatus.Seen].indexOf(this.status) >= 0);
     }
 
     public isFinished (): boolean {
-        return ([RequestStatus.Rejected, RequestStatus.Submitted, RequestStatus.Failed].indexOf(this.status) >= 0);
+        return this.failed() || this.status === RequestStatus.Submitted;
     }
 
     public hasResultFile (): boolean {
         return ([RequestStatus.Completed, RequestStatus.Submitted, RequestStatus.Sending].indexOf(this.status) >= 0);
+    }
+
+    public failed (): boolean {
+        return ([RequestStatus.Rejected, RequestStatus.Failed].indexOf(this.status) >= 0);
     }
 
 }

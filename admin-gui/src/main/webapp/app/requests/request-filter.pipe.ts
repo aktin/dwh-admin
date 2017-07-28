@@ -25,27 +25,27 @@ export class RequestFilterPipe implements PipeTransform {
     transform( requests: LocalRequest[], status: RequestStatus | string, marker: RequestMarker ): LocalRequest[] {
         let output = requests;
 
-        if ( status === 'auth' ) { // show auth
-            output = output.filter(req => req.needAuthorization());
-        } else if ( status === 'done' ) { // show auth
-            output = output.filter(req => req.isFinished());
-        } else if ( typeof status === 'number') {
-            output = output.filter(req => req.status === status);
+        switch (status) {
+            case 'all' : {
+                break;
+            }
+            case 'auth' : {
+                output = output.filter(req => req.needAuthorization());
+                break;
+            }
+            case 'new' : {
+                output = output.filter(req => req.status === RequestStatus.Retrieved);
+                break;
+            }
+            case 'done' : {
+                output = output.filter(req => req.isFinished());
+                break;
+            }
         }
-
-        switch ( marker ) {
-            case RequestMarker.STARRED: {
-                output = output.filter(req => req.marker === RequestMarker.STARRED);
-                break;
-            }
-            case RequestMarker.HIDDEN: {
-                // NOP - show hidden!
-                output = output.filter(req => req.marker === RequestMarker.HIDDEN);
-                break;
-            }
-            default: { // filter our the hidden ones
-                output = output.filter(req => req.marker !== RequestMarker.HIDDEN);
-            }
+        if ( status === 'hidden') {
+            output = output.filter(req => req.marker === RequestMarker.HIDDEN);
+        } else {
+            output = output.filter(req => req.marker !== RequestMarker.HIDDEN);
         }
 
         return output;

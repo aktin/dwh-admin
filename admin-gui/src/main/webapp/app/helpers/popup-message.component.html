@@ -16,19 +16,34 @@
         </a>
     </div>
 
-    <div class="popup-message-buttons" *ngIf="mode === 'confirm'">
-        <div class="ui green animated fade button popup-message-okay-button" (click)="msgOk()">
-            <div class="visible content">{{buttonText[0]}}</div>
-            <div class="hidden content">
-                <i class="icon checkmark"></i>
-                {{buttonText[0]}}
+    <div class="ui extra" *ngIf="checkBoxText && checkBoxText.length >= 2">
+        <br />
+        <label>{{checkBoxText[0]}}</label>
+        <div class="field">
+            <div class="ui slider checkbox">
+                <input type="checkbox" name="frequency" [(ngModel)]="checked">
+                <label *ngIf="!checked || checkBoxText.length == 2">{{checkBoxText[1]}}</label>
+                <label *ngIf="checked && checkBoxText.length > 2">{{checkBoxText[2]}}</label>
             </div>
         </div>
-        <div class="ui red animated fade button popup-message-okay-button" (click)="msgCancel()">
-            <div class="visible content">{{buttonText[1]}}</div>
+    </div>
+
+    <br />
+    <div class="popup-message-buttons" *ngIf="mode === 'confirm'">
+        <div class="ui animated fade button popup-message-okay-button"
+             [ngClass]="buttons[0][1]" (click)="msgOk()">
+            <div class="visible content">{{buttons[0][0]}}</div>
+            <div class="hidden content">
+                <i class="icon checkmark"></i>
+                {{buttons[0][0]}}
+            </div>
+        </div>
+        <div class="ui animated fade button popup-message-okay-button"
+             [ngClass]="buttons[1][1]" (click)="msgCancel()">
+            <div class="visible content">{{buttons[1][0]}}</div>
             <div class="hidden content">
                 <i class="icon remove"></i>
-                {{buttonText[1]}}
+                {{buttons[1][0]}}
             </div>
         </div>
     </div>

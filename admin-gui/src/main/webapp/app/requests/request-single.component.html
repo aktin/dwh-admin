@@ -3,7 +3,7 @@
         <div class="ui breadcrumb">
             <a class="section breadcrumb-header" routerLink="/request">Anfragenbersicht</a>
             <i class="right angle icon divider"></i>
-            <div class="active section">{{request.query.query.title}} - {{request.query.query.description}}</div>
+            <div class="active section">{{request.query.query.title}}</div>
         </div>
     </div>
     <request-single-view [requestData]="request" [single]="true" class="row" [popUp]="popUp"></request-single-view>

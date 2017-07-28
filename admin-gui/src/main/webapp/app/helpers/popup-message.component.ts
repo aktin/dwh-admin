@@ -13,8 +13,10 @@ export class PopUpMessageComponent {
     @Input() head: string;
     @Input() callback: Function;
     @Input() mode = 'info'; // 'confirm'
-    @Input() buttonText: [string, string] = ['Weiter', 'Abbrechen'];
+    @Input() buttons: string[][] = [['Weiter', 'green'], ['Abbrechen', 'red']];
     show = false;
+    checkBoxText: string[];
+    checked = false;
 
     constructor() {}
 
@@ -25,11 +27,16 @@ export class PopUpMessageComponent {
         this.callback = callback;
     }
 
+    setOptIn (texts: string[]): void {
+        this.checked = true;
+        this.checkBoxText = texts;
+    }
+
     // call after setData
-    setConfirm (buttons?: [string, string]): void {
+    setConfirm (buttons?: string[][]): void {
         this.mode = 'confirm';
         if (buttons) {
-            this.buttonText = buttons;
+            this.buttons = buttons;
         }
     }
 
@@ -38,13 +45,18 @@ export class PopUpMessageComponent {
         if (this.callback) {
             this.callback(false);
         }
+        this.clear();
     }
 
     msgOk (): void {
         this.show = false;
         if (this.callback) {
+            if (this.checkBoxText) {
+                this.callback(true, this.checked);
+            }
             this.callback(true);
         }
+        this.clear();
     }
 
     msgCancel (): void {
@@ -52,5 +64,17 @@ export class PopUpMessageComponent {
         if (this.callback) {
             this.callback(false);
         }
+        this.clear();
+    }
+
+    clear (): void {
+        this.message = null;
+        this.head = null;
+        this.callback = null;
+        this.mode = 'info';
+        this.show = false;
+        this.buttons = null;
+        this.checkBoxText = null;
+        this.checked = false;
     }
 }

@@ -4,10 +4,10 @@
         id="request-list-{{request.requestId}}"
 >
     <div class="compact row">
-        <div class="six wide column">
+        <div class="twelve wide column">
             <h1 class="ui header request-single-view-header" [routerLink]="['/request', request.requestId]">
-                {{request.query.query.title}}
-                <div class="ui red circular label" *ngIf="request.status < 2">neu</div>
+                {{request.query.query.title}} {{request.status}}
+                <!--<div class="ui red circular label" *ngIf="request.status < 2">neu</div>-->
             </h1>
         </div>
         <div class="actions four wide right floated right aligned column">
@@ -24,16 +24,19 @@
         </div>
     </div>
     <div class="row">
-        <div class="sixteen wide column">
-            diagram mit fluss und reihenfolge für status
-        </div>
+        <request-status-bar [request]="request" [single]="true"></request-status-bar>
     </div>
     <div class="row ui warning message" *ngIf="request.needAuthorization()">
-        <div class="ten wide column">
-            <i class="huge warning sign icon"></i>
-            Aktion erforderlich und was passiert bei buttons
+        <div class="two wide column">
+            <i class="huge yellow warning sign icon"></i>
         </div>
-        <div class="actions right aligned six wide column">
+        <div class="eight wide column larger middle aligned" *ngIf="request.isNew()">
+            Diese Anfrage wurde noch nicht zur Ausführung freigegeben. Bitte wählen Sie eine Aktion.
+        </div>
+        <div class="eight wide column larger middle aligned" *ngIf="!request.isNew()">
+            Die Ergbnisse wurden noch nicht zur Übermittlung freigegeben. Bitte wählen Sie eine Aktion.
+        </div>
+        <div class="actions right aligned middle aligned six wide column">
             <div class="ui green animated fade button request-allow-button"
                  (click)="authorize(true)"
             >
@@ -43,7 +46,7 @@
                     Zulassen
                 </div>
             </div>
-            <div class="ui orange animated fade button request-deny-button"
+            <div class="ui red animated fade button request-deny-button"
                  (click)="authorize(false)"
             >
                 <div class="visible content">Ablehnen</div>
