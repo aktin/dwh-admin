@@ -1,4 +1,3 @@
-<div class="ui divider"></div>
 <div
         class="ui basic segment request-single-view grid container"
         id="request-list-{{request.requestId}}"
@@ -6,7 +5,7 @@
     <div class="compact row">
         <div class="twelve wide column">
             <h1 class="ui header request-single-view-header" [routerLink]="['/request', request.requestId]">
-                {{request.query.query.title}} {{request.status}}
+                {{request.query.query.title}}
                 <!--<div class="ui red circular label" *ngIf="request.status < 2">neu</div>-->
             </h1>
         </div>
@@ -57,9 +56,55 @@
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="sixteen wide column">
-            Beschreibung: {{request.query.query.description}}
+    <div class="row ui segment">
+        <div class="ui meta sixteen wide column">
+            Auftraggeber: {{request.query.query.principal.name}}
+            <span *ngIf="request.query.query.principal.organization">
+                , {{request.query.query.principal.organization}}
+            </span>
+            <div *ngIf="request.query.query.principal.phone">
+                , {{request.query.query.principal.phone}}
+            </div>
+            <span *ngIf="request.query.query.principal.email">
+            , {{request.query.query.principal.email}}
+            </span>
+        </div>
+        <div class="ui sixteen wide column divider"></div>
+        <div class="ui meta five wide column">
+            Datum der Beauftragung:
+        </div>
+        <div class="ui meta three wide column">
+            {{request.query.published | date: 'mediumDate'}}
+        </div>
+        <div class="ui meta five wide column">
+            Referenzdatum der Daten:
+        </div>
+        <div class="ui meta three wide column">
+            {{request.query.referenceDate | date: 'mediumDate'}}
+        </div>
+        <div class="ui meta five wide column">
+            Datum der (geplanten) Ausführung:
+        </div>
+        <div class="ui meta three wide column">
+            {{request.query.scheduled | date: 'mediumDate'}}
+        </div>
+        <div class="ui meta five wide column">
+            Deadline:
+        </div>
+        <div class="ui meta three wide column">
+            {{request.query.deadline | date: 'mediumDate'}}
+        </div>
+        <div class="ui meta five wide column" *ngIf="request.query.closed">
+            Beendet am:
+        </div>
+        <div class="ui meta three wide column" *ngIf="request.query.closed">
+            {{request.query.closed | date: 'mediumDate'}}
+        </div>
+        <div class="ui meta five wide column" *ngIf="request.query.canceled">
+            Vom Broker abgebrochen am:
+        </div>
+        <div class="ui meta three wide column" *ngIf="request.query.canceled">
+            {{request.query.canceled | date: 'mediumDate'}}
         </div>
     </div>
     <div class="compact row">
@@ -113,6 +158,11 @@
             <div class="item" *ngIf="request.query.query.principal.phone">
                 {{request.query.query.principal.phone}}
             </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="sixteen wide column">
+            Beschreibung: {{request.query.query.description}}
         </div>
     </div>
 
