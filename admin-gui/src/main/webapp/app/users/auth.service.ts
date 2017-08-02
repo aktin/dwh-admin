@@ -45,7 +45,7 @@ export class AuthService {
     }
 
     private redirect2Home (): void {
-        console.log('redirect')
+        // console.log('redirect');
         this._router.navigate(['']);
     }
 
@@ -103,6 +103,8 @@ export class AuthService {
                     this.cleanUpStorage();
                     this.redirect2Home();
                 }
+                this.cleanUpStorage();
+                this.redirect2Home();
                 return err;
             },
         );

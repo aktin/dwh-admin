@@ -17,7 +17,7 @@ export class UrlService {
         login : 'auth/login',
         logout : 'auth/logout',
         adminCheck : 'auth/has/admin',
-        userCheck : 'auth/check/',
+        authCheck : 'auth/check/',
         userUpdate : 'auth/update',
 
         getUsers : 'users', // get
