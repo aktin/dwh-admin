@@ -56,119 +56,85 @@
             </div>
         </div>
     </div>
-    <div class="row ui segment">
-        <div class="ui meta sixteen wide column">
-            Auftraggeber: {{request.query.query.principal.name}}
-            <span *ngIf="request.query.query.principal.organization">
-                , {{request.query.query.principal.organization}}
-            </span>
-            <div *ngIf="request.query.query.principal.phone">
-                , {{request.query.query.principal.phone}}
-            </div>
-            <span *ngIf="request.query.query.principal.email">
-            , {{request.query.query.principal.email}}
-            </span>
-        </div>
-        <div class="ui sixteen wide column divider"></div>
-        <div class="ui meta five wide column">
-            Datum der Beauftragung:
-        </div>
-        <div class="ui meta three wide column">
-            {{request.query.published | date: 'mediumDate'}}
-        </div>
-        <div class="ui meta five wide column">
-            Referenzdatum der Daten:
-        </div>
-        <div class="ui meta three wide column">
-            {{request.query.referenceDate | date: 'mediumDate'}}
-        </div>
-        <div class="ui meta five wide column">
-            Datum der (geplanten) Ausführung:
-        </div>
-        <div class="ui meta three wide column">
-            {{request.query.scheduled | date: 'mediumDate'}}
-        </div>
-        <div class="ui meta five wide column">
-            Deadline:
-        </div>
-        <div class="ui meta three wide column">
-            {{request.query.deadline | date: 'mediumDate'}}
-        </div>
-        <div class="ui meta five wide column" *ngIf="request.query.closed">
-            Beendet am:
-        </div>
-        <div class="ui meta three wide column" *ngIf="request.query.closed">
-            {{request.query.closed | date: 'mediumDate'}}
-        </div>
-        <div class="ui meta five wide column" *ngIf="request.query.canceled">
-            Vom Broker abgebrochen am:
-        </div>
-        <div class="ui meta three wide column" *ngIf="request.query.canceled">
-            {{request.query.canceled | date: 'mediumDate'}}
-        </div>
-    </div>
-    <div class="compact row">
-        <div class="ui meta seven wide column">
-            <div class="ui padded grid">
-                <div class="ui compact row">
-                    <div class="six wide column">Reference:</div>
-                    <div class="ten wide column">{{request.query.referenceDate | date: 'mediumDate'}}</div>
-                </div>
-                <div class="ui compact row">
-                    <div class="six wide column">published:</div>
-                    <div class="ten wide column">{{request.query.published | date: 'mediumDate'}}</div>
-                </div>
-                <div class="ui compact row">
-                    <div class="six wide column">scheduled:</div>
-                    <div class="ten wide column">{{request.query.scheduled | date: 'mediumDate'}}</div>
-                </div>
-                <div class="ui compact row">
-                    <div class="six wide column">deadline:</div>
-                    <div class="ten wide column">{{request.query.deadline | date: 'mediumDate'}}</div>
-                </div>
-                <div class="ui compact row" *ngIf="request.query.closed">
-                    <div class="six wide column">closed:</div>
-                    <div class="ten wide column">{{request.query.closed | date: 'mediumDate'}}</div>
-                </div>
-                <div class="ui compact row" *ngIf="request.query.canceled">
-                    <div class="six wide column">canceled:</div>
-                    <div class="ten wide column">{{request.query.canceled | date: 'mediumDate'}}</div>
-                </div>
+    <div class="row ui segment grid">
+        <div class="compact row">
+            <div class="ui meta sixteen wide column">
+                Auftraggeber: <b>{{request.query.query.principal.name}}</b>
+                <span *ngIf="request.query.query.principal.organization">
+                    , {{request.query.query.principal.organization}}
+                </span>
+                <span *ngIf="request.query.query.principal.phone">
+                    , {{request.query.query.principal.phone}}
+                </span>
+                <span *ngIf="request.query.query.principal.email">
+                    , {{request.query.query.principal.email}}
+                </span>
             </div>
         </div>
-        <div class="ui meta four wide column">
-            <div class="item">
-                Request-ID: {{request.requestId}}
-            </div>
-            <div class="item" *ngIf="request.hasResultFile()">
-                download: hier link einfügen und beschreibung nur in detail
-            </div>
+        <div class="row">
+            <div class="ui sixteen wide column divider"></div>
         </div>
-        <div class="ui meta five wide column">
-            Principal:
-            <div class="item">
-                {{request.query.query.principal.name}}
+        <div class="compact row">
+            <div class="ui meta five wide column" *ngIf="request.query.published">
+                Datum der Beauftragung:
             </div>
-            <div class="item" *ngIf="request.query.query.principal.organization">
-                {{request.query.query.principal.organization}}
+            <div class="ui meta three wide column" *ngIf="request.query.published">
+                {{request.query.published | date: 'mediumDate'}}
             </div>
-            <div class="item" *ngIf="request.query.query.principal.email">
-                {{request.query.query.principal.email}}
+            <div class="ui meta five wide column" *ngIf="request.query.referenceDate">
+                Referenzdatum der Daten:
             </div>
-            <div class="item" *ngIf="request.query.query.principal.phone">
-                {{request.query.query.principal.phone}}
+            <div class="ui meta three wide column" *ngIf="request.query.referenceDate">
+                {{request.query.referenceDate | date: 'mediumDate'}}
+            </div>
+            <div class="ui meta five wide column" *ngIf="request.query.scheduled">
+                Datum der (geplanten) Ausführung:
+            </div>
+            <div class="ui meta three wide column" *ngIf="request.query.scheduled">
+                {{request.query.scheduled | date: 'mediumDate'}}
+            </div>
+            <div class="ui meta five wide column" *ngIf="request.query.deadline">
+                Deadline:
+            </div>
+            <div class="ui meta three wide column" *ngIf="request.query.deadline">
+                {{request.query.deadline | date: 'mediumDate'}}
+            </div>
+            <div class="ui meta five wide column" *ngIf="request.query.closed">
+                Beendet am:
+            </div>
+            <div class="ui meta three wide column" *ngIf="request.query.closed">
+                {{request.query.closed | date: 'mediumDate'}}
+            </div>
+            <div class="ui meta five wide column" *ngIf="request.query.canceled">
+                Vom Broker abgebrochen am:
+            </div>
+            <div class="ui meta three wide column" *ngIf="request.query.canceled">
+                {{request.query.canceled | date: 'mediumDate'}}
             </div>
         </div>
     </div>
     <div class="row">
+        <div class="ui meta sixteen wide column" *ngIf="false && request.hasResultFile()">Ergebnisse: Hier kommt dann der Link der Ergebnisse hin.</div>
         <div class="sixteen wide column">
-            Beschreibung: {{request.query.query.description}}
+            Beschreibung: <br/>
+            {{request.query.query.description}}
         </div>
     </div>
-
-    <div class="ui segment sixteen wide column">
-        <pre>{{request.query.query.extensions[0]}}</pre>
+    <div class="row ui segment">
+        <div class="five wide column">
+            SQL Abfrage:
+        </div>
+        <div class="five wide column actions">
+            <div class="ui basic right labeled icon compact button"
+                 (click)="hideSql = !hideSql;"
+            >
+                {{hideSql? 'SQL einblenden':'SQL ausblenden'}}
+                <i class="icon" [ngClass]="hideSql?'plus':'minus'"></i>
+            </div>
+        </div>
+        <div class="sixteen wide column" [class.hidden]="hideSql">
+            <pre>{{request.query.query.extensions[0]}}</pre>
+        </div>
     </div>
-
 </div>
 

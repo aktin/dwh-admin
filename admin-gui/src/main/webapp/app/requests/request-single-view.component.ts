@@ -17,6 +17,7 @@ export class RequestSingleViewComponent  {
     @Input() requestData: LocalRequest;
     @Input() single = false;
     @Input() popUp: PopUpMessageComponent = null;
+    hideSql = true;
     hiddenLoading = false;
     options: string[];
 
