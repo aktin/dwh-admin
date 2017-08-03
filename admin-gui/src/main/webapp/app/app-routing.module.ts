@@ -9,7 +9,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import _ = require('underscore');
 
-import { HomeComponent }         from './home/index';
+import { HomeComponent, TestComponent }     from './home/index';
 import { UsersComponent, UserSingleComponent, UserNewComponent,
         UserLoginComponent, UserAuthGuard } from './users/index';
 import { ReportsComponent, ReportSingleComponent, ReportNewComponent } from './reports/index';
@@ -84,7 +84,7 @@ const routes: Routes = [// array of routes
             ],
         },
     },
-    {
+    /*{
         path: 'users',
         canActivate: [UserAuthGuard],
         data : {
@@ -107,7 +107,7 @@ const routes: Routes = [// array of routes
                 component: UserSingleComponent,
             },
         ],
-    },
+    },*/
     {
         path: 'status',
         canActivate: [UserAuthGuard],
@@ -117,6 +117,13 @@ const routes: Routes = [// array of routes
             roles : [
                 'LOGGEDIN',
             ],
+        },
+    },
+    {
+        path: 'test',
+        component: TestComponent,
+        data : {
+            name : 'Funktionstest',
         },
     },
     {

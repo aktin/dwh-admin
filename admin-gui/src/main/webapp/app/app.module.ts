@@ -15,7 +15,7 @@ import { AppRoutingModule }     from './app-routing.module';
 
 import { AppComponent }         from './app.component';
 
-import { HomeComponent }                                                            from './home/index';
+import { HomeComponent, TestComponent }                                             from './home/index';
 import { StorageService, UrlService, HttpInterceptorService,
             SafeUrlPipe, OrderByPipe,
             PopUpMessageComponent, LoadingComponent }                               from './helpers/index';
@@ -41,6 +41,7 @@ import { RestrictedComponent }  from './restricted/restricted.component';
     declarations: [
         AppComponent,
         HomeComponent,
+        TestComponent,
         UserLoginComponent,
         UsersComponent,
         UserSingleComponent,

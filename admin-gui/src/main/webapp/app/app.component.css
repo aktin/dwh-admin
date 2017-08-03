@@ -1,5 +1,10 @@
-
-.app-header {
+.header-logo {
+    min-width: 230px;
+    display: inline-block;
+}
+.header-title {
+    display: inline-block;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 250%;
+    font-size: 18px;
+    min-width: 250px;
 }
