@@ -122,9 +122,6 @@ const routes: Routes = [// array of routes
     {
         path: 'test',
         component: TestComponent,
-        data : {
-            name : 'Funktionstest',
-        },
     },
     {
         path: '**',
