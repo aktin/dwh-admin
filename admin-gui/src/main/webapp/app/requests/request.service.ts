@@ -121,6 +121,10 @@ export class RequestService {
     }
 
     authorizeRequest (requestId: number, status: RequestStatus, allow: boolean, autoSubmit?: boolean): RequestStatus {
-         return this.updateStatus(requestId, LocalRequest.nextStatus(status, allow), autoSubmit);
+        let newStatus = LocalRequest.nextStatus(status, allow);
+        if (newStatus === null) {
+            return status;
+        }
+        return this.updateStatus(requestId, newStatus, autoSubmit);
     }
 }
