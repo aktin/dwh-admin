@@ -31,6 +31,7 @@ import { User } from './user';
 @Injectable()
 export class AuthService {
 
+
     private _tokenValidTrustTime = 3000;
 
     constructor (
@@ -41,12 +42,19 @@ export class AuthService {
     ) {}
 
     private cleanUpStorage (): void {
+        let url = this._store.getValue('route');
         this._store.clear();
+        this._store.setValue('route', url);
     }
-
-    private redirect2Home (): void {
-        // console.log('redirect');
+    redirect2Home (url?: string): void {
+        if (!url) {
+            url = this._router.url;
+        }
+        this._store.setValue('route', url);
         this._router.navigate(['']);
+    }
+    redirect2Route () {
+        this._router.navigate([this._store.getValue('route')]);
     }
 
     userLogin ( username: string, password: string): Observable<User> {
@@ -82,7 +90,7 @@ export class AuthService {
         // .catch(this._http.handleError)
         .finally(() => {
             this.cleanUpStorage();
-            // this.redirect2Home();
+            this.redirect2Home('');
         });
     }
 

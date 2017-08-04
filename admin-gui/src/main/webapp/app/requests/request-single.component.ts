@@ -13,7 +13,8 @@ import { LocalRequest } from './request';
     styleUrls: ['./requests.component.css'],
 })
 export class RequestSingleComponent implements OnInit {
-    request: LocalRequest;
+    req: LocalRequest;
+    reqId: number;
     @ViewChild(PopUpMessageComponent) popUp: PopUpMessageComponent;
 
     constructor(
@@ -24,12 +25,20 @@ export class RequestSingleComponent implements OnInit {
     ngOnInit(): void {
         this._route.params
             .map((params: Params) => {
+            this.reqId = +params['id'];
                 return this._requestService.getRequest(+params['id']);
             }).subscribe(
             req => {
                 // console.log(req);
-                this.request = req;
+                this.req = req;
             }
         );
+    }
+
+    get request (): LocalRequest {
+        if (!this.req) {
+            this.req = this._requestService.getRequest(this.reqId);
+        }
+        return this.req;
     }
 }

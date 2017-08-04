@@ -3,6 +3,7 @@
     class="ui basic segment report-single-view container"
     id="report-list-{{report.id}}"
     [ngClass]="reportClass"
+    *ngIf="report"
 >
     <div class="ui header request-single-view-header" [class.small]="!report.isSuccess()" routerLink="/report/{{report.id}}">
         {{report.name}}

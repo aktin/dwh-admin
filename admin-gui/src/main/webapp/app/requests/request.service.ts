@@ -63,7 +63,7 @@ export class RequestService {
 
         let request = _.find(requests, (req) => req.requestId === requestId);
 
-        if (request.status === RequestStatus.Retrieved) {
+        if (request && request.status === RequestStatus.Retrieved) {
             request.status = this.authorizeRequest(
                 request.requestId,
                 request.status,

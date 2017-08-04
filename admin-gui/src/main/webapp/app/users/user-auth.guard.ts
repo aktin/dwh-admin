@@ -19,14 +19,14 @@ export class UserAuthGuard implements CanActivate {
         // console.log ( route, state.url);
         let data = route.data;
         if (data && data['roles'] ) {
-
             let roles: string[] = _.map(data['roles'], (role: string) => {
                 return role.toUpperCase();
             });
 
             return this._authService.userRolesCheckFull(roles).map( hasRole => {
                     if (!hasRole) {
-                        this._router.navigate(['home']);
+                        this._authService.redirect2Home(state.url);
+                        // this._router.navigate(['home']);
                     } return hasRole;
                 }
             );

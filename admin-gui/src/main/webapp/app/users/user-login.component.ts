@@ -6,6 +6,7 @@ import { Component, Input } from '@angular/core';
 import { AuthService } from './auth.service';
 import { UrlService } from '../helpers/index';
 import $ = require('jquery');
+import { Router } from '@angular/router';
 require('semantic-ui');
 
 @Component({
@@ -23,7 +24,8 @@ export class UserLoginComponent {
     private _hideSelect = true;
     private _messages: string[] = [];
 
-    constructor (private _authService: AuthService, private _url: UrlService) {
+    constructor (private _authService: AuthService,
+                 private _url: UrlService) {
         this.serverUrl = this._url.serverUrl;
     }
 
@@ -48,6 +50,7 @@ export class UserLoginComponent {
             ( /*user*/ ) => {
                 this.loggingInState = 'success';
                 this._hideSelect = true;
+                this._authService.redirect2Route();
             },
             error => {
                 console.error('error? ', error);

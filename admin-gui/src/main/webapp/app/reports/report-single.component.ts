@@ -10,7 +10,8 @@ import { ReportService } from './report.service';
     templateUrl: './report-single.component.html',
 })
 export class ReportSingleComponent implements OnInit {
-    report: Report;
+    rep: Report;
+    repId: number;
 
     constructor(
         private _route: ActivatedRoute,
@@ -20,11 +21,19 @@ export class ReportSingleComponent implements OnInit {
     ngOnInit(): void {
         this._route.params
             .map((params: Params) => {
+            this.repId = +params['id'];
                 return this._reportService.getReport(+params['id']);
             }).subscribe(
                 rep => {
-                    this.report = rep;
+                    this.rep = rep;
                 }
             );
+    }
+
+    get report (): Report {
+        if (!this.rep) {
+            this.rep = this._reportService.getReport(this.repId);
+        }
+        return this.rep;
     }
 }
