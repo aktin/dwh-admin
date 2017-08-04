@@ -39,8 +39,8 @@ export class LocalRequest {
         } return null;
     }
 
-    public static nextStatus (status: RequestStatus, auth: boolean): RequestStatus {
-        if (auth) {
+    public static nextStatus (status: RequestStatus, allow: boolean): RequestStatus {
+        if (allow) {
             if (status === RequestStatus.Retrieved) {
                 return RequestStatus.Seen;
             }
@@ -50,6 +50,7 @@ export class LocalRequest {
             if (status === RequestStatus.Completed) {
                 return RequestStatus.Sending;
             }
+            return null;
         }
         return RequestStatus.Rejected;
     }

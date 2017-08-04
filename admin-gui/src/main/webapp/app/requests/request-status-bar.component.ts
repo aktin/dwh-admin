@@ -19,11 +19,9 @@ export class RequestStatusBarComponent implements OnInit {
     failed: boolean;
     fillBar: string;
     leftSpace: string;
-
     statusLength = 7;
-
-    items: any = null;
-
+    myItems: any = null;
+    oldStatus: RequestStatus;
     statusTexts = [
         'Eingegangen',
         'Freigabe der Abfrage',
@@ -36,21 +34,22 @@ export class RequestStatusBarComponent implements OnInit {
         'Abgelehnt'
     ];
 
-    ngOnInit () {
-        if (this.request && this.items === null) {
+    calcView () {
+        if (this.request && this.oldStatus !== this.request.status) {
+            this.oldStatus = this.request.status;
             this.failed = this.request.failed();
-            this.items = [];
+            this.myItems = [];
             if (this.failed) {
                 this.fillBar = '100%';
                 this.leftSpace = 'calc((100% - 20px)';
-                this.items.push({});
+                this.myItems.push({});
                 let obj = {
                     title: this.statusTexts[this.request.status],
                     active: true,
                     dot : false
                 };
                 obj[RequestStatus[this.request.status]] = true;
-                this.items.push(obj);
+                this.myItems.push(obj);
             } else {
                 this.fillBar = Number(this.request.status) / (this.statusLength - 1) * 100 + '%';
                 this.leftSpace = 'calc((100% - ' + (this.statusLength * 10) + 'px) / ' + (this.statusLength - 1) + ')';
@@ -69,9 +68,18 @@ export class RequestStatusBarComponent implements OnInit {
                             obj['interaction'] = true;
                         }
                     }
-                    this.items.push(obj);
+                    this.myItems.push(obj);
                 }
             }
         }
+    }
+
+    get items() {
+        this.calcView();
+        return this.myItems;
+    }
+
+    ngOnInit () {
+        this.calcView();
     }
 }
