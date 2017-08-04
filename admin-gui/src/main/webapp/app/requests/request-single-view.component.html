@@ -4,7 +4,7 @@
 >
     <div class="compact row">
         <div class="twelve wide column">
-            <h1 class="ui header request-single-view-header" [routerLink]="['/request', request.requestId]">
+            <h1 class="ui header">
                 {{request.query.query.title}}
                 <!--<div class="ui red circular label" *ngIf="request.status < 2">neu</div>-->
             </h1>
@@ -122,19 +122,21 @@
     </div>
     <div class="row ui segment">
         <div class="five wide column">
-            SQL Abfrage:
+            Abfragedefinition:
         </div>
-        <div class="five wide column actions">
+        <div class="eight wide column actions right floated right aligned">
             <div class="ui basic right labeled icon compact button"
                  (click)="hideSql = !hideSql;"
             >
-                {{hideSql? 'SQL einblenden':'SQL ausblenden'}}
+                {{hideSql? 'Abfragesyntax einblenden':'Abfragesyntax ausblenden'}}
                 <i class="icon" [ngClass]="hideSql?'plus':'minus'"></i>
             </div>
         </div>
-        <div class="sixteen wide column" [class.hidden]="hideSql">
-            <pre>{{request.query.query.extensions[0]}}</pre>
+        <div class="sixteen wide column padded" [class.hidden]="hideSql">
+            <pre>{{formatXml(request.query.query.extensions[0])}}</pre>
         </div>
+        <!--<div class="sixteen wide column" [innerHtml]="escapeXml(formatXml(request.query.query.extensions[0]))">-->
+        <!--</div>-->
     </div>
 </div>
 

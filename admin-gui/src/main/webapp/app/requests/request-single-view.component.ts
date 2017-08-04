@@ -6,6 +6,7 @@ import { LocalRequest, RequestMarker, RequestStatus } from './request';
 
 import { PopUpMessageComponent } from '../helpers/index';
 import { RequestService } from './request.service';
+import _ = require('underscore');
 
 @Component({
     selector: 'request-single-view',
@@ -118,4 +119,69 @@ export class RequestSingleViewComponent  {
             this.hiddenLoading = false;
         }, 500);
     }
+
+    formatXml(rawxml: string): string {
+        let formatted = '';
+        let xml = rawxml.replace(/(>)\s*(<)(\/*)/g, '$1\n$2$3');
+        let pad = 0;
+        let sql = 0;
+        _.each(xml.split('\n'), function(rawnode, index) {
+            let node = rawnode.trim();
+            if (node === '') {
+                return;
+            }
+            let indent = 0;
+            if (node.match( /.+<\/\w[^>]*>$/ )) {
+                indent = 0;
+            } else if (node.match( /^<\/\w/ )) {
+                if (pad !== 0) {
+                    pad -= 1;
+                }
+            } else if (node.match( /^<\w([^>]*[^\/])?>.*$/ )) {
+                indent = 1;
+            } else {
+                indent = 0;
+            }
+
+
+            let padding = '';
+            for (let i = 0; i < pad; i++) {
+                padding += '      ';
+            }
+            if (! node.match(/<.*/)) {
+                // its a sql sequence.
+                if (sql !== 0) {
+                    padding += '  ';
+                } else {
+                    padding = '\n' + padding;
+                }
+                if (node.match((/.*;$/))) {
+                    sql = 0;
+                } else {
+                    sql ++;
+                }
+            }
+
+
+            if (node.match( /.*<\/source>/ )) {
+                formatted += '\n';
+            }
+            formatted += padding + node + '\n';
+
+            pad += indent;
+
+        });
+        return formatted;
+    }
+
+    escapeXml (xml: string): string {
+        return xml
+            // .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/  /g, '&emsp;')
+            .replace(/\n/g, '<br />');
+    }
+
+
 }
