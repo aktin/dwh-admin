@@ -13,7 +13,7 @@
         <a *ngIf="report.isSuccess()" class="ui circular green icon button" href="{{report.url}}" title="Diesen Monatsbericht herunterladen">
             <i class="cloud download icon"></i>
         </a>
-        <a *ngIf="!single" class="ui circular icon button" routerLink="/report/{{report.id}}">
+        <a *ngIf="!single" class="ui circular icon button" routerLink="/report/{{report.id}}" title="Detailansicht des Berichts">
             <i class="eye icon"></i>
         </a>
         <a *ngIf="single" class="ui circular basic green icon button" routerLink="/report" title="Zurück zum Berichtsübersicht">
@@ -27,7 +27,7 @@
             <div class="eight wide column"><b>{{report.getDeStatus()}}</b></div>
         </div>
         <div *ngIf="report.isSuccess()" class="ui compact row report-genDate">
-            <div class="three wide column">Datenstand:</div>
+            <div class="three wide column">Erstelldatum:</div>
             <div class="eight wide column">{{report.generationDate | date: 'mediumDate'}}</div>
         </div>
         <div class="ui compact row report-timespan">
