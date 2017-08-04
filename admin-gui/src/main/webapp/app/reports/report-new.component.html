@@ -14,7 +14,7 @@
                 <label>Berichtsart</label>
                 <select name="template" class="ui fluid dropdown template-select" [(ngModel)]="template" title="Bericht Templates">
                     <!--<option value="" disabled="disabled">bitte Auswählen</option>-->
-                    <option *ngFor="let tem of templates" [value]="tem.id" >{{tem.description}}</option>
+                    <option *ngFor="let tem of templates" [value]="tem.id" [selected]="template==tem.id" >{{tem.description}}</option>
                 </select>
             </div>
 
