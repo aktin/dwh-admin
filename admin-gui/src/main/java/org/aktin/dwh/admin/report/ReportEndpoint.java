@@ -18,9 +18,12 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
+import org.aktin.dwh.admin.auth.Secured;
 import org.aktin.report.ArchivedReport;
 import org.aktin.report.Report;
 import org.aktin.report.ReportArchive;
@@ -42,6 +45,9 @@ public class ReportEndpoint {
 	
 	@Inject
 	ReportArchive archive;
+
+	@Context 
+	private SecurityContext security;
 
 	/**
 	 * List all available report templates
@@ -72,6 +78,7 @@ public class ReportEndpoint {
 	 * @throws IOException IO error, report could not be created
 	 * @throws NotFoundException the given {@code templateId} was not found. 
 	 */
+	@Secured
 	@POST
 	@Path("{templateId}")
 	@Consumes({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
@@ -81,6 +88,7 @@ public class ReportEndpoint {
 		if( template == null ){
 			throw new NotFoundException("There is no template "+templateId);
 		}
+
 		// verify request contents
 		verifyRequest(template, request);
 		
@@ -88,9 +96,9 @@ public class ReportEndpoint {
 				Instant.ofEpochMilli(request.start.getTime()), 
 				Instant.ofEpochMilli(request.end.getTime())
 		);
-	
+		
 		// create in archive
-		ArchivedReport report = archive.addReport(info, "TODO:authuser");
+		ArchivedReport report = archive.addReport(info, security.getUserPrincipal().getName());
 		// generate report
 		try {
 			report.createAsync(manager);
@@ -114,6 +122,10 @@ public class ReportEndpoint {
 		}
 		if( request.end == null ){
 			throw new BadRequestException("End timestamp must be specified");
+		}
+		if( security == null || security.getUserPrincipal() == null ){
+			log.warning("No user authentication. Rejecting report generation!");	
+			throw new BadRequestException("User authentication missing");
 		}
 	}
 }
