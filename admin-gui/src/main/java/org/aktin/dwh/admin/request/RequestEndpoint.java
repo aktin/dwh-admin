@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.activation.DataSource;
 import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Consumes;
@@ -17,6 +18,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.SecurityContext;
 
 import org.aktin.broker.request.RequestManager;
@@ -61,6 +63,24 @@ public class RequestEndpoint {
 			throw new NotFoundException();
 		}
 		return wrap(req);
+	}
+
+	@Secured
+	@GET
+	@Path("{id}/result")
+	public Response getRequestResult(@PathParam("id") int id) throws IOException{
+		RetrievedRequest req = manager.getRequest(id);
+		if( req == null ){
+			throw new NotFoundException();
+		}
+		DataSource data = req.getResultData();
+		if( data == null ){
+			throw new NotFoundException();
+		}
+		ResponseBuilder b = Response.ok(data.getInputStream(), data.getContentType());
+		// attachment name
+		b.header("Content-Disposition", "inline; filename=\""+data.getName()+"\"");
+		return b.build();
 	}
 
 	@Secured
