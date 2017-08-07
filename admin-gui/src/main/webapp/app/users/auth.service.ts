@@ -54,7 +54,9 @@ export class AuthService {
         this._router.navigate(['']);
     }
     redirect2Route () {
-        this._router.navigate([this._store.getValue('route')]);
+        let url = this._store.getValue('route');
+        this._store.deleteValue('route');
+        this._router.navigate([url]);
     }
 
     userLogin ( username: string, password: string): Observable<User> {
