@@ -3,6 +3,10 @@
     cursor: pointer;
 }
 
+.request-status-bar-overview {
+    cursor: pointer;
+}
+
 .hidden {
     display: none !important;
 }
