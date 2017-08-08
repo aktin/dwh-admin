@@ -14,8 +14,10 @@ export class StorageService {
         return localStorage.getItem(key);
     }
 
-    deleteValue (key: string): void {
+    deleteValue (key: string): string {
+        let val = localStorage.getItem(key);
         localStorage.removeItem(key);
+        return val;
     }
 
     getTime (key: string): number {

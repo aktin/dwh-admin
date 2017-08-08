@@ -16,7 +16,7 @@ import { AppRoutingModule }     from './app-routing.module';
 import { AppComponent }         from './app.component';
 
 import { HomeComponent, TestComponent }                                             from './home/index';
-import { StorageService, UrlService, HttpInterceptorService,
+import { StorageService, UrlService, HttpInterceptorService, DownloadService, CleanUpAuthService,
             SafeUrlPipe, OrderByPipe,
             PopUpMessageComponent, LoadingComponent }                               from './helpers/index';
 import { UsersComponent, UserSingleComponent, UserSingleViewComponent, UserNewComponent, UserService,
@@ -73,7 +73,9 @@ import { RestrictedComponent }  from './restricted/restricted.component';
         Title,
         UrlService,
         StorageService,
+        CleanUpAuthService,
         HttpInterceptorService,
+        DownloadService,
         UserAuthGuard,
         AuthService,
         UserService,

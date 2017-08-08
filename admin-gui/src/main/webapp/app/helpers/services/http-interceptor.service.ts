@@ -8,12 +8,17 @@ import { Observable } from 'rxjs/Observable';
 import _ = require('underscore');
 
 import { StorageService } from './storage.service';
+import { CleanUpAuthService } from './clean-up-auth.service';
 
 @Injectable()
 export class HttpInterceptorService {
     private _dataInterval: 3000;
 
-    constructor(private _http: Http, private _store: StorageService) {
+    constructor(
+        private _http: Http,
+        private _store: StorageService,
+        private _cleanUp: CleanUpAuthService
+    ) {
     }
 
     request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
@@ -73,6 +78,10 @@ export class HttpInterceptorService {
         // In a real world app, you might use a remote logging infrastructure
         let errMsg: string;
         if (error instanceof Response) {
+            if (error.status === 401) {
+                this._cleanUp.cleanUpStorage('Sitzung abgelaufen. Bitte erneut anmelden');
+                this._cleanUp.redirect2Home();
+            }
             const body = error.text() || '';
             const err = /*body.error ||*/ JSON.stringify(body);
             errMsg = `${error.status} - ${error.statusText || ''} ${err}`;

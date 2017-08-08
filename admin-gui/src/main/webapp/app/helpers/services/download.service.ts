@@ -8,7 +8,7 @@ import { HttpInterceptorService } from './http-interceptor.service';
 import FileSaver = require('file-saver');
 
 @Injectable()
-export class UrlService {
+export class DownloadService {
     constructor(
         private _http: HttpInterceptorService,
     ) {}
@@ -16,6 +16,9 @@ export class UrlService {
         let headers = this._http.generateHeaderOptions('Accept', type);
         headers.responseType = ResponseContentType.Blob;
         this._http.get(url, headers).map(res => res.blob()).subscribe(blob => FileSaver(blob, filename),
-            error => console.log('Error downloading the file.'));
+            error => {
+                console.log('Error downloading the file.');
+                this._http.handleError(error);
+            });
     }
 }

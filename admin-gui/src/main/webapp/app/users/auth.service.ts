@@ -17,7 +17,7 @@ import 'rxjs/add/operator/combineLatest';
 
 import _ = require('underscore');
 
-import { StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
+import { StorageService, UrlService, HttpInterceptorService, CleanUpAuthService } from '../helpers/index';
 
 import { User } from './user';
 
@@ -31,37 +31,25 @@ import { User } from './user';
 @Injectable()
 export class AuthService {
 
-
     private _tokenValidTrustTime = 3000;
 
     constructor (
         private _http: HttpInterceptorService,
         private _urls: UrlService,
         private _store: StorageService,
-        private _router: Router
+        private _cleanUp: CleanUpAuthService,
     ) {}
 
-    private cleanUpStorage (): void {
-        let url = this._store.getValue('route');
-        this._store.clear();
-        this._store.setValue('route', url);
-    }
     redirect2Home (url?: string): void {
-        if (!url) {
-            url = this._router.url;
-        }
-        this._store.setValue('route', url);
-        this._router.navigate(['']);
+        return this._cleanUp.redirect2Home(url);
     }
     redirect2Route () {
-        let url = this._store.getValue('route');
-        this._store.deleteValue('route');
-        this._router.navigate([url]);
+        return this._cleanUp.redirect2Route();
     }
 
     userLogin ( username: string, password: string): Observable<User> {
         // console.log('login',  this._urls.parse('login'));
-        this.cleanUpStorage();
+        this._cleanUp.cleanUpStorage();
         return this._http.post(
             this._urls.parse('login'),
             {username: username, password: password}
@@ -86,13 +74,13 @@ export class AuthService {
             this._http.generateHeaderOptions('Content-Type', 'text/plain')
         ).map(res => {
             console.log('token valid for ' + res.text().split('=')[1].split('}')[0] + 'ms');
-            this.cleanUpStorage();
+            this._cleanUp.cleanUpStorage();
             return true;
         })
         // .catch(this._http.handleError)
         .finally(() => {
-            this.cleanUpStorage();
-            this.redirect2Home('');
+            this._cleanUp.cleanUpStorage();
+            this._cleanUp.redirect2Home('');
         });
     }
 
@@ -110,11 +98,11 @@ export class AuthService {
             }, (err: Response) => {
                 if (err.status === 401) {
                     // console.log('unauthorized');
-                    this.cleanUpStorage();
-                    this.redirect2Home();
+                    this._cleanUp.cleanUpStorage();
+                    this._cleanUp.redirect2Home();
                 }
-                this.cleanUpStorage();
-                this.redirect2Home();
+                this._cleanUp.cleanUpStorage();
+                this._cleanUp.redirect2Home();
                 return err;
             },
         );
@@ -133,8 +121,8 @@ export class AuthService {
             }, (err: Response) => {
                 if (err.status === 401) {
                     // console.log('unauthorized');
-                    this.cleanUpStorage();
-                    this.redirect2Home();
+                    this._cleanUp.cleanUpStorage();
+                    this._cleanUp.redirect2Home();
                 }
                 return err;
             },
@@ -158,7 +146,7 @@ export class AuthService {
             }, (err: Response) => {
                 if (err.status === 401) {
                     console.log('unauthorized in roles', err);
-                    // this.cleanUpStorage();
+                    // this._cleanUp.cleanUpStorage();
                 }
                 return err;
             },
@@ -205,7 +193,7 @@ export class AuthService {
         if (this.userLocalCheck()) {
             if (this._store.getValue('user.name') === null) {
                 // some thing went wrong. user name error. we will wipe it then
-                this.cleanUpStorage();
+                this._cleanUp.cleanUpStorage();
             }
             return new User (this._store.getValue('user.name'), this._store.getValue('user.token'));
         }
@@ -233,8 +221,8 @@ export class AuthService {
             if ( this._store.getValue('user.token') !== null ) {
                 return JSON.parse(this._store.getValue('user.admin')) || false;
             }
-            this.cleanUpStorage();
-            // this.redirect2Home();
+            this._cleanUp.cleanUpStorage();
+            // this._cleanUp.redirect2Home();
             return false;
         }
         if (_.contains(roles, 'LOGGEDIN')) {
