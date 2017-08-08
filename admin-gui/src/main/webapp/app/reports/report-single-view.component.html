@@ -10,7 +10,7 @@
     </div>
 
     <div class="actions">
-        <a *ngIf="report.isSuccess()" class="ui circular green icon button" href="{{report.url}}" title="Diesen Monatsbericht herunterladen">
+        <a *ngIf="report.isSuccess()" class="ui circular green icon button" href="{{report.url}}" title="Diesen Bericht herunterladen">
             <i class="cloud download icon"></i>
         </a>
         <a *ngIf="!single" class="ui circular icon button" routerLink="/report/{{report.id}}" title="Detailansicht des Berichts">
