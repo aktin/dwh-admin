@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 import { ResponseContentType } from '@angular/http';
 import { HttpInterceptorService } from './http-interceptor.service';
 
-import FileSaver = require('file-saver');
+import * as FileSaver from 'file-saver';
 
 @Injectable()
 export class DownloadService {
