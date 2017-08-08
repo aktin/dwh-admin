@@ -13,7 +13,7 @@ import { AuthService } from './auth.service';
 @Injectable()
 export class UserAuthGuard implements CanActivate {
 
-    constructor(private _router: Router, private _authService: AuthService) { }
+    constructor(private _authService: AuthService) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         // console.log ( route, state.url);
@@ -26,7 +26,6 @@ export class UserAuthGuard implements CanActivate {
             return this._authService.userRolesCheckFull(roles).map( hasRole => {
                     if (!hasRole) {
                         this._authService.redirect2Home(state.url);
-                        // this._router.navigate(['home']);
                     } return hasRole;
                 }
             );

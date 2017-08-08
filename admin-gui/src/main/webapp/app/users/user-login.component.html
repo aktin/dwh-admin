@@ -4,6 +4,9 @@
     <button class="ui submit button" type="submit" (click)="userLogout()">Logout</button>
 </div>
 <div *ngIf="!menu && ! hasUser" class="ui segment">
+    <div class="ui warning message" *ngIf="authMessages">
+        <div class="header">{{authMessages}}</div>
+    </div>
     <form class="ui form login-form" #loginForm="ngForm" (ngSubmit)="userLogin()" [ngClass]="logInFormClasses">
         <div class="ui error message">
             <div class="header">Log In fehlgeschlagen</div>

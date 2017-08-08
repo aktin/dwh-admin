@@ -4,9 +4,8 @@
 import { Component, Input } from '@angular/core';
 
 import { AuthService } from './auth.service';
-import { UrlService } from '../helpers/index';
+import { UrlService, StorageService } from '../helpers/index';
 import $ = require('jquery');
-import { Router } from '@angular/router';
 require('semantic-ui');
 
 @Component({
@@ -23,10 +22,16 @@ export class UserLoginComponent {
     loggingInState: string;
     private _hideSelect = true;
     private _messages: string[] = [];
+    authMessages: string;
 
     constructor (private _authService: AuthService,
-                 private _url: UrlService) {
+                 private _url: UrlService,
+                 private _store: StorageService) {
         this.serverUrl = this._url.serverUrl;
+        let msg = this._store.deleteValue('auth-messages');
+        if (msg) {
+            this.authMessages = msg;
+        }
     }
 
 
