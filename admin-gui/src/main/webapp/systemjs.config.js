@@ -28,6 +28,7 @@
             'rxjs':                       'npm:rxjs',
             'underscore':                 'npm:underscore/underscore-min.js',
             'jquery':                     'npm:jquery/jquery.slim.min.js',
+            'file-saver':                 'npm:file-saver/FileSaver.js',
             'semantic-ui':                'npm:semantic-ui/semantic.min.js'
         },
         // packages tells the System loader how to load when no filename and/or no extension
