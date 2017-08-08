@@ -15,8 +15,8 @@ require('semantic-ui');
 })
 export class UserLoginComponent {
     @Input () menu = false;
-    username = 'i2b2';
-    password = 'demouser';
+    username: string; // = 'i2b2';
+    password: string; // = 'demouser';
 
     serverUrl  = this._url.serverUrl;
     loggingInState: string;
