@@ -11,7 +11,7 @@ import _ = require('underscore');
 import FileSaver = require('file-saver');
 
 
-import { StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
+import { StorageService, UrlService, HttpInterceptorService, DownloadService } from '../helpers/index';
 import { LocalRequest, RequestMarker, RequestStatus } from './request';
 
 @Injectable()
@@ -20,6 +20,7 @@ export class RequestService {
 
     constructor(
         private _http: HttpInterceptorService,
+        private _download: DownloadService,
         private _urls: UrlService,
         private _store: StorageService,
         private _router: Router
@@ -130,15 +131,8 @@ export class RequestService {
     }
 
     downloadResultFile (requestId: number, result?: string) {
-        let headers = this._http.generateHeaderOptions('Accept', result);
-        headers.responseType = ResponseContentType.Blob;
-        this._http.get(this._urls.parse('requestResult', {requestId: requestId}), headers).map(res => res.blob()).subscribe(blob => {
-                let filename = 'aktin_anfragen_' + requestId + '_ergebnisse.zip';
-                let url = window.URL.createObjectURL(new Blob([blob], {type: result}));
-                FileSaver(blob, filename);
-            },
-            error => console.log('Error downloading the file.'));
-
-
+        this._download.get('aktin_anfragen_' + requestId + '_ergebnisse.zip',
+            result,
+            this._urls.parse('requestResult', {requestId: requestId}));
     }
 }

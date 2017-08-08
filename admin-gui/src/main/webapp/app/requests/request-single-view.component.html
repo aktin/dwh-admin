@@ -138,11 +138,6 @@
     </div>
     <div class="row ui segment" *ngIf="request.hasResultFile()">
         <div class="ten wide column header" >Ergebnisse: </div>
-        <!--<div class="two wide column actions right floated right aligned">
-            <a class="ui circular green icon button" href="{{request.url}}" download title="Die Ergebnisdatei herunterladen.">
-                <i class="cloud download icon"></i>
-            </a>
-        </div>-->
         <div class="two wide column actions right floated right aligned">
             <a class="ui circular green icon button"
                [ngClass]="{'disabled': downloadLoading }"

@@ -187,9 +187,7 @@ export class RequestSingleViewComponent  {
     downloadResult (): void {
         this.downloadLoading = true;
         this._requestService.downloadResultFile(this.requestData.requestId, this.requestData.result);
-        setTimeout(() => {
-            this.downloadLoading = false;
-        }, 500);
+        setTimeout(() => {this.downloadLoading = false;}, 500);
     }
 
 }
