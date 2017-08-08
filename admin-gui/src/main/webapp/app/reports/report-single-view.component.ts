@@ -3,6 +3,7 @@
  */
 import { Component, Input }     from '@angular/core';
 import { Report, ReportStatus } from './report';
+import { ReportService } from './report.service';
 
 @Component({
     selector: 'report-single-view',
@@ -13,8 +14,9 @@ import { Report, ReportStatus } from './report';
 export class ReportSingleViewComponent  {
     @Input() reportData: Report;
     @Input() single = false;
+    downloadLoading = false;
 
-    constructor() {}
+    constructor(private _reportService: ReportService) {}
 
     get report (): Report {
         return this.reportData;
@@ -26,5 +28,14 @@ export class ReportSingleViewComponent  {
             'report-success'    : this.report.status === ReportStatus.Completed,
             'report-failed'     : this.report.status !== ReportStatus.Completed,
         };
+    }
+
+    downloadResult (): void {
+        console.log(this.reportData);
+        this.downloadLoading = true;
+        this._reportService.downloadReportFile(this.reportData);
+        setTimeout(() => {
+            this.downloadLoading = false;
+        }, 500);
     }
 }

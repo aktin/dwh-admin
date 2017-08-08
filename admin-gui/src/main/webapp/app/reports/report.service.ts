@@ -10,7 +10,7 @@ import 'rxjs/add/operator/map';
 
 import _ = require('underscore');
 
-import { StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
+import { StorageService, UrlService, HttpInterceptorService, DownloadService } from '../helpers/index';
 import { Report, ReportTemplate } from './report';
 
 @Injectable()
@@ -21,7 +21,8 @@ export class ReportService {
     constructor(
         private _http: HttpInterceptorService,
         private _urls: UrlService,
-        private _store: StorageService
+        private _store: StorageService,
+        private _download: DownloadService
     ) {}
 
     private _updateReport (): void {
@@ -90,7 +91,6 @@ export class ReportService {
         return Report.parseObj(_.find(reports, (rep) => rep['id'] === id));
     }
 
-    // TODO add parameters for new reports
     newReportMonthly (): void {
         this._http.post(this._urls.parse('newMonthlyReport'), {}).catch(err => {return this._http.handleError(err); })
             .subscribe();
@@ -114,5 +114,9 @@ export class ReportService {
     getDefaultTemplate (): ReportTemplate {
         this._updateReportTemplates();
         return (JSON.parse(this._store.getValue('reports.templates')) || [])[0];
+    }
+
+    downloadReportFile (report: Report) {
+        this._download.get(report.name, 'application/pdf', report.url);
     }
 }
