@@ -7,6 +7,6 @@
     cursor: pointer;
 }
 
-.hidden {
+.hide-sql {
     display: none !important;
 }

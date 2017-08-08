@@ -132,7 +132,7 @@
                 <i class="icon" [ngClass]="hideSql?'eye':'hide'"></i>
             </div>
         </div>
-        <div class="sixteen wide column padded" [class.hidden]="hideSql">
+        <div class="sixteen wide column padded" [ngClass]="{'hide-sql': hideSql}">
             <pre>{{formatXml(request.query.query.extensions[0])}}</pre>
         </div>
     </div>
