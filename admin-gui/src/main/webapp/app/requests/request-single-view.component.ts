@@ -20,6 +20,7 @@ export class RequestSingleViewComponent  {
     @Input() popUp: PopUpMessageComponent = null;
     hideSql = true;
     hiddenLoading = false;
+    downloadLoading = false;
     options: string[];
 
     constructor(private _requestService: RequestService) {
@@ -183,5 +184,12 @@ export class RequestSingleViewComponent  {
             .replace(/\n/g, '<br />');
     }
 
+    downloadResult (): void {
+        this.downloadLoading = true;
+        this._requestService.downloadResultFile(this.requestData.requestId, this.requestData.result);
+        setTimeout(() => {
+            this.downloadLoading = false;
+        }, 500);
+    }
 
 }

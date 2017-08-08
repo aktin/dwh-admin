@@ -85,7 +85,8 @@ export class LocalRequest {
         public marker: RequestMarker,
         public status: RequestStatus,
         public autoSubmit: boolean,
-        public query: Request
+        public query: Request,
+        public result: string,
     ) {}
 
     public needAuthorization (): boolean {
@@ -101,7 +102,7 @@ export class LocalRequest {
     }
 
     public hasResultFile (): boolean {
-        return ([RequestStatus.Completed, RequestStatus.Submitted, RequestStatus.Sending].indexOf(this.status) >= 0);
+        return this.result !== null;
     }
 
     public failed (): boolean {

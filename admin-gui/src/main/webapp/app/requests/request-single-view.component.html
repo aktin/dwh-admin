@@ -114,8 +114,7 @@
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="ui meta sixteen wide column" *ngIf="false && request.hasResultFile()">Ergebnisse: Hier kommt dann der Link der Ergebnisse hin.</div>
+    <div class="row  ui segment">
         <div class="sixteen wide column">
             Beschreibung: <br/>
             {{request.query.query.description}}
@@ -130,14 +129,31 @@
                  (click)="hideSql = !hideSql;"
             >
                 {{hideSql? 'Abfragesyntax einblenden':'Abfragesyntax ausblenden'}}
-                <i class="icon" [ngClass]="hideSql?'plus':'minus'"></i>
+                <i class="icon" [ngClass]="hideSql?'eye':'hide'"></i>
             </div>
         </div>
         <div class="sixteen wide column padded" [class.hidden]="hideSql">
             <pre>{{formatXml(request.query.query.extensions[0])}}</pre>
         </div>
-        <!--<div class="sixteen wide column" [innerHtml]="escapeXml(formatXml(request.query.query.extensions[0]))">-->
-        <!--</div>-->
+    </div>
+    <div class="row ui segment" *ngIf="request.hasResultFile()">
+        <div class="ten wide column header" >Ergebnisse: </div>
+        <!--<div class="two wide column actions right floated right aligned">
+            <a class="ui circular green icon button" href="{{request.url}}" download title="Die Ergebnisdatei herunterladen.">
+                <i class="cloud download icon"></i>
+            </a>
+        </div>-->
+        <div class="two wide column actions right floated right aligned">
+            <a class="ui circular green icon button"
+               [ngClass]="{'disabled': downloadLoading }"
+               (click)="downloadResult()"
+               title="Die Ergebnisdatei herunterladen.">
+                <i class="download icon"></i>
+            </a>
+        </div>
+        <div class="sixteen wide column">
+
+        </div>
     </div>
 </div>
 

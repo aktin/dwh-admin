@@ -1,14 +1,15 @@
 /**
  * Created by Xu on 08-Jun-17.
  */
-import { Injectable }   from '@angular/core';
-import { Response }     from '@angular/http';
+import { Injectable } from '@angular/core';
+import { Response, ResponseContentType } from '@angular/http';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs/Subscription';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
 import _ = require('underscore');
+import FileSaver = require('file-saver');
+
 
 import { StorageService, UrlService, HttpInterceptorService } from '../helpers/index';
 import { LocalRequest, RequestMarker, RequestStatus } from './request';
@@ -126,5 +127,18 @@ export class RequestService {
             return status;
         }
         return this.updateStatus(requestId, newStatus, autoSubmit);
+    }
+
+    downloadResultFile (requestId: number, result?: string) {
+        let headers = this._http.generateHeaderOptions('Accept', result);
+        headers.responseType = ResponseContentType.Blob;
+        this._http.get(this._urls.parse('requestResult', {requestId: requestId}), headers).map(res => res.blob()).subscribe(blob => {
+                let filename = 'aktin_anfragen_' + requestId + '_ergebnisse.zip';
+                let url = window.URL.createObjectURL(new Blob([blob], {type: result}));
+                FileSaver(blob, filename);
+            },
+            error => console.log('Error downloading the file.'));
+
+
     }
 }
