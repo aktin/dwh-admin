@@ -18,7 +18,7 @@ export class RequestsComponent  {
 
     get stateFilterArray(): [string, RequestStatus|string][] {
         return [
-            [ 'Keine Filter', 'all' ],
+            [ 'Alle anzeigen', 'all' ],
             [ 'Aktion erforderlich', 'auth' ],
             [ 'Neue Anfragen', 'new' ],
             [ 'Gelöschte Anfragen', 'hidden' ],
