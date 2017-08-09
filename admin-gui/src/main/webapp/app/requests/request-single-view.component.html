@@ -26,6 +26,20 @@
     <div class="row">
         <request-status-bar [request]="request" [single]="true"></request-status-bar>
     </div>
+    <div class="row ui segment" *ngIf="request.hasResultFile()">
+        <div class="ten wide column header" >Ergebnisse: </div>
+        <div class="two wide column actions right floated right aligned">
+            <a class="ui circular green icon button"
+               [ngClass]="{'disabled': downloadLoading }"
+               (click)="downloadResult()"
+               title="Die Ergebnisdatei herunterladen.">
+                <i class="download icon"></i>
+            </a>
+        </div>
+        <div class="sixteen wide column">
+
+        </div>
+    </div>
     <div class="row ui warning message" *ngIf="request.needAuthorization()">
         <div class="two wide column">
             <i class="huge yellow warning sign icon"></i>
@@ -134,20 +148,6 @@
         </div>
         <div class="sixteen wide column padded" [ngClass]="{'hide-sql': hideSql}">
             <pre>{{formatXml(request.query.query.extensions[0])}}</pre>
-        </div>
-    </div>
-    <div class="row ui segment" *ngIf="request.hasResultFile()">
-        <div class="ten wide column header" >Ergebnisse: </div>
-        <div class="two wide column actions right floated right aligned">
-            <a class="ui circular green icon button"
-               [ngClass]="{'disabled': downloadLoading }"
-               (click)="downloadResult()"
-               title="Die Ergebnisdatei herunterladen.">
-                <i class="download icon"></i>
-            </a>
-        </div>
-        <div class="sixteen wide column">
-
         </div>
     </div>
 </div>
