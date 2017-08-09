@@ -10,3 +10,12 @@
 .hide-sql {
     display: none !important;
 }
+
+.request-result-button-text {
+    display: inline-block;
+    float: right;
+    margin-left: 15px;
+}
+.request-result-button-icon {
+    padding-top: 5px;
+}
