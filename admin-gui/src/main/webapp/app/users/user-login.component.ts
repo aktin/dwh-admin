@@ -59,7 +59,8 @@ export class UserLoginComponent {
             },
             error => {
                 console.error('error? ', error);
-                this._messages.push('Authentifizierungsfehler: ' + error);
+                // this._messages.push('Authentifizierungsfehler: ' + error);
+                this._messages.push('Authentifizierungsfehler! Bitte überprüfen Sie Ihre Eingaben!');
                 this.loggingInState = 'error';
             }
         );

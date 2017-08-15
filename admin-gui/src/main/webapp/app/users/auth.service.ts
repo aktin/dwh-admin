@@ -64,7 +64,9 @@ export class AuthService {
                 return user;
             }
             return Observable.throw('Authentication Error, status code: ' + res.status);
-        }).catch(this._http.handleError);
+        }).catch( (err) =>  {
+            return this._http.handleError(err);
+        });
     }
 
     userLogout (): Observable<boolean> {
