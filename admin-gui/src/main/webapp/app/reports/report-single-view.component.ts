@@ -30,6 +30,12 @@ export class ReportSingleViewComponent  {
         };
     }
 
+    get endDate () {
+        let next = new Date (this.reportData.timespan[1].getTime());
+        next.setDate(this.reportData.timespan[1].getDate() - 1);
+        return next;
+    }
+
     downloadResult (): void {
         console.log(this.reportData);
         this.downloadLoading = true;

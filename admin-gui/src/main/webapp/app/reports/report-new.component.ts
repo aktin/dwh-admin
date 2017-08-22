@@ -29,8 +29,10 @@ export class ReportNewComponent {
     }
     constructor(private _reportService: ReportService, private _router: Router) {
         let date = new Date();
+        let to = new Date();
         date.setDate(1);
-        this.toDate = this.date2String(date);
+        to.setDate(date.getDate() - 1);
+        this.toDate = this.date2String(to);
         date.setMonth(date.getMonth() - 1);
         this.fromDate = this.date2String(date);
     }
@@ -46,10 +48,12 @@ export class ReportNewComponent {
     generateReport(): void {
         let from = this.string2date(this.fromDate);
         let to =  this.string2date(this.toDate);
+        to.setDate(to.getDate() + 1);
         if (from >= to) {
             this.popUp.setData(true, 'Fehler beim Erzeugen des neuen Berichts',
                     'Bitte wählen Sie eine passende Zeitspanne von mindestens einem Tag aus!');
             to.setMonth(from.getMonth() + 1);
+            to.setDate(to.getDate() - 1);
             this.toDate = this.date2String(to);
             return;
         }
