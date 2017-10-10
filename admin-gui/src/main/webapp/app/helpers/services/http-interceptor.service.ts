@@ -109,6 +109,9 @@ export class HttpInterceptorService {
         if (this._store.getValue('user.token') /* && config.url === getUrl("/auth/login") */ ) {
             options.headers.set('Authorization', 'Bearer ' + this._store.getValue('user.token'));
         }
+        options.headers.append('Cache-Control', 'no-cache, no-store, must-revalidate');
+        options.headers.append('Pragma', 'no-cache');
+        options.headers.append('Expires', '0');
         return options;
     }
 }
