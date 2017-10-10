@@ -19,7 +19,7 @@
 </div>
 <div class="ui divider"></div>
 <div *ngIf="requests" class="">
-    <div class="ui vertical segment" *ngFor="let request of requests | requestFilter:stateFilter ">
+    <div class="ui vertical segment" *ngFor="let request of requests | requestFilter:stateFilter | orderBy: ['-requestId']">
         <div class="ui vertical basic segment request-single-view grid container" id="request-list-{{request.requestId}}">
             <div class="twelve wide column">
                 <div class="ui header request-single-view-header" [routerLink]="['/request', request.requestId]">

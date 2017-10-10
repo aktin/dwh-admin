@@ -6,17 +6,20 @@ import _ = require('underscore');
 
 @Injectable()
 export class StorageService {
+    myStore: Storage = localStorage;
+    // myStore: Storage = sessionStorage;
+
     setValue (key: string, value: string): void {
-        localStorage.setItem(key, value);
+        this.myStore.setItem(key, value);
     }
 
     getValue (key: string): string {
-        return localStorage.getItem(key);
+        return this.myStore.getItem(key);
     }
 
     deleteValue (key: string): string {
-        let val = localStorage.getItem(key);
-        localStorage.removeItem(key);
+        let val = this.myStore.getItem(key);
+        this.myStore.removeItem(key);
         return val;
     }
 
@@ -31,6 +34,6 @@ export class StorageService {
      * remove all data from storage. really clean then
      */
     clear (): void {
-        localStorage.clear();
+        this.myStore.clear();
     }
 }

@@ -32,7 +32,7 @@ export class ReportService {
             this._dataInterval,
             this._urls.parse('reportsList'),
             (res: Response) => {
-                // console.log(res);
+                // console.log(res.json());
                 return _.map(res.json(), rawRep => {
                     return Report.parseObj(rawRep, this._urls.parse('reportsList'));
                 });
@@ -72,7 +72,6 @@ export class ReportService {
     }
 
     getReports (): Report[] {
-
         this._updateReport();
         return _.map(JSON.parse(this._store.getValue('reports.data')), rep => { return Report.parseObj(rep); } );
     }
