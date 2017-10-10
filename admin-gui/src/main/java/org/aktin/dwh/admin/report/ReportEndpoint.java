@@ -24,6 +24,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 
 import org.aktin.dwh.admin.auth.Secured;
+import org.aktin.dwh.admin.filter.NoCache;
 import org.aktin.report.ArchivedReport;
 import org.aktin.report.Report;
 import org.aktin.report.ReportArchive;
@@ -54,6 +55,7 @@ public class ReportEndpoint {
 	 * @return report templates
 	 */
 	@GET
+	@NoCache
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<ReportTemplate> getTemplates(){
