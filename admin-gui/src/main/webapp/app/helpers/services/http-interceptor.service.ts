@@ -26,7 +26,12 @@ export class HttpInterceptorService {
     }
 
     get(url: string, options?: RequestOptionsArgs): Observable<Response> {
-        return this._http.get(url, this.getRequestOptionArgs(options));
+        let opts = this.getRequestOptionArgs(options);
+        if (!opts.params) {
+            opts.params = {};
+        }
+        opts.params['time'] = Math.floor( (+new Date()) / 1000);
+        return this._http.get(url, opts);
     }
 
     post(url: string, body: string | any, options?: RequestOptionsArgs): Observable<Response> {
@@ -109,9 +114,9 @@ export class HttpInterceptorService {
         if (this._store.getValue('user.token') /* && config.url === getUrl("/auth/login") */ ) {
             options.headers.set('Authorization', 'Bearer ' + this._store.getValue('user.token'));
         }
-        options.headers.append('Cache-Control', 'no-cache, no-store, must-revalidate');
-        options.headers.append('Pragma', 'no-cache');
-        options.headers.append('Expires', '0');
+        // options.headers.append('Cache-Control', 'no-cache, no-store, must-revalidate');
+        // options.headers.append('Pragma', 'no-cache');
+        // options.headers.append('Expires', '0');
         return options;
     }
 }
