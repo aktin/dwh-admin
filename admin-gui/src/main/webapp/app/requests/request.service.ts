@@ -16,7 +16,7 @@ import { LocalRequest, RequestMarker, RequestStatus } from './request';
 
 @Injectable()
 export class RequestService {
-    private _dataInterval = 300;
+    private _dataInterval = 3000;
 
     constructor(
         private _http: HttpInterceptorService,
