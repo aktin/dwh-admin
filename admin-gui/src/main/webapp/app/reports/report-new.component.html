@@ -33,6 +33,22 @@
                     </div>
             </div>
 
+
+            <div class="two fields">
+                <div class="field">
+                    <label>Startdatum</label>
+                    <div class="ui input">
+                        <my-date-picker name="fromDateMDP" [options]="fromDPOptions" [(ngModel)]="fromDateModel" required></my-date-picker>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Enddatum</label>
+                    <div class="ui input">
+                        <my-date-picker name="toDateMDP" [options]="toDPOptions" [(ngModel)]="toDateModel" required></my-date-picker>
+                    </div>
+                </div>
+            </div>
+
             <button class="ui fluid large submit button" type="submit">
                 Erzeugen
             </button>

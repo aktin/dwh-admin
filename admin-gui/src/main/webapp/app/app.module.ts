@@ -5,15 +5,15 @@
  *  register components and import additional modules
  */
 
-import { NgModule }             from '@angular/core';
-import { BrowserModule, Title }        from '@angular/platform-browser';
-import { FormsModule }          from '@angular/forms';
-import { HttpModule, JsonpModule } from '@angular/http';
-import { LOCALE_ID }            from '@angular/core';
+import { NgModule, LOCALE_ID }          from '@angular/core';
+import { BrowserModule, Title }         from '@angular/platform-browser';
+import { FormsModule }                  from '@angular/forms';
+import { HttpModule, JsonpModule }      from '@angular/http';
 
-import { AppRoutingModule }     from './app-routing.module';
+import { MyDatePickerModule }           from 'mydatepicker';
 
-import { AppComponent }         from './app.component';
+import { AppRoutingModule }             from './app-routing.module';
+import { AppComponent }                 from './app.component';
 
 import { HomeComponent, TestComponent }                                             from './home/index';
 import { StorageService, UrlService, HttpInterceptorService, DownloadService, CleanUpAuthService,
@@ -37,6 +37,7 @@ import { RestrictedComponent }  from './restricted/restricted.component';
         FormsModule,
         HttpModule,
         JsonpModule,
+        MyDatePickerModule,
     ],
     declarations: [
         AppComponent,
