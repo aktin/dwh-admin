@@ -26,6 +26,7 @@ import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.Marker;
 import org.aktin.broker.request.RetrievedRequest;
 import org.aktin.dwh.admin.auth.Secured;
+import org.aktin.dwh.admin.filter.NoCache;
 
 @Path("request")
 public class RequestEndpoint {
@@ -39,6 +40,7 @@ public class RequestEndpoint {
 	 * @return generated reports
 	 */
 	@GET
+	@NoCache
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Request> getRequests(){
 		// TODO allow ordering via query param

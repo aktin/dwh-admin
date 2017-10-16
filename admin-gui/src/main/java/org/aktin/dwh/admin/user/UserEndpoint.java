@@ -20,6 +20,7 @@ import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.admin.I2b2Authentication;
 import org.aktin.dwh.admin.auth.Secured;
+import org.aktin.dwh.admin.filter.NoCache;
 
 import de.sekmi.li2b2.client.FormattedMessageLogger;
 import de.sekmi.li2b2.client.Li2b2Client;
@@ -69,6 +70,7 @@ public class UserEndpoint {
 	 */
 	@Secured
 	@GET
+	@NoCache
 	@Produces(MediaType.APPLICATION_JSON)
 	public User[] getUsers() throws IOException, HiveException{
 		return initializeLi2b2Client().PM().getUsers();
