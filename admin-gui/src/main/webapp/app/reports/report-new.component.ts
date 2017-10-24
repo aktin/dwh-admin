@@ -4,7 +4,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
-import {IMyDpOptions} from 'mydatepicker';
+import { IMyDateModel, IMyDpOptions } from 'mydatepicker';
 
 import { PopUpMessageComponent } from '../helpers/index';
 import { ReportTemplate } from './report';
@@ -19,9 +19,24 @@ require('semantic-ui');
 })
 export class ReportNewComponent {
 
-    defaultDPOptiones: IMyDpOptions = {
+    template: string;
+
+    from:  Date;
+    to: Date;
+
+    fromDate: string;
+    toDate: string;
+
+    fromDateModel: any = { date: this.formulateDate4DP(new Date()) };
+    toDateModel: any = { date: this.formulateDate4DP(new Date()) };
+
+    fromDPOptions: IMyDpOptions;
+    toDPOptions: IMyDpOptions;
+
+    defaultDPOptions: IMyDpOptions = {
         dayLabels: {su: 'So', mo: 'Mo', tu: 'Di', we: 'Mi', th: 'Do', fr: 'Fr', sa: 'Sa'},
-        monthLabels: { 1: 'Jan', 2: 'Feb', 3: 'Mär', 4: 'Apr', 5: 'Mai', 6: 'Jun', 7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Okt', 11: 'Nov', 12: 'Dez' },
+        monthLabels: { 1: 'Jan', 2: 'Feb', 3: 'Mär', 4: 'Apr', 5: 'Mai', 6: 'Jun',
+            7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Okt', 11: 'Nov', 12: 'Dez' },
         showTodayBtn: false,
         editableDateField: false,
         inline: false,
@@ -30,24 +45,16 @@ export class ReportNewComponent {
         disableSince: this.formulateDate4DP(new Date()),
     };
 
-    fromDPOptions: IMyDpOptions;
-    toDPOptions: IMyDpOptions;
-
-    fromDateModel: any = { date: this.formulateDate4DP(new Date()) };
-    toDateModel: any = { date: this.formulateDate4DP(new Date()) };
-
-    template: string;
-    fromDate: string;
-    toDate: string;
-
-    from:  Date;
-    to: Date;
-
     @ViewChild(PopUpMessageComponent) popUp: PopUpMessageComponent;
 
     private formulateDate4DP (d: Date): any {
         return {year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate()};
     }
+
+    private DP2date (s: any): Date {
+        return new Date(s.year, s.month - 1, s.day);
+    }
+
     private date2String (d: Date): string {
         return d.toISOString().split('T')[0];
     }
@@ -70,10 +77,19 @@ export class ReportNewComponent {
         this.fromDateModel.date = this.formulateDate4DP(date);
         this.from = date;
 
-        this.fromDPOptions = this.defaultDPOptiones;
-        this.toDPOptions = this.defaultDPOptiones;
+        this.fromDPOptions = this.defaultDPOptions;
+        this.toDPOptions = this.defaultDPOptions;
 
         // this.toDPOptions.disableUntil = this.formulateDate4DP(date);
+    }
+
+    onFromDateChanged(event: IMyDateModel) {
+        this.fromDateModel.date = event.date;
+        // event properties are: event.date, event.jsdate, event.formatted and event.epoc
+    }
+
+    onToDateChanged(event: IMyDateModel) {
+        this.toDateModel.date = event.date;
     }
 
     get templates(): ReportTemplate[] {
@@ -84,8 +100,11 @@ export class ReportNewComponent {
     }
 
     generateReport(): void {
-        let from = this.string2date(this.fromDate);
-        let to =  this.string2date(this.toDate);
+        // let from = this.string2date(this.fromDate);
+        // let to =  this.string2date(this.toDate);
+        let from = this.DP2date(this.fromDateModel.date);
+        let to = this.DP2date(this.toDateModel.date);
+
         to.setDate(to.getDate() + 1);
         if (from >= to) {
             this.popUp.setData(true, 'Fehler beim Erzeugen des neuen Berichts',
