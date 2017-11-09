@@ -21,12 +21,6 @@ export class ReportNewComponent {
 
     template: string;
 
-    from:  Date;
-    to: Date;
-
-    fromDate: string;
-    toDate: string;
-
     fromDateModel: any = { date: this.formulateDate4DP(new Date()) };
     toDateModel: any = { date: this.formulateDate4DP(new Date()) };
 
@@ -55,12 +49,6 @@ export class ReportNewComponent {
         return new Date(s.year, s.month - 1, s.day);
     }
 
-    private date2String (d: Date): string {
-        return d.toISOString().split('T')[0];
-    }
-    private string2date (s: string): Date {
-        return new Date(s + 'T00:00:00');
-    }
 
     constructor(private _reportService: ReportService, private _router: Router) {
         let date = new Date();
@@ -68,14 +56,10 @@ export class ReportNewComponent {
 
         date.setDate(1);
         to.setDate(date.getDate() - 1);
-        this.toDate = this.date2String(to);
         this.toDateModel.date = this.formulateDate4DP(to);
-        this.to = to;
 
         date.setMonth(date.getMonth() - 1);
-        this.fromDate = this.date2String(date);
         this.fromDateModel.date = this.formulateDate4DP(date);
-        this.from = date;
 
         this.fromDPOptions = this.defaultDPOptions;
         this.toDPOptions = this.defaultDPOptions;
@@ -100,8 +84,6 @@ export class ReportNewComponent {
     }
 
     generateReport(): void {
-        // let from = this.string2date(this.fromDate);
-        // let to =  this.string2date(this.toDate);
         let from = this.DP2date(this.fromDateModel.date);
         let to = this.DP2date(this.toDateModel.date);
 
@@ -111,27 +93,12 @@ export class ReportNewComponent {
                     'Bitte wählen Sie eine passende Zeitspanne von mindestens einem Tag aus!');
             to.setMonth(from.getMonth() + 1);
             to.setDate(to.getDate() - 1);
-            this.toDate = this.date2String(to);
+            this.toDateModel.date = this.formulateDate4DP(to);
             return;
         }
         this._reportService.newReport(this.template, from, to);
         this.popUp.setData(true, 'Neuer Bericht',
                     'Neuer ' + this.template + ' wird erzeugt und im Übersicht angezeigt.',
                     () => {this._router.navigate(['/report'])} );
-    }
-
-    get maxFromDate(): string {
-        let today = new Date();
-        let max = this.toDate;
-        today.setHours(0);
-
-        if (today > this.string2date(this.toDate)) {
-            max = this.date2String(today);
-        }
-        return max;
-    }
-
-    get maxToDate(): string {
-        return this.date2String(new Date());
     }
 }
