@@ -22,7 +22,7 @@ export class FileSingleComponent implements OnInit {
         this._route.params
             .map((params: Params) => {
             this.patId = +params['id'];
-                return this._fileService.getReport(+params['id']);
+                return this._fileService.getCDAFile(+params['id']);
             }).subscribe(
                 file => {
                     this.file = file;
