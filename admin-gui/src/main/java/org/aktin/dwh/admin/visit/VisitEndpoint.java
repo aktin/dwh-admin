@@ -1,5 +1,6 @@
 package org.aktin.dwh.admin.visit;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
@@ -10,6 +11,7 @@ import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -38,15 +40,22 @@ public class VisitEndpoint {
 	@Inject
 	private Preferences prefs;
 
+
+	/**
+	 * Perform an asynchronous GET operation with encounter IDE as stored in
+	 * the i2b2 encounter_mapping table.
+	 * @param encounter {@code encounter_ide} as stored in i2b2's encounter_mapping table 
+	 * @param xslt optional XSLT transformation. {@code null} for identity transform.
+	 * @param response asynchronous response object to retrieve the results
+	 */
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
-	@Path("{root}/{ext}")
-	public void asyncGet(
-			@PathParam("root") String visitRoot, 
-			@PathParam("ext") String visitExt, 
+	public void asyncGetByPseudonym(
+			@QueryParam("eide") String encounter, 
 			@QueryParam("xslt") String xslt,
 			@Suspended AsyncResponse response)
 	{
+		Objects.requireNonNull(encounter);
 		final URL res;
 		if( xslt == null ){
 			res = null;
@@ -59,9 +68,14 @@ public class VisitEndpoint {
 				return;
 			}
 		}
-		String encounter = anonymizer.calculateEncounterPseudonym(visitRoot, visitExt);
-		log.info("Asynchronous GET delegated");
-		CompletableFuture<Document> doc = extractor.extractEncounterXML(encounter, EAV_ROOT);
+		log.info("Asynchronous GET delegated for encounter_ide="+encounter);
+		CompletableFuture<Document> doc;
+		try {
+			doc = extractor.extractEncounterXML(encounter, EAV_ROOT);
+		} catch ( FileNotFoundException e ) {
+			response.resume(new NotFoundException(e));
+			return;
+		}
 		doc.whenComplete( (d,t) -> {
 			if( t != null ){
 				log.log(Level.WARNING, "Asynchronous GET terminated exceptionally", t);
@@ -84,6 +98,19 @@ public class VisitEndpoint {
 		});
 	}
 
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	@Path("{root}/{ext}")
+	public void asyncGet(
+			@PathParam("root") String visitRoot, 
+			@PathParam("ext") String visitExt, 
+			@QueryParam("xslt") String xslt,
+			@Suspended AsyncResponse response)
+	{
+		String encounter = anonymizer.calculateEncounterPseudonym(visitRoot, visitExt);
+		asyncGetByPseudonym(encounter, xslt, response);
+	}
+	
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("{ext}")
