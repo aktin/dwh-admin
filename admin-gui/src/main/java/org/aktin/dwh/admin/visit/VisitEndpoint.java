@@ -40,6 +40,9 @@ public class VisitEndpoint {
 	@Inject
 	private Preferences prefs;
 
+	private URL lookupResourceXSLT(String name){
+		return getClass().getResource("/xslt/"+name+".xslt");
+	}
 
 	/**
 	 * Perform an asynchronous GET operation with encounter IDE as stored in
@@ -60,7 +63,7 @@ public class VisitEndpoint {
 		if( xslt == null ){
 			res = null;
 		}else{
-			res = getClass().getResource(xslt);
+			res = lookupResourceXSLT(xslt);
 			if( res == null ){
 				String warn = "Unknown xslt resource: "+xslt;
 				log.warning(warn);
@@ -81,7 +84,8 @@ public class VisitEndpoint {
 				log.log(Level.WARNING, "Asynchronous GET terminated exceptionally", t);
 				response.resume(t);
 			}else if( d != null ){
-				log.info("Asynchronous GET completed");
+				log.info("Asynchronous GET completed ["+d.getDocumentElement().getNamespaceURI()+"]:"+d.getDocumentElement().getLocalName());
+				
 				if( res != null ){
 					// transform
 					VisitTransformer vt = new VisitTransformer(res);
@@ -120,7 +124,7 @@ public class VisitEndpoint {
 			@Suspended AsyncResponse response)
 	{
 		String visitRoot = prefs.get(PreferenceKey.cdaEncounterRootPreset);
-		Objects.requireNonNull(visitRoot);
+		Objects.requireNonNull(visitRoot,"no preference for "+PreferenceKey.cdaEncounterRootPreset);
 		asyncGet(visitRoot, visitExt, response);
 	}
 
