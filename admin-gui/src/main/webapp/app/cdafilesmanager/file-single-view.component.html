@@ -1,12 +1,11 @@
 <div class="ui divider"></div>
 <div
-    class="ui basic segment report-single-view container"
-    id="report-list-{{report.id}}"
-    [ngClass]="reportClass"
-    *ngIf="report"
+    class="ui basic segment cdafile-single-view container"
+    id="cdafile-list-{{file.id}}"
+    *ngIf="file"
 >
-    <div class="ui header request-single-view-header" [class.small]="!report.isSuccess()" routerLink="/report/{{report.id}}">
-        {{report.name}}
+    <div class="ui header request-single-view-header" routerLink="/file/{{file.id}}">
+        {{file.id}}
     </div>
 
     <div class="actions">
