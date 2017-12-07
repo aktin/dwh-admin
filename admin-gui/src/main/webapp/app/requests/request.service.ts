@@ -10,13 +10,15 @@ import 'rxjs/add/operator/map';
 import _ = require('underscore');
 import FileSaver = require('file-saver');
 
-
 import { StorageService, UrlService, HttpInterceptorService, DownloadService } from '../helpers/index';
 import { LocalRequest, RequestMarker, RequestStatus } from './request';
+import Timer = NodeJS.Timer;
 
 @Injectable()
 export class RequestService {
     private _dataInterval = 3000;
+    private _updateTimer: Timer;
+    private _updateTimerToggle = false;
 
     constructor(
         private _http: HttpInterceptorService,
@@ -33,6 +35,7 @@ export class RequestService {
             this._dataInterval,
             this._urls.parse('requestList'),
             (res: Response) => {
+                console.log('updating requests');
                 return res.text();
             }, (err: Response) => {
                 return err;
@@ -47,14 +50,51 @@ export class RequestService {
         );
     }
 
-    getRequests (): LocalRequest[] {
+
+    private _updateRequest (requestId: number, index: number, value: LocalRequest): void {
+        this._http.debouncedGet<LocalRequest>(
+            'request.' + requestId,
+            value, null,
+            this._dataInterval,
+            this._urls.parse('request', {requestId: requestId}),
+            (res: Response) => {
+                console.log('updating request ', index);
+                return JSON.parse(res.text());
+            }, (err: Response) => {
+                return err;
+            }
+        ).subscribe(
+            (req: LocalRequest) => {
+                if (req) {
+                    let reqs = JSON.parse(this._store.getValue('requests.data'));
+                    reqs[index] = req;
+                    this._store.setValue('requests.data', JSON.stringify(reqs));
+                }
+            },
+            error => console.log(error)
+        );
+    }
+
+    getRequests (init = true): LocalRequest[] {
         this._updateRequests();
+
+        /*if (init || ! this._updateTimerToggle) {
+            console.log('set new timer');
+            clearTimeout(this._updateTimer);
+            this._updateTimerToggle = true;
+            this._updateTimer = setTimeout(() => {
+                this._updateTimerToggle = false;
+                this.getRequests(false);
+            }, this._dataInterval);
+        }*/
+
         return _.map(JSON.parse(this._store.getValue('requests.data')),
                                     req => LocalRequest.parseRequest(req));
     }
 
-    getRequest (requestId: number = -1): LocalRequest {
-        let requests: LocalRequest[] = this.getRequests();
+    getRequest (requestId = -1): LocalRequest {
+        let requests: LocalRequest[] = _.map(JSON.parse(this._store.getValue('requests.data')),
+                                    req => LocalRequest.parseRequest(req));
 
         if (!requests) {
             return null;
@@ -63,7 +103,9 @@ export class RequestService {
             requestId = requests.length - 1;
         }
 
-        let request = _.find(requests, (req) => req.requestId === requestId);
+        let index = _.findIndex(requests, (req) => req.requestId === requestId);
+        // let request = _.find(requests, (req) => req.requestId === requestId);
+        let request = requests[index];
 
         if (request && request.status === RequestStatus.Retrieved) {
             request.status = this.authorizeRequest(
@@ -71,8 +113,15 @@ export class RequestService {
                 request.status,
                 true);
         }
-
+        console.log('get requests from storage');
+        this._updateRequest(requestId, index, request);
         return request;
+    }
+
+    clearUpdate () {
+        console.log('call clear timer');
+        // this._requestService.unbind();
+        clearTimeout(this._updateTimer);
     }
 
     updateMarker (requestId: number, marker: RequestMarker): void {
