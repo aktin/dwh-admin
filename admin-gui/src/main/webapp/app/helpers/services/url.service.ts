@@ -42,6 +42,10 @@ export class UrlService {
         setRequestStatus: 'request/@requestId@/status/@status@',
         setRequestMarker: 'request/@requestId@/marker/@marker@',
         updateRequestMarker: 'request/@requestId@/marker', // put / delete
+
+        // visitList : 'files',
+        visit : 'visit/@root@/@id@',
+        visitEide : 'visit/',
     };
 
     setServerUrl (serverUrl: string) {

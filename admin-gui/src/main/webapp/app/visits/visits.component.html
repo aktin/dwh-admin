@@ -1,0 +1,44 @@
+<div class="ui grid">
+    <div class="row">
+        <div class="ui breadcrumb">
+            <div class="active section breadcrumb-header">Visits</div>
+        </div>
+    </div>
+
+    <div class="ui segment row">
+        <form class="ui form search-visit-form sixteen wide column" #searchVisitForm="ngForm" (ngSubmit)="search()">
+
+            <div class="two fields">
+                <div class="field">
+                    <label>ROOT</label>
+                    <div class="ui input">
+                        <input name="root" type="text" placeholder="ROOT" [(ngModel)]="root" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>encounterId</label>
+                    <div class="ui input">
+                        <input name="encounterId" type="text" placeholder="encounterId" [(ngModel)]="encounterId" required>
+                    </div>
+                </div>
+            </div>
+
+            <button class="ui fluid large submit button" type="submit">
+                Erzeugen
+            </button>
+
+        </form>
+    </div>
+
+    <div class="ui row" *ngIf="visit">
+        <div class="sixteen wide column">
+            {{visit.root}} // {{visit.encounterId}}
+        </div>
+        <div class="sixteen wide column">
+            <pre style="overflow-wrap: break-word;  white-space: pre-wrap; word-wrap: break-word;">
+                {{visit.xml}}
+            </pre>
+        </div>
+    </div>
+</div>
+

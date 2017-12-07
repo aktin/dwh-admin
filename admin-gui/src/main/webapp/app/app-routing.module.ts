@@ -14,6 +14,7 @@ import { UsersComponent, UserSingleComponent, UserNewComponent,
         UserLoginComponent, UserAuthGuard } from './users/index';
 import { ReportsComponent, ReportSingleComponent, ReportNewComponent } from './reports/index';
 import { PreferencesComponent }  from './preferences/index';
+import { VisitsComponent }  from './visits/index';
 import { RequestsComponent, RequestSingleComponent }     from './requests/index';
 import { StatusComponent }       from './status/index';
 
@@ -79,6 +80,17 @@ const routes: Routes = [// array of routes
         component: PreferencesComponent,
         data : {
             name : 'Konfigurationen',
+            roles : [
+                'LOGGEDIN',
+            ],
+        },
+    },
+    {
+        path: 'visits',
+        canActivate: [UserAuthGuard],
+        component: VisitsComponent,
+        data : {
+            name : 'Visits',
             roles : [
                 'LOGGEDIN',
             ],
