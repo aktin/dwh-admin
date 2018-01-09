@@ -24,7 +24,6 @@
 		<xsl:call-template name="eav_metadata"/>
 		<xsl:call-template name="eav_patientdata"/>
 		<xsl:apply-templates select="e:encounter"/>
-		<!-- TODO call other blocks -->
 	</xsl:template>
 
 	<xsl:template match="e:encounter">
@@ -33,11 +32,13 @@
 		<xsl:call-template name="eav_complaint"/>
 		<xsl:call-template name="eav_vitals"/>
 		<!-- TODO call other blocks -->
+		<!-- other_baseinformation
+		diagnosis
+		weiteres vorgehen
+		weitere module
+
+		zeiten? -->
+
 	</xsl:template>
-
-	
-
-
-	<!-- ... more blocks ... -->
 
 </xsl:stylesheet>
