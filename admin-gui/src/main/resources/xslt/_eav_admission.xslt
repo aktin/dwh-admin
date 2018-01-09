@@ -21,48 +21,52 @@
 	</xsl:template>
 	
 	<!-- Zuweisung -->
-	<xsl:template match="e:fact[@concept='AKTIN:REFERRAL:VAP']">
-		Vertragsarzt/Praxis
+	<xsl:template match="e:fact[starts-with(@concept,'AKTIN:REFERRAL:')]">
+		<xsl:if test="@concept='AKTIN:REFERRAL:VAP'">
+			Vertragsarzt/Praxis
+		</xsl:if>
+		<xsl:if test="@concept='AKTIN:REFERRAL:KVNPIK'">
+			KV-Notfallpraxis am Krankenhaus
+		</xsl:if>
+		<xsl:if test="@concept='AKTIN:REFERRAL:KVNDAK'">
+			KV-Notdienst außerhalb des Krankenhauses
+		</xsl:if>
+		<xsl:if test="@concept='AKTIN:REFERRAL:RD'">
+			Rettungsdienst
+		</xsl:if>
+		<xsl:if test="@concept='AKTIN:REFERRAL:NA'">
+			Notarzt
+		</xsl:if>
+		<xsl:if test="@concept='AKTIN:REFERRAL:KLINV'">
+			Klinik/Verlegung
+		</xsl:if>
+		<xsl:if test="@concept='AKTIN:REFERRAL:NPHYS'">
+			Zuweisung nicht durch Arzt
+		</xsl:if>
+		<xsl:if test="@concept='AKTIN:REFERRAL:OTH'">
+			Andere
+		</xsl:if>
 	</xsl:template>
-	<xsl:template match="e:fact[@concept='AKTIN:REFERRAL:VAP']">
-		KV-Notfallpraxis am Krankenhaus
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='AKTIN:REFERRAL:KVNDAK']">
-		KV-Notdienst außerhalb des Krankenhauses
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='AKTIN:REFERRAL:RD']">
-		Rettungsdienst
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='AKTIN:REFERRAL:NA']">
-		Notarzt
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='AKTIN:REFERRAL:KLINV']">
-		Klinik/Verlegung
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='AKTIN:REFERRAL:NPHYS']">
-		Zuweisung nicht durch Arzt
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='AKTIN:REFERRAL:OTH']">
-		Andere
-	</xsl:template>
-
-	<!-- TODO more referral templates -->
-	<xsl:template match="e:fact[@concept='AKTIN:TRANSPORT:NA']">
-		Ohne
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='AKTIN:TRANSPORT:1']">
-		KTW
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='AKTIN:TRANSPORT:2']">
-		RTW
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='AKTIN:TRANSPORT:3']">
-		NAW/NEF/ITW
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='AKTIN:TRANSPORT:4']">
-		RTH/ITH
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='AKTIN:TRANSPORT:OTH']">
-		Andere
+	
+	<!-- Transport -->
+	<xsl:template match="e:fact[starts-with(@concept,'AKTIN:TRANSPORT:')]">
+		<xsl:if test="@concept='AKTIN:TRANSPORT:NA'">
+			Ohne
+		</xsl:if>
+		<xsl:if test="@concept='AKTIN:TRANSPORT:1'">
+			KTW
+		</xsl:if>
+		<xsl:if test="@concept='AKTIN:TRANSPORT:2'">
+			RTW
+		</xsl:if>
+		<xsl:if test="@concept='AKTIN:TRANSPORT:3'">
+			NAW/NEF/ITW
+		</xsl:if>
+		<xsl:if test="@concept='AKTIN:TRANSPORT:4'">
+			RTH/ITH
+		</xsl:if>
+		<xsl:if test="@concept='AKTIN:TRANSPORT:OTH'">
+			Andere
+		</xsl:if>
 	</xsl:template>
 </xsl:stylesheet>
