@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="basis1.xslt"?>
+<?xml-stylesheet type="text/xsl" href="eav2detailslist.xslt"?>
 <eav-data xmlns="http://sekmi.de/histream/ns/eav-data"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <meta>
