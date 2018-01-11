@@ -9,6 +9,10 @@
 	<xsl:include href="_eav_admission.xslt"/>
 	<xsl:include href="_eav_complaint.xslt"/>
 	<xsl:include href="_eav_vitals.xslt"/>
+	<xsl:include href="_eav_baseinfo.xslt"/>
+	<xsl:include href="_eav_diagnosis.xslt"/>
+	<xsl:include href="_eav_finale.xslt"/>
+	<xsl:include href="_eav_modules.xslt"/>
 
 	<xsl:template match="/">
 		<html>
@@ -31,14 +35,10 @@
 		<xsl:call-template name="eav_admission"/>
 		<xsl:call-template name="eav_complaint"/>
 		<xsl:call-template name="eav_vitals"/>
-		<!-- TODO call other blocks -->
-		<!-- other_baseinformation
-		diagnosis
-		weiteres vorgehen
-		weitere module
-
-		zeiten? -->
-
+		<xsl:call-template name="eav_baseinfo"/>
+		<xsl:call-template name="eav_diagnosis"/>
+		<xsl:call-template name="eav_finale"/>
+		<xsl:call-template name="eav_modules"/>
 	</xsl:template>
 
 </xsl:stylesheet>

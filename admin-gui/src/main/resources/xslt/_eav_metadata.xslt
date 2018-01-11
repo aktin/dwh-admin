@@ -18,6 +18,23 @@
 
 				<dt>Patienten Id</dt>
 				<dd><xsl:value-of select="@id"/></dd>
+
+				<dt>Aufnahmezeitpunkt</dt>
+				<dd><xsl:value-of select="e:encounter/e:start"/></dd>
+
+				<dt>Zeitpunkt der Ersteinschätzung</dt>
+				<dd>
+					<xsl:value-of select="e:encounter/e:fact[starts-with(@concept,'MTS:') or starts-with(@concept,'ESI:') or starts-with(@concept,'AKTIN:ASSESSMENT:')]/@start"/>
+				</dd>
+
+				<dt>Erster Arztkontakt</dt>
+				<dd><xsl:value-of select="e:encounter/e:fact[@concept='AKTIN:PHYSENCOUNTER']/@start"/></dd>
+
+				<dt>Beginn der Therapie</dt>
+				<dd><xsl:value-of select="e:encounter/e:fact[@concept='AKTIN:STARTTHERAPY']/@start"/></dd>
+
+				<dt>Entlass-/Verlgungzeitpunkt</dt>
+				<dd><xsl:value-of select="e:encounter/e:end"/></dd>
 			</dl>
 		</dd>
 

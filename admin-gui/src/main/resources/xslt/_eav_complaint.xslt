@@ -55,36 +55,40 @@
 
 	<!-- Triage -->
 	<!-- MTS -->
-	<xsl:template match="e:fact[@concept='MTS:5']">
-		MTS Stufe 5 (nicht dringend, blau)
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='MTS:4']">
-		MTS Stufe 4 (normal, grün)
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='MTS:3']">
-		MTS Stufe 3 (dringend, gelb)
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='MTS:2']">
-		MTS Stufe 2 (sehr dringend, orange)
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='MTS:1']">
-		MTS Stufe 1 (sofort, rot)
+	<xsl:template match="e:fact[starts-with(@concept,'MTS:')]">
+		<xsl:if test="@concept='MTS:5'">
+			MTS Stufe 5 (nicht dringend, blau)
+		</xsl:if>
+		<xsl:if test="@concept='MTS:4'">
+			MTS Stufe 4 (normal, grün)
+		</xsl:if>
+		<xsl:if test="@concept='MTS:3'">
+			MTS Stufe 3 (dringend, gelb)
+		</xsl:if>
+		<xsl:if test="@concept='MTS:2'">
+			MTS Stufe 2 (sehr dringend, orange)
+		</xsl:if>
+		<xsl:if test="@concept='MTS:1'">
+			MTS Stufe 1 (sofort, rot)
+		</xsl:if>
 	</xsl:template>
 	<!-- ESI -->
-	<xsl:template match="e:fact[@concept='ESI:5']">
-		ESI Stufe 5 (Nonurgent - Stable, with no resources anticipated except oral or topical medications, or prescriptions)
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='ESI:4']">
-		ESI Stufe 4 (Less Urgent - Stable, with only one type of resource anticipated (such as only an X-ray, or only sutures))
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='ESI:3']">
-		ESI Stufe 3 (Urgent - Stable, with multiple types of resources needed to investigate or treat (such as lab tests plus X-ray imaging))
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='ESI:2']">
-		ESI Stufe 2 (Emergent - High risk of deterioration, or signs of a time-critical problem)
-	</xsl:template>
-	<xsl:template match="e:fact[@concept='ESI:1']">
-		ESI Stufe 1 (Resuscitation - Immediate, life-saving intervention required without delay)
+	<xsl:template match="e:fact[starts-with(@concept,'ESI:')]">
+		<xsl:if test="@concept='ESI:5'">
+			ESI Stufe 5 (Nonurgent - Stable, with no resources anticipated except oral or topical medications, or prescriptions)
+		</xsl:if>
+		<xsl:if test="@concept='ESI:4'">
+			ESI Stufe 4 (Less Urgent - Stable, with only one type of resource anticipated (such as only an X-ray, or only sutures))
+		</xsl:if>
+		<xsl:if test="@concept='ESI:3'">
+			ESI Stufe 3 (Urgent - Stable, with multiple types of resources needed to investigate or treat (such as lab tests plus X-ray imaging))
+		</xsl:if>
+		<xsl:if test="@concept='ESI:2'">
+			ESI Stufe 2 (Emergent - High risk of deterioration, or signs of a time-critical problem)
+		</xsl:if>
+		<xsl:if test="@concept='ESI:1'">
+			ESI Stufe 1 (Resuscitation - Immediate, life-saving intervention required without delay)
+		</xsl:if>
 	</xsl:template>
 	<!-- Sonstige -->
 	<xsl:template match="e:fact[starts-with(@concept,'AKTIN:ASSESSMENT:')]">
