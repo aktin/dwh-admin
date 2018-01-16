@@ -9,7 +9,7 @@ import { VisitService } from './visit.service';
 })
 export class VisitsComponent {
     root: string = '1.2.276.0.76.3.87686';
-    encounterId: string = '2017091050';
+    encounterId: string = '20171050';
     _visitData: Visit = null;
 
     constructor (private _fileService: VisitService) {}

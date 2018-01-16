@@ -44,7 +44,7 @@ export class UrlService {
         updateRequestMarker: 'request/@requestId@/marker', // put / delete
 
         // visitList : 'files',
-        visit : 'visit/@root@/@id@',
+        visit : 'visit/@root@/@id@?xslt=@filter@',
         visitEide : 'visit/',
     };
 
