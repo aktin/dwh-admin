@@ -9,35 +9,47 @@
 		<dt>Beschwerden und Ersteinschätzung</dt>
 		<dd>
 			<dl>
-				<dt>Vorstellungsgrund (CEDIS)</dt>
-				<dd>
-					<xsl:apply-templates select="e:fact[starts-with(@concept,'CEDIS30:')]"/>
-				</dd>
+				<xsl:if test="e:fact[starts-with(@concept, 'CEDIS30:')]">
+					<dt>Vorstellungsgrund (CEDIS)</dt>
+					<dd>
+						<xsl:apply-templates select="e:fact[starts-with(@concept,'CEDIS30:')]"/>
+					</dd>
+				</xsl:if>
 
-				<dt>Beschwerden bei Vorstellung</dt>
-				<dd>
-					<xsl:value-of select="e:fact[@concept='AKTIN:COMPLAINT']/e:value"/>
-				</dd>
+				<xsl:if test="e:fact[@concept='AKTIN:COMPLAINT']">
+					<dt>Beschwerden bei Vorstellung</dt>
+					<dd>
+						<xsl:value-of select="e:fact[@concept='AKTIN:COMPLAINT']/e:value"/>
+					</dd>
+				</xsl:if>
 
-				<dt>Zeitpunkt der Vorstellung</dt>
-				<dd>
-					<xsl:value-of select="e:fact[@concept='AKTIN:COMPLAINT']/@start"/>
-				</dd>
+				<xsl:if test="e:fact[@concept='AKTIN:COMPLAINT']/@start">
+					<dt>Zeitpunkt der Vorstellung</dt>
+					<dd>
+						<xsl:value-of select="e:fact[@concept='AKTIN:COMPLAINT']/@start"/>
+					</dd>
+				</xsl:if>
 
-				<dt>Symptomdauer</dt>
-				<dd>
-					<xsl:apply-templates select="e:fact[@concept='AKTIN:SYMPTOMDURATION']"/>
-				</dd>
+				<xsl:if test="e:fact[@concept='AKTIN:SYMPTOMDURATION']">
+					<dt>Symptomdauer</dt>
+					<dd>
+						<xsl:apply-templates select="e:fact[@concept='AKTIN:SYMPTOMDURATION']"/>
+					</dd>
+				</xsl:if>
 
-				<dt>Ersteinschätzung</dt>
-				<dd>
-					<xsl:apply-templates select="e:fact[starts-with(@concept,'MTS:') or starts-with(@concept,'ESI:') or starts-with(@concept,'AKTIN:ASSESSMENT:')]"/>
-				</dd>
+				<xsl:if test="e:fact[starts-with(@concept,'MTS:') or starts-with(@concept,'ESI:') or starts-with(@concept,'AKTIN:ASSESSMENT:')]">
+					<dt>Ersteinschätzung</dt>
+					<dd>
+						<xsl:apply-templates select="e:fact[starts-with(@concept,'MTS:') or starts-with(@concept,'ESI:') or starts-with(@concept,'AKTIN:ASSESSMENT:')]"/>
+					</dd>
+				</xsl:if>
 
-				<dt>Zeitpunkt der Ersteinschätzung</dt>
-				<dd>
-					<xsl:value-of select="e:fact[starts-with(@concept,'MTS:') or starts-with(@concept,'ESI:') or starts-with(@concept,'AKTIN:ASSESSMENT:')]/@start"/>
-				</dd>
+				<xsl:if test="e:fact[starts-with(@concept,'MTS:') or starts-with(@concept,'ESI:') or starts-with(@concept,'AKTIN:ASSESSMENT:')]/@start">
+					<dt>Zeitpunkt der Ersteinschätzung</dt>
+					<dd>
+						<xsl:value-of select="e:fact[starts-with(@concept,'MTS:') or starts-with(@concept,'ESI:') or starts-with(@concept,'AKTIN:ASSESSMENT:')]/@start"/>
+					</dd>
+				</xsl:if>
 			</dl>
 		</dd>
 	</xsl:template>

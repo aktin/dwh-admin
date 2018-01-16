@@ -9,32 +9,52 @@
 		<dd>
 			<dl>
 				<dt>Dokumenten Id</dt>
-				<dd><xsl:value-of select="e:encounter/@id"/></dd>
-
-				<dt>Fallkennzeichen</dt>
 				<dd>
-					<xsl:value-of select="e:encounter/e:fact[@concept='AKTIN:Fallkennzeichen']/e:value"/>
+					<xsl:value-of select="e:encounter/@id"/>
 				</dd>
+
+				<xsl:if test="e:encounter/e:fact[@concept='AKTIN:Fallkennzeichen']/e:value">
+					<dt>Fallkennzeichen</dt>
+					<dd>
+						<xsl:value-of select="e:encounter/e:fact[@concept='AKTIN:Fallkennzeichen']/e:value"/>
+					</dd>
+				</xsl:if>
 
 				<dt>Patienten Id</dt>
-				<dd><xsl:value-of select="@id"/></dd>
-
-				<dt>Aufnahmezeitpunkt</dt>
-				<dd><xsl:value-of select="e:encounter/e:start"/></dd>
-
-				<dt>Zeitpunkt der Ersteinschätzung</dt>
 				<dd>
-					<xsl:value-of select="e:encounter/e:fact[starts-with(@concept,'MTS:') or starts-with(@concept,'ESI:') or starts-with(@concept,'AKTIN:ASSESSMENT:')]/@start"/>
+					<xsl:value-of select="@id"/>
 				</dd>
 
-				<dt>Erster Arztkontakt</dt>
-				<dd><xsl:value-of select="e:encounter/e:fact[@concept='AKTIN:PHYSENCOUNTER']/@start"/></dd>
+				<dt>Aufnahmezeitpunkt</dt>
+				<dd>
+					<xsl:value-of select="e:encounter/e:start"/>
+				</dd>
 
-				<dt>Beginn der Therapie</dt>
-				<dd><xsl:value-of select="e:encounter/e:fact[@concept='AKTIN:STARTTHERAPY']/@start"/></dd>
+				<xsl:if test="e:encounter/e:fact[starts-with(@concept,'MTS:') or starts-with(@concept,'ESI:') or starts-with(@concept,'AKTIN:ASSESSMENT:')]/@start">
+					<dt>Zeitpunkt der Ersteinschätzung</dt>
+					<dd>
+						<xsl:value-of select="e:encounter/e:fact[starts-with(@concept,'MTS:') or starts-with(@concept,'ESI:') or starts-with(@concept,'AKTIN:ASSESSMENT:')]/@start"/>
+					</dd>
+				</xsl:if>
+
+				<xsl:if test="e:encounter/e:fact[@concept='AKTIN:PHYSENCOUNTER']/@start">
+					<dt>Erster Arztkontakt</dt>
+					<dd>
+						<xsl:value-of select="e:encounter/e:fact[@concept='AKTIN:PHYSENCOUNTER']/@start"/>
+					</dd>
+				</xsl:if>
+
+				<xsl:if test="e:encounter/e:fact[@concept='AKTIN:STARTTHERAPY']/@start">
+					<dt>Beginn der Therapie</dt>
+					<dd>
+						<xsl:value-of select="e:encounter/e:fact[@concept='AKTIN:STARTTHERAPY']/@start"/>
+					</dd>
+				</xsl:if>
 
 				<dt>Entlass-/Verlgungzeitpunkt</dt>
-				<dd><xsl:value-of select="e:encounter/e:end"/></dd>
+				<dd>
+					<xsl:value-of select="e:encounter/e:end"/>
+				</dd>
 			</dl>
 		</dd>
 

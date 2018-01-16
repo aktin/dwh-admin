@@ -7,15 +7,19 @@
 		<dt>Aufnahme und Zuweisung</dt>
 		<dd>
 			<dl>
-				<dt>Zuweisung/Einweiser</dt>
-				<dd>
-					<xsl:apply-templates select="e:fact[starts-with(@concept,'AKTIN:REFERRAL:')]"/>
-				</dd>
+				<xsl:if test="e:fact[starts-with(@concept, 'AKTIN:REFERRAL:')]">
+					<dt>Zuweisung/Einweiser</dt>
+					<dd>
+						<xsl:apply-templates select="e:fact[starts-with(@concept,'AKTIN:REFERRAL:')]"/>
+					</dd>
+				</xsl:if>
 
-				<dt>Transportmittel</dt>
-				<dd>
-					<xsl:apply-templates select="e:fact[starts-with(@concept,'AKTIN:TRANSPORT:')]"/>
-				</dd>
+				<xsl:if test="e:fact[starts-with(@concept, 'AKTIN:TRANSPORT:')]">
+					<dt>Transportmittel</dt>
+					<dd>
+						<xsl:apply-templates select="e:fact[starts-with(@concept,'AKTIN:TRANSPORT:')]"/>
+					</dd>
+				</xsl:if>
 			</dl>
 		</dd>
 	</xsl:template>
