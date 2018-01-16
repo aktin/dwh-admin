@@ -8,19 +8,19 @@
 	
 	<groupId>org.aktin.dwh</groupId>
 	<artifactId>admin-gui</artifactId>
-	<version>0.4-SNAPSHOT</version>
+	<version>0.4rc1</version>
 
 	<parent>
 		<groupId>org.aktin.dwh</groupId>
 		<artifactId>dwh-admin</artifactId>
-		<version>0.4-SNAPSHOT</version>
+		<version>0.4rc1</version>
 	</parent>
 	
 	<dependencies>
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>dwh-api</artifactId>
-			<version>0.3-SNAPSHOT</version>
+			<version>0.3</version>
 		</dependency>
 		<dependency>
 			<groupId>de.li2b2.facade</groupId>
@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>org.aktin.broker</groupId>
 			<artifactId>query-model</artifactId>
-			<version>0.5-SNAPSHOT</version>
+			<version>0.5</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
