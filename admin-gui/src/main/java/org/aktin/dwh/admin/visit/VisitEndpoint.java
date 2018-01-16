@@ -58,7 +58,7 @@ public class VisitEndpoint {
 			@QueryParam("xslt") String xslt,
 			@Suspended AsyncResponse response)
 	{
-		Objects.requireNonNull(encounter);
+		Objects.requireNonNull(encounter,"query param 'eide' required if no encounter ext is provided");
 		final URL res;
 		if( xslt == null ){
 			res = null;
