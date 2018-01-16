@@ -18,6 +18,8 @@ export class VisitService {
 
     private _dataInterval = 3000;
     private _storedDataName = 'visits';
+    private filter = 'eav2detailslist';
+    private filterFormat = 'html';
 
     constructor(
         private _http: HttpInterceptorService,
@@ -31,7 +33,7 @@ export class VisitService {
             this._storedDataName + '.' + root + '.' + encounterId,
             visit, null,
             this._dataInterval,
-            this._urls.parse('visit', {root: root, id: encounterId}),
+            this._urls.parse('visit', {root: root, id: encounterId, filter: this.filter}),
             (res: Response) => {
                 if (!visit) {
                     visit = new Visit(root, encounterId);
@@ -44,6 +46,16 @@ export class VisitService {
         ).subscribe(
             v => {
                 if (v) {
+
+                    if (this.filterFormat === 'html') {
+                        // format the raw xml input to only hmtl.body
+                        console.log('replace xml');
+                        let new_v_xml = v.xml.replace(/<\?xml[^>]*\?><html[^>]*>/, '');
+                        new_v_xml = new_v_xml.replace(/<body>/, '');
+                        new_v_xml = new_v_xml.replace(/<\/body>/, '');
+                        new_v_xml = new_v_xml.replace(/<\/html>/, '');
+                        v.xml = new_v_xml;
+                    }
 
                     let visits = JSON.parse(this._store.getValue(this._storedDataName + '.data'));
                     if (!visits) {
