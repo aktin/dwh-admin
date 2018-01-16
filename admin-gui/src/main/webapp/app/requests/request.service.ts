@@ -17,8 +17,6 @@ import Timer = NodeJS.Timer;
 @Injectable()
 export class RequestService {
     private _dataInterval = 3000;
-    private _updateTimer: Timer;
-    private _updateTimerToggle = false;
 
     constructor(
         private _http: HttpInterceptorService,
@@ -116,12 +114,6 @@ export class RequestService {
         console.log('get requests from storage');
         this._updateRequest(requestId, index, request);
         return request;
-    }
-
-    clearUpdate () {
-        console.log('call clear timer');
-        // this._requestService.unbind();
-        clearTimeout(this._updateTimer);
     }
 
     updateMarker (requestId: number, marker: RequestMarker): void {

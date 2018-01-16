@@ -25,8 +25,6 @@ export class RequestsComponent implements OnDestroy{
     ngOnDestroy(): void {
         console.log('call clear timer');
         clearTimeout(this._updateTimer);
-
-        // this._requestService.clearUpdate();
     }
 
     get stateFilterArray(): [string, RequestStatus|string][] {
