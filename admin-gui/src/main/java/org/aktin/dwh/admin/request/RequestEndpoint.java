@@ -46,7 +46,7 @@ public class RequestEndpoint {
 		// TODO allow ordering via query param
 		List<Request> list = new ArrayList<>();
 		// TODO optionally filter
-		manager.forEachRequest( request -> {
+		manager.requests().forEach( request -> {
 			list.add(wrap(request));
 		});
 
