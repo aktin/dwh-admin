@@ -35,9 +35,8 @@
             {{visit.root}} // {{visit.encounterId}}
         </div>
         <div class="sixteen wide column">
-            <pre style="overflow-wrap: break-word;  white-space: pre-wrap; word-wrap: break-word;">
-                {{visit.xml}}
-            </pre>
+            <div style="overflow-wrap: break-word;  white-space: pre-wrap; word-wrap: break-word;" [innerHTML]="visit.xml" >
+            </div>
         </div>
     </div>
 </div>
