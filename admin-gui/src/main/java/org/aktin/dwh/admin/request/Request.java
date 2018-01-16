@@ -19,7 +19,7 @@ public class Request {
 
 	Request(RetrievedRequest r){
 		this.requestId = r.getRequestId();
-		this.queryId = r.getQueryId();
+		this.queryId = r.getRequest().getQueryId();
 		this.marker = r.getMarker();
 		this.query = r.getRequest();
 		this.status = r.getStatus();
