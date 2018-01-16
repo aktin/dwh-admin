@@ -24,7 +24,7 @@
             </div>
 
             <button class="ui fluid large submit button" type="submit">
-                Erzeugen
+                Nach Besuch Suchen
             </button>
 
         </form>
@@ -38,6 +38,10 @@
             <div style="overflow-wrap: break-word;  white-space: pre-wrap; word-wrap: break-word;" [innerHTML]="visit.xml" >
             </div>
         </div>
+    </div>
+
+    <div class="ui row" *ngIf="waiting && !visit">
+        waiting
     </div>
 </div>
 
