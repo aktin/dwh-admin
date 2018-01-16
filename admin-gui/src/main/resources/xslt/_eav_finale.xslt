@@ -7,18 +7,22 @@
 		<dt>Abschluss / weiteres Vorgehen</dt>
 		<dd>
 			<dl>
-				<dt>Führende Abschlussdiagnose</dt>
-				<dd>
-					<dl>
-						<xsl:apply-templates select="e:fact[starts-with(@concept,'ICD10GM:') and e:modifier[@code='AKTIN:DIAG:F']]"/>
-					</dl>
-				</dd>
-				<dt>Weitere Abschlussdiagnosen</dt>
-				<dd>
-					<dl>
-						<xsl:apply-templates select="e:fact[starts-with(@concept,'ICD10GM:') and not(e:modifier[@code='AKTIN:DIAG:F'])]"/>
-					</dl>
-				</dd>
+				<xsl:if test="e:fact[starts-with(@concept,'ICD10GM:') and e:modifier[@code='AKTIN:DIAG:F']]">
+					<dt>Führende Abschlussdiagnose</dt>
+					<dd>
+						<dl>
+							<xsl:apply-templates select="e:fact[starts-with(@concept,'ICD10GM:') and e:modifier[@code='AKTIN:DIAG:F']]"/>
+						</dl>
+					</dd>
+				</xsl:if>
+				<xsl:if test="e:fact[starts-with(@concept,'ICD10GM:') and not(e:modifier[@code='AKTIN:DIAG:F'])]">
+					<dt>Weitere Abschlussdiagnosen</dt>
+					<dd>
+						<dl>
+							<xsl:apply-templates select="e:fact[starts-with(@concept,'ICD10GM:') and not(e:modifier[@code='AKTIN:DIAG:F'])]"/>
+						</dl>
+					</dd>
+				</xsl:if>
 				<xsl:if test="e:fact[starts-with(@concept,'AKTIN:TRANSFER:')]">
 					<dt>Verlegungsart</dt>
 					<dd>

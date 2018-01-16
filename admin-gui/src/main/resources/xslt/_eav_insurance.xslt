@@ -7,12 +7,16 @@
 		<dt>Krankenversicherung</dt>
 		<dd>
 			<dl>
-				<dt>Versicherungsträger</dt>
-				<dd><xsl:value-of select="e:fact[@concept='AKTIN:KKNAME']/e:value"/></dd>
-				
-				<dt>Versicherungsnummer</dt>
-				<dd><xsl:value-of select="e:fact[@concept='AKTIN:IKNR']/e:value"/></dd>
-				
+
+				<xsl:if test="e:fact[starts-with(@concept, 'AKTIN:TRANSPORT:')]">
+					<dt>Versicherungsträger</dt>
+					<dd><xsl:value-of select="e:fact[@concept='AKTIN:KKNAME']/e:value"/></dd>
+				</xsl:if>
+
+				<xsl:if test="e:fact[starts-with(@concept, 'AKTIN:TRANSPORT:')]">
+					<dt>Versicherungsnummer</dt>
+					<dd><xsl:value-of select="e:fact[@concept='AKTIN:IKNR']/e:value"/></dd>
+				</xsl:if>
 				<!-- <dt>VKNR</dt>
 				<dd><xsl:value-of select="e:fact[@concept='AKTIN:VKNR']/e:value"/></dd> -->
 			</dl>
