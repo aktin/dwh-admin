@@ -9,8 +9,8 @@ import Timer = NodeJS.Timer;
     styleUrls: ['./visits.component.css'],
 })
 export class VisitsComponent implements OnDestroy{
-    root: string = '1.2.276.0.76.3.87686';
-    encounterId: string = '20171050';
+    root: string; // = '1.2.276.0.76.3.87686';
+    encounterId: string; // = '20171050';
     _visitData: Visit = null;
     waiting = false;
 

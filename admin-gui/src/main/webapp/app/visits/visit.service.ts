@@ -28,12 +28,12 @@ export class VisitService {
         private _download: DownloadService
     ) {}
 
-    private _updateVisit (root: string, encounterId: string, index = -1, visit: Visit = null): void {
+    private _updateVisit (url: string, root: string, encounterId: string, index = -1, visit: Visit = null): void {
         this._http.debouncedGet<Visit> (
             this._storedDataName + '.' + root + '.' + encounterId,
             visit, null,
             this._dataInterval,
-            this._urls.parse('visit', {root: root, id: encounterId, filter: this.filter}),
+            url ? url : this._urls.parse('visit', {root: root, id: encounterId, filter: this.filter}),
             (res: Response) => {
                 if (!visit) {
                     visit = new Visit(root, encounterId);
@@ -76,13 +76,21 @@ export class VisitService {
     getVisit (root: string, encounterId: string): Visit {
         let visits: Visit[] = _.map(JSON.parse(this._store.getValue(this._storedDataName + '.data')),
             req => Visit.parseObj(req));
+        let url = '';
 
-        if (encounterId === null || root === null) {
+        url = this._urls.parse('visit', {root: root, id: encounterId, filter: this.filter})
+
+        if (encounterId === null){
             return null;
         }
 
+        if (root === null) {
+            url = this._urls.parse('visitId', {id: encounterId, filter: this.filter})
+        }
+        // add visitId url
+
         if (!visits) {
-            this._updateVisit(root, encounterId);
+            this._updateVisit(url, root, encounterId);
             return null;
         }
 
@@ -91,7 +99,7 @@ export class VisitService {
         let visit = visits[index];
 
         console.log('get visit from storage');
-        this._updateVisit(root, encounterId, index, visit);
+        this._updateVisit(url, root, encounterId, index, visit);
         return visit;
     }
 }

@@ -45,6 +45,7 @@ export class UrlService {
 
         // visitList : 'files',
         visit : 'visit/@root@/@id@?xslt=@filter@',
+        visitId : 'visit/@id@?xslt=@filter@',
         visitEide : 'visit/',
     };
 
