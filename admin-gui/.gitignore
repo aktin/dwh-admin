@@ -4,6 +4,7 @@
 target/
 *.zip
 
+node_modules
 local-node/
 .idea
 .editorconfig
