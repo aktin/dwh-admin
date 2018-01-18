@@ -25,13 +25,13 @@
 		<dependency>
 			<groupId>de.li2b2.facade</groupId>
 			<artifactId>li2b2-client</artifactId>
-			<version>0.3</version>
+			<version>0.4</version>
 		</dependency>
 		<dependency>
 			<!-- for token authentication -->
 			<groupId>de.li2b2.facade</groupId>
 			<artifactId>li2b2-server</artifactId>
-			<version>0.3</version>
+			<version>0.4</version>
   		</dependency>
 		<!-- request/query management -->
 		<dependency>
