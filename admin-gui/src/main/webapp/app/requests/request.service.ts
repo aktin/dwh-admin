@@ -56,7 +56,7 @@ export class RequestService {
             this._dataInterval,
             this._urls.parse('request', {requestId: requestId}),
             (res: Response) => {
-                console.log('updating request ', index, res.text());
+                // console.log('updating request ', index, res.text());
                 return JSON.parse(res.text());
             }, (err: Response) => {
                 return err;
