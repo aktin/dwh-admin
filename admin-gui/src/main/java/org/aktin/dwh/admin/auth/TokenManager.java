@@ -13,5 +13,10 @@ public class TokenManager extends AbstractTokenManager<Authentication>{
 	public Authentication createPrincipal(String name) {
 		throw new UnsupportedOperationException();
 	}
-	
+
+	@Override
+	public long getExpirationMillis() {
+		// default to 30min
+		return 1000*60*30;
+	}
 }

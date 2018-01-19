@@ -13,6 +13,7 @@ import org.aktin.dwh.admin.auth.AuthFilter;
 import org.aktin.dwh.admin.log.LogEndpoint;
 import org.aktin.dwh.admin.report.ReportArchiveEndpoint;
 import org.aktin.dwh.admin.report.ReportEndpoint;
+import org.aktin.dwh.admin.request.QueryEndpoint;
 import org.aktin.dwh.admin.request.RequestEndpoint;
 import org.aktin.dwh.admin.user.UserEndpoint;
 import org.aktin.dwh.db.TestDataSource;
@@ -58,6 +59,7 @@ public class AdminTestServer {
 		rc.register(ReportArchiveEndpoint.class);
 		rc.register(Summary.class);
 		rc.register(RequestEndpoint.class);
+		rc.register(QueryEndpoint.class);
 
 		setupJNDI(ds);
 	}

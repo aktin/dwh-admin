@@ -1,12 +1,14 @@
 package org.aktin.dwh.admin.request;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.activation.DataSource;
 import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -24,6 +26,7 @@ import javax.ws.rs.core.SecurityContext;
 import org.aktin.broker.request.RequestManager;
 import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.Marker;
+import org.aktin.broker.request.QueryRuleAction;
 import org.aktin.broker.request.RetrievedRequest;
 import org.aktin.dwh.admin.auth.Secured;
 import org.aktin.dwh.admin.filter.NoCache;
@@ -142,5 +145,22 @@ public class RequestEndpoint {
 		return Response.noContent().build();
 	}
 
+
+	@Secured
+	@POST
+	@Path("{id}/rule/{action}")
+	public Response updateMarker(@PathParam("id") int id, @PathParam("action") QueryRuleAction action) throws IOException{
+		RetrievedRequest req = manager.getRequest(id);
+		if( req == null ){
+			throw new NotFoundException();
+		}
+		Integer queryId = req.getRequest().getQueryId();
+		if( queryId == null ){
+			// rules only allowed for identifyable queries (e.g. repeating)
+			throw new ClientErrorException(422);
+		}
+		manager.createQueryRule(req, security.getUserPrincipal().getName(), action);
+		return Response.created(URI.create("../../../query/"+queryId+"/rule")).build();
+	}
 
 }
