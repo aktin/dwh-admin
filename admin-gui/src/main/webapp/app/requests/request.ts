@@ -11,7 +11,7 @@ export interface Query {
     },
     principal: {
         name: string,
-        organization: string,
+        organisation: string,
         email: string,
         phone: string,
         address?: string,
@@ -22,7 +22,7 @@ export interface Query {
 
 export interface Request {
     id: number,
-    referenceDate: Date,
+    reference: Date,
     published: Date,
     scheduled: Date,
     deadline: Date,
@@ -64,7 +64,7 @@ export class LocalRequest {
             data['status'] = RequestStatus[data['status']];
         }
         let rawRequest = data['query'];
-        rawRequest['referenceDate'] = this.parseDate(rawRequest['referenceDate']);
+        rawRequest['reference'] = this.parseDate(rawRequest['reference']);
         rawRequest['published']     = this.parseDate(rawRequest['published']);
         rawRequest['scheduled']     = this.parseDate(rawRequest['scheduled']);
         rawRequest['deadline']      = this.parseDate(rawRequest['deadline']);
@@ -74,6 +74,7 @@ export class LocalRequest {
         let rawQuery = rawRequest['query'];
         rawQuery['schedule'] = rawQuery['schedule'] || {};
         rawQuery['schedule']['reference'] = this.parseDate(rawQuery['schedule']['reference']);
+        // rawQuery['schedule']['duration'] = rawQuery['schedule']['duration'];
 
         Object.setPrototypeOf(data, LocalRequest.prototype);
         return data;
@@ -155,7 +156,7 @@ export enum RequestStatus {
     status: string,
     query: Request {
         id: number,
-        referenceDate: Date,
+        reference: Date,
         published: Date,
         scheduled: Date,
         deadline: Date,

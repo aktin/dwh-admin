@@ -75,8 +75,8 @@
         <div class="compact row">
             <div class="ui meta sixteen wide column">
                 Auftraggeber: <b>{{request.query.query.principal.name}}</b>
-                <span *ngIf="request.query.query.principal.organization">
-                    , {{request.query.query.principal.organization}}
+                <span *ngIf="request.query.query.principal.organisation">
+                    , {{request.query.query.principal.organisation}}
                 </span>
                 <span *ngIf="request.query.query.principal.phone">
                     , {{request.query.query.principal.phone}}
@@ -96,17 +96,23 @@
             <div class="ui meta three wide column" *ngIf="request.query.published">
                 {{request.query.published | date: 'mediumDate'}}
             </div>
-            <div class="ui meta five wide column" *ngIf="request.query.referenceDate">
+            <div class="ui meta five wide column" *ngIf="request.query.reference">
                 Referenzdatum der Daten:
             </div>
-            <div class="ui meta three wide column" *ngIf="request.query.referenceDate">
-                {{request.query.referenceDate | date: 'mediumDate'}}
+            <div class="ui meta three wide column" *ngIf="request.query.reference">
+                {{request.query.reference | date: 'mediumDate'}}
             </div>
             <div class="ui meta five wide column" *ngIf="request.query.scheduled">
                 Datum der (geplanten) Ausführung:
             </div>
             <div class="ui meta three wide column" *ngIf="request.query.scheduled">
                 {{request.query.scheduled | date: 'mediumDate'}}
+            </div>
+            <div class="ui meta five wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.duration">
+                Zeitraum der Abfrage:
+            </div>
+            <div class="ui meta three wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.duration">
+                {{request.query.query.schedule.duration}}
             </div>
             <div class="ui meta five wide column" *ngIf="request.query.deadline">
                 Deadline:
@@ -130,8 +136,8 @@
     </div>
     <div class="row  ui segment">
         <div class="sixteen wide column">
-            Beschreibung: <br/>
-            {{request.query.query.description}}
+            <b>Beschreibung:</b> <br/>
+            <pre>{{request.query.query.description}}</pre>
         </div>
     </div>
     <div class="row ui segment">
