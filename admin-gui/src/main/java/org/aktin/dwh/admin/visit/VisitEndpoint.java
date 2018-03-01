@@ -26,6 +26,7 @@ import org.aktin.Preferences;
 import org.aktin.dwh.Anonymizer;
 import org.aktin.dwh.DataExtractor;
 import org.aktin.dwh.PreferenceKey;
+import org.aktin.dwh.admin.auth.Secured;
 import org.w3c.dom.Document;
 
 @Path("visit")
@@ -52,6 +53,7 @@ public class VisitEndpoint {
 	 * @param response asynchronous response object to retrieve the results
 	 */
 	@GET
+	@Secured
 	@Produces(MediaType.APPLICATION_XML)
 	public void asyncGetByPseudonym(
 			@QueryParam("eide") String encounter, 
@@ -103,6 +105,7 @@ public class VisitEndpoint {
 	}
 
 	@GET
+	@Secured
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("{root}/{ext}")
 	public void asyncGet(
@@ -116,6 +119,7 @@ public class VisitEndpoint {
 	}
 	
 	@GET
+	@Secured
 	@Produces(MediaType.APPLICATION_XML)
 	@Path("{ext}")
 	public void asyncGet(
