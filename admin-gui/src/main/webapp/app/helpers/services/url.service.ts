@@ -11,7 +11,6 @@ export class UrlService {
         // 'http://localhost:8080/aktin/admin/rest/',
         '/aktin/admin/rest/',
     ];
-    // DEBUG set server url to 2 - standard is 0
     private _serverUrl = this._serverUrls[0];
     private _endUrls = {
         login : 'auth/login',
