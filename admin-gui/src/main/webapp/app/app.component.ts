@@ -68,7 +68,11 @@ export class AppComponent implements OnInit {
                     error => console.log(error)
                 );
         }
-        return this.versionData;
+        if (!this.versionData) {
+            return "bitte einloggen zum Anzeigen";
+        }
+
+        return this.versionData.slice(9);
     }
 
     get routings() {
