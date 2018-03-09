@@ -8,3 +8,8 @@
     font-size: 18px;
     min-width: 250px;
 }
+.header-version {
+    display: inline-block;
+    font-family: Arial, Helvetica, sans-serif;
+    min-width: 250px;
+}
