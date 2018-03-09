@@ -12,6 +12,9 @@ import _ = require('underscore');
 
 import { routings }     from './app-routing.module';
 import { AuthService }  from './users/index';
+import { HttpInterceptorService } from './helpers/services/http-interceptor.service';
+import { Response }     from '@angular/http';
+import { UrlService } from './helpers/services/url.service';
 
 @Component({
     selector: 'my-app',
@@ -20,12 +23,15 @@ import { AuthService }  from './users/index';
 })
 export class AppComponent implements OnInit {
     visibility: any = {};
-
+    versionData = "";
 
     constructor (private _titleService: Title,
                  private _atuhService: AuthService,
                  private _route: ActivatedRoute,
-                 private _router: Router) {};
+                 private _router: Router,
+                 private _http: HttpInterceptorService,
+                 private _url: UrlService,
+                 ) {};
 
     ngOnInit(): void {
         let title = 'AKTIN - Adminverwaltung';
@@ -52,6 +58,18 @@ export class AppComponent implements OnInit {
 
     }
 
+    get version () {
+        if (!this.versionData) {
+            this._http.debouncedGet('version', '', '', 5000, this._url.parse('version'),
+                (res: Response) => { return res.text(); },
+                (err: Response) => {return err; } )
+                .subscribe(
+                    val => { if (val) {this.versionData = val; } },
+                    error => console.log(error)
+                );
+        }
+        return this.versionData;
+    }
 
     get routings() {
         _.each(routings, route => {

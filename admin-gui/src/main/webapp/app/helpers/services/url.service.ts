@@ -46,6 +46,9 @@ export class UrlService {
         visit : 'visit/@root@/@id@?xslt=@filter@',
         visitId : 'visit/@id@?xslt=@filter@',
         visitEide : 'visit/',
+
+        // versions endpoint
+        version: 'info/version',
     };
 
     setServerUrl (serverUrl: string) {
