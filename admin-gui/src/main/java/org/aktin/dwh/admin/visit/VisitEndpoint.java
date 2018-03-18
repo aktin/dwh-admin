@@ -32,7 +32,6 @@ import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.admin.auth.Secured;
 import org.w3c.dom.Document;
 
-import de.sekmi.histream.DateTimeAccuracy;
 
 @Path("visit")
 public class VisitEndpoint {
@@ -126,6 +125,7 @@ public class VisitEndpoint {
 			}else{
 				zone = ZoneId.of(zoneId);
 			}
+			/*
 			DateTimeAccuracy start;
 			try {
 				start = DateTimeAccuracy.parsePartialIso8601(visitStart, zone);
@@ -136,7 +136,7 @@ public class VisitEndpoint {
 			// calculate min and max timestamps for inaccurate time
 			Instant startMin = start.toInstantMin();
 			Instant startMax = start.toInstantMin().plus(1, start.getAccuracy());
-
+			*/
 			// TODO add feature to histream-core/DataExtractor to find visits in the given timeframe
 			
 		}
