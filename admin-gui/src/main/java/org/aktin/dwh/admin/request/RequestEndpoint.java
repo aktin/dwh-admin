@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.activation.DataSource;
 import javax.inject.Inject;
@@ -33,6 +34,7 @@ import org.aktin.dwh.admin.filter.NoCache;
 
 @Path("request")
 public class RequestEndpoint {
+	private static final Logger log = Logger.getLogger(RequestEndpoint.class.getName());
 	@Inject
 	RequestManager manager;
 	@Context 
@@ -107,6 +109,21 @@ public class RequestEndpoint {
 			throw new NotFoundException();
 		}
 		String userId = security.getUserPrincipal().getName();
+		log.info("query "+id+" changeStatus (by "+userId+") -> "+newStatus);
+		// check to prevent accidental re-execution of finished query
+		if( newStatus == RequestStatus.Queued ){
+			switch( req.getStatus() ){
+			case Completed:
+			case Failed:
+			case Submitted:
+			case Sending:
+				log.warning("Illegal try to change status back to queued rejected");
+				throw new ClientErrorException("Re-queuing finished request rejected", 409);
+			default:
+				// change permitted, go on
+				break;
+			}
+		}
 		req.changeStatus(userId, newStatus, null);
 	}
 
