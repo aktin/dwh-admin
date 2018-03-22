@@ -8,12 +8,12 @@
 	
 	<groupId>org.aktin.dwh</groupId>
 	<artifactId>admin-gui</artifactId>
-	<version>0.5-SNAPSHOT</version>
+	<version>0.6-SNAPSHOT</version>
 
 	<parent>
 		<groupId>org.aktin.dwh</groupId>
 		<artifactId>dwh-admin</artifactId>
-		<version>0.5-SNAPSHOT</version>
+		<version>0.6-SNAPSHOT</version>
 	</parent>
 	
 	<dependencies>
@@ -140,19 +140,19 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>report-manager</artifactId>
-			<version>0.4rc1</version>
+			<version>0.5</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>report-archive</artifactId>
-			<version>0.4rc1</version>
+			<version>0.5</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>report-manager</artifactId>
-			<version>0.4rc1</version>
+			<version>0.5</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
@@ -178,7 +178,7 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>request-manager</artifactId>
-			<version>0.4rc1</version>
+			<version>0.5</version>
 			<scope>test</scope>
 		</dependency>
 
