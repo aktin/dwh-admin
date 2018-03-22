@@ -30,7 +30,7 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this._route.params
             .map((params: Params) => {
-            this.reqId = +params['id'];
+                this.reqId = +params['id'];
                 return this._requestService.getRequest(+params['id']);
             }).subscribe(
             req => {
@@ -49,7 +49,7 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
         if (this._updateTimerToggle) {
             return;
         }
-        console.log('set new timer');
+        console.log('set new timer single request', this.reqId);
         clearTimeout(this._updateTimer);
         this._updateTimerToggle = true;
         this._updateTimer = setTimeout(() => {

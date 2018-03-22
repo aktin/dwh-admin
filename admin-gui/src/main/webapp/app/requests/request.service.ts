@@ -65,6 +65,9 @@ export class RequestService {
             (req: LocalRequest) => {
                 if (req) {
                     let reqs = JSON.parse(this._store.getValue('requests.data'));
+                    if (reqs === null) {
+                        reqs = [];
+                    }
                     reqs[index] = req;
                     this._store.setValue('requests.data', JSON.stringify(reqs));
                 }
@@ -104,6 +107,9 @@ export class RequestService {
         let index = _.findIndex(requests, (req) => req.requestId === requestId);
         // let request = _.find(requests, (req) => req.requestId === requestId);
         let request = requests[index];
+        if (index < 0) {
+            index = 0;
+        }
 
         if (request && request.status === RequestStatus.Retrieved) {
             request.status = this.authorizeRequest(
