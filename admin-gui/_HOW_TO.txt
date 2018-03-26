@@ -1,0 +1,53 @@
+Vorgehen für neues Menupunkt (große Funktion)
+	- In der URL Verwaltung die API Aufrufe hinzufügen.
+	- einen neuen Ordner anlegen (ähnlich wie reports, requests ... )
+	- Ähnliche Struktur wie z.B. in reports umsetzen, nicht benötigte Ansichten weglassen
+	- in app.module.ts die Komponente importieren
+	- in app-routing.module.ts mit einer URL versehen
+
+Vorgehen für neue Pakete (neue Dependencies für package.json)
+	- neue Pakete in systemjs.config.js hinzufügen
+	- wichtige Dateien im Ordner lib ablegen, wichtig: nur js Dateien
+
+Vorgehensvorschlag für Erweiterung der requests (periodische Anfragen)
+	- popup-message.component aus helper in request kopieren und in request-popup umbenennen (und die popup-message Klasse vererben?)
+	- diese um die Logik für die periodische Anfragen erweitern:
+		- 2. slider einbauen (Alle Abfragen dieser Reihe erlauben)
+		- 2. slider nur aktivierbar, wenn 1. slider aktiviert ist (also automatisch false wenn die Ergebnisse nicht automatisch gesendet werden sollen)
+	- diesen popup bei requests einbauen
+	- Einzelansicht erweitern, um alte Anfragen der Reihe anzuzeigen (neuste, ..., diese Anfrage, ... ) 
+	- Einzelansicht mittels Pfeilen navigierbar machen in der Reihe?
+	- Einzelansicht erweitern, sodass Erlaubnis nachträglich hinzugefügt oder verweigert werden kann --> Popup erneut aufrufen
+
+Struktur:
+	- Ausserhalb von app: index.html (Aussehen, bevor der Browser Angular geladen hat, erste js Dateien), systemjs-Konfigurationen sowie Imports, lib-Ordner für live-Referenzen, package.js für angular-npm Paketeverwaltung
+	- app.module.ts : Registrierung benötigter Services, Module, aktive Komponenten ... 
+	- app-routing.module.ts : URL Verwaltung im APP, Rechte Verwaltung (Welche Seiten benötigen einen eingeloggten User etc)
+	- app.component : Basisseiten Aufbau, Header, Main, Footer
+	- home: 	Startseite
+	- helpers: 	Helperfunktionen wie URL-Verwaltung, Generelle Popup, HTTP-Interceptor
+		- PopUp: Generelle PopUp Funktion für einfache JA-NEIN-Abfrage, Nachrichten
+		- Dateparser für Deutsch [inaktiv]
+		- Loading [inaktiv]
+		- URL-Verwaltung: alle Weblinks und REST-API Aufrufe werden hier angelegt und verwaltet. Aufrufe mit Parameter werden hier geparst
+		- Storage-Verwaltung: Einstellungen und Aufruf sowie Speicherung in die Storage. Umänderung in Sessionstorage hier vornehmen!
+		- HTTP-Interceptor: Coverklasse für die eigentliche HTTP-Klasse. Unter anderem erweitert um Timestamped GET Aufrufe, um IE Caching zu umgehen, sowie Authentificationtoken für eingeloggte User. Auch um eine Debounced GET (Vllt Throttled besserer Begriff?) erweiteret, um Floading von Anfragen auf dem Server zu verhindern.
+		- FileSaver: Module Deklaration für Dateispeicherung [aktiv?]
+		- Download: DownloadService für den PDF Download für Berichte sowie ZIP Download bei Anfragen [aktiv?]
+		- OderByPipe: Sortierungspipe für For-Schleifen in der Anzeige
+		- SafeURLPipe: Pipe in der Anzeige um URLs zu filtern und richtig anzuzeigen
+	- reports: Berichtsverwaltung sowie Anzeige
+		- report.ts : Datenhaltung
+		- report.service.ts : Verwaltung, Serverkommunikation, Storagemanagement
+		- report.component : Anzeige der Liste, Aufruf von report-single-view.component
+		- report-single.component : Anzeige eines einzelnen Berichts, Aufruf von report-single-view.component
+		- report-single-view.component: Anzeige einses Berichts, sowohl für Liste als auch einzeln. Sollten sich die Anzeigen zu sehr abwandeln, jeweils in den entsprechenden Komponenten umbauen, Einzelansicht dann in report-single.component verschieben
+		- report-new.component : Eingabemaske für neues Bericht. Leitet dananch automatisch nach Listenansicht weiter. Ruft PopUp auf.
+	- requests: Anfragenverwaltung
+		- ähnlich zu reports,
+		- zusätzlich request-status-bar.component zur Anzeige der Status
+	- users: user-auth-guard und userverwaltung [inaktiv]
+	- visits: Fallanzeige - um weitere such und Listfunktionen zu erweitern!
+	- status: status des servers, simple display
+	- preferences: Einstellungen auf dem Server, simple display
+	- restricted: [inaktiv]
