@@ -51,3 +51,8 @@ Struktur:
 	- status: status des servers, simple display
 	- preferences: Einstellungen auf dem Server, simple display
 	- restricted: [inaktiv]
+
+Vorschlag zum Einarbeiten:
+	- Basis Angular.io Tutorial folgen
+	- Angular.io Heroes APP, Routing, HTTP Sourcecode als Referenzen
+	- Webstorm, Einrichtung als NPM App, main\webapp\package.json, Kommand start
