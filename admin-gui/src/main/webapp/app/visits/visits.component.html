@@ -8,17 +8,31 @@
     <div class="ui segment row">
         <form class="ui form search-visit-form sixteen wide column" #searchVisitForm="ngForm" (ngSubmit)="search()">
 
+<!--            Radiobuttons
+            Patientenid,
+            Aufnahmedatum/zeitpunkt (Datum picker mit eingabe fÃ¼r uhrzeit (bei leer alles vom tag oder stunde etc))
+            Fallid (abrechnungsfall oder besuch)
+
+            eventuell noch grund der suche-->
+
+            <!--<div class="field">
+                <label>Patientenid</label>
+                <div class="ui input">
+                    <input name="patientId" type="text" placeholder="Patientenid" [(ngModel)]="formdata['patientId']" required>
+                </div>
+            </div>-->
+
             <div class="two fields">
                 <div class="field">
-                    <label>ROOT</label>
+                    <label>Fall Id: Root</label>
                     <div class="ui input">
-                        <input name="root" type="text" placeholder="ROOT" [(ngModel)]="root" required>
+                        <input name="root" type="text" placeholder="Root" [(ngModel)]="formdata['root']" required>
                     </div>
                 </div>
                 <div class="field">
-                    <label>encounterId</label>
+                    <label>Fall Id: Extension</label>
                     <div class="ui input">
-                        <input name="encounterId" type="text" placeholder="encounterId" [(ngModel)]="encounterId" required>
+                        <input name="encounterId" type="text" placeholder="Extension" [(ngModel)]="formdata['encounterId']" required>
                     </div>
                 </div>
             </div>
@@ -30,7 +44,7 @@
         </form>
     </div>
 
-    <div class="ui row" *ngIf="visit">
+<!--    <div class="ui row" *ngIf="visit">
         <div class="sixteen wide column">
             {{visit.root}} // {{visit.encounterId}}
         </div>
@@ -38,10 +52,12 @@
             <div style="overflow-wrap: break-word;  white-space: pre-wrap; word-wrap: break-word;" [innerHTML]="visit.xml" >
             </div>
         </div>
-    </div>
+    </div>-->
 
     <div class="ui row" *ngIf="waiting && !visit">
         waiting
     </div>
+
+    <visit-single-view [visitData]="visit" class="ui vertical segment"></visit-single-view>
 </div>
 

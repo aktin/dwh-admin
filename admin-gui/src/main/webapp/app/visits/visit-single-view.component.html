@@ -20,5 +20,15 @@
             </a>
         </div>
     </div>
+
+    <div class="ui row" *ngIf="visit">
+        <div class="sixteen wide column">
+            {{visit.root}} // {{visit.encounterId}}
+        </div>
+        <div class="sixteen wide column">
+            <div class="visit-single-view-detail" [innerHTML]="visit.xml" >
+            </div>
+        </div>
+    </div>
 </div>
 
