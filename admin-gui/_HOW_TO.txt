@@ -1,5 +1,5 @@
 Vorgehen für neues Menupunkt (große Funktion)
-	- In der URL Verwaltung die API Aufrufe hinzufügen.
+	- In der URL Verwaltung [helpers/services/url.service.ts] die API Aufrufe hinzufügen.
 	- einen neuen Ordner anlegen (ähnlich wie reports, requests ... )
 	- Ähnliche Struktur wie z.B. in reports umsetzen, nicht benötigte Ansichten weglassen
 	- in app.module.ts die Komponente importieren
@@ -29,7 +29,7 @@ Struktur:
 		- PopUp: Generelle PopUp Funktion für einfache JA-NEIN-Abfrage, Nachrichten
 		- Dateparser für Deutsch [inaktiv]
 		- Loading [inaktiv]
-		- URL-Verwaltung: alle Weblinks und REST-API Aufrufe werden hier angelegt und verwaltet. Aufrufe mit Parameter werden hier geparst
+		- URL-Verwaltung [helpers/services/url.service.ts]: alle Weblinks und REST-API Aufrufe werden hier angelegt und verwaltet. Aufrufe mit Parameter werden hier geparst
 		- Storage-Verwaltung: Einstellungen und Aufruf sowie Speicherung in die Storage. Umänderung in Sessionstorage hier vornehmen!
 		- HTTP-Interceptor: Coverklasse für die eigentliche HTTP-Klasse. Unter anderem erweitert um Timestamped GET Aufrufe, um IE Caching zu umgehen, sowie Authentificationtoken für eingeloggte User. Auch um eine Debounced GET (Vllt Throttled besserer Begriff?) erweiteret, um Floading von Anfragen auf dem Server zu verhindern.
 		- FileSaver: Module Deklaration für Dateispeicherung [aktiv?]
