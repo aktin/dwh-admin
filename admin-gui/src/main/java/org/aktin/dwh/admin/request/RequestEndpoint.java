@@ -163,10 +163,19 @@ public class RequestEndpoint {
 	}
 
 
+	/**
+	 * Create a query rule for this request.
+	 * Does only work, if there is no previous rule.
+	 * To retrieve a rule, use {@link QueryEndpoint#getRule(int)}.
+	 * @param id request id
+	 * @param action action
+	 * @return response status created
+	 * @throws IOException NotFoundException or {@link ClientErrorException}(422)
+	 */
 	@Secured
 	@POST
 	@Path("{id}/rule/{action}")
-	public Response updateMarker(@PathParam("id") int id, @PathParam("action") QueryRuleAction action) throws IOException{
+	public Response createQueryRule(@PathParam("id") int id, @PathParam("action") QueryRuleAction action) throws IOException{
 		RetrievedRequest req = manager.getRequest(id);
 		if( req == null ){
 			throw new NotFoundException();
@@ -179,5 +188,6 @@ public class RequestEndpoint {
 		manager.createQueryRule(req, security.getUserPrincipal().getName(), action);
 		return Response.created(URI.create("../../../query/"+queryId+"/rule")).build();
 	}
+
 
 }
