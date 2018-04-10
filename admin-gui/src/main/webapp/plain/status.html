@@ -23,37 +23,6 @@ function init(){
 			alert(JSON.stringify(data));
 		}
 	});
-	/*
-	// list node status
-	$.get({
-		url: rest_base+'/broker/request/'+id+'/status',
-		dataType: 'xml',
-		success: function(data){
-			var list = $(data).find('request-status-info');
-			if( list.length == 0 ){
-				$('#nodes').after('<p>Bisher Statusmeldungen eingegangen</p>');
-				$('#nodes').remove();
-			}else list.each(function(){
-				var st = parseNodeStatus($(this));
-				$('#nodes tbody').append('<tr><td>'+st[0]+'</td><td>'+st[1]+'</td><td>'+st[2]+'</td></tr>');
-			});
-		}
-	});
-	// list results
-	$.get({ 
-		url: rest_base+'/aggregator/request/'+id+'/result',
-		dataType: 'xml',
-		success: function(data){
-			var list = $(data).find('result');
-			if( list.length == 0 ){
-				$('#results').after('<p>Bisher keine Ergebnisse vorhanden</p>');
-				$('#results').remove();
-			}else list.each(function(){
-				var node_id = $(this).find('node').text();
-				$('#results tbody').append('<tr><td>'+node_id+'</td><td><a href="/aggregator/request/'+id+'/result/'+node_id+'">'+$(this).find('type').text()+'</a></td></tr>');
-			});
-		}
-	});*/
 }
 </script>
 	</head>
@@ -65,21 +34,8 @@ function init(){
 
 		Statistik seit <span id="start"></span> (i.d.R. letzter Start des Servers).<br/>
 		
-		
-		
-		<table id="times">
-			<caption>Zeitstempel</caption>
-			<thead>
-				<tr>
-					<td>Aktion</td>
-					<td>Zeitpunkt</td>
-				</tr>
-			</thead>
-			<tbody></tbody>
-		</table>
-
 		<table id="docs">
-			<caption>Dokumente</caption>
+			<caption>CDA-Interface</caption>
 			<thead>
 				<tr>
 					<td>Aktion</td>
@@ -94,4 +50,4 @@ function init(){
 		</div>
 
 	</body>
-</html>x
+</html>
