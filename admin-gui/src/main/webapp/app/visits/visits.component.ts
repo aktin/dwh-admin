@@ -13,6 +13,12 @@ export class VisitsComponent implements OnDestroy{
     encounterId: string; // = '20171050';
     _visitData: Visit = null;
     waiting = false;
+    formdata = {
+        //*/
+        root : '1.2.276.0.76.3.87686',
+        encounterId : '20171050',
+        //*/
+    };
 
     private _updateTimer: Timer;
     private _updateTimerToggle = false;
@@ -42,6 +48,8 @@ export class VisitsComponent implements OnDestroy{
 
     search (): void {
         console.log(this.root, this.encounterId);
+        this.root = this.formdata['root'];
+        this.encounterId = this.formdata['encounterId'];
         this.waiting = true;
         this._visitData = this._fileService.getVisit(this.root, this.encounterId);
     }

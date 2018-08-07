@@ -24,7 +24,7 @@ import { UsersComponent, UserSingleComponent, UserSingleViewComponent, UserNewCo
 import { ReportService, SuccessReportsPipe, ReportSingleViewComponent,
             ReportsComponent, ReportNewComponent, ReportSingleComponent }           from './reports/index';
 import { PreferencesComponent, PreferenceService }                                  from './preferences/index';
-import { VisitService, VisitsComponent }                      from './visits/index';
+import { VisitService, VisitsComponent, VisitSingleViewComponent }                  from './visits/index';
 import { RequestsComponent, RequestSingleViewComponent, RequestSingleComponent, RequestStatusBarComponent,
             RequestFilterPipe, RequestService }                                     from './requests/index';
 import { StatusComponent, StatusService }                                           from './status/index';
@@ -59,6 +59,7 @@ import { RestrictedComponent }  from './restricted/restricted.component';
         RequestSingleComponent,
         RequestStatusBarComponent,
         VisitsComponent,
+        VisitSingleViewComponent,
         StatusComponent,
         RestrictedComponent,
         LoadingComponent,

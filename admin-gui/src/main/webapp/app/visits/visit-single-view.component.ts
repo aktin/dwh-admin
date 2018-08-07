@@ -13,7 +13,7 @@ import { Visit } from './visit';
 })
 
 export class VisitSingleViewComponent  {
-    @Input() _visit: Visit;
+    @Input() visitData: Visit;
     @Input() root: string;
     @Input() patId: string;
 
@@ -21,6 +21,6 @@ export class VisitSingleViewComponent  {
     }
 
     get visit (): Visit {
-        return this._visit;
+        return this.visitData;
     }
 }
