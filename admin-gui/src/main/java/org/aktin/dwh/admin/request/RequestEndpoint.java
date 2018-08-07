@@ -32,6 +32,11 @@ import org.aktin.broker.request.RetrievedRequest;
 import org.aktin.dwh.admin.auth.Secured;
 import org.aktin.dwh.admin.filter.NoCache;
 
+
+/**
+ * RESTful HTTP end point for receiving, updating and deleting requests and their attributes.
+ * 
+ */
 @Path("request")
 public class RequestEndpoint {
 	private static final Logger log = Logger.getLogger(RequestEndpoint.class.getName());
@@ -40,9 +45,10 @@ public class RequestEndpoint {
 	@Context 
 	private SecurityContext security;
 
+	
 	/**
-	 * List generated reports
-	 * @return generated reports
+	 * GET request to receive all requests.
+	 * @return list of all requests
 	 */
 	@GET
 	@NoCache
@@ -62,6 +68,12 @@ public class RequestEndpoint {
 		return new Request(request);
 	}
 	
+	/**
+	 * GET request to receive the request of the given id.
+	 * @param id requestId
+	 * @return Request object
+	 * @throws IOException
+	 */
 	@GET
 	@Path("{id}")
 	public Request getRequest(@PathParam("id") int id) throws IOException{
@@ -72,6 +84,12 @@ public class RequestEndpoint {
 		return wrap(req);
 	}
 
+	/**
+	 * GET request to receive the result file of the specified request.
+	 * @param id requestId
+	 * @return Response containing the result file
+	 * @throws IOException
+	 */
 	@Secured
 	@GET
 	@Path("{id}/result")
@@ -90,6 +108,13 @@ public class RequestEndpoint {
 		return b.build();
 	}
 
+	/**
+	 * POST request to set the value of the autoSubmit attribute of the specifies request. 
+	 * If autoSubmit is set to true the result of the request is send to server without asking for permission.
+	 * @param id requestId
+	 * @param autoSubmit
+	 * @throws IOException
+	 */
 	@Secured
 	@POST
 	@Path("{id}/autoSubmit/{value}")
@@ -100,6 +125,12 @@ public class RequestEndpoint {
 		}
 		req.setAutoSubmit(true);
 	}
+	/**
+	 * POST request to set the status of the specifies request to the given value.
+	 * @param id requestId
+	 * @param newStatus of the request
+	 * @throws IOException
+	 */
 	@Secured
 	@POST
 	@Path("{id}/status/{value}")
@@ -127,6 +158,13 @@ public class RequestEndpoint {
 		req.changeStatus(userId, newStatus, null);
 	}
 
+	/**
+	 * POST request to set the marker of a request. 
+	 * The marker determines if the request is visible in the user interface or if it's marked as deleted.
+	 * @param id requestId
+	 * @param mark value of enum Mark
+	 * @throws IOException
+	 */
 	@Secured
 	@POST
 	@Path("{id}/marker/{value}")
@@ -139,6 +177,12 @@ public class RequestEndpoint {
 		req.setMarker(mark);
 	}
 
+	/**
+	 * PUT request to change an already existing marker of a request.
+	 * @param id requestId
+	 * @param mark value of enum Mark
+	 * @throws IOException
+	 */
 	@Secured
 	@PUT
 	@Path("{id}/marker")
@@ -150,6 +194,12 @@ public class RequestEndpoint {
 		}
 		req.setMarker(mark);
 	}
+	/**
+	 * DELETE request to delete a marker of a request.
+	 * @param id requestId
+	 * @return empty Response
+	 * @throws IOException
+	 */
 	@Secured
 	@DELETE
 	@Path("{id}/marker")
@@ -163,6 +213,13 @@ public class RequestEndpoint {
 	}
 
 
+	/**
+	 * POST request to create a new rule for the query to which the specified request belongs to.
+	 * @param id requestId
+	 * @param action value of enum QueryRuleAction
+	 * @return Response for the new created resource 
+	 * @throws IOException
+	 */
 	@Secured
 	@POST
 	@Path("{id}/rule/{action}")

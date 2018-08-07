@@ -19,6 +19,10 @@ import org.aktin.broker.request.BrokerQueryRule;
 import org.aktin.broker.request.RetrievedRequest;
 import org.aktin.dwh.admin.auth.Secured;
 
+/**
+ * RESTful HTTP end point for receiving and deleting query rules.
+ * 
+ */
 @Path("query")
 public class QueryEndpoint {
 	@Inject
@@ -26,6 +30,13 @@ public class QueryEndpoint {
 	@Context 
 	private SecurityContext security;
 	
+	/**
+	 * GET request to retrieve the queryBundle resource (contains the query rule and a list 
+	 * of all requests that belong to the query) which can be addressed by the given path.
+	 * @param id queryId
+	 * @return queryBundle of the given queryId
+	 * @throws IOException
+	 */
 	@GET
 	@Path("{id}")
 	public QueryBundle getQueryBundle(@PathParam("id") int id) throws IOException{
@@ -47,6 +58,11 @@ public class QueryEndpoint {
 	}
 
 
+	/**
+	 * GET request to retrieve the rule of a specific query which contains the rule action and the creator of the rule.
+	 * @param id queryId
+	 * @return rule object
+	 */
 	@GET
 	@Path("{id}/rule")
 	public Rule getRule(@PathParam("id") int id){
@@ -56,6 +72,11 @@ public class QueryEndpoint {
 		}
 		return Rule.wrap(rule);
 	}
+	/**
+	 * DELETE request to delete the rule of the query which is specified by the given id.
+	 * @param id queryId
+	 * @throws IOException
+	 */
 	@Secured
 	@DELETE
 	@Path("{id}/rule")
