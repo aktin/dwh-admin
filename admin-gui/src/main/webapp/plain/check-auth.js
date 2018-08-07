@@ -1,4 +1,5 @@
-var rest_base='../rest';
+var rest_base='http://134.106.36.86:8087/aktin/admin';
+//var rest_base='../rest';
 function updateAuthStatus(onSuccess){
 		$.ajax({ 
 			type: 'GET', 

@@ -12,8 +12,8 @@ function loadRequestList(){
 		success: function(data) {
 			// clear list
 			$('#requests').empty();
-			// TODO render request list
-			alert(JSON.stringify(data));
+			// render request list
+			//alert(JSON.stringify(data));
 			for( var i=0; i<data.length; i++ ){
 				var req = data[i];
 				var el = $('<div class="req"><span>request id='+req.requestId+'</span> <span class="del">x</span> <span class="show">s</span></div>');
