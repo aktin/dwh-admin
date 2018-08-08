@@ -3,19 +3,27 @@ package org.aktin.dwh.admin.request;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.POST;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 
 import org.aktin.broker.request.RequestManager;
+import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.BrokerQueryRule;
+import org.aktin.broker.request.QueryRuleAction;
 import org.aktin.broker.request.RetrievedRequest;
 import org.aktin.dwh.admin.auth.Secured;
 
@@ -25,6 +33,7 @@ import org.aktin.dwh.admin.auth.Secured;
  */
 @Path("query")
 public class QueryEndpoint {
+	private static final Logger log = Logger.getLogger(QueryEndpoint.class.getName());
 	@Inject
 	RequestManager manager;
 	@Context 
@@ -53,8 +62,47 @@ public class QueryEndpoint {
 		if( rule != null ){
 			qb.rule = Rule.wrap(rule);
 		}
+		qb.requests = rs.stream().map(req -> new Request(req)).collect(Collectors.toList());
 		// sort by date XXX or already sorted???
 		return qb;
+	}
+	
+	@POST
+	@Secured
+	@Path("{id}/applyRule")
+	@Produces(MediaType.APPLICATION_JSON)
+	public void applyRule(@PathParam("id") int id, QueryRuleAction action) {
+		List<RetrievedRequest> rs = new ArrayList<>();
+		try( Stream<? extends RetrievedRequest> req = manager.getQueryRequests(id) ){
+			req.forEach(rs::add);
+		}
+		for( RetrievedRequest req : rs ) {
+			switch( req.getStatus() ) {
+			case Submitted:
+			case Failed:
+			case Completed:
+			case Sending:
+				continue;
+			case Retrieved:
+			case Seen:
+			case Processing:
+			case Queued:
+				if( action == QueryRuleAction.REJECT ) {
+					try {
+						req.changeStatus(security.getUserPrincipal().getName(), RequestStatus.Rejected, "Automatic reject by query rule");
+					} catch (IOException e) {
+						log.log(Level.SEVERE, "Unable to apply reject rule to request {0}", req.getRequestId());
+					}
+				}
+				if( action == QueryRuleAction.ACCEPT_SUBMIT ) {
+					req.setAutoSubmit(true);
+				} else if( action == QueryRuleAction.ACCEPT_EXECUTE ) {
+					req.setAutoSubmit(false);
+				} else  {
+					
+				}
+			}
+		}
 	}
 
 
