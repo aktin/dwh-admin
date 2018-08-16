@@ -41,6 +41,18 @@ export class RequestFilterPipe implements PipeTransform {
                 output = output.filter(req => req.isFinished());
                 break;
             }
+            case 'submitted' : {
+                output = output.filter(req => req.isSubmitted());
+                break;
+            }
+            case 'failed' : {
+                output = output.filter(req => req.failed());
+                break;
+            }
+            case 'recurring' : {
+                output = output.filter(req => req.isRecurring());
+                break;
+            }
         }
         if ( status === 'hidden') {
             output = output.filter(req => req.marker === RequestMarker.HIDDEN);

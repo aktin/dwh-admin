@@ -101,6 +101,6 @@ export enum ReportStatus {
  */
 export enum ReportStateParse {
     'Erfolg',
-    'Datenfehler',
+    'nicht ausreichend Daten vorhanden',
     'wird erstellt',
 }

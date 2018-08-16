@@ -17,7 +17,7 @@
     </div>
 
     <div class="ui extra" *ngIf="checkBoxText && checkBoxText.length >= 2">
-        <br />
+        <br/>
         <label>{{checkBoxText[0]}}</label>
         <div class="field">
             <div class="ui slider checkbox">
@@ -27,6 +27,30 @@
             </div>
         </div>
     </div>
+
+    <div class="ui extra" *ngIf="checkBoxTextQuery && checkBoxTextQuery.length >= 2">
+        <br/>
+        <label>{{checkBoxTextQuery[0]}}</label>
+        <div class="field">
+            <div class="ui slider checkbox">
+                <input type="checkbox" name="query" [(ngModel)]="checkedQuery" [disabled]="checkBoxText && checkBoxText.length >= 2 && !checked">
+                <label *ngIf="!checkedQuery || checkBoxTextQuery.length == 2">{{checkBoxTextQuery[1]}}</label>
+                <label *ngIf="checkedQuery && checkBoxTextQuery.length > 2">{{checkBoxTextQuery[2]}}</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui extra" *ngIf="checkBoxTextApply && checkBoxTextApply.length >= 2">
+        <br/>
+        <label>{{checkBoxTextApply[0]}}</label>
+        <div class="field">
+            <div class="ui slider checkbox">
+                <input type="checkbox" name="query" [(ngModel)]="checkedApply" [disabled]="(checkBoxText && checkBoxText.length >= 2 && !checked) || !checkedQuery">
+                <label *ngIf="!checkedApply || checkBoxTextApply.length == 2">{{checkBoxTextApply[1]}}</label>
+                <label *ngIf="checkedApply && checkBoxTextApply.length > 2">{{checkBoxTextApply[2]}}</label>
+            </div>
+        </div>
+     </div>
 
     <br />
     <div class="popup-message-buttons" *ngIf="mode === 'confirm'">

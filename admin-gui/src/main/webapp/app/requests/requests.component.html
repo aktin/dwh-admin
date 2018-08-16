@@ -1,11 +1,10 @@
 <div class="ui grid">
-
     <div class="ui breadcrumb eight wide column">
         <div class="active section breadcrumb-header">Anfragenübersicht</div>
     </div>
     <div class="ui form right aligned eight wide column">
         <div class="inline field">
-            <label>Nach Status Filtern</label>
+            <label>Nach Status filtern:</label>
             <select class="ui inline dropdown" (change)="stateFilter=$event.target['value']">
                 <option *ngFor="let filter of stateFilterArray"
                         value="{{filter[1]}}"
@@ -18,12 +17,18 @@
     </div>
 </div>
 <div class="ui divider"></div>
-<div *ngIf="requests" class="">
-    <div class="ui vertical segment" *ngFor="let request of requests | requestFilter:stateFilter | orderBy: ['-requestId']">
+<pagination-controls class="pagination"
+    (pageChange)="p = $event"
+    autoHide="true"
+    previousLabel="Vorherige Seite"
+    nextLabel="Nächste Seite">
+</pagination-controls>
+<div *ngIf="requests">
+    <div class="ui vertical segment" *ngFor="let request of requests | requestFilter:stateFilter | orderBy: ['-requestId'] | paginate: { itemsPerPage: 12, currentPage: p }">
         <div class="ui vertical basic segment request-single-view grid container" id="request-list-{{request.requestId}}">
             <div class="twelve wide column">
                 <div class="ui header request-single-view-header" [routerLink]="['/request', request.requestId]">
-                    {{request.query.query.title}}
+                    {{request.query.query.title}} {{request.requestId}}
                     <!--<div class="ui red circular label" *ngIf="request.status < 2">neu</div>-->
                     <div class="ui gray circular label" *ngIf="!single" title="{{request.query.query.description}}">i</div>
                 </div>
@@ -33,11 +38,7 @@
                     <i class="eye icon"></i>
                 </a>
             </div>
-            <request-status-bar [request]="request" [routerLink]="['/request', request.requestId]" class="request-status-bar-overview"></request-status-bar>
+            <request-status-bar [request]="request" [queryDetails]="getQueryDetails()" [routerLink]="['/request', request.requestId]" class="request-status-bar-overview"></request-status-bar>
         </div>
     </div>
-
-    <!--<request-single-view *ngFor="let req of requests | requestFilter:stateFilter:markerFilter " [requestData]="req" class="ui vertical segment"></request-single-view>-->
-
-
 </div>

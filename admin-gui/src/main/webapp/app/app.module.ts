@@ -5,30 +5,31 @@
  *  register components and import additional modules
  */
 
-import { NgModule, LOCALE_ID }          from '@angular/core';
-import { BrowserModule, Title }         from '@angular/platform-browser';
-import { FormsModule }                  from '@angular/forms';
-import { HttpModule, JsonpModule }      from '@angular/http';
+import { NgModule, LOCALE_ID } from '@angular/core';
+import { BrowserModule, Title } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
+import { HttpModule, JsonpModule } from '@angular/http';
 
-import { MyDatePickerModule }           from 'mydatepicker';
+import { MyDatePickerModule } from 'mydatepicker';
+import { NgxPaginationModule } from 'ngx-pagination';
 
-import { AppRoutingModule }             from './app-routing.module';
-import { AppComponent }                 from './app.component';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
 
-import { HomeComponent, TestComponent }                                             from './home/index';
+import { HomeComponent, TestComponent } from './home/index';
 import { StorageService, UrlService, HttpInterceptorService, DownloadService, CleanUpAuthService,
-            SafeUrlPipe, OrderByPipe,
-            PopUpMessageComponent, LoadingComponent }                               from './helpers/index';
+            SafeUrlPipe, OrderByPipe, DurationDataPipe, DurationQueryPipe,
+            PopUpMessageComponent, LoadingComponent } from './helpers/index';
 import { UsersComponent, UserSingleComponent, UserSingleViewComponent, UserNewComponent, UserService,
-            UserLoginComponent, UserAuthGuard, AuthService }                        from './users/index';
+            UserLoginComponent, UserAuthGuard, AuthService } from './users/index';
 import { ReportService, SuccessReportsPipe, ReportSingleViewComponent,
-            ReportsComponent, ReportNewComponent, ReportSingleComponent }           from './reports/index';
-import { PreferencesComponent, PreferenceService }                                  from './preferences/index';
-import { VisitService, VisitsComponent, VisitSingleViewComponent }                  from './visits/index';
+            ReportsComponent, ReportNewComponent, ReportSingleComponent } from './reports/index';
+import { PreferencesComponent, PreferenceService } from './preferences/index';
+import { VisitService, VisitsComponent, VisitSingleViewComponent } from './visits/index';
 import { RequestsComponent, RequestSingleViewComponent, RequestSingleComponent, RequestStatusBarComponent,
-            RequestFilterPipe, RequestService }                                     from './requests/index';
-import { StatusComponent, StatusService }                                           from './status/index';
-import { RestrictedComponent }  from './restricted/restricted.component';
+            RequestFilterPipe, RequestService } from './requests/index';
+import { StatusComponent, StatusService } from './status/index';
+import { RestrictedComponent } from './restricted/restricted.component';
 
 
 @NgModule({
@@ -39,6 +40,7 @@ import { RestrictedComponent }  from './restricted/restricted.component';
         HttpModule,
         JsonpModule,
         MyDatePickerModule,
+        NgxPaginationModule,
     ],
     declarations: [
         AppComponent,
@@ -66,6 +68,8 @@ import { RestrictedComponent }  from './restricted/restricted.component';
         PopUpMessageComponent,
         OrderByPipe,
         SafeUrlPipe,
+        DurationDataPipe,
+        DurationQueryPipe,
         SuccessReportsPipe,
         RequestFilterPipe,
     ],
@@ -88,7 +92,7 @@ import { RestrictedComponent }  from './restricted/restricted.component';
         VisitService,
         PreferenceService,
         StatusService,
+        //{provide: Window, useValue: window },
     ]
 })
 export class AppModule { }
-

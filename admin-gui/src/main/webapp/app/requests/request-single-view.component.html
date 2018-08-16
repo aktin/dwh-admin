@@ -24,7 +24,7 @@
         </div>
     </div>
     <div class="row">
-        <request-status-bar [request]="request" [single]="true"></request-status-bar>
+        <request-status-bar [request]="request" [queryDetails]="getQueryDetails()" [single]="true"></request-status-bar>
     </div>
     <div class="row ui segment" *ngIf="request.hasResultFile()">
         <div class="twelve wide column middle aligned">
@@ -36,7 +36,7 @@
                (click)="downloadResult()"
                title="Die Ergebnisdatei herunterladen."><i class="download icon request-result-button-icon"></i>
                 <div class="request-result-button-text">Ergebnisse<br/>
-                Herunterladen</div>
+                herunterladen</div>
             </a>
         </div>
     </div>
@@ -46,6 +46,7 @@
         </div>
         <div class="eight wide column larger middle aligned" *ngIf="request.isNew()">
             Diese Anfrage wurde noch nicht zur Ausführung freigegeben. Bitte wählen Sie eine Aktion.
+            <span *ngIf="request.isRecurring()" class="block-margin">Sie haben auch die Möglickeit alle Anfragen der Serie anzunehmen oder abzulehnen.</span>
         </div>
         <div class="eight wide column larger middle aligned" *ngIf="!request.isNew()">
             Die Ergebnisse wurden noch nicht zur Übermittlung freigegeben. Bitte wählen Sie eine Aktion.
@@ -108,11 +109,11 @@
             <div class="ui meta three wide column" *ngIf="request.query.scheduled">
                 {{request.query.scheduled | date: 'mediumDate'}}
             </div>
-            <div class="ui meta five wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.duration">
-                Zeitraum der Abfrage:
+            <div class="ui meta five wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.duration && !request.isRecurring()">
+                Zeitraum der Daten:
             </div>
-            <div class="ui meta three wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.duration">
-                {{request.query.query.schedule.duration}}
+            <div class="ui meta three wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.duration && !request.isRecurring()">
+                {{request.query.query.schedule.duration | durationData }}
             </div>
             <div class="ui meta five wide column" *ngIf="request.query.deadline">
                 Deadline:
@@ -131,6 +132,63 @@
             </div>
             <div class="ui meta three wide column" *ngIf="request.query.canceled">
                 {{request.query.canceled | date: 'mediumDate'}}
+            </div>
+        </div>
+        <div class="row" *ngIf="request.isRecurring()">
+            <div class="ui sixteen wide column divider"></div>
+        </div>
+        <div class="compact row" *ngIf="request.isRecurring()">
+            <div class="ui meta sixteen wide column">
+                <b>Serien-Informationen:</b>
+            </div>
+            <div class="ui meta five wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.duration">
+                Zeitraum der Daten:
+            </div>
+            <div class="ui meta three wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.duration">
+                {{request.query.query.schedule.duration | durationData }}
+            </div>
+            <div class="ui meta five wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.interval">
+                Abfrage-Intervall:
+            </div>
+            <div class="ui meta three wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.interval">
+                {{request.query.query.schedule.interval | durationQuery }}
+            </div>
+        </div>
+        <div class="row" *ngIf="queryRule">
+            <div class="ui meta eight wide column">
+                Für die Serie liegt folgende Freigabe-Regel vor:<br>
+                (erstellt von {{queryRule.user}} am ) <br>
+                <button class="ui button button-delete-rule" (click)="deleteQueryRule()">Regel entfernen</button>
+            </div>
+            <div class="ui meta eight wide column " *ngIf="queryRule">
+                <span *ngIf="queryRule.action === 'REJECT'">Alle Anfragen dieser Serie ablehnen.</span>
+                <div *ngIf="queryRule.action === 'ACCEPT_EXECUTE' || queryRule.action === 'ACCEPT_SUBMIT'">
+                    Alle Anfragen dieser Serie freigeben. <br>
+                    <!--Ergebnisüberprüfung vor der Übermittlung: <br>-->
+                    <span *ngIf="queryRule.action === 'ACCEPT_SUBMIT'">Nach der Berechnung werden die Ergebnisse direkt übertragen.</span>
+                    <span *ngIf="queryRule.action === 'ACCEPT_EXECUTE'">Vor der Übermittlung der Ergebnisse wird erneut nachgefragt.</span>
+                </div>
+            </div>
+        </div>
+        <button class="ui button button-query-requests" (click)="showQuery = !showQuery" *ngIf="request.isRecurring()">
+                Alle Anfragen der Serie
+                <span *ngIf="!showQuery">anzeigen</span>
+                <span *ngIf="showQuery">ausblenden</span>
+        </button>
+    </div>
+    <div class="container-query-requests" *ngIf="showQuery">
+        <pagination-controls class="pagination"
+            (pageChange)="p = $event"
+            autoHide="true"
+            previousLabel="Vorherige Seite"
+            nextLabel="Nächste Seite">
+        </pagination-controls>
+        <div *ngFor="let recurr of recurrRequests | paginate: { itemsPerPage: 6, currentPage: p }">
+            <div class="request-status-bar-active-request" *ngIf="recurr.requestId === request.requestId">
+                <request-status-bar [request]="recurr" [queryDetails]="getQueryDetails()"></request-status-bar>
+            </div>
+            <div class="request-status-bar-overview" *ngIf="recurr.requestId !== request.requestId">
+                <request-status-bar [request]="recurr" [queryDetails]="getQueryDetails()" [routerLink]="['/request', recurr.requestId]"></request-status-bar>
             </div>
         </div>
     </div>

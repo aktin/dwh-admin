@@ -4,7 +4,9 @@
     /*width: 100%;*/
     vertical-align: middle;
     position: relative;
-    margin-left: 50px;
+    /*margin-left: 50px;*/
+    margin: 20px 0 10px 50px;
+
 }
 .request-status-bar-box.class {
     width: 600px;
@@ -73,4 +75,9 @@
     top: 15px;
     text-align: center;
     width: 200px;
+}
+
+.request-query-header {
+    float: left;
+    margin-top: 5px;
 }

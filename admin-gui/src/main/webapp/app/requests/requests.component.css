@@ -7,6 +7,12 @@
     cursor: pointer;
 }
 
+.request-status-bar-active-request {
+    border: 2px solid rgb(253, 221, 132);
+    border-radius: 25px;
+    width: 100%;
+}
+
 .hide-sql {
     display: none !important;
 }
@@ -18,4 +24,32 @@
 }
 .request-result-button-icon {
     padding-top: 5px;
+}
+
+.container-query-requests {
+    border: solid lightgray 1px;
+    border-radius: 25px;
+    width: 100%;
+}
+
+.container-query-requests div {
+    padding: 10px 5px 15px 5px;
+}
+
+.button-query-requests {
+    margin: 20px auto 5px auto;
+    width: 250px;
+}
+
+.button-delete-rule {
+    margin: 10px auto 10px auto;
+}
+
+.pagination /deep/ .ngx-pagination {
+    text-align: center;
+  }
+
+.block-margin {
+    display: block;
+    margin-top: 15px;
 }

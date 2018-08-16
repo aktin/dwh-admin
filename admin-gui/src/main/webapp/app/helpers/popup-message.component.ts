@@ -15,10 +15,12 @@ export class PopUpMessageComponent {
     @Input() mode = 'info'; // 'confirm'
     @Input() buttons: string[][] = [['Weiter', 'green'], ['Abbrechen', 'red']];
     show = false;
-    checkBoxText: string[];
+    checkBoxText: string[] = [];
+    checkBoxTextQuery: string[] = [];
+    checkBoxTextApply: string[] = [];
     checked = false;
-
-    constructor() {}
+    checkedQuery = false;
+    checkedApply = false;
 
     setData (show: boolean, title: string, message: string, callback?: Function): void {
         this.show = show;
@@ -30,6 +32,16 @@ export class PopUpMessageComponent {
     setOptIn (texts: string[]): void {
         this.checked = true;
         this.checkBoxText = texts;
+    }
+
+    setOptQuery (texts: string[]): void {
+        this.checkedQuery = true;
+        this.checkBoxTextQuery = texts;
+    }
+
+    setOptApply (texts: string[]): void {
+        this.checkedApply = true;
+        this.checkBoxTextApply = texts;
     }
 
     // call after setData
@@ -51,10 +63,8 @@ export class PopUpMessageComponent {
     msgOk (): void {
         this.show = false;
         if (this.callback) {
-            if (this.checkBoxText) {
-                this.callback(true, this.checked);
-            }
-            this.callback(true);
+            this.callback(true, this.checked, this.checkedQuery, this.checkedApply);
+            //this.callback(true);
         }
         this.clear();
     }
@@ -75,6 +85,10 @@ export class PopUpMessageComponent {
         this.show = false;
         this.buttons = null;
         this.checkBoxText = null;
+        this.checkBoxTextQuery = null;
+        this.checkBoxTextApply = null;
         this.checked = false;
+        this.checkedQuery = false;
+        this.checkedApply = false;
     }
 }

@@ -16,6 +16,7 @@ export class RequestStatusBarComponent implements OnInit {
     @Input() request: LocalRequest;
     @Input() single: boolean;
     @Input() interaction: boolean;
+    @Input() queryDetails: object;
     failed: boolean;
     fillBar: string;
     leftSpace: string;
@@ -46,7 +47,7 @@ export class RequestStatusBarComponent implements OnInit {
                 let obj = {
                     title: this.statusTexts[this.request.status],
                     active: true,
-                    dot : false
+                    dot: false
                 };
                 obj[RequestStatus[this.request.status]] = true;
                 this.myItems.push(obj);
@@ -56,7 +57,7 @@ export class RequestStatusBarComponent implements OnInit {
                 for (let n = 0; n < this.statusLength; n ++) {
                     let obj = {
                         title: this.statusTexts[n],
-                        dot : true
+                        dot: true
                     };
                     if ( <RequestStatus> n < this.request.status ) {
                         obj['visited'] = true;

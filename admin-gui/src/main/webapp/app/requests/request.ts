@@ -1,6 +1,8 @@
+
 /**
  * Created by Xu on 08-Jun-17.
  */
+
 export interface Query {
     id: number,
     title: string,
@@ -8,6 +10,7 @@ export interface Query {
     schedule: {
         duration: string,
         reference: Date,
+        interval: string;
     },
     principal: {
         name: string,
@@ -18,6 +21,16 @@ export interface Query {
         url?: string,
     },
     extensions: string[];
+}
+
+export interface QueryBundle {
+    rule: Rule,
+    requests: Array<LocalRequest>
+}
+
+export interface Rule {
+    user: string,
+    action: QueryRuleAction
 }
 
 export interface Request {
@@ -102,6 +115,10 @@ export class LocalRequest {
         return this.failed() || this.status === RequestStatus.Submitted;
     }
 
+    public isSubmitted(): boolean {
+        return this.status === RequestStatus.Submitted;
+    }
+
     public hasResultFile (): boolean {
         return this.result !== null;
     }
@@ -110,6 +127,9 @@ export class LocalRequest {
         return ([RequestStatus.Rejected, RequestStatus.Failed].indexOf(this.status) >= 0);
     }
 
+    public isRecurring(): boolean {
+        return this.queryId !== null;
+    }
 }
 
 export enum RequestMarker {
@@ -146,6 +166,23 @@ export enum RequestStatus {
          * or manually after {@link #Completed}.
          */
     Rejected,
+}
+
+export enum QueryRuleAction {
+    /**
+	 * reject matching queries
+	 */
+    REJECT,
+    /**
+	 * accept execution of matching queries,
+	 * but require interaction before results are submitted
+	 */
+    ACCEPT_EXECUTE,
+    /**
+	 * accept execution of matching queries and automatically
+	 * submit the result data.
+	 */
+    ACCEPT_SUBMIT
 }
 
 /*

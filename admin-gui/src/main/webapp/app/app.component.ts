@@ -3,17 +3,17 @@
  *
  * Base App Component with layout
  */
-import { Component, OnInit }    from '@angular/core';
-import { Title }                from '@angular/platform-browser';
+import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/mergeMap';
 import _ = require('underscore');
 
-import { routings }     from './app-routing.module';
-import { AuthService }  from './users/index';
+import { routings } from './app-routing.module';
+import { AuthService } from './users/index';
 import { HttpInterceptorService } from './helpers/services/http-interceptor.service';
-import { Response }     from '@angular/http';
+import { Response } from '@angular/http';
 import { UrlService } from './helpers/services/url.service';
 
 @Component({
@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
     versionData = "";
 
     constructor (private _titleService: Title,
-                 private _atuhService: AuthService,
+                 private _authService: AuthService,
                  private _route: ActivatedRoute,
                  private _router: Router,
                  private _http: HttpInterceptorService,
@@ -62,14 +62,14 @@ export class AppComponent implements OnInit {
         if (!this.versionData) {
             this._http.debouncedGet('version', '', '', 5000, this._url.parse('version'),
                 (res: Response) => { return res.text(); },
-                (err: Response) => {return err; } )
+                (err: Response) => { return err; } )
                 .subscribe(
                     val => { if (val) {this.versionData = val; } },
                     error => console.log(error)
                 );
         }
         if (!this.versionData) {
-            return "bitte einloggen zum Anzeigen";
+            return "Bitte einloggen zum Anzeigen.";
         }
 
         return this.versionData.slice(9);
@@ -77,7 +77,7 @@ export class AppComponent implements OnInit {
 
     get routings() {
         _.each(routings, route => {
-            this.visibility[route.data['name']] = this._atuhService.userLocalCheckRoles(route.data['roles']);
+            this.visibility[route.data['name']] = this._authService.userLocalCheckRoles(route.data['roles']);
         });
 
         return routings;

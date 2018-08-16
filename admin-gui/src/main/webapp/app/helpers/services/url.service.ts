@@ -7,8 +7,7 @@ import _ = require('underscore');
 @Injectable()
 export class UrlService {
     private _serverUrls = [
-        // 'http://134.106.36.86:8087/aktin/admin/rest/',
-        // 'http://localhost:8080/aktin/admin/rest/',
+        //'http://134.106.36.86:8020/aktin/admin/rest/',
         '/aktin/admin/rest/',
     ];
     private _serverUrl = this._serverUrls[0];
@@ -41,6 +40,11 @@ export class UrlService {
         setRequestStatus: 'request/@requestId@/status/@status@',
         setRequestMarker: 'request/@requestId@/marker/@marker@',
         updateRequestMarker: 'request/@requestId@/marker', // put / delete
+
+        setQueryRule : 'request/@requestId@/rule/@action@',
+        query : 'query/@queryId@',
+        queryRule : 'query/@queryId@/rule', // get/delete
+        applyRule : 'query/@queryId@/applyRule',
 
         // visitList : 'files',
         visit : 'visit/@root@/@id@?xslt=@filter@',

@@ -67,6 +67,13 @@ public class QueryEndpoint {
 		return qb;
 	}
 	
+	
+	/**
+	 * POST request to apply the given rule action to all requests that are already present and belong to the query.
+	 * Only requests with a changeable status (interaction required for this or a following status, ignoring auto submit) will be affected.
+	 * @param id queryId
+	 * @param action rule action
+	 */
 	@POST
 	@Secured
 	@Path("{id}/applyRule")
@@ -78,29 +85,38 @@ public class QueryEndpoint {
 		}
 		for( RetrievedRequest req : rs ) {
 			switch( req.getStatus() ) {
+			case Rejected:
 			case Submitted:
 			case Failed:
-			case Completed:
 			case Sending:
 				continue;
 			case Retrieved:
 			case Seen:
-			case Processing:
 			case Queued:
+			case Processing:
+			case Completed:
 				if( action == QueryRuleAction.REJECT ) {
 					try {
 						req.changeStatus(security.getUserPrincipal().getName(), RequestStatus.Rejected, "Automatic reject by query rule");
 					} catch (IOException e) {
-						log.log(Level.SEVERE, "Unable to apply reject rule to request {0}", req.getRequestId());
+						log.log(Level.SEVERE, "Unable to apply reject rule to request " + req.getRequestId(), e);
 					}
-				}
-				if( action == QueryRuleAction.ACCEPT_SUBMIT ) {
-					req.setAutoSubmit(true);
-				} else if( action == QueryRuleAction.ACCEPT_EXECUTE ) {
-					req.setAutoSubmit(false);
-				} else  {
-					
-				}
+				} else {
+					if( action == QueryRuleAction.ACCEPT_SUBMIT ) {
+						req.setAutoSubmit(true);
+					} else if( action == QueryRuleAction.ACCEPT_EXECUTE ) {
+						req.setAutoSubmit(false);
+					}
+					if (req.getStatus() != RequestStatus.Processing && req.getStatus() != RequestStatus.Completed && req.getStatus() != RequestStatus.Queued) {
+						try {
+							req.changeStatus(security.getUserPrincipal().getName(), RequestStatus.Queued, "Automatic accept by query rule");
+						} catch (IOException e) {
+							log.log(Level.SEVERE, "Unable to apply accept rule to request " + req.getRequestId(), e);
+						}
+					}
+				} 
+				break;
+			default: throw new AssertionError();
 			}
 		}
 	}
