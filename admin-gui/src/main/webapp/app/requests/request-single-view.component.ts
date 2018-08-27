@@ -2,10 +2,11 @@
 /**
  * Created by Xu on 09-Jun-17.
  */
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { PaginatePipe, PaginationService } from 'ngx-pagination';
 
 import { LocalRequest, RequestMarker, RequestStatus, Rule, QueryRuleAction, QueryBundle } from './request';
+import { RequestSingleComponent } from './request-single.component';
 import { PopUpMessageComponent } from '../helpers/index';
 import { RequestService } from './request.service';
 import _ = require('underscore');
@@ -16,30 +17,23 @@ import _ = require('underscore');
     styleUrls: ['./requests.component.css'],
 })
 
-export class RequestSingleViewComponent implements OnInit {
+export class RequestSingleViewComponent {
     @Input() requestData: LocalRequest;
+    @Input() queryBundle: QueryBundle;
+    @Input() queryDetails: object;
     @Input() single = false;
     @Input() popUp: PopUpMessageComponent = null;
-    requestsData = this._requestService.getRequests();
-    queryDetails = {};
+    // requestsData = this._requestService.getRequests();
+    // queryDetails: Object = this.queryDetails[this.request.queryId] = { 'order': [], 'rejected': 0, 'accepted': 0, 'submitted': 0 };
     hideSql = true;
     hiddenLoading = false;
     downloadLoading = false;
     options: string[];
     showQuery = false;
-    queryBundle: QueryBundle;
-
-    constructor(private _requestService: RequestService) {
+    // improve: avoid direct access to requestSingleComponent
+    constructor(private _requestService: RequestService, private _requestSingleComponent: RequestSingleComponent) {
         let tempOpt = Object.keys(RequestStatus);
         this.options = tempOpt.slice(tempOpt.length / 2);
-    }
-
-    ngOnInit() {
-        // improve: wait for async call updateQueryBundle to finish before loading content
-        if (this.request.isRecurring()) {
-            this.queryDetails[this.request.queryId] = { 'order': [], 'rejected': 0, 'accepted': 0, 'submitted': 0 };
-            this.updateQueryBundle();
-        }
     }
 
     get request (): LocalRequest {
@@ -80,15 +74,10 @@ export class RequestSingleViewComponent implements OnInit {
         );
     }
 
-    updateQueryBundle() {
-        this._requestService.getQueryBundle(this.request.queryId)
-            .subscribe(res => { this.queryBundle = res; this.queryDetails[this.request.queryId] = this.updateQueryDetails(); });
-    }
-
     applyRule(checkedApply: boolean, action: QueryRuleAction) {
         if (checkedApply) {
             this._requestService.applyRule(this.request.queryId, action)
-                .subscribe(() => { this.updateQueryBundle() });
+                .subscribe(() => { this._requestSingleComponent.updateQueryBundle() });
         }
     }
 
@@ -127,6 +116,7 @@ export class RequestSingleViewComponent implements OnInit {
             this.popUp.setData(true, title, message,
                 (answer: boolean, checked: boolean, checkedQuery: boolean, checkedApply: boolean) => {
                     if (answer) {
+                        this.requestData.status = this.setStatus(this.requestData, allow, checked);
                         if (this.request.isRecurring() && checkedQuery) {
                             if (checked && allow) {
                                 if (this.queryRule &&  this.queryRule.action.toString() !== 'ACCEPT_SUBMIT') {
@@ -161,8 +151,6 @@ export class RequestSingleViewComponent implements OnInit {
                                         });
                                 }
                             }
-                        } else {
-                            this.requestData.status = this.setStatus(this.requestData, allow, checked);
                         }
                     }
                 });
@@ -186,12 +174,14 @@ export class RequestSingleViewComponent implements OnInit {
     }
 
     getNumApplyRule(): number {
+        let reqId = this.requestData.requestId;
         let requests = this.queryBundle.requests.filter(function(req) {
-            return req.status === RequestStatus.Retrieved ||
+            return req.requestId !== reqId &&
+                  (req.status === RequestStatus.Retrieved ||
                    req.status === RequestStatus.Seen ||
                    req.status === RequestStatus.Queued ||
                    req.status === RequestStatus.Processing ||
-                   req.status === RequestStatus.Completed;
+                   req.status === RequestStatus.Completed);
 
         });
         return requests.length;
@@ -206,7 +196,7 @@ export class RequestSingleViewComponent implements OnInit {
 
     deleteQueryRule() {
         return this._requestService.deleteQueryRule(this.request.queryId)
-            .subscribe(() => this.updateQueryBundle());
+            .subscribe(() => this._requestSingleComponent.updateQueryBundle());
     }
 
     toggleHiddenMarker (): void {
@@ -225,23 +215,7 @@ export class RequestSingleViewComponent implements OnInit {
     }
 
     getQueryDetails() {
-        return this.queryDetails;
-    }
-
-    updateQueryDetails() {
-        let query = this.queryBundle.requests;
-        let order: number[] = [];
-        query.forEach(request => {
-            order.push(request.requestId);
-        });
-        let rejected = query.filter(
-            req => req.status === RequestStatus.Rejected).length;
-        let accepted = query.filter(
-            req => req.status !== RequestStatus.Retrieved &&  req.status !== RequestStatus.Seen
-                &&  req.status !== RequestStatus.Rejected).length;
-        let submitted = query.filter(
-            req => req.status === RequestStatus.Submitted).length;
-        return { 'order': order, 'rejected': rejected, 'accepted': accepted, 'submitted': submitted };
+        return this._requestSingleComponent.queryDetails;
     }
 
     get recurrRequests(): LocalRequest[] {
@@ -314,7 +288,7 @@ export class RequestSingleViewComponent implements OnInit {
     downloadResult (): void {
         this.downloadLoading = true;
         this._requestService.downloadResultFile(this.requestData.requestId, this.requestData.result);
-        setTimeout(() => {this.downloadLoading = false;}, 500);
+        setTimeout(() => { this.downloadLoading = false; }, 500);
     }
 
 }

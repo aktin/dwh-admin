@@ -2,10 +2,11 @@
  * Created by Xu on 04.05.2017.
  */
 import { Component, OnDestroy } from '@angular/core';
+import { TimerObservable } from 'rxjs/observable/TimerObservable';
+import { Subscription } from 'rxjs';
 
 import { RequestService } from './request.service';
 import { LocalRequest, RequestMarker, RequestStatus } from './request';
-import Timer = NodeJS.Timer;
 
 @Component({
     templateUrl: './requests.component.html',
@@ -18,15 +19,21 @@ export class RequestsComponent implements OnDestroy {
     stateFilter: RequestStatus | string = 'auth';
     queryDetails = {};
 
-    private _updateTimer: Timer;
-    private _updateTimerToggle = false;
+    private _timerSubscription: Subscription;
     private _dataInterval = 5000;
 
     constructor(private _requestService: RequestService) {}
 
+    ngOnInit() {
+        let timer = TimerObservable.create(0, this._dataInterval);
+        this._timerSubscription = timer.subscribe(() => {
+            this.updateRequests();
+        });
+    }
+
     ngOnDestroy(): void {
-        console.log('call clear timer');
-        clearTimeout(this._updateTimer);
+        console.log('unsubscribe timer');
+        this._timerSubscription.unsubscribe();
     }
 
     get stateFilterArray(): [string, RequestStatus|string][] {
@@ -42,28 +49,20 @@ export class RequestsComponent implements OnDestroy {
         ];
     }
 
-    updateRequest (): void {
-        if (this._updateTimerToggle) {
-            return;
-        }
-        console.log('set new timer');
-        clearTimeout(this._updateTimer);
-        this._updateTimerToggle = true;
-        this._updateTimer = setTimeout(() => {
-            this._updateTimerToggle = false;
-            this.updateRequest ();
-        }, this._dataInterval);
-        this.requestsData = this._requestService.getRequests();
-        this.queryDetails = {};
+    updateRequests(): void {
+        console.log('update Requests');
+        this._requestService.getRequests()
+            .subscribe(res => {
+                this.requestsData = res;
+                this.updateQueryDetails();
+            });
     }
 
     get requests(): LocalRequest[] {
-        this.updateRequest ();
-        this.requestsData = this._requestService.getRequests();
         return this.requestsData;
     }
 
-    getQueryDetails(): object {
+    updateQueryDetails() {
         for (let i = 0; i < this.requestsData.length; i++) {
             let currReq = this.requestsData[i];
             if (currReq.isRecurring() && !this.queryDetails.hasOwnProperty(currReq.queryId)) {
@@ -87,6 +86,6 @@ export class RequestsComponent implements OnDestroy {
                 this.queryDetails[currReq.queryId] = { 'order': order, 'rejected': rejected, 'accepted': accepted, 'submitted': submitted };
             }
         }
-        return this.queryDetails;
     }
+
 }
