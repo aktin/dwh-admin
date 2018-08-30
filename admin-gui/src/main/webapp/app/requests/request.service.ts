@@ -28,19 +28,28 @@ export class RequestService {
         private _router: Router
     ) {}
 
-    getRequests(): Observable<any> {
-        return this._http.get(this._urls.parse('requestList'))
+    getRequests(etag: string): Observable<any> {
+        let options = { headers: new Headers({'If-None-Match': etag}),  'observe': 'response' };
+        return this._http.get(this._urls.parse('requestList'), options)
             .catch(err => this._http.handleError(err))
-            .map( res => res = _.map(JSON.parse(res.text()), req => LocalRequest.parseRequest(req)) );
+            .map(resp => {
+                let res = {};
+                res['etag'] = resp.headers.get('ETag');
+                res['req'] = _.map(JSON.parse(resp.text()), req => LocalRequest.parseRequest(req));
+                return res;
+            });
     }
 
-    getRequest(requestId: number): Observable<any> {
-        return this._http.get(this._urls.parse('request', {requestId: requestId}))
+    getRequest(requestId: number, etag: string): Observable<any> {
+        let options = { headers: new Headers({'If-None-Match': etag}),  observe: 'response' };
+        return this._http.get(this._urls.parse('request', {requestId: requestId}), options)
             .catch(err => this._http.handleError(err))
-            .map(res => {
-                res = LocalRequest.parseRequest(JSON.parse(res.text()));
-                if (res.status === RequestStatus.Retrieved) {
-                    res.status = this.authorizeRequest(res.requestId, res.status, true);
+            .map(resp => {
+                let res = {};
+                res['etag'] = resp.headers.get('ETag');
+                res['req'] = LocalRequest.parseRequest(JSON.parse(resp.text()));
+                if (res['req'].status === RequestStatus.Retrieved) {
+                    res['req'].status = this.authorizeRequest(res['req'].requestId, res['req'].status, true);
                 }
                 return res;
             });

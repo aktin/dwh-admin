@@ -17,7 +17,7 @@ export class PopUpMessageComponent {
     show = false;
     checkBoxText: string[] = [];
     checkBoxTextQuery: string[] = [];
-    checkBoxTextApply: string[] = [];
+    checkBoxTextApply: string = null;
     checked = false;
     checkedQuery = false;
     checkedApply = false;
@@ -39,7 +39,7 @@ export class PopUpMessageComponent {
         this.checkBoxTextQuery = texts;
     }
 
-    setOptApply (texts: string[]): void {
+    setOptApply (texts: string): void {
         this.checkedApply = true;
         this.checkBoxTextApply = texts;
     }

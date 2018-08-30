@@ -40,14 +40,12 @@
         </div>
     </div>
 
-    <div class="ui extra" *ngIf="checkBoxTextApply && checkBoxTextApply.length >= 2">
+    <div class="ui extra" *ngIf="checkBoxTextApply">
         <br/>
-        <label>{{checkBoxTextApply[0]}}</label>
         <div class="field">
-            <div class="ui slider checkbox">
+            <div class="ui checkbox">
                 <input type="checkbox" name="query" [(ngModel)]="checkedApply" [disabled]="(checkBoxText && checkBoxText.length >= 2 && !checked) || !checkedQuery">
-                <label *ngIf="!checkedApply || checkBoxTextApply.length == 2">{{checkBoxTextApply[1]}}</label>
-                <label *ngIf="checkedApply && checkBoxTextApply.length > 2">{{checkBoxTextApply[2]}}</label>
+                <label>{{ checkBoxTextApply }}</label>
             </div>
         </div>
      </div>

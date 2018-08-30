@@ -95,20 +95,23 @@ export class RequestSingleViewComponent {
                     if (this.request.isRecurring()) {
                         this.popUp.setOptQuery(['Serien-Freigabe',
                         'Nur diese Anfrage freigeben.', 'Alle Anfragen dieser Serie freigeben.']);
-                        this.popUp.setOptApply(['',
-                        'Freigabe-Regel nur auf alle zukünftigen Anfragen anwenden.',
-                        'Freigabe von allen zukünftigen und bereits bestehenden Anfragen. Hiervon sind '
-                        + this.getNumApplyRule() + ' Anfragen betroffen.']);
+                        let numAllow = this.getNumApplyRule();
+                        if ( numAllow > 0) {
+                            this.popUp.setOptApply(
+                            'Neben dieser und zukünftigen Anfragen auch bereits bestehende Anfragen freigeben. ' +
+                            'Anzahl der hiervon betroffenden Anfragen: ' + numAllow);
+                        }
                     }
             } else {
                 if (this.request.isRecurring()) {
                     message += ' Nur Anfragen, die noch nicht ausgeführt wurden, werden hierdurch abgelehnt.';
                     this.popUp.setOptQuery(['Serien-Ablehnung',
                     'Nur diese Anfrage ablehnen.', 'Alle Anfragen dieser Serie ablehnen.']);
-                    this.popUp.setOptApply(['',
-                        'Nur alle zukünftigen Anfragen ablehnen.',
-                        'Alle zukünftigen und bereits bestehenden Anfragen ablehnen. Hiervon sind '
-                        + this.getNumApplyRule() + ' Anfragen betroffen.']);
+                    let numReject = this.getNumApplyRule();
+                    this.popUp.setOptApply(
+                        'Neben dieser und zukünftigen Anfragen auch bereits bestehende Anfragen ablehnen. ' +
+                        'Anzahl der hiervon betroffenden Anfragen: '
+                        + numReject);
                 }
                 buttons[0] = ['Jetzt ablehnen', 'red'];
             }
@@ -119,7 +122,7 @@ export class RequestSingleViewComponent {
                         this.requestData.status = this.setStatus(this.requestData, allow, checked);
                         if (this.request.isRecurring() && checkedQuery) {
                             if (checked && allow) {
-                                if (this.queryRule &&  this.queryRule.action.toString() !== 'ACCEPT_SUBMIT') {
+                                if (this.queryRule && this.queryRule.action.toString() !== 'ACCEPT_SUBMIT') {
                                     this._requestService.deleteQueryRule(this.request.queryId).subscribe(resp => {
                                         this._requestService.setQueryRule(this.request.requestId, QueryRuleAction.ACCEPT_SUBMIT)
                                             .subscribe(res => {

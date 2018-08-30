@@ -17,6 +17,7 @@ import { LocalRequest, QueryBundle, RequestStatus } from './request';
 export class RequestSingleComponent implements OnInit, OnDestroy {
     request: LocalRequest;
     reqId: number;
+    etag = '0';
     queryBundle: QueryBundle;
     queryDetails: Object = {};
     bundleLoaded = false;
@@ -36,23 +37,26 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
         this._route.params
             .subscribe((params: Params) => {
                 this.reqId = +params['id'];
-                this.updateRequest();
-                this._requestService.getRequest(this.reqId)
+                this._requestService.getRequest(this.reqId, this.etag)
                     .subscribe(res => {
-                        this.request = res;
+                        this.request = res['req'];
+                        this.etag = res['etag'];
                         this.requestLoaded = true;
-                        this._requestService.getQueryBundle(this.request.queryId)
-                        .subscribe(bundle => {
-                            this.queryBundle = bundle;
-                            this.updateQueryDetails();
+                        if (!this.request.isRecurring()) {
                             this.bundleLoaded = true;
-                        });
+                        } else {
+                            this._requestService.getQueryBundle(this.request.queryId)
+                                .subscribe(bundle => {
+                                    this.queryBundle = bundle;
+                                    this.updateQueryDetails();
+                                    this.bundleLoaded = true;
+                                });
+                        }
                     });
             });
         let timer = TimerObservable.create(0, this._dataInterval);
         this._timerSubscription = timer.subscribe(() => {
             if (this.request) {
-                console.log('update data');
                 this.updateRequest();
                 if (this.request.isRecurring()) {
                     this.updateQueryBundle();
@@ -67,24 +71,25 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
     }
 
     get dataLoaded() {
-        if (this.requestLoaded) {
-            if (this.request.isRecurring() && this.bundleLoaded) {
-                return true;
-            } else if (!this.request.isRecurring()) {
-                return true;
-            }
-            return false;
+        if (this.requestLoaded && this.bundleLoaded) {
+            return true;
         }
         return false;
     }
 
     updateRequest(): void {
-        this._requestService.getRequest(this.reqId).subscribe(res => this.request = res);
+        this._requestService.getRequest(this.reqId, this.etag)
+            .subscribe(res => {
+                console.log('update request');
+                this.request = res['req'];
+                this.etag = res['etag'];
+            });
     }
 
     updateQueryBundle() {
         this._requestService.getQueryBundle(this.request.queryId)
             .subscribe(res => {
+                console.log('update queryBundle');
                 this.queryBundle = res;
                 this.updateQueryDetails();
             });

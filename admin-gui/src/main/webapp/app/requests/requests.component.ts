@@ -15,6 +15,7 @@ import { LocalRequest, RequestMarker, RequestStatus } from './request';
 
 export class RequestsComponent implements OnDestroy {
     requestsData: LocalRequest[];
+    etag = '0';
     status: RequestStatus = null;
     stateFilter: RequestStatus | string = 'auth';
     queryDetails = {};
@@ -50,10 +51,11 @@ export class RequestsComponent implements OnDestroy {
     }
 
     updateRequests(): void {
-        console.log('update Requests');
-        this._requestService.getRequests()
+        this._requestService.getRequests(this.etag)
             .subscribe(res => {
-                this.requestsData = res;
+                console.log('update Requests');
+                this.requestsData = res['req'];
+                this.etag = res['etag'];
                 this.updateQueryDetails();
             });
     }

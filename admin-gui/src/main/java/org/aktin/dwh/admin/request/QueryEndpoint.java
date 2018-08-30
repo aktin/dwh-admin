@@ -78,7 +78,7 @@ public class QueryEndpoint {
 	@Secured
 	@Path("{id}/applyRule")
 	@Produces(MediaType.APPLICATION_JSON)
-	public void applyRule(@PathParam("id") int id, QueryRuleAction action) {
+	public void applyRule(@PathParam("id") int id, QueryRuleAction action) throws IOException {
 		List<RetrievedRequest> rs = new ArrayList<>();
 		try( Stream<? extends RetrievedRequest> req = manager.getQueryRequests(id) ){
 			req.forEach(rs::add);

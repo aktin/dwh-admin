@@ -3,6 +3,7 @@ package org.aktin.dwh.admin.request;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -19,6 +20,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -48,20 +50,34 @@ public class RequestEndpoint {
 	
 	/**
 	 * GET request to receive all requests.
-	 * @return list of all requests
+	 * @return response with a list of all requests if the lastActionTimestamp on the client differs from the one on the server, 
+	 * 		   otherwise response with status 304 (Not Modified).
 	 */
 	@GET
 	@NoCache
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Request> getRequests(){
+	public Response getRequests(@Context javax.ws.rs.core.Request request) {
 		// TODO allow ordering via query param
 		List<Request> list = new ArrayList<>();
+		long maxTimestamp = 0L;
 		// TODO optionally filter
-		manager.requests().forEach( request -> {
-			list.add(wrap(request));
-		});
-
-		return list;
+		for(Iterator<? extends RetrievedRequest> iterator = manager.requests().iterator(); iterator.hasNext();) {
+			RetrievedRequest req = iterator.next();
+			long reqTimestamp = req.getLastActionTimestamp();
+			if(maxTimestamp < reqTimestamp) {
+				maxTimestamp = reqTimestamp;
+				list.add(wrap(req));
+			}
+		}
+		EntityTag etag = new EntityTag(Long.toString(maxTimestamp));
+		ResponseBuilder b = request.evaluatePreconditions(etag);
+		if (b != null) {
+			return b.build();
+		}
+		return Response.ok(list)
+					   .tag(etag)
+					   .header("Access-Control-Expose-Headers", "ETag")
+					   .build();
 	}
 
 	private Request wrap(RetrievedRequest request){
@@ -71,17 +87,26 @@ public class RequestEndpoint {
 	/**
 	 * GET request to receive the request of the given id.
 	 * @param id requestId
-	 * @return Request object
+	 * @return response with the request object if the lastActionTimestamp on the client differs from the one on the server, 
+	 * 		   otherwise response with status 304 (Not Modified).
 	 * @throws IOException
 	 */
 	@GET
 	@Path("{id}")
-	public Request getRequest(@PathParam("id") int id) throws IOException{
+	public Response getRequest(@PathParam("id") int id, @Context javax.ws.rs.core.Request request) throws IOException{
 		RetrievedRequest req = manager.getRequest(id);
 		if( req == null ){
 			throw new NotFoundException();
 		}
-		return wrap(req);
+		EntityTag etag = new EntityTag(Long.toString(req.getLastActionTimestamp()));
+		ResponseBuilder b = request.evaluatePreconditions(etag);
+		if (b != null) {
+			return b.build();
+		}
+		return Response.ok(wrap(req))
+					   .tag(etag)
+					   .header("Access-Control-Expose-Headers", "ETag")
+					   .build();
 	}
 
 	/**
