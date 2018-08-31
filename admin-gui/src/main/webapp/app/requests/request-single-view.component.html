@@ -110,7 +110,7 @@
                 {{request.query.scheduled | date: 'mediumDate'}}
             </div>
             <div class="ui meta five wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.duration && !request.isRecurring()">
-                Zeitraum der Daten:
+                Erhebungszeitraum der Daten:
             </div>
             <div class="ui meta three wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.duration && !request.isRecurring()">
                 {{request.query.query.schedule.duration | durationData }}
@@ -142,7 +142,7 @@
                 <b>Serien-Informationen:</b>
             </div>
             <div class="ui meta five wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.duration">
-                Zeitraum der Daten:
+                Erhebungszeitraum der Daten:
             </div>
             <div class="ui meta three wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.duration">
                 {{request.query.query.schedule.duration | durationData }}
