@@ -55,16 +55,24 @@ export class RequestService {
             });
     }
 
-    getQueryBundle(queryId: number): Observable<any> {
-        if (queryId == null) {
+    getQueryBundle(queryId: number, etag: string): Observable<any> {
+        let options = { headers: new Headers({'If-None-Match': etag}),  observe: 'response' };
+        if (queryId === null) {
             return null;
         }
-        return this._http.get(this._urls.parse('query', {queryId: queryId}))
+        return this._http.get(this._urls.parse('query', {queryId: queryId}), options)
             .catch(err => this._http.handleError(err))
-            .map(res => { res = JSON.parse(res.text()); res.requests = _.map(res.requests, req => LocalRequest.parseRequest(req));
-                res.requests.sort((req1: LocalRequest, req2: LocalRequest) => {
+            .map(resp => {
+                let res = {};
+                res['etag'] = resp.headers.get('ETag');
+                res['bundle'] = JSON.parse(resp.text());
+                res['bundle'].requests = _.map( res['bundle'].requests, req => LocalRequest.parseRequest(req));
+                res['bundle'].requests.sort((req1: LocalRequest, req2: LocalRequest) => {
                     return +new Date(req1.query.reference) - +new Date(req2.query.reference);
                 });
+                if (res['bundle'].rule) {
+                    res['bundle'].rule.creationDate = new Date(res['bundle'].rule.creationDate);
+                }
                 return res;
             });
     }

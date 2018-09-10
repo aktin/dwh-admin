@@ -119,39 +119,45 @@ export class RequestSingleViewComponent {
             this.popUp.setData(true, title, message,
                 (answer: boolean, checked: boolean, checkedQuery: boolean, checkedApply: boolean) => {
                     if (answer) {
+                        // set status of current request
                         this.requestData.status = this.setStatus(this.requestData, allow, checked);
-                        if (this.request.isRecurring() && checkedQuery) {
-                            if (checked && allow) {
-                                if (this.queryRule && this.queryRule.action.toString() !== 'ACCEPT_SUBMIT') {
+                        // query rule has to be set
+                        if (this.request.isRecurring() && checkedQuery && checked) {
+                            // set accept_submit
+                            if (allow) {
+                                // delete old rule and create new one
+                                if (this.queryRule && <QueryRuleAction> this.queryRule.action !== QueryRuleAction.ACCEPT_SUBMIT) {
                                     this._requestService.deleteQueryRule(this.request.queryId).subscribe(resp => {
                                         this._requestService.setQueryRule(this.request.requestId, QueryRuleAction.ACCEPT_SUBMIT)
                                             .subscribe(res => {
                                                 this.applyRule(checkedApply, QueryRuleAction.ACCEPT_SUBMIT);
                                             });
                                         });
-                                } else if (!this.queryRule) {
+                                } else if (!this.queryRule) { // no existing rule, create new one
                                     this._requestService.setQueryRule(this.request.requestId, QueryRuleAction.ACCEPT_SUBMIT)
                                         .subscribe(res => {
                                             this.applyRule(checkedApply, QueryRuleAction.ACCEPT_SUBMIT);
                                        });
+                                } else { // rule didn't change, apply rule to existing requests
+                                    this.applyRule(checkedApply, QueryRuleAction.ACCEPT_SUBMIT);
                                 }
-                            // } else if (!checked && allow) {
-                            //     console.log("set QueryRule: Execute");
-                            //     this._requestService.setQueryRule(this.request.queryId, this.request.requestId,
-                            //         QueryRuleAction.ACCEPT_EXECUTE);
-                            } else if (!allow) {
-                                if (this.queryRule && this.queryRule.action.toString() !== 'REJECT') {
+                            // set reject
+                            } else {
+                                // delete old rule and create new one
+                                if (this.queryRule && <QueryRuleAction> this.queryRule.action !== QueryRuleAction.REJECT) {
                                     this._requestService.deleteQueryRule(this.request.queryId).subscribe(() => {
                                         this._requestService.setQueryRule(this.request.requestId, QueryRuleAction.REJECT)
                                             .subscribe(res => {
                                                 this.applyRule(checkedApply, QueryRuleAction.REJECT);
                                             });
                                     });
-                                } else if (!this.queryRule) {
+                                } else if (!this.queryRule) { // no existing rule, create new one
                                     this._requestService.setQueryRule(this.request.requestId, QueryRuleAction.REJECT)
                                         .subscribe(res => {
                                             this.applyRule(checkedApply, QueryRuleAction.REJECT);
                                         });
+                                } else { // rule didn't change, apply rule to existing requests
+                                    this.applyRule(checkedApply, QueryRuleAction.REJECT);
                                 }
                             }
                         }
@@ -199,7 +205,7 @@ export class RequestSingleViewComponent {
 
     deleteQueryRule() {
         return this._requestService.deleteQueryRule(this.request.queryId)
-            .subscribe(() => this._requestSingleComponent.updateQueryBundle());
+            .subscribe(() => { this._requestSingleComponent.updateQueryBundle(true)});
     }
 
     toggleHiddenMarker (): void {

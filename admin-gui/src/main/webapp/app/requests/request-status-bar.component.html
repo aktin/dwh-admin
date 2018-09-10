@@ -11,7 +11,7 @@
             </div>
     <div class="request-status-bar-box" [class.single]="single">
         <div class="request-status-line">
-            <div class="request-status-line-fill" [ngStyle]="{'width': fillBar }" [class.failed]="failed"></div>
+            <div class="request-status-line-fill" [ngStyle]="{'width': fillBar }" [ngClass]="{'failed': failed, 'expired': expired}"></div>
         </div>
         <div class="request-status-bar-item"
             *ngFor="let item of items; let i = index"
@@ -23,11 +23,15 @@
                 title="{{item.title}}"
             ></div>
             <i class="circular yellow inverted warning sign icon request-status-icon interaction"
-            *ngIf="item.interaction" title="{{item.title}}"></i>
+            *ngIf="item.interaction" title={{item.title}}></i>
             <i class="circular red inverted hand paper icon request-status-icon Rejected"
-            *ngIf="item.Rejected" title="{{item.title}}"></i>
+            *ngIf="item.Rejected" title={{item.title}}></i>
             <i class="circular red inverted warning icon request-status-icon Failed"
-            *ngIf="item.Failed" title="{{item.title}}"></i>
+            *ngIf="item.Failed" title={{item.title}}></i>
+            <i class="circular yellow inverted hourglass end icon request-status-icon Expired"
+            *ngIf="item.Expired" title={{item.title}}></i>
+            <i class="circular green inverted check icon request-status-icon Submitted"
+            *ngIf="item.Submitted" title={{item.title}}></i>
             <div class="request-status-text" *ngIf="item.active">{{item.title}}</div>
         </div>
     </div>

@@ -157,7 +157,7 @@
         <div class="row" *ngIf="queryRule">
             <div class="ui meta eight wide column">
                 Für die Serie liegt folgende Freigabe-Regel vor:<br>
-                (erstellt von {{queryRule.user}} am ) <br>
+                (erstellt von {{ queryRule.user }} am {{ queryRule.creationDate | date: 'd. MMM y, HH:mm a' }}) <br>
                 <button class="ui button button-delete-rule" (click)="deleteQueryRule()">Regel entfernen</button>
             </div>
             <div class="ui meta eight wide column " *ngIf="queryRule">

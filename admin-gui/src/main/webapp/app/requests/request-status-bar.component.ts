@@ -18,6 +18,7 @@ export class RequestStatusBarComponent implements OnInit {
     @Input() interaction: boolean;
     @Input() queryDetails: object;
     failed: boolean;
+    expired: boolean;
     fillBar: string;
     leftSpace: string;
     statusLength = 7;
@@ -32,15 +33,17 @@ export class RequestStatusBarComponent implements OnInit {
         'Senden der Ergebnisse',
         'Übermittlung abgeschlossen',
         'Fehlgeschlagen',
-        'Abgelehnt'
+        'Abgelehnt',
+        'Geschlossen'
     ];
 
     calcView () {
         if (this.request && this.oldStatus !== this.request.status) {
             this.oldStatus = this.request.status;
             this.failed = this.request.failed();
+            this.expired = this.request.isExpired();
             this.myItems = [];
-            if (this.failed) {
+            if (this.failed || this.expired) {
                 this.fillBar = '100%';
                 this.leftSpace = 'calc((100% - 20px)';
                 this.myItems.push({});
@@ -68,6 +71,10 @@ export class RequestStatusBarComponent implements OnInit {
                             obj.dot = false;
                             obj['interaction'] = true;
                         }
+                    }
+                    if (this.request.isSubmitted && n === this.statusLength - 1) {
+                        obj[RequestStatus[this.request.status]] = true;
+                        obj.dot = false;
                     }
                     this.myItems.push(obj);
                 }

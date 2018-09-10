@@ -17,8 +17,9 @@ import { LocalRequest, QueryBundle, RequestStatus } from './request';
 export class RequestSingleComponent implements OnInit, OnDestroy {
     request: LocalRequest;
     reqId: number;
-    etag = '0';
+    requestEtag = '0';
     queryBundle: QueryBundle;
+    bundleEtag = '0';
     queryDetails: Object = {};
     bundleLoaded = false;
     requestLoaded = false;
@@ -37,17 +38,18 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
         this._route.params
             .subscribe((params: Params) => {
                 this.reqId = +params['id'];
-                this._requestService.getRequest(this.reqId, this.etag)
+                this._requestService.getRequest(this.reqId, this.requestEtag)
                     .subscribe(res => {
                         this.request = res['req'];
-                        this.etag = res['etag'];
+                        this.requestEtag = res['etag'];
                         this.requestLoaded = true;
                         if (!this.request.isRecurring()) {
                             this.bundleLoaded = true;
                         } else {
-                            this._requestService.getQueryBundle(this.request.queryId)
+                            this._requestService.getQueryBundle(this.request.queryId, this.bundleEtag)
                                 .subscribe(bundle => {
-                                    this.queryBundle = bundle;
+                                    this.queryBundle = bundle['bundle'];
+                                    this.bundleEtag = bundle['etag'];
                                     this.updateQueryDetails();
                                     this.bundleLoaded = true;
                                 });
@@ -78,19 +80,20 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
     }
 
     updateRequest(): void {
-        this._requestService.getRequest(this.reqId, this.etag)
+        this._requestService.getRequest(this.reqId, this.requestEtag)
             .subscribe(res => {
                 console.log('update request');
                 this.request = res['req'];
-                this.etag = res['etag'];
+                this.requestEtag = res['etag'];
             });
     }
 
-    updateQueryBundle() {
-        this._requestService.getQueryBundle(this.request.queryId)
+    updateQueryBundle(freshUpdate?: boolean) {
+        this._requestService.getQueryBundle(this.request.queryId, freshUpdate ? '0' : this.bundleEtag)
             .subscribe(res => {
                 console.log('update queryBundle');
-                this.queryBundle = res;
+                this.queryBundle = res['bundle'];
+                this.bundleEtag = res['etag'];
                 this.updateQueryDetails();
             });
     }

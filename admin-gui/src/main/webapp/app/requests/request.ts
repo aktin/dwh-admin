@@ -127,6 +127,10 @@ export class LocalRequest {
         return ([RequestStatus.Rejected, RequestStatus.Failed].indexOf(this.status) >= 0);
     }
 
+    public isExpired(): boolean {
+        return this.status === RequestStatus.Expired;
+    }
+
     public isRecurring(): boolean {
         return this.queryId !== null;
     }
@@ -166,6 +170,8 @@ export enum RequestStatus {
          * or manually after {@link #Completed}.
          */
     Rejected,
+        /** The request was closed by the broker or deleted from it. */
+    Expired
 }
 
 export enum QueryRuleAction {

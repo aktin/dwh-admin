@@ -30,6 +30,9 @@
 .request-status-line-fill.failed {
     background-color: #DB2828;
 }
+.request-status-line-fill.expired {
+    background-color: rgb(247, 222, 82);
+}
 
 .request-status-bar-item {
     position: relative;

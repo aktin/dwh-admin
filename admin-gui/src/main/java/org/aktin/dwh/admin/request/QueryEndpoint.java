@@ -1,7 +1,9 @@
 package org.aktin.dwh.admin.request;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,8 +19,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.aktin.broker.request.RequestManager;
 import org.aktin.broker.request.RequestStatus;
@@ -40,18 +45,28 @@ public class QueryEndpoint {
 	private SecurityContext security;
 	
 	/**
-	 * GET request to retrieve the queryBundle resource (contains the query rule and a list 
-	 * of all requests that belong to the query) which can be addressed by the given path.
+	 * GET request to retrieve the queryBundle resource (contains the query rule and a list of all requests that belong 
+	 * to the query) which can be addressed by the given path. If called after the queryRule is deleted and the belonging 
+	 * requests were modified after rule creation the response will have status 304 (maxTimestamp not changing). In that 
+	 * case send eTag with value 0 from client to get the bundle with updated rule.   
 	 * @param id queryId
-	 * @return queryBundle of the given queryId
+	 * @return response with queryBundle of the given queryId if the lastActionTimestamp on the 
+	 * 		   client differs from the one on the server, otherwise response with status 304 (Not Modified).
 	 * @throws IOException
 	 */
 	@GET
 	@Path("{id}")
-	public QueryBundle getQueryBundle(@PathParam("id") int id) throws IOException{
+	public Response getQueryBundle(@PathParam("id") int id, @Context javax.ws.rs.core.Request request) throws IOException{
 		List<RetrievedRequest> rs = new ArrayList<>();
+		long maxTimestamp = 0L;
 		try( Stream<? extends RetrievedRequest> req = manager.getQueryRequests(id) ){
-			req.forEach(rs::add);
+			for(Iterator<? extends RetrievedRequest> iterator = req.iterator(); iterator.hasNext();) {
+				RetrievedRequest currReq = iterator.next();
+				rs.add(currReq);
+				if(currReq.getLastActionTimestamp() > maxTimestamp) {
+					maxTimestamp = currReq.getLastActionTimestamp();
+				}
+			}
 		}
 		if( rs.isEmpty() ){
 			throw new NotFoundException();
@@ -59,12 +74,24 @@ public class QueryEndpoint {
 		// add rule if available
 		QueryBundle qb = new QueryBundle();
 		BrokerQueryRule rule = manager.getQueryRule(id);
-		if( rule != null ){
+		if( rule != null ) {
+			Instant ruleTimestamp = rule.getTimestamp();
+			if(ruleTimestamp.toEpochMilli() > maxTimestamp) {
+				maxTimestamp = ruleTimestamp.toEpochMilli();
+			}
 			qb.rule = Rule.wrap(rule);
 		}
 		qb.requests = rs.stream().map(req -> new Request(req)).collect(Collectors.toList());
 		// sort by date XXX or already sorted???
-		return qb;
+		EntityTag etag = new EntityTag(Long.toString(maxTimestamp));
+		ResponseBuilder b = request.evaluatePreconditions(etag);
+		if (b != null) {
+			return b.build();
+		}
+		return Response.ok(qb)
+					   .tag(etag)
+					   .header("Access-Control-Expose-Headers", "ETag")
+					   .build();
 	}
 	
 	

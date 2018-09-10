@@ -66,8 +66,8 @@ public class RequestEndpoint {
 			long reqTimestamp = req.getLastActionTimestamp();
 			if(maxTimestamp < reqTimestamp) {
 				maxTimestamp = reqTimestamp;
-				list.add(wrap(req));
 			}
+			list.add(wrap(req));
 		}
 		EntityTag etag = new EntityTag(Long.toString(maxTimestamp));
 		ResponseBuilder b = request.evaluatePreconditions(etag);
