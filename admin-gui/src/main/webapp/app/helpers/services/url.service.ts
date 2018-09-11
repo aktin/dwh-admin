@@ -7,7 +7,7 @@ import _ = require('underscore');
 @Injectable()
 export class UrlService {
     private _serverUrls = [
-        //'http://134.106.36.86:8020/aktin/admin/rest/',
+        // 'http://134.106.36.86:8020/aktin/admin/rest/',
         '/aktin/admin/rest/',
     ];
     private _serverUrl = this._serverUrls[0];
@@ -29,6 +29,7 @@ export class UrlService {
         status : 'import-summary',
 
         reportsList : 'report/archive',
+        report: 'report/archive/@reportId@/info',
         newMonthlyReport : 'report/monthly/email',
         reportTemplates : 'report/template', // get
         newReport : 'report/template/@templateId@', // post, with start and end in data, json in header

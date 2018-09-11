@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,9 +18,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.aktin.dwh.admin.auth.Secured;
 import org.aktin.dwh.admin.filter.NoCache;
@@ -30,6 +32,9 @@ import org.aktin.report.Report;
 import org.aktin.report.ReportArchive;
 import org.aktin.report.ReportInfo;
 import org.aktin.report.ReportManager;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * RESTful HTTP end point for generating reports.
@@ -52,16 +57,33 @@ public class ReportEndpoint {
 
 	/**
 	 * List all available report templates
-	 * @return report templates
+	 * @return Response with list of all report templates or response with status 304 (not modified) if the list 
+	 * on the client is the same as on the broker (eTag didn't change). 
 	 */
 	@GET
 	@NoCache
 	@Path("")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ReportTemplate> getTemplates(){
-		ArrayList<ReportTemplate> reports = new ArrayList<>();
-		manager.reports().forEach(r -> reports.add(new ReportTemplate(r)));
-		return reports;
+	public Response getTemplates(@Context Request request) {
+		ArrayList<ReportTemplate> templates = new ArrayList<>();
+		ObjectMapper mapper = new ObjectMapper();
+		String templatesJson = "";
+		
+		manager.reports().forEach(r -> templates.add(new ReportTemplate(r)));
+        try {
+        	templatesJson = mapper.writeValueAsString(templates);
+        } catch (JsonProcessingException e) {
+        	log.log(Level.WARNING, "Unable to convert list of report templates to JSON ", e);
+        }
+		EntityTag etag = new EntityTag(Integer.toString(templatesJson.hashCode()));
+		ResponseBuilder b = request.evaluatePreconditions(etag);
+		if (b != null) {
+			return b.build();
+		}
+		return Response.ok(templates)
+				   .tag(etag)
+				   .header("Access-Control-Expose-Headers", "ETag")
+				   .build();
 	}
 
 	/**

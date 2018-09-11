@@ -3,6 +3,8 @@
  */
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
+import { TimerObservable } from 'rxjs/observable/TimerObservable';
+import { Subscription } from 'rxjs';
 
 import { Report } from './report';
 import { ReportService } from './report.service';
@@ -13,10 +15,11 @@ import Timer = NodeJS.Timer;
 export class ReportSingleComponent implements OnInit, OnDestroy {
     rep: Report;
     repId: number;
+    repEtag: '0';
 
-    private _updateTimer: Timer;
-    private _updateTimerToggle = false;
     private _dataInterval = 5000;
+    private _timerSubscription: Subscription;
+    private _paramsSubscription: Subscription;
 
     constructor(
         private _route: ActivatedRoute,
@@ -25,42 +28,32 @@ export class ReportSingleComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this._route.params
-            .map((params: Params) => {
-            this.repId = +params['id'];
-                return this._reportService.getReport(+params['id']);
-            }).subscribe(
-                rep => {
-                    this.rep = rep;
-                }
-            );
+            .subscribe((params: Params) => {
+                this.repId = +params['id'];
+            })
+        let timer = TimerObservable.create(0, this._dataInterval);
+        this._timerSubscription = timer.subscribe(() => {
+            if (this.repId) {
+                this.updateReport();
+            }
+        });
     }
 
     ngOnDestroy(): void {
-        console.log('call clear timer');
-        clearTimeout(this._updateTimer);
+        console.log('unsubscribe timer');
+        this._timerSubscription.unsubscribe();
     }
 
-
-    updateReport (): void {
-        if (this._updateTimerToggle) {
-            return;
-        }
-        console.log('set new timer - report ' + this.repId);
-        clearTimeout(this._updateTimer);
-        this._updateTimerToggle = true;
-        this._updateTimer = setTimeout(() => {
-            this._updateTimerToggle = false;
-            this.updateReport ();
-        }, this._dataInterval);
-        this.rep = this._reportService.getReport(this.repId);
+    updateReport() {
+        this._reportService.getReport(this.repId, this.repEtag)
+            .subscribe(res => {
+                console.log('update report');
+                this.rep = res['report'];
+                this.repEtag = res['etag'];
+            })
     }
-
 
     get report (): Report {
-        if (!this.rep) {
-            this.rep = this._reportService.getReport(this.repId);
-        }
-        this.updateReport ();
         return this.rep;
     }
 }

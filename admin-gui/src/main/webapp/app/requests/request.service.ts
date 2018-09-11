@@ -18,32 +18,33 @@ import Timer = NodeJS.Timer;
 
 @Injectable()
 export class RequestService {
-    private _dataInterval = 3000;
 
     constructor(
         private _http: HttpInterceptorService,
         private _download: DownloadService,
         private _urls: UrlService,
-        private _store: StorageService,
         private _router: Router
     ) {}
 
-    getRequests(etag: string): Observable<any> {
+    getRequests(etag: string): Observable<Object> {
         let options = { headers: new Headers({'If-None-Match': etag}),  'observe': 'response' };
         return this._http.get(this._urls.parse('requestList'), options)
-            .catch(err => this._http.handleError(err))
+            .catch(err => { return this._http.handleError(err) })
             .map(resp => {
                 let res = {};
                 res['etag'] = resp.headers.get('ETag');
                 res['req'] = _.map(JSON.parse(resp.text()), req => LocalRequest.parseRequest(req));
+                res['req'].sort((req1: LocalRequest, req2: LocalRequest) => {
+                    return +new Date(req1.query.reference) - +new Date(req2.query.reference);
+                });
                 return res;
             });
     }
 
-    getRequest(requestId: number, etag: string): Observable<any> {
+    getRequest(requestId: number, etag: string): Observable<Object> {
         let options = { headers: new Headers({'If-None-Match': etag}),  observe: 'response' };
         return this._http.get(this._urls.parse('request', {requestId: requestId}), options)
-            .catch(err => this._http.handleError(err))
+            .catch(err => { return this._http.handleError(err) })
             .map(resp => {
                 let res = {};
                 res['etag'] = resp.headers.get('ETag');
@@ -55,13 +56,13 @@ export class RequestService {
             });
     }
 
-    getQueryBundle(queryId: number, etag: string): Observable<any> {
+    getQueryBundle(queryId: number, etag: string): Observable<Object> {
         let options = { headers: new Headers({'If-None-Match': etag}),  observe: 'response' };
         if (queryId === null) {
             return null;
         }
         return this._http.get(this._urls.parse('query', {queryId: queryId}), options)
-            .catch(err => this._http.handleError(err))
+            .catch(err => { return this._http.handleError(err) })
             .map(resp => {
                 let res = {};
                 res['etag'] = resp.headers.get('ETag');
@@ -77,32 +78,32 @@ export class RequestService {
             });
     }
 
-    setQueryRule(requestId: number, action: QueryRuleAction): Observable<any> {
+    setQueryRule(requestId: number, action: QueryRuleAction): Observable<Response> {
         // let currentRoute = this._router.url;
         return this._http.post(
             this._urls.parse('setQueryRule', {requestId: requestId, action: QueryRuleAction[action]}), {})
-            .catch(err => this._http.handleError(err));
+            .catch(err => { return this._http.handleError(err) })
             // .subscribe( (res) => {
             //     setTimeout(() => this._router.navigate([currentRoute]), 600);
             // });
     }
 
-    deleteQueryRule(queryId: number): Observable<any> {
+    deleteQueryRule(queryId: number): Observable<Response> {
         return this._http.delete(this._urls.parse('queryRule', {queryId: queryId}))
-        .catch(err => this._http.handleError(err));
+        .catch(err => { return this._http.handleError(err) })
     }
 
-    applyRule(queryId: number, ruleAction: QueryRuleAction): Observable<any> {
+    applyRule(queryId: number, ruleAction: QueryRuleAction): Observable<Response> {
         return this._http.post(this._urls.parse('applyRule', {queryId: queryId}), JSON.stringify(ruleAction),
             this._http.generateHeaderOptions('Content-Type', 'application/json'))
-            .catch(err => this._http.handleError(err));
+            .catch(err => { return this._http.handleError(err) })
     }
 
     updateMarker (requestId: number, marker: RequestMarker): void {
         let currentRoute = this._router.url;
         if (marker === null) {
             this._http.delete(this._urls.parse('updateRequestMarker', {requestId: requestId}))
-                .catch(err => {return this._http.handleError(err); })
+                .catch(err => { return this._http.handleError(err); })
                 .subscribe(() => {
                     // this.updateRequest(requestId, null, null);
                     // this._updateRequests();
@@ -114,7 +115,7 @@ export class RequestService {
                     JSON.stringify(RequestMarker[marker]),
                     this._http.generateHeaderOptions('Content-Type', 'application/json')
                 )
-                .catch(err => this._http.handleError(err))
+                .catch(err => { return this._http.handleError(err) })
                 .subscribe(() => {
                     // this.updateRequest(requestId, null, marker);
                     // this._updateRequests();
@@ -136,7 +137,7 @@ export class RequestService {
         };
         if (autoSubmit) {
             this._http.post(this._urls.parse('setRequestAutoSubmit', {requestId: requestId, submit: autoSubmit}), {})
-                .catch(err => this._http.handleError(err))
+                .catch(err => { return this._http.handleError(err) })
                 .subscribe(() => {
                     setStatusPost.subscribe(statusCallback);
                 });

@@ -1,8 +1,10 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { TimerObservable } from 'rxjs/observable/TimerObservable';
+import { Subscription } from 'rxjs';
+import { Md5 } from 'ts-md5/dist/md5';
 
 import { Report } from './report';
 import { ReportService } from './report.service';
-import Timer = NodeJS.Timer;
 
 @Component({
     templateUrl: './reports.component.html',
@@ -11,38 +13,38 @@ import Timer = NodeJS.Timer;
 export class ReportsComponent implements OnDestroy {
     reportsData: Report[];
     showOnlySuccessful = false;
+    repEtag = '0';
 
-    private _updateTimer: Timer;
-    private _updateTimerToggle = false;
     private _dataInterval = 5000;
+    private _timerSubscription: Subscription;
 
     constructor (private _reportService: ReportService) {}
 
-    ngOnDestroy(): void {
-        console.log('call clear timer');
-        clearTimeout(this._updateTimer);
+    ngOnInit() {
+        let timer = TimerObservable.create(0, this._dataInterval);
+        this._timerSubscription = timer.subscribe(() => {
+            this.updateReports();
+        });
     }
 
+    ngOnDestroy() {
+        console.log('unsubscribe timer');
+        this._timerSubscription.unsubscribe();
+    }
 
-    updateReport (): void {
-        if (this._updateTimerToggle) {
-            return;
-        }
-        console.log('set new timer - reports');
-        clearTimeout(this._updateTimer);
-        this._updateTimerToggle = true;
-        this._updateTimer = setTimeout(() => {
-            this._updateTimerToggle = false;
-            this.updateReport ();
-        }, this._dataInterval);
-        this.reportsData = this._reportService.getReports();
+    updateReports() {
+        this._reportService.getReports(this.repEtag)
+            .subscribe(res => {
+                console.log('update reports');
+                this.reportsData = res['reports'];
+                this.repEtag = res['etag'];
+            })
     }
 
     get reports (): Report[] {
-        this.updateReport ();
-        this.reportsData = this._reportService.getReports();
         return this.reportsData;
     }
+
 }
 
 

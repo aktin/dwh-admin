@@ -35,7 +35,10 @@
     color: rgb(180, 130, 30);
 }
 
-
 .display-calendar {
     display: block;
 }
+
+.pagination /deep/ .ngx-pagination {
+    text-align: center;
+  }

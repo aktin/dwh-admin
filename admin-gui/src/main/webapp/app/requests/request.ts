@@ -30,7 +30,8 @@ export interface QueryBundle {
 
 export interface Rule {
     user: string,
-    action: QueryRuleAction
+    action: QueryRuleAction,
+    creationDate: Date
 }
 
 export interface Request {

@@ -20,5 +20,11 @@
     <label (click)="showOnlySuccessful=!showOnlySuccessful">Nur erfolgreich erstellte Berichte anzeigen</label>
 </div>
 <div *ngIf="reports" class="ui">
-    <report-single-view *ngFor="let report of reports | success:showOnlySuccessful | orderBy: ['-id']" [reportData]="report" class="ui vertical segment"></report-single-view>
+    <pagination-controls class="pagination"
+        (pageChange)="p = $event"
+        autoHide="true"
+        previousLabel="Vorherige Seite"
+        nextLabel="Nächste Seite">
+    </pagination-controls>
+    <report-single-view *ngFor="let report of reports | success:showOnlySuccessful | orderBy: ['-id'] | paginate: { itemsPerPage: 10, currentPage: p }" [reportData]="report" class="ui vertical segment"></report-single-view>
 </div>

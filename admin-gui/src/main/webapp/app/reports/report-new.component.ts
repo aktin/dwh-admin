@@ -1,8 +1,10 @@
 /**
  * Created by Xu on 02-Jun-17.
  */
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { TimerObservable } from 'rxjs/observable/TimerObservable';
+import { Subscription } from 'rxjs';
 
 import { IMyDateModel, IMyDpOptions } from 'mydatepicker';
 
@@ -18,8 +20,12 @@ require('semantic-ui');
     styleUrls: ['./reports.component.css'],
 })
 export class ReportNewComponent {
+    private _timerSubscription: Subscription;
+    private _dataInterval = 5000;
 
-    template: string;
+    template: ReportTemplate;
+    templateList: ReportTemplate[];
+    templatesEtag: string;
 
     fromDateModel: any = { date: this.formulateDate4DP(new Date()) };
     toDateModel: any = { date: this.formulateDate4DP(new Date()) };
@@ -49,7 +55,6 @@ export class ReportNewComponent {
         return new Date(s.year, s.month - 1, s.day);
     }
 
-
     constructor(private _reportService: ReportService, private _router: Router) {
         let date = new Date();
         let to = new Date();
@@ -67,6 +72,32 @@ export class ReportNewComponent {
         // this.toDPOptions.disableUntil = this.formulateDate4DP(date);
     }
 
+    ngOnInit() {
+        this.updateTemplates();
+        let timer = TimerObservable.create(0, this._dataInterval);
+        this._timerSubscription = timer.subscribe(() => {
+            this.updateTemplates();
+        });
+    }
+
+    ngOnDestroy() {
+        console.log('unsubscribe timer');
+        this._timerSubscription.unsubscribe();
+    }
+
+    updateTemplates() {
+        this._reportService.getReportTemplates(this.templatesEtag)
+            .subscribe(resp => {
+                console.log('update templates');
+                this.templateList = resp['reportTemplates'];
+                this.templatesEtag = resp['etag'];
+                console.log(this.templateList);
+                if (!this.template && resp['reportTemplates'].length > 0) {
+                    this.template = resp['reportTemplates'][0];
+                }
+            });
+    }
+
     onFromDateChanged(event: IMyDateModel) {
         this.fromDateModel.date = event.date;
         // event properties are: event.date, event.jsdate, event.formatted and event.epoc
@@ -77,28 +108,35 @@ export class ReportNewComponent {
     }
 
     get templates(): ReportTemplate[] {
-        if (this._reportService.getDefaultTemplate()) {
-            this.template = this._reportService.getDefaultTemplate().id;
+       return this.templateList;
+    }
+
+    get templateId(): string {
+        if (this.template) {
+            return this.template.id;
         }
-        return this._reportService.getReportTemplates();
+        return null;
     }
 
     generateReport(): void {
-        let from = this.DP2date(this.fromDateModel.date);
-        let to = this.DP2date(this.toDateModel.date);
-
-        to.setDate(to.getDate() + 1);
-        if (from >= to) {
+        let to, from;
+        if (this.fromDateModel && this.toDateModel) {
+            from = this.DP2date(this.fromDateModel.date);
+            to = this.DP2date(this.toDateModel.date);
+            to.setDate(to.getDate() + 1);
+        }
+        if (from >= to || !from || !to) {
             this.popUp.setData(true, 'Fehler beim Erzeugen des neuen Berichts',
                     'Bitte wählen Sie eine passende Zeitspanne von mindestens einem Tag aus!');
-            to.setMonth(from.getMonth() + 1);
-            to.setDate(to.getDate() - 1);
-            this.toDateModel.date = this.formulateDate4DP(to);
+            // to.setMonth(from.getMonth() + 1);
+            // to.setDate(to.getDate() - 1);
+            // this.toDateModel.date = this.formulateDate4DP(to);
             return;
         }
-        this._reportService.newReport(this.template, from, to);
-        this.popUp.setData(true, 'Neuer Bericht',
-                    'Neuer ' + this.template + ' wird erzeugt und im Übersicht angezeigt.',
+        console.log('new report: ' + this.template.id);
+        this._reportService.newReport(this.template.id, from, to);
+        this.popUp.setData(true, 'Neuer Bericht wird erstellt',
+        'Der Bericht "' + this.template.description + '" wird erstellt und steht danach in der Berichtsübersicht bereit.',
                     () => {this._router.navigate(['/report'])} );
     }
 }

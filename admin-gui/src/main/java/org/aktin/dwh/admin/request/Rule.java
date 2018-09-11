@@ -6,6 +6,7 @@ import org.aktin.broker.request.QueryRuleAction;
 public class Rule {
 	public String user;
 	public QueryRuleAction action;
+	// TODO: creationDate as Instant -> receiving nano and epocheSeconds on client instead date in ISO format
 	public String creationDate;
 
 	public static Rule wrap(BrokerQueryRule rule){
