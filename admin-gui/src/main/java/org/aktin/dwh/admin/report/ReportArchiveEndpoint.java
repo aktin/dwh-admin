@@ -6,8 +6,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -27,12 +25,8 @@ import org.aktin.report.ArchivedReport;
 import org.aktin.report.ReportArchive;
 import org.aktin.report.ArchivedReport.Status;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @Path("report/archive")
 public class ReportArchiveEndpoint {
-	private static final Logger log = Logger.getLogger(ReportArchiveEndpoint.class.getName());
 	
 	@Inject
 	ReportArchive archive;
@@ -45,17 +39,20 @@ public class ReportArchiveEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getGeneratedReports(@Context Request request) {
 		List<ReportEntry> list = new ArrayList<>();
-		ObjectMapper mapper = new ObjectMapper();
-		String reportsJson = "";
+		long maxTimestamp = 0L;
+		int numWaiting = 0;
 		for (ArchivedReport report : archive.reports()) {
-			list.add(ReportEntry.fill(report));
+			ReportEntry reportEntry = ReportEntry.fill(report);
+			if (reportEntry.status == Status.Waiting) {
+				numWaiting += 1;
+			}
+			list.add(reportEntry);
+			if(reportEntry.created.getTime() > maxTimestamp) {
+				maxTimestamp = reportEntry.created.getTime();
+			}
 		}
-		try {
-			reportsJson = mapper.writeValueAsString(list);
-	    } catch (JsonProcessingException e) {
-	    	log.log(Level.WARNING, "Unable to convert reportEntryList to JSON ", e);
-	    }
-		EntityTag etag = new EntityTag(Integer.toString(reportsJson.hashCode()));
+		// eTag consists of timestamp of the last created report and the number of reports with status 'Waiting' (to register changes from waiting to terminal status)
+		EntityTag etag = new EntityTag(Long.toString(maxTimestamp) + "-" + Integer.toString(numWaiting)); 
 		ResponseBuilder b = request.evaluatePreconditions(etag);
 		if (b != null) {
 			return b.build();
@@ -75,18 +72,12 @@ public class ReportArchiveEndpoint {
 	@Path("{id}/info")
 	public Response getReportInfo(@PathParam("id") int id, @Context Request request) throws IOException {
 		ArchivedReport report = archive.get(id);
-		ObjectMapper mapper = new ObjectMapper();
-		String reportJson = "";
-		if( report == null ){
+		if( report == null ) {
 			throw new NotFoundException();
 		}
 		ReportEntry reportEntry = ReportEntry.fill(report);
-		try {
-			reportJson = mapper.writeValueAsString(reportEntry);
-	    } catch (JsonProcessingException e) {
-	    	log.log(Level.WARNING, "Unable to convert reportEntry to JSON ", e);
-	    }
-		EntityTag etag = new EntityTag(Integer.toString(reportJson.hashCode()));
+		// eTag consists of creation timestamp and the ordinal of the status (to register changes from waiting to terminal status)
+		EntityTag etag = new EntityTag(Long.toString(reportEntry.created.getTime()) + "-" + reportEntry.status.ordinal()); 
 		ResponseBuilder b = request.evaluatePreconditions(etag);
 		if (b != null) {
 			return b.build();

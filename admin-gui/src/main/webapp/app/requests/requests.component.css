@@ -9,8 +9,19 @@
 
 .request-status-bar-active-request {
     border: 2px solid rgb(253, 221, 132);
-    border-radius: 25px;
+    border-radius: 20px;
     width: 100%;
+}
+
+.container-query-requests {
+    border: solid lightgray 1px;
+    border-radius: 20px;
+    width: 100%;
+    padding: 0px;
+}
+
+.container-query-requests div {
+    padding: 10px 3px 15px 3px;
 }
 
 .hide-sql {
@@ -24,16 +35,6 @@
 }
 .request-result-button-icon {
     padding-top: 5px;
-}
-
-.container-query-requests {
-    border: solid lightgray 1px;
-    border-radius: 25px;
-    width: 100%;
-}
-
-.container-query-requests div {
-    padding: 10px 5px 15px 5px;
 }
 
 .button-query-requests {

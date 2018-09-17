@@ -65,12 +65,12 @@ export class RequestSingleViewComponent {
         return RequestStatus[this.requestData.status];
     }
 
-    setStatus(request: LocalRequest, allow: boolean, checked?: boolean): RequestStatus {
+    setStatus(request: LocalRequest, allow: boolean, checkedAuto?: boolean): RequestStatus {
         return this._requestService.authorizeRequest(
             request.requestId,
             request.status,
             allow,
-            checked,
+            checkedAuto,
         );
     }
 
@@ -94,35 +94,38 @@ export class RequestSingleViewComponent {
                     'Nach der Berechnung werden die Ergebnisse direkt übertragen.']);
                     if (this.request.isRecurring()) {
                         this.popUp.setOptQuery(['Serien-Freigabe',
-                        'Nur diese Anfrage freigeben.', 'Alle Anfragen dieser Serie freigeben.']);
+                        'Nur diese Anfrage freigeben.', 'Diese und alle zukünftigen Anfragen der Serie freigeben.']);
                         let numAllow = this.getNumApplyRule();
-                        if ( numAllow > 0) {
+                        if (numAllow > 0) {
                             this.popUp.setOptApply(
-                            'Neben dieser und zukünftigen Anfragen auch bereits bestehende Anfragen freigeben. ' +
-                            'Anzahl der hiervon betroffenden Anfragen: ' + numAllow);
+                            'Auch bereits bestehende Anfragen freigeben und automatisch übermitteln. ' +
+                            'Anzahl der hiervon betroffenen Anfragen: ' + numAllow);
                         }
                     }
             } else {
                 if (this.request.isRecurring()) {
                     message += ' Nur Anfragen, die noch nicht ausgeführt wurden, werden hierdurch abgelehnt.';
                     this.popUp.setOptQuery(['Serien-Ablehnung',
-                    'Nur diese Anfrage ablehnen.', 'Alle Anfragen dieser Serie ablehnen.']);
+                    'Nur diese Anfrage ablehnen.', 'Diese und alle zukünftigen Anfragen der Serie ablehnen.']);
                     let numReject = this.getNumApplyRule();
                     this.popUp.setOptApply(
-                        'Neben dieser und zukünftigen Anfragen auch bereits bestehende Anfragen ablehnen. ' +
-                        'Anzahl der hiervon betroffenden Anfragen: '
+                        'Auch bereits bestehende Anfragen ablehnen. Anzahl der hiervon betroffenen Anfragen: '
                         + numReject);
                 }
                 buttons[0] = ['Jetzt ablehnen', 'red'];
             }
             this.popUp.setConfirm(buttons);
             this.popUp.setData(true, title, message,
-                (answer: boolean, checked: boolean, checkedQuery: boolean, checkedApply: boolean) => {
+                (answer: boolean, checkedAuto: boolean, checkedQuery: boolean, checkedApply: boolean) => {
+                    checkedQuery = this.request.isRecurring() && checkedQuery && (checkedAuto || !allow);
+                    checkedApply = this.request.isRecurring() && checkedQuery && checkedApply;
                     if (answer) {
                         // set status of current request
-                        this.requestData.status = this.setStatus(this.requestData, allow, checked);
+                        if (!this.request.isRecurring() || !checkedQuery || !checkedApply) {
+                            this.requestData.status = this.setStatus(this.requestData, allow, checkedAuto);
+                        }
                         // query rule has to be set
-                        if (this.request.isRecurring() && checkedQuery && checked) {
+                        if (checkedQuery) {
                             // set accept_submit
                             if (allow) {
                                 // delete old rule and create new one
@@ -205,7 +208,7 @@ export class RequestSingleViewComponent {
 
     deleteQueryRule() {
         return this._requestService.deleteQueryRule(this.request.queryId)
-            .subscribe(() => { this._requestSingleComponent.updateQueryBundle(true)});
+            .subscribe(() => { this._requestSingleComponent.updateQueryBundle()});
     }
 
     toggleHiddenMarker (): void {

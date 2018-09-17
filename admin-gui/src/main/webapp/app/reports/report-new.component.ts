@@ -1,10 +1,8 @@
 /**
  * Created by Xu on 02-Jun-17.
  */
-import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { TimerObservable } from 'rxjs/observable/TimerObservable';
-import { Subscription } from 'rxjs';
 
 import { IMyDateModel, IMyDpOptions } from 'mydatepicker';
 
@@ -20,12 +18,9 @@ require('semantic-ui');
     styleUrls: ['./reports.component.css'],
 })
 export class ReportNewComponent {
-    private _timerSubscription: Subscription;
-    private _dataInterval = 5000;
 
     template: ReportTemplate;
     templateList: ReportTemplate[];
-    templatesEtag: string;
 
     fromDateModel: any = { date: this.formulateDate4DP(new Date()) };
     toDateModel: any = { date: this.formulateDate4DP(new Date()) };
@@ -73,27 +68,15 @@ export class ReportNewComponent {
     }
 
     ngOnInit() {
-        this.updateTemplates();
-        let timer = TimerObservable.create(0, this._dataInterval);
-        this._timerSubscription = timer.subscribe(() => {
-            this.updateTemplates();
-        });
+        this.getTemplates();
     }
 
-    ngOnDestroy() {
-        console.log('unsubscribe timer');
-        this._timerSubscription.unsubscribe();
-    }
-
-    updateTemplates() {
-        this._reportService.getReportTemplates(this.templatesEtag)
+    getTemplates() {
+        this._reportService.getReportTemplates()
             .subscribe(resp => {
-                console.log('update templates');
-                this.templateList = resp['reportTemplates'];
-                this.templatesEtag = resp['etag'];
-                console.log(this.templateList);
-                if (!this.template && resp['reportTemplates'].length > 0) {
-                    this.template = resp['reportTemplates'][0];
+                this.templateList = resp;
+                if (this.templateList.length > 0) {
+                    this.template = this.templateList[0];
                 }
             });
     }
@@ -108,7 +91,7 @@ export class ReportNewComponent {
     }
 
     get templates(): ReportTemplate[] {
-       return this.templateList;
+        return this.templateList;
     }
 
     get templateId(): string {
@@ -133,7 +116,6 @@ export class ReportNewComponent {
             // this.toDateModel.date = this.formulateDate4DP(to);
             return;
         }
-        console.log('new report: ' + this.template.id);
         this._reportService.newReport(this.template.id, from, to);
         this.popUp.setData(true, 'Neuer Bericht wird erstellt',
         'Der Bericht "' + this.template.description + '" wird erstellt und steht danach in der Berichtsübersicht bereit.',

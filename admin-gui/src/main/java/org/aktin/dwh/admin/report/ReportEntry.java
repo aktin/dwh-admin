@@ -8,6 +8,8 @@ import org.aktin.report.ArchivedReport.Status;
 
 public class ReportEntry {
 	public int id;
+	// TODO: Instant instead Date (fix problem: receiving nano and epochSecond when using Instant)
+	public Date created;
 	public Date data;
 	public Date start;
 	public Date end;
@@ -20,6 +22,7 @@ public class ReportEntry {
 	static ReportEntry fill(ArchivedReport report){
 		ReportEntry e = new ReportEntry();
 		e.id = report.getId();
+		e.created = convertInstant(report.getCreatedTimestamp());
 		e.data = convertInstant(report.getDataTimestamp());
 		e.start = convertInstant(report.getStartTimestamp());
 		e.end = convertInstant(report.getEndTimestamp());

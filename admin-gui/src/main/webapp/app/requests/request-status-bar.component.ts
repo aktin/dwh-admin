@@ -87,6 +87,10 @@ export class RequestStatusBarComponent implements OnInit {
         return this.myItems;
     }
 
+    getNumRequest(request: LocalRequest): number {
+        return this.queryDetails[request.queryId].order.indexOf(request.requestId) + 1;
+    }
+
     ngOnInit () {
         this.calcView();
     }

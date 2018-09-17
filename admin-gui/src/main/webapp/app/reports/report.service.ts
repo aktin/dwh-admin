@@ -24,7 +24,7 @@ export class ReportService {
     ) {}
 
     getReports(etag: string): Observable<Object> {
-        let options = { headers: new Headers({'If-None-Match': etag}),  'observe': 'response' };
+        let options = { headers: new Headers({'If-None-Match': etag}), 'observe': 'response' };
         return this._http.get(this._urls.parse('reportsList'), options)
             .catch(err => { return this._http.handleError(err) })
             .map(resp => {
@@ -62,15 +62,11 @@ export class ReportService {
             .subscribe();
     }
 
-    getReportTemplates(etag: string): Observable<Object> {
-        let options = { headers: new Headers({'If-None-Match': etag}),  'observe': 'response' };
-        return this._http.get(this._urls.parse('reportTemplates'), options)
+    getReportTemplates(): Observable<ReportTemplate[]> {
+        return this._http.get(this._urls.parse('reportTemplates'))
             .catch(err => { return this._http.handleError(err) })
             .map(resp => {
-                let res = {};
-                res['etag'] = resp.headers.get('ETag');
-                res['reportTemplates'] = JSON.parse(resp.text());
-                return res;
+               return <ReportTemplate[]> JSON.parse(resp.text());
             });
     }
 

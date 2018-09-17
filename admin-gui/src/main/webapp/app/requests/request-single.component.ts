@@ -88,8 +88,8 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
             });
     }
 
-    updateQueryBundle(freshUpdate?: boolean) {
-        this._requestService.getQueryBundle(this.request.queryId, freshUpdate ? '0' : this.bundleEtag)
+    updateQueryBundle() {
+        this._requestService.getQueryBundle(this.request.queryId, this.bundleEtag)
             .subscribe(res => {
                 console.log('update queryBundle');
                 this.queryBundle = res['bundle'];

@@ -45,10 +45,12 @@ export class Report {
     public static parseObj (obj: any, url?: string): Report {
         obj['timespan'] = obj['timespan'] || [];
 
+        if (obj.hasOwnProperty('created')) {
+            obj['created'] = this.parseDate(obj['created']);
+        }
         if (obj.hasOwnProperty('data')) {
             obj['generationDate'] = this.parseDate(obj['data']);
         } else {
-
             obj['generationDate'] = this.parseDate(obj['generationDate']);
         }
         if (obj.hasOwnProperty('start') && obj.hasOwnProperty('end')) {
@@ -60,7 +62,6 @@ export class Report {
         if (obj['status'] && obj['status'].length > 0) {
             obj['status'] = ReportStatus[obj['status']];
         }
-
         if (! obj['url']) {
             obj['url'] = this.getLink(obj, url);
         }
@@ -73,6 +74,7 @@ export class Report {
 
     constructor(
         public id: number,
+        public created: Date,
         public generationDate: Date, // if not null: report generation date
         public timespan: [Date, Date],
         public template: string,

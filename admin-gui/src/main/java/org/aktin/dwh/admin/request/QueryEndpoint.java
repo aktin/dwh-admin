@@ -1,7 +1,6 @@
 package org.aktin.dwh.admin.request;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -46,9 +45,7 @@ public class QueryEndpoint {
 	
 	/**
 	 * GET request to retrieve the queryBundle resource (contains the query rule and a list of all requests that belong 
-	 * to the query) which can be addressed by the given path. If called after the queryRule is deleted and the belonging 
-	 * requests were modified after rule creation the response will have status 304 (maxTimestamp not changing). In that 
-	 * case send eTag with value 0 from client to get the bundle with updated rule.   
+	 * to the query) which can be addressed by the given path.
 	 * @param id queryId
 	 * @return response with queryBundle of the given queryId if the lastActionTimestamp on the 
 	 * 		   client differs from the one on the server, otherwise response with status 304 (Not Modified).
@@ -59,6 +56,7 @@ public class QueryEndpoint {
 	public Response getQueryBundle(@PathParam("id") int id, @Context javax.ws.rs.core.Request request) throws IOException{
 		List<RetrievedRequest> rs = new ArrayList<>();
 		long maxTimestamp = 0L;
+		long ruleTimestamp = 0L;
 		try( Stream<? extends RetrievedRequest> req = manager.getQueryRequests(id) ){
 			for(Iterator<? extends RetrievedRequest> iterator = req.iterator(); iterator.hasNext();) {
 				RetrievedRequest currReq = iterator.next();
@@ -75,15 +73,12 @@ public class QueryEndpoint {
 		QueryBundle qb = new QueryBundle();
 		BrokerQueryRule rule = manager.getQueryRule(id);
 		if( rule != null ) {
-			Instant ruleTimestamp = rule.getTimestamp();
-			if(ruleTimestamp.toEpochMilli() > maxTimestamp) {
-				maxTimestamp = ruleTimestamp.toEpochMilli();
-			}
+			ruleTimestamp = rule.getTimestamp().toEpochMilli();
 			qb.rule = Rule.wrap(rule);
 		}
 		qb.requests = rs.stream().map(req -> new Request(req)).collect(Collectors.toList());
 		// sort by date XXX or already sorted???
-		EntityTag etag = new EntityTag(Long.toString(maxTimestamp));
+		EntityTag etag = new EntityTag(Long.toString(maxTimestamp) + "-" + Long.toString(ruleTimestamp));
 		ResponseBuilder b = request.evaluatePreconditions(etag);
 		if (b != null) {
 			return b.build();
@@ -134,7 +129,7 @@ public class QueryEndpoint {
 					} else if( action == QueryRuleAction.ACCEPT_EXECUTE ) {
 						req.setAutoSubmit(false);
 					}
-					if (req.getStatus() != RequestStatus.Processing && req.getStatus() != RequestStatus.Completed && req.getStatus() != RequestStatus.Queued) {
+					if (req.getStatus() == RequestStatus.Retrieved || req.getStatus() == RequestStatus.Seen) {
 						try {
 							req.changeStatus(security.getUserPrincipal().getName(), RequestStatus.Queued, "Automatic accept by query rule");
 						} catch (IOException e) {
