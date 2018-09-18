@@ -53,11 +53,11 @@ public class QueryEndpoint {
 	 */
 	@GET
 	@Path("{id}")
-	public Response getQueryBundle(@PathParam("id") int id, @Context javax.ws.rs.core.Request request) throws IOException{
+	public Response getQueryBundle(@PathParam("id") int id, @Context javax.ws.rs.core.Request request) throws IOException {
 		List<RetrievedRequest> rs = new ArrayList<>();
 		long maxTimestamp = 0L;
 		long ruleTimestamp = 0L;
-		try( Stream<? extends RetrievedRequest> req = manager.getQueryRequests(id) ){
+		try( Stream<? extends RetrievedRequest> req = manager.getQueryRequests(id) ) {
 			for(Iterator<? extends RetrievedRequest> iterator = req.iterator(); iterator.hasNext();) {
 				RetrievedRequest currReq = iterator.next();
 				rs.add(currReq);
@@ -135,6 +135,12 @@ public class QueryEndpoint {
 						} catch (IOException e) {
 							log.log(Level.SEVERE, "Unable to apply accept rule to request " + req.getRequestId(), e);
 						}
+					} else if(req.getStatus() == RequestStatus.Completed && req.hasAutoSubmit()) {
+						try {
+							req.changeStatus(security.getUserPrincipal().getName(), RequestStatus.Sending, "Automatic submitted by query rule");
+						} catch (IOException e) {
+							log.log(Level.SEVERE, "Unable to submit request " + req.getRequestId(), e);
+						}
 					}
 				} 
 				break;
@@ -142,7 +148,6 @@ public class QueryEndpoint {
 			}
 		}
 	}
-
 
 	/**
 	 * GET request to retrieve the rule of a specific query which contains the rule action and the creator of the rule.
@@ -166,12 +171,17 @@ public class QueryEndpoint {
 	@Secured
 	@DELETE
 	@Path("{id}/rule")
-	public void deleteRule(@PathParam("id") int id) throws IOException{
+	public void deleteRule(@PathParam("id") int id) throws IOException {
 		BrokerQueryRule rule = manager.getQueryRule(id);
 		if( rule == null ){
 			throw new NotFoundException();
 		}
 		manager.deleteQueryRule(id);
+		try (Stream<? extends RetrievedRequest> req = manager.getQueryRequests(id)) {
+			for(Iterator<? extends RetrievedRequest> requests = req.iterator(); requests.hasNext();) {
+				requests.next().setAutoSubmit(false);
+			}
+		}
 	}
 
 

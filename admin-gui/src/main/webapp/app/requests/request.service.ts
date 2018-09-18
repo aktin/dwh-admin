@@ -69,7 +69,11 @@ export class RequestService {
                 res['bundle'] = JSON.parse(resp.text());
                 res['bundle'].requests = _.map( res['bundle'].requests, req => LocalRequest.parseRequest(req));
                 res['bundle'].requests.sort((req1: LocalRequest, req2: LocalRequest) => {
-                    return +new Date(req1.query.reference) - +new Date(req2.query.reference);
+                    if (+new Date(req1.query.reference) === +new Date(req2.query.reference)) {
+                        return req1.requestId - req2.requestId;
+                    } else {
+                        return +new Date(req1.query.reference) - +new Date(req2.query.reference);
+                    }
                 });
                 if (res['bundle'].rule) {
                     res['bundle'].rule.creationDate = new Date(res['bundle'].rule.creationDate);

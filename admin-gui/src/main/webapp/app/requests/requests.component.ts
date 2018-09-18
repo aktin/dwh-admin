@@ -72,7 +72,11 @@ export class RequestsComponent implements OnDestroy {
                     return req.queryId === currReq.queryId;
                 });
                 query.sort((req1: LocalRequest, req2: LocalRequest) => {
-                    return +new Date(req1.query.reference) - +new Date(req2.query.reference);
+                    if (+new Date(req1.query.reference) === +new Date(req2.query.reference)) {
+                        return req1.requestId - req2.requestId;
+                    } else {
+                        return +new Date(req1.query.reference) - +new Date(req2.query.reference);
+                    }
                 });
                 let order: number[] = [];
                 query.forEach(request => {
