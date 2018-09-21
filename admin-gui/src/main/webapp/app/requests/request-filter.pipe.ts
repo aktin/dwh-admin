@@ -37,20 +37,64 @@ export class RequestFilterPipe implements PipeTransform {
                 output = output.filter(req => req.status === RequestStatus.Retrieved);
                 break;
             }
+            case 'recurring' : {
+                output = output.filter(req => req.isRecurring());
+                break;
+            }
+            case 'single' : {
+                output = output.filter(req => !req.isRecurring());
+                break;
+            }
             case 'done' : {
                 output = output.filter(req => req.isFinished());
                 break;
             }
+            case 'inProgress' : {
+                output = output.filter(req => !req.isFinished());
+                break;
+            }
+            case 'seen': {
+                output = output.filter(req => req.status === RequestStatus.Seen);
+                break;
+            }
+            case 'retrieved' : {
+                output = output.filter(req => req.status === RequestStatus.Retrieved);
+                break;
+            }
+            case 'queued': {
+                output = output.filter(req => req.status === RequestStatus.Queued);
+                break;
+            }
+            case 'processing': {
+                output = output.filter(req => req.status === RequestStatus.Processing);
+                break;
+            }
+            case 'completed': {
+                output = output.filter(req => req.status === RequestStatus.Completed);
+                break;
+            }
+            case 'sending': {
+                output = output.filter(req => req.status === RequestStatus.Sending);
+                break;
+            }
+            case 'seen': {
+                output = output.filter(req => req.status === RequestStatus.Seen);
+                break;
+            }
             case 'submitted' : {
-                output = output.filter(req => req.isSubmitted());
+                output = output.filter(req => req.status === RequestStatus.Submitted);
+                break;
+            }
+            case 'rejected' : {
+                output = output.filter(req => req.status === RequestStatus.Rejected);
                 break;
             }
             case 'failed' : {
-                output = output.filter(req => req.failed());
+                output = output.filter(req => req.status === RequestStatus.Failed);
                 break;
             }
-            case 'recurring' : {
-                output = output.filter(req => req.isRecurring());
+            case 'expired' : {
+                output = output.filter(req => req.status === RequestStatus.Expired);
                 break;
             }
         }

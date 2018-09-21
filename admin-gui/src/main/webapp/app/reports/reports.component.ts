@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TimerObservable } from 'rxjs/observable/TimerObservable';
 import { Subscription } from 'rxjs';
-import { Md5 } from 'ts-md5/dist/md5';
 
 import { Report } from './report';
 import { ReportService } from './report.service';

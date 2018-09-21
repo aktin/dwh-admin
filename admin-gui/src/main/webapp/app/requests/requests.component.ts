@@ -37,16 +37,33 @@ export class RequestsComponent implements OnDestroy {
         this._timerSubscription.unsubscribe();
     }
 
-    get stateFilterArray(): [string, RequestStatus|string][] {
+    get stateFilterArray(): [string, RequestStatus|string, any][] {
         return [
-            [ 'Alle anzeigen', 'all' ],
-            [ 'Aktion erforderlich', 'auth' ],
-            [ 'Neue Anfragen', 'new' ],
-            [ 'Gelöschte Anfragen', 'hidden' ],
-            [ 'Wiederkehrende Anfragen', 'recurring' ],
-            [ 'Abgeschlossene Anfragen', 'done' ],
-            [ 'Erfolgreiche Anfragen', 'submitted' ],
-            [ 'Fehlgeschlagene Anfragen', 'failed' ],
+            [ 'Alle anzeigen', 'all', null ],
+            [ 'Aktion erforderlich', 'auth', null ],
+            [ 'Neue Anfragen', 'new', null ],
+            [ 'Einzelanfragen', 'single', null ],
+            [ 'Serien-Anfragen', 'recurring', null ],
+            [ 'Gelöschte Anfragen', 'hidden',  null ],
+            [ 'Laufende Anfragen' , null,
+                [
+                [ 'Alle laufenden Anfragen', 'inProgress' ],
+                [ 'Eingegangen (neue Anfragen)', 'retrieved' ],
+                [ 'Freigabe der Abfrage', 'seen' ],
+                [ 'Ausführung geplant', 'queued' ],
+                [ 'Ausführung läuft', 'processing' ],
+                [ 'Freigabe der Ergebnisse', 'completed' ],
+                ]
+            ],
+            [ 'Abgeschlossene Anfragen' , null,
+                [
+                [ 'Alle abgeschlossenen Anfragen', 'done' ],
+                [ 'Übermittlung abgeschlossen', 'submitted' ],
+                [ 'Abgelehnt', 'rejected' ],
+                [ 'Fehlgeschlagen', 'failed' ],
+                [ 'Geschlossen', 'expired' ]
+                ]
+            ]
         ];
     }
 

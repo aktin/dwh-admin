@@ -104,7 +104,7 @@ export class RequestSingleViewComponent {
                     }
             } else {
                 if (this.request.isRecurring()) {
-                    message += ' Nur Anfragen, die noch nicht ausgeführt wurden, werden hierdurch abgelehnt.';
+                    //message += ' Nur Anfragen, die noch nicht ausgeführt wurden, werden hierdurch abgelehnt.';
                     this.popUp.setOptQuery(['Serien-Ablehnung',
                     'Nur diese Anfrage ablehnen.', 'Diese und alle zukünftigen Anfragen der Serie ablehnen.']);
                     let numReject = this.getNumApplyRule();
@@ -231,7 +231,7 @@ export class RequestSingleViewComponent {
     }
 
     get recurrRequests(): LocalRequest[] {
-        return this.queryBundle.requests;
+        return this.queryBundle.requests.slice().reverse();
     }
 
     formatXml(rawxml: string): string {

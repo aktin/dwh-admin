@@ -41,7 +41,7 @@ export class RequestStatusBarComponent implements OnInit {
         if (this.request && this.oldStatus !== this.request.status) {
             this.oldStatus = this.request.status;
             this.failed = this.request.failed();
-            this.expired = this.request.isExpired();
+            this.expired = this.request.status === RequestStatus.Expired;
             this.myItems = [];
             if (this.failed || this.expired) {
                 this.fillBar = '100%';
@@ -72,7 +72,7 @@ export class RequestStatusBarComponent implements OnInit {
                             obj['interaction'] = true;
                         }
                     }
-                    if (this.request.isSubmitted && n === this.statusLength - 1) {
+                    if (this.request.status === RequestStatus.Submitted && n === this.statusLength - 1) {
                         obj[RequestStatus[this.request.status]] = true;
                         obj.dot = false;
                     }

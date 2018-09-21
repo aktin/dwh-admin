@@ -1,10 +1,10 @@
 <div>
         <div *ngIf="request.isRecurring()">
                 <h4 class="ui header left floated">
-                    Serien-Anfrage {{ getNumRequest(request) }}
-                    vom {{ request.query.reference | date: 'mediumDate' }}
-                    [{{ queryDetails[request.queryId].rejected }} abgelehnt -
-                    {{ queryDetails[request.queryId].accepted }} freigegeben, davon
+                    Serien-Anfrage {{ getNumRequest(request) }}:
+                    Ausführung am {{ request.query.scheduled | date: 'mediumDate' }}
+                    [{{ queryDetails[request.queryId].rejected }} abgelehnt,
+                    {{ queryDetails[request.queryId].accepted }} freigegeben,
                     {{ queryDetails[request.queryId].submitted }} übertragen]
                 </h4>
             </div>

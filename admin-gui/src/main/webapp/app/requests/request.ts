@@ -113,11 +113,7 @@ export class LocalRequest {
     }
 
     public isFinished (): boolean {
-        return this.failed() || this.status === RequestStatus.Submitted;
-    }
-
-    public isSubmitted(): boolean {
-        return this.status === RequestStatus.Submitted;
+        return this.failed() || this.status === RequestStatus.Submitted || this.status === RequestStatus.Expired;
     }
 
     public hasResultFile (): boolean {
@@ -126,10 +122,6 @@ export class LocalRequest {
 
     public failed (): boolean {
         return ([RequestStatus.Rejected, RequestStatus.Failed].indexOf(this.status) >= 0);
-    }
-
-    public isExpired(): boolean {
-        return this.status === RequestStatus.Expired;
     }
 
     public isRecurring(): boolean {

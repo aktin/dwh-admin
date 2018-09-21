@@ -54,3 +54,11 @@
     display: block;
     margin-top: 15px;
 }
+
+.filterOptgroup {
+    color: rgb(26, 155, 214);
+}
+
+.filterOption {
+    color: black;
+}
