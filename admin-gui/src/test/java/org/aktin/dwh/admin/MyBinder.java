@@ -16,6 +16,8 @@ import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.admin.auth.TokenManager;
 import org.aktin.dwh.admin.log.DemoLogfileReader;
 import org.aktin.dwh.admin.log.LogLineSupplierFactory;
+import org.aktin.dwh.optinout.StudyManager;
+import org.aktin.dwh.optinout.StudyManagerImpl;
 import org.aktin.dwh.prefs.impl.PropertyFilePreferences;
 import org.aktin.dwh.statistics.ImportSummaryImpl;
 import org.aktin.dwh.ImportSummary;
@@ -132,6 +134,10 @@ public class MyBinder extends AbstractBinder{
 		bindReportModules(prefs);
 		
 		bindRequestModules(prefs);
+
+		StudyManagerImpl sm = new StudyManagerImpl();
+		sm.setDataSource(ds);
+		bind(sm).to(StudyManager.class);
 
 		// bind summary
 		ImportSummaryImpl summ = new ImportSummaryImpl();

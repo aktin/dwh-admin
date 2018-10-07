@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import org.aktin.dwh.admin.auth.AuthEndpoint;
 import org.aktin.dwh.admin.auth.AuthFilter;
 import org.aktin.dwh.admin.log.LogEndpoint;
+import org.aktin.dwh.admin.optin.OptInEndpoint;
 import org.aktin.dwh.admin.report.ReportArchiveEndpoint;
 import org.aktin.dwh.admin.report.ReportEndpoint;
 import org.aktin.dwh.admin.request.QueryEndpoint;
@@ -60,6 +61,7 @@ public class AdminTestServer {
 		rc.register(Summary.class);
 		rc.register(RequestEndpoint.class);
 		rc.register(QueryEndpoint.class);
+		rc.register(OptInEndpoint.class);
 
 		setupJNDI(ds);
 	}
