@@ -1,3 +1,4 @@
+
 /**
  * Created by Xu on 06.04.2017.
  *
@@ -16,7 +17,9 @@ import { ReportsComponent, ReportSingleComponent, ReportNewComponent } from './r
 import { PreferencesComponent }  from './preferences/index';
 import { VisitsComponent }  from './visits/index';
 import { RequestsComponent, RequestSingleComponent }     from './requests/index';
+import { StudyManagerComponent } from './studyManager/index';
 import { StatusComponent }       from './status/index';
+import { Permissions } from './users/roles';
 
 const routes: Routes = [// array of routes
     {
@@ -38,6 +41,10 @@ const routes: Routes = [// array of routes
             roles : [
                 'LOGGEDIN',
             ],
+            permissions : [
+                Permissions.READ_REQUESTS,
+                Permissions.WRITE_REQUESTS,
+            ]
         },
         children : [
             {
@@ -53,11 +60,16 @@ const routes: Routes = [// array of routes
     {
         path : 'report',
         canActivate : [UserAuthGuard],
+        canActivateChild : [UserAuthGuard],
         data : {
             name : 'Berichte',
             roles : [
                 'LOGGEDIN',
             ],
+            permissions : [
+                Permissions.READ_REPORTS,
+                Permissions.WRITE_REPORTS
+            ]
         },
         children : [
             {
@@ -67,6 +79,12 @@ const routes: Routes = [// array of routes
             {
                 path: 'new',
                 component: ReportNewComponent,
+                data: {
+                    name: 'newReport',
+                    permissions: [
+                        Permissions.WRITE_REPORTS 
+                    ]
+                }
             },
             {
                 path: ':id',
@@ -75,25 +93,45 @@ const routes: Routes = [// array of routes
         ],
     },
     {
+        path: 'visits',
+        canActivate: [UserAuthGuard],
+        component: VisitsComponent,
+        data : {
+            name : 'Fallsuche',
+            roles : [
+                'LOGGEDIN',
+            ],
+            permissions : [
+                Permissions.LIST_VISITS,
+                Permissions.WRITE_STUDY_MANAGER
+            ]
+        },
+    },
+    {
+        path: 'studyManager',
+        canActivate: [UserAuthGuard],
+        component: StudyManagerComponent,
+        data: {
+            name: 'Studien-Manager',
+            permissions: [
+                Permissions.READ_STUDY_MANAGER,
+                Permissions.WRITE_STUDY_MANAGER
+            ]
+        }
+    },
+    {
         path: 'preferences',
         canActivate: [UserAuthGuard],
         component: PreferencesComponent,
         data : {
             name : 'Konfigurationen',
             roles : [
+                // 'Admin',
                 'LOGGEDIN',
             ],
-        },
-    },
-    {
-        path: 'visits',
-        canActivate: [UserAuthGuard],
-        component: VisitsComponent,
-        data : {
-            name : 'Visits',
-            roles : [
-                'LOGGEDIN',
-            ],
+            permissions : [
+                Permissions.CONFIG
+            ]
         },
     },
     /*{
@@ -127,8 +165,12 @@ const routes: Routes = [// array of routes
         data : {
             name : 'Status',
             roles : [
+                // 'Admin',
                 'LOGGEDIN',
             ],
+            permissions : [
+                Permissions.STATUS
+            ]
         },
     },
     {

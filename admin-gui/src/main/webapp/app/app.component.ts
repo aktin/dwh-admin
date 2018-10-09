@@ -15,6 +15,7 @@ import { AuthService } from './users/index';
 import { HttpInterceptorService } from './helpers/services/http-interceptor.service';
 import { Response } from '@angular/http';
 import { UrlService } from './helpers/services/url.service';
+import { Role } from './users/roles';
 
 @Component({
     selector: 'my-app',
@@ -23,7 +24,7 @@ import { UrlService } from './helpers/services/url.service';
 })
 export class AppComponent implements OnInit {
     visibility: any = {};
-    versionData = "";
+    versionData = '';
 
     constructor (private _titleService: Title,
                  private _authService: AuthService,
@@ -69,7 +70,7 @@ export class AppComponent implements OnInit {
                 );
         }
         if (!this.versionData) {
-            return "Bitte einloggen zum Anzeigen.";
+            return 'Bitte einloggen zum Anzeigen.';
         }
 
         return this.versionData.slice(9);
@@ -77,7 +78,8 @@ export class AppComponent implements OnInit {
 
     get routings() {
         _.each(routings, route => {
-            this.visibility[route.data['name']] = this._authService.userLocalCheckRoles(route.data['roles']);
+            // this.visibility[route.data['name']] = this._authService.userLocalCheckRoles(route.data['roles']);
+            this.visibility[route.data['name']] = this._authService.userLocalCheckPermissions(route.data['permissions']);
         });
 
         return routings;
