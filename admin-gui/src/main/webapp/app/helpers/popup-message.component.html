@@ -22,8 +22,8 @@
         <div class="field">
             <div class="ui slider checkbox">
                 <input type="checkbox" name="frequency" [(ngModel)]="checked">
-                <label *ngIf="!checked || checkBoxText.length == 2">{{checkBoxText[1]}}</label>
-                <label *ngIf="checked && checkBoxText.length > 2">{{checkBoxText[2]}}</label>
+                <label class="fontBlack" *ngIf="!checked || checkBoxText.length == 2">{{checkBoxText[1]}}</label>
+                <label class="fontBlack" *ngIf="checked && checkBoxText.length > 2">{{checkBoxText[2]}}</label>
             </div>
         </div>
     </div>
@@ -33,9 +33,9 @@
         <label>{{checkBoxTextQuery[0]}}</label>
         <div class="field">
             <div class="ui slider checkbox">
-                <input type="checkbox" name="query" [(ngModel)]="checkedQuery" [disabled]="checkBoxText && checkBoxText.length >= 2 && !checked">
-                <label *ngIf="!checkedQuery || checkBoxTextQuery.length == 2">{{checkBoxTextQuery[1]}}</label>
-                <label *ngIf="checkedQuery && checkBoxTextQuery.length > 2">{{checkBoxTextQuery[2]}}</label>
+                <input type="checkbox" name="query" [(ngModel)]="checkedQuery">
+                <label class="fontBlack" *ngIf="!checkedQuery || checkBoxTextQuery.length == 2">{{checkBoxTextQuery[1]}}</label>
+                <label class="fontBlack" *ngIf="checkedQuery && checkBoxTextQuery.length > 2">{{checkBoxTextQuery[2]}}</label>
             </div>
         </div>
     </div>
@@ -44,13 +44,35 @@
         <br/>
         <div class="field">
             <div class="ui checkbox">
-                <input type="checkbox" name="query" [(ngModel)]="checkedApply" [disabled]="(checkBoxText && checkBoxText.length >= 2 && !checked) || !checkedQuery">
+                <input type="checkbox" name="apply" [(ngModel)]="checkedApply" [disabled]="!checkedQuery">
                 <label>{{ checkBoxTextApply }}</label>
+            </div>
+        </div>
+    </div>
+     <div class="ui extra" *ngIf="checkBoxTextMail">
+        <div class="field">
+            <div class="ui checkbox">
+                <input type="checkbox" name="mail" [(ngModel)]="checkedMail" [disabled]="!checkedQuery || checkedQuery && !checked">
+                <label>{{ checkBoxTextMail }}</label>
             </div>
         </div>
      </div>
 
-    <br />
+     <div *ngIf="checkedQuery">
+        <br>
+        <ng-container *ngIf="!checked && checkBoxText">
+            Sie erhalten Benachrichtigungen per E-Mail, wenn weitere Aktionen erforderlich sind.
+        </ng-container>
+        <ng-container *ngIf="checked && !checkedMail || !checkBoxText">
+            Sie erhalten keine weiteren Benachrichtigungen für Anfragen aus dieser Serie.
+        </ng-container>
+        <ng-container *ngIf="checked && checkedMail">
+            Sie erhalten Benachrichtigungen per E-Mail, wenn Ergebnisse übermittelt wurden.
+        </ng-container>
+        <br>
+     </div>
+
+    <br>
     <div class="popup-message-buttons" *ngIf="mode === 'confirm'">
         <div class="ui animated fade button popup-message-okay-button"
              [ngClass]="buttons[0][1]" (click)="msgOk()">

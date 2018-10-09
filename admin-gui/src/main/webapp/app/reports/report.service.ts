@@ -1,3 +1,4 @@
+
 /**
  * Created by Xu on 09.05.2017.
  *
@@ -12,7 +13,9 @@ import 'rxjs/add/operator/map';
 import _ = require('underscore');
 
 import { StorageService, UrlService, HttpInterceptorService, DownloadService } from '../helpers/index';
+import { AuthService } from './../users/auth.service';
 import { Report, ReportTemplate } from './report';
+import { Permissions } from '../users/roles';
 
 @Injectable()
 export class ReportService {
@@ -20,8 +23,24 @@ export class ReportService {
     constructor(
         private _http: HttpInterceptorService,
         private _urls: UrlService,
-        private _download: DownloadService
+        private _download: DownloadService,
+        private _auth: AuthService
     ) {}
+
+    checkPermission(permission: string): boolean {
+        let perm: Permissions;
+        switch (permission) {
+            case 'READ_REPORTS':
+                perm = Permissions.READ_REPORTS;
+                break;
+            case 'WRITE_REPORTS':
+                perm = Permissions.WRITE_REPORTS;
+                break;
+            default:
+                return false;
+        }
+        return this._auth.userLocalCheckPermissions([perm]);
+    }
 
     getReports(etag: string): Observable<Object> {
         let options = { headers: new Headers({'If-None-Match': etag}), 'observe': 'response' };

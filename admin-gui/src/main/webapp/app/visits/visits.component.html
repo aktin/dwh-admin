@@ -1,7 +1,7 @@
 <div class="ui grid">
     <div class="row">
         <div class="ui breadcrumb">
-            <div class="active section breadcrumb-header">Visits</div>
+            <div class="active section breadcrumb-header">Fallsuche</div>
         </div>
     </div>
 
@@ -24,7 +24,7 @@
             <div class="ui divider margin-top-bottom"></div>
                 <div class="inline fields">
                     <div class="three wide field ui radio checkbox">
-                        <input type="radio" name="visitSearchOption" value="optionPatient" [(ngModel)]="visitOption" (change)="onRadioChanged($event)" checked="checked">
+                        <input type="radio" name="visitSearchOption" value="optionPatient" [(ngModel)]="visitOption" checked="checked">
                         <label>Patienten-ID:</label>
                     </div>
                     <div class="thirteen wide field">
@@ -45,7 +45,7 @@
                 <div class="ui divider margin-top-bottom"></div>
                 <div class="inline fields">
                     <div class="three wide field ui radio checkbox">
-                        <input type="radio" name="visitSearchOption" value="optionCasenumber" [(ngModel)]="visitOption" (change)="onRadioChanged($event)">
+                        <input type="radio" name="visitSearchOption" value="optionCasenumber" [(ngModel)]="visitOption">
                         <label>Fallnummer:</label>
                     </div>
                     <div class="thirteen wide field">
@@ -68,7 +68,7 @@
                 <div class="ui divider margin-top-bottom"></div>
                 <div class="inline fields">
                     <div class="four wide field ui radio checkbox">
-                        <input type="radio" name="visitSearchOption" value="optionDate" [(ngModel)]="visitOption" (change)="onRadioChanged($event)">
+                        <input type="radio" name="visitSearchOption" value="optionDate" [(ngModel)]="visitOption">
                         <label>Aufnahmezeitraum:</label>
                     </div>
                     <div class="twelve wide field">

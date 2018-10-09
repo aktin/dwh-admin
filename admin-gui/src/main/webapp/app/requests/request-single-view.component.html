@@ -40,13 +40,13 @@
             </a>
         </div>
     </div>
-    <div class="row ui warning message" *ngIf="request.needAuthorization()">
+    <div class="row ui warning message" *ngIf="isAuthorized('WRITE_REQUESTS') && request.needAuthorization()">
         <div class="two wide column">
             <i class="huge yellow warning sign icon"></i>
         </div>
         <div class="eight wide column larger middle aligned" *ngIf="request.isNew()">
             Diese Anfrage wurde noch nicht zur Ausführung freigegeben. Bitte wählen Sie eine Aktion.
-            <span *ngIf="request.isRecurring()" class="block-margin">Sie haben auch die Möglickeit alle Anfragen der Serie anzunehmen oder abzulehnen.</span>
+            <span *ngIf="request.isRecurring()" class="block-margin">Sie haben auch die Möglichkeit alle Anfragen der Serie anzunehmen oder abzulehnen.</span>
         </div>
         <div class="eight wide column larger middle aligned" *ngIf="!request.isNew()">
             Die Ergebnisse wurden noch nicht zur Übermittlung freigegeben. Bitte wählen Sie eine Aktion.

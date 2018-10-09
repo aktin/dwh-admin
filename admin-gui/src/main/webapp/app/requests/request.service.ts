@@ -14,6 +14,8 @@ import FileSaver = require('file-saver');
 
 import { StorageService, UrlService, HttpInterceptorService, DownloadService } from '../helpers/index';
 import { LocalRequest, RequestMarker, RequestStatus, QueryBundle, Query, Rule, QueryRuleAction } from './request';
+import { AuthService } from './../users/auth.service';
+import { Permissions } from '../users/roles';
 import Timer = NodeJS.Timer;
 
 @Injectable()
@@ -23,8 +25,24 @@ export class RequestService {
         private _http: HttpInterceptorService,
         private _download: DownloadService,
         private _urls: UrlService,
-        private _router: Router
+        private _router: Router,
+        private _auth: AuthService
     ) {}
+
+    checkPermission(permission: string): boolean {
+        let perm: Permissions;
+        switch (permission) {
+            case 'READ_REQUESTS':
+                perm = Permissions.READ_REQUESTS;
+                break;
+            case 'WRITE_REQUESTS':
+                perm = Permissions.WRITE_REQUESTS;
+                break;
+            default:
+                return false;
+        }
+        return this._auth.userLocalCheckPermissions([perm]);
+    }
 
     getRequests(etag: string): Observable<Object> {
         let options = { headers: new Headers({'If-None-Match': etag}),  'observe': 'response' };

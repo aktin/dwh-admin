@@ -13,23 +13,26 @@ import { AuthService } from './auth.service';
 @Injectable()
 export class UserAuthGuard implements CanActivate {
 
-    constructor(private _authService: AuthService) { }
+    constructor(private _authService: AuthService) {}
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        // console.log ( route, state.url);
-        let data = route.data;
-        if (data && data['roles'] ) {
-            let roles: string[] = _.map(data['roles'], (role: string) => {
-                return role.toUpperCase();
-            });
-
-            return this._authService.userRolesCheckFull(roles).map( hasRole => {
-                    if (!hasRole) {
-                        this._authService.redirect2Home(state.url);
-                    } return hasRole;
-                }
-            );
-        }
-        return Observable.of(true);
+       return this.isAuthorized(route, state);
     }
+
+    canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+        return this.isAuthorized(childRoute, state);
+    }
+
+    isAuthorized(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+        let data = route.data;
+        if (data && data['permissions']) {
+            let hasPermission = this._authService.userLocalCheckPermissions(data['permissions']);
+            if (!hasPermission) {
+                this._authService.redirect2Home(state.url);
+                return false;
+           }
+        }
+        return true;
+    }
+
 }

@@ -1,3 +1,7 @@
+.ui.breadcrumb {
+    padding-bottom: 20px;
+}
+
 .reports-filter-checkbox {
     z-index: 100;
 }

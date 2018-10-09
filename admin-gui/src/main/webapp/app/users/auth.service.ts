@@ -1,3 +1,4 @@
+
 /**
  * Created by Xu on 03.05.2017.
  *
@@ -18,8 +19,9 @@ import 'rxjs/add/operator/combineLatest';
 import _ = require('underscore');
 
 import { StorageService, UrlService, HttpInterceptorService, CleanUpAuthService } from '../helpers/index';
-
+import { routings } from '../app-routing.module';
 import { User } from './user';
+import { Role, Permissions } from './roles';
 
 /**
  * Service Class for AUTH and LOGIN
@@ -32,6 +34,7 @@ import { User } from './user';
 export class AuthService {
 
     private _tokenValidTrustTime = 3000;
+    private _visibility: any = {};
 
     constructor (
         private _http: HttpInterceptorService,
@@ -60,7 +63,9 @@ export class AuthService {
                 this._store.setValue('user.auth.time', String(Date.now()));
                 this._store.setValue('user.name', user.username);
                 this._store.setValue('user.token', user.token);
+                this._store.setValue('user.roles', JSON.stringify(this.getAktinRoles()));
                 this.adminCheck().subscribe();
+                this.setVisibility();
                 return user;
             }
             return Observable.throw('Authentication Error, status code: ' + res.status);
@@ -131,6 +136,12 @@ export class AuthService {
         );
     }
 
+    // TODO: api call to get roles from server
+    getAktinRoles(): String[] {
+        return ['Admin'];
+    }
+
+    // TODO: replace by aktin roles
     /**
      * get user roles from server.
      * @returns {Observable<string[]>}
@@ -164,7 +175,6 @@ export class AuthService {
         return this.userRoles().map(
             userRoles => { // at least one role is in userRoles
                 return _.some(roles, function (role) {
-
                     return _.contains(userRoles, role);
                 });
             }
@@ -210,6 +220,27 @@ export class AuthService {
         return this._store.getValue('user.token') !== null;
     }
 
+    userLocalCheckPermissions(checkPermissions: Permissions[]): boolean {
+        if (!checkPermissions || checkPermissions.length === 0) {
+            return true;
+        }
+        if (this._store.getValue('user.roles') === null) {
+            return false;
+        }
+        let userRoles: Role[] = [];
+        for (let i = 0; i < JSON.parse(this._store.getValue('user.roles')).length; i++) {
+            userRoles.push(new Role(JSON.parse(this._store.getValue('user.roles'))[i]));
+        }
+        for (let i = 0; i < checkPermissions.length; i++) {
+            for (let j = 0; j < userRoles.length; j++) {
+                if (userRoles[j].getPermissions().indexOf(checkPermissions[i]) !== -1) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * check local user roles
      * @param {string[]} roles
@@ -234,6 +265,23 @@ export class AuthService {
         return _.some(roles, function (role) {
             return _.contains(userRoles, role);
         });
+    }
+
+    setVisibility() {
+        _.each(routings, route => {
+            if (route.hasOwnProperty('children')) {
+                let children = route.children;
+                for (let i = 0; i < children.length; i++) {
+                    if (children[i].hasOwnProperty('data') && children[i].data.hasOwnProperty('name')) {
+                        this._visibility[children[i].data['name']] = this.userLocalCheckPermissions(children[i].data['permissions']);
+                    }
+                }
+            }
+        });
+    }
+
+    getVisibility() {
+        return this._visibility;
     }
 
 }

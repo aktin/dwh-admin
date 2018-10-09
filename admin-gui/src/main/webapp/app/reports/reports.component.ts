@@ -1,9 +1,11 @@
+
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TimerObservable } from 'rxjs/observable/TimerObservable';
 import { Subscription } from 'rxjs';
 
 import { Report } from './report';
 import { ReportService } from './report.service';
+import { AuthService } from './../users/auth.service';
 
 @Component({
     templateUrl: './reports.component.html',
@@ -17,7 +19,7 @@ export class ReportsComponent implements OnDestroy {
     private _dataInterval = 5000;
     private _timerSubscription: Subscription;
 
-    constructor (private _reportService: ReportService) {}
+    constructor (private _reportService: ReportService, private _authService: AuthService) {}
 
     ngOnInit() {
         let timer = TimerObservable.create(0, this._dataInterval);
@@ -37,11 +39,15 @@ export class ReportsComponent implements OnDestroy {
                 console.log('update reports');
                 this.reportsData = res['reports'];
                 this.repEtag = res['etag'];
-            })
+            });
     }
 
     get reports (): Report[] {
         return this.reportsData;
+    }
+
+    isAuthorized(permission: string) {
+        return this._reportService.checkPermission(permission);
     }
 
 }

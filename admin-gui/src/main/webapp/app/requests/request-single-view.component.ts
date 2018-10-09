@@ -65,6 +65,10 @@ export class RequestSingleViewComponent {
         return RequestStatus[this.requestData.status];
     }
 
+    isAuthorized(permission: string) {
+        return this._requestService.checkPermission(permission);
+    }
+
     setStatus(request: LocalRequest, allow: boolean, checkedAuto?: boolean): RequestStatus {
         return this._requestService.authorizeRequest(
             request.requestId,
@@ -98,13 +102,13 @@ export class RequestSingleViewComponent {
                         let numAllow = this.getNumApplyRule();
                         if (numAllow > 0) {
                             this.popUp.setOptApply(
-                            'Auch bereits bestehende Anfragen freigeben und automatisch übermitteln. ' +
+                            'Auch bereits bestehende Anfragen freigeben. ' +
                             'Anzahl der hiervon betroffenen Anfragen: ' + numAllow);
                         }
+                        this.popUp.setoptMail('E-Mail-Benachrichtigung nach der Übermittlung von Ergebnissen')
                     }
             } else {
                 if (this.request.isRecurring()) {
-                    //message += ' Nur Anfragen, die noch nicht ausgeführt wurden, werden hierdurch abgelehnt.';
                     this.popUp.setOptQuery(['Serien-Ablehnung',
                     'Nur diese Anfrage ablehnen.', 'Diese und alle zukünftigen Anfragen der Serie ablehnen.']);
                     let numReject = this.getNumApplyRule();
@@ -116,8 +120,9 @@ export class RequestSingleViewComponent {
             }
             this.popUp.setConfirm(buttons);
             this.popUp.setData(true, title, message,
-                (answer: boolean, checkedAuto: boolean, checkedQuery: boolean, checkedApply: boolean) => {
-                    checkedQuery = this.request.isRecurring() && checkedQuery && (checkedAuto || !allow);
+                (answer: boolean, checkedAuto: boolean, checkedQuery: boolean, checkedApply: boolean, checkedMail: boolean) => {
+                    // checkedQuery = this.request.isRecurring() && checkedQuery && (checkedAuto || !allow);
+                    checkedQuery = this.request.isRecurring() && checkedQuery || !allow;
                     checkedApply = this.request.isRecurring() && checkedQuery && checkedApply;
                     if (answer) {
                         // set status of current request
@@ -126,42 +131,32 @@ export class RequestSingleViewComponent {
                         }
                         // query rule has to be set
                         if (checkedQuery) {
-                            // set accept_submit
-                            if (allow) {
-                                // delete old rule and create new one
-                                if (this.queryRule && <QueryRuleAction> this.queryRule.action !== QueryRuleAction.ACCEPT_SUBMIT) {
-                                    this._requestService.deleteQueryRule(this.request.queryId).subscribe(resp => {
-                                        this._requestService.setQueryRule(this.request.requestId, QueryRuleAction.ACCEPT_SUBMIT)
-                                            .subscribe(res => {
-                                                this.applyRule(checkedApply, QueryRuleAction.ACCEPT_SUBMIT);
-                                            });
-                                        });
-                                } else if (!this.queryRule) { // no existing rule, create new one
-                                    this._requestService.setQueryRule(this.request.requestId, QueryRuleAction.ACCEPT_SUBMIT)
-                                        .subscribe(res => {
-                                            this.applyRule(checkedApply, QueryRuleAction.ACCEPT_SUBMIT);
-                                       });
-                                } else { // rule didn't change, apply rule to existing requests
-                                    this.applyRule(checkedApply, QueryRuleAction.ACCEPT_SUBMIT);
+                            let newRuleAction: QueryRuleAction;
+                            if (allow && !checkedAuto) {
+                                newRuleAction = QueryRuleAction.ACCEPT_EXECUTE;
+                            } else if (allow && checkedAuto) {
+                                newRuleAction = QueryRuleAction.ACCEPT_SUBMIT;
+                                if (checkedMail) {
+                                    // TODO: set email flag
                                 }
-                            // set reject
                             } else {
-                                // delete old rule and create new one
-                                if (this.queryRule && <QueryRuleAction> this.queryRule.action !== QueryRuleAction.REJECT) {
-                                    this._requestService.deleteQueryRule(this.request.queryId).subscribe(() => {
-                                        this._requestService.setQueryRule(this.request.requestId, QueryRuleAction.REJECT)
-                                            .subscribe(res => {
-                                                this.applyRule(checkedApply, QueryRuleAction.REJECT);
-                                            });
-                                    });
-                                } else if (!this.queryRule) { // no existing rule, create new one
-                                    this._requestService.setQueryRule(this.request.requestId, QueryRuleAction.REJECT)
+                                newRuleAction = QueryRuleAction.REJECT;
+                            }
+                            // delete old rule and create new one
+                            if (this.queryRule && <QueryRuleAction> this.queryRule.action !== newRuleAction) {
+                                this._requestService.deleteQueryRule(this.request.queryId).subscribe(resp => {
+                                    this._requestService.setQueryRule(this.request.requestId, newRuleAction)
                                         .subscribe(res => {
-                                            this.applyRule(checkedApply, QueryRuleAction.REJECT);
+                                            this.applyRule(checkedApply, newRuleAction);
                                         });
-                                } else { // rule didn't change, apply rule to existing requests
-                                    this.applyRule(checkedApply, QueryRuleAction.REJECT);
-                                }
+                                    });
+                            } else if (!this.queryRule) { // no existing rule, create new one
+                                this._requestService.setQueryRule(this.request.requestId, newRuleAction)
+                                    .subscribe(res => {
+                                        this.applyRule(checkedApply, newRuleAction);
+                                    });
+                            } else { // rule didn't change, apply rule to existing requests
+                                this.applyRule(checkedApply, newRuleAction);
                             }
                         }
                     }

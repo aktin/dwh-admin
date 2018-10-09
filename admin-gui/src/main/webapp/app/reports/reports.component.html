@@ -3,7 +3,7 @@
         <div class="ui breadcrumb">
             <div class="active section breadcrumb-header">Berichtsübersicht</div>
         </div>
-        <div class="five wide right floated column right aligned">
+        <div class="five wide right floated column right aligned" *ngIf="isAuthorized('WRITE_REPORTS')">
             <div class="ui left labeled button" title="Neuen Bericht vom vergangen Monat erzeugen" routerLink="/report/new">
                 <a class="ui teal basic label">
                     Neuer Bericht
