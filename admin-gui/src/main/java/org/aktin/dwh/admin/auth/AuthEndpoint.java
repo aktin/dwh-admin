@@ -86,13 +86,22 @@ public class AuthEndpoint {
 	
 	@Secured
 	@GET
+	@Path("role")
+	public String getRole(){
+		I2b2Authentication auth = (I2b2Authentication)security.getUserPrincipal();
+		return auth.getRole();
+	}
+	
+	@Deprecated
+	@Secured
+	@GET
 	@Path("has/{role}")
 	public boolean hasRole(@PathParam("role") String role){
 		I2b2Authentication auth = (I2b2Authentication)security.getUserPrincipal();
 		if( role.equals("admin") ){
 			return auth.isAdmin();
 		}else{
-			return auth.hasRole(role);
+			return role.equals(auth.getRole());
 		}
 	}
 
