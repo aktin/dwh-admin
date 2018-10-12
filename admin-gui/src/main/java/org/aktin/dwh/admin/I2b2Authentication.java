@@ -9,13 +9,13 @@ public class I2b2Authentication implements Authentication{
 	private String userId;
 	private String sessionKey;
 	private String domain;
-	private String[] roles;
+	private String role;
 	private boolean isAdmin;
 
-	public I2b2Authentication(String user, String session, String domain, String[] roles, boolean isAdmin) {
+	public I2b2Authentication(String user, String session, String domain, String role, boolean isAdmin) {
 		this.userId = user;
 		this.sessionKey = session;
-		this.roles = roles;
+		this.role = role;
 		this.isAdmin = isAdmin;
 		this.domain = domain;
 	}
@@ -25,14 +25,11 @@ public class I2b2Authentication implements Authentication{
 	}
 
 	@Override
-	public boolean hasRole(String role) {
-		for( String r : roles ){
-			if( r.equals(role) ){
-				return true;
-			}
-		}
-		return false;
+	public String getRole() {
+		return role;
 	}
+	
+	// TODO: getRole
 
 	@Override
 	public boolean isAdmin() {

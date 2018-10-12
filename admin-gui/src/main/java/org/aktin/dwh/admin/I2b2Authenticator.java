@@ -18,6 +18,7 @@ import de.sekmi.li2b2.client.Li2b2Client;
 import de.sekmi.li2b2.client.pm.UserConfiguration;
 import de.sekmi.li2b2.hive.ErrorResponseException;
 import de.sekmi.li2b2.hive.HiveException;
+import de.sekmi.li2b2.hive.pm.Param;
 import de.sekmi.li2b2.hive.pm.UserProject;
 
 @Singleton
@@ -51,14 +52,21 @@ public class I2b2Authenticator implements Authenticator{
 			client.setAuthorisation(user, new String(password), domain);
 			client.setProjectId(project);
 			UserConfiguration uc = client.PM().requestUserConfiguration();
-			String[] roles = null;
-			for( UserProject p : uc.getProjects() ){
-				if( p.id.equals(project) ){
-					roles = p.role;
+//			String[] roles = null;
+//			for( UserProject p : uc.getProjects() ){
+//				if( p.id.equals(project) ){
+//					roles = p.role;
+//				}
+//			}
+//			log.info("Roles from config: "+Arrays.toString(roles));
+			String role = null;
+			for(Param p : client.PM().getUserParams(user)) {
+				if (p.name.equals("AKTIN_ROLE")) {
+					role = p.value;
 				}
 			}
-			log.info("Roles from config: "+Arrays.toString(roles));
-			auth = new I2b2Authentication(uc.getUserName(), uc.getSessionKey(), uc.getUserDomain(), roles, uc.isAdmin());
+			log.info("aktinRole: " + role);
+			auth = new I2b2Authentication(uc.getUserName(), uc.getSessionKey(), uc.getUserDomain(), role, uc.isAdmin());
 		}catch (ErrorResponseException e) {
 			// unauthorized
 		}catch( IOException | HiveException e ){

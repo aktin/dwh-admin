@@ -27,6 +27,7 @@ import de.sekmi.li2b2.client.pm.Role;
 import de.sekmi.li2b2.client.pm.User;
 import de.sekmi.li2b2.hive.ErrorResponseException;
 import de.sekmi.li2b2.hive.HiveException;
+import de.sekmi.li2b2.hive.pm.Param;
 
 
 /**
@@ -113,6 +114,20 @@ public class UserEndpoint {
 		}catch( ErrorResponseException e ){
 			return Response.status(Status.NOT_FOUND).build();
 		}
+	}
+	
+	/**
+	 * Retrieve user parameter for given user.
+	 *
+	 * @return user parameter of given user
+	 * @throws HiveException unexpected response by i2b2
+	 * @throws IOException communications error with i2b2
+	 */
+	@Secured
+	@GET
+	@Path("{user}/userParams")
+	public Param[] getUserParams(@PathParam("user") String name) throws IOException, HiveException {
+		return initializeLi2b2Client().PM().getUserParams(name);
 	}
 
 	/**

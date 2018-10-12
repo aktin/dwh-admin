@@ -82,8 +82,10 @@ public class AuthFilter implements ContainerRequestFilter{
 			public boolean isUserInRole(String role) {
 				if( role.equals("admin") ){
 					return token.getPayload().isAdmin();
-				}else{
-					return token.getPayload().hasRole(role);
+				}else if (token.getPayload().getRole() != null){
+					return token.getPayload().getRole().equals(role);
+				} else {
+					return false;
 				}
 			}
 			
