@@ -19,5 +19,6 @@ export class User {
         public email?: string,
         public isAdmin?: boolean,
         public roles?: string[],
+        public aktinRole?: string,
     ) { }
 }

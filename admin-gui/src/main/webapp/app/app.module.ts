@@ -28,7 +28,7 @@ import { PreferencesComponent, PreferenceService } from './preferences/index';
 import { VisitService, VisitsComponent, VisitSingleViewComponent } from './visits/index';
 import { RequestsComponent, RequestSingleViewComponent, RequestSingleComponent, RequestStatusBarComponent,
             RequestFilterPipe, RequestService } from './requests/index';
-import { StudyManagerComponent, StudyManagerService } from './studyManager/index';
+import { StudyManagerComponent, StudyManagerService, PopUpNewEntryComponent } from './studyManager/index';
 import { StatusComponent, StatusService } from './status/index';
 import { RestrictedComponent } from './restricted/restricted.component';
 
@@ -64,6 +64,7 @@ import { RestrictedComponent } from './restricted/restricted.component';
         VisitsComponent,
         VisitSingleViewComponent,
         StudyManagerComponent,
+        PopUpNewEntryComponent,
         StatusComponent,
         RestrictedComponent,
         LoadingComponent,
@@ -92,6 +93,7 @@ import { RestrictedComponent } from './restricted/restricted.component';
         ReportService,
         RequestService,
         VisitService,
+        StudyManagerService,
         PreferenceService,
         StatusService,
         //{provide: Window, useValue: window },

@@ -123,15 +123,17 @@ export class VisitsComponent implements OnInit, OnDestroy {
         // this._visitData = this._fileService.getVisit(this.root, this.encounterId);
     }
 
+    // not working correctly, DP bubble: ui pointing red basic label?
     isValid(): boolean {
         let comp = this;
-        if (!this.formdata.startDate || this.formdata.startDate === {date: {year: 0 , month: 0, day: 0}} ||
-            !new Date(this.formdata.startDate.date)) {
+        if (this.visitOption === 'optionDate' && !this.formdata.startDate ||
+                this.formdata.startDate === {date: {year: 0 , month: 0, day: 0}} || !new Date(this.formdata.startDate.date)) {
             this.startDateRequired = true;
             setTimeout(function(){ comp.startDateRequired = false; }, 5000);
             return false;
         }
-        if (this.formdata.endTime !== '' && (!this.formdata.endDate || this.formdata.endDate === {date: {year: 0 , month: 0, day: 0}})) {
+        if (this.visitOption === 'optionDate' && this.formdata.endTime !== '' && (!this.formdata.endDate ||
+                    this.formdata.endDate === {date: {year: 0 , month: 0, day: 0}})) {
             this.endDateRequired = true;
             setTimeout(function(){ comp.endDateRequired = false; }, 5000);
             return false;

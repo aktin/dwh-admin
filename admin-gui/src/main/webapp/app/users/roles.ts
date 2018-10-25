@@ -8,8 +8,8 @@ export class Role {
 
     parse(rolename: string): Role {
         let role = this;
-        switch (rolename) {
-            case 'Admin':
+        switch (rolename.toUpperCase()) {
+            case 'ADMIN':
                 this.permissions = [ Permissions.READ_REQUESTS,
                                      Permissions.WRITE_REQUESTS,
                                      Permissions.READ_REPORTS,
@@ -20,12 +20,12 @@ export class Role {
                                      Permissions.CONFIG,
                                      Permissions.STATUS ]
                 break;
-            case 'StudyNurse':
+            case 'STUDY_NURSE':
                 this.permissions = [ Permissions.READ_STUDY_MANAGER,
-                                     Permissions.WRITE_STUDY_MANAGER,
-                                     Permissions.READ_REPORTS,
-                                     Permissions.READ_REQUESTS ]
+                                     Permissions.WRITE_STUDY_MANAGER ]
                 break;
+            default:
+                this.permissions = [];
         }
         return role;
     }

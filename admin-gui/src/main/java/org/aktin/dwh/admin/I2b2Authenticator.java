@@ -65,11 +65,10 @@ public class I2b2Authenticator implements Authenticator{
 					role = p.value;
 				}
 			}
-			log.info("aktinRole: " + role);
 			auth = new I2b2Authentication(uc.getUserName(), uc.getSessionKey(), uc.getUserDomain(), role, uc.isAdmin());
-		}catch (ErrorResponseException e) {
+		} catch (ErrorResponseException e) {
 			// unauthorized
-		}catch( IOException | HiveException e ){
+		} catch( IOException | HiveException e ){
 			log.log(Level.SEVERE, "Authentication via i2b2 failed", e);
 		}
 		return auth;

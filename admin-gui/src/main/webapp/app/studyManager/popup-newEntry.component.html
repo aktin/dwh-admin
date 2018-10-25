@@ -1,0 +1,109 @@
+<div id="popup-message-overlay" (click)="closeMessage()" *ngIf="show">
+</div>
+
+<!-- <div ng-controller="PopUpNewEntryComponent as ctrl"> -->
+<div id="popup-message-content" class="ui text container very padded segment" *ngIf="show">
+    <div class="ui header">
+        {{head}}
+    </div>
+
+    <div class="ui content">
+        <p>{{message}}</p><br>
+    </div>
+
+    <div class="close-action">
+        <a class="ui compact  small icon red circular button" (click)="closeMessage()">
+            <i class="remove icon"></i>
+        </a>
+    </div>
+
+    <div class="ui extra">
+        <form ngNativeValidate #form="ngForm" id="ngForm"  class="ui form sixteen wide column" (submit)="msgOk()">
+            <div class="inline fields">
+                <div class="three wide field"><label>Studie:</label></div>
+                <select class="seven wide field ui dropdown" name="studyId" [(ngModel)]="formdata.studyId" required>
+                    <option value="">Wählen Sie eine Studie aus.</option>
+                    <option *ngFor="let option of studies" [ngValue]="option.id">
+                        {{ option.title }}
+                    </option>
+                </select>
+            </div>
+            <div class="inline fields">
+                <div class="three wide field"><label> {{ extLabel }}: </label></div>
+                <div class="thirteen wide field">
+                    <input type=text class="ui input focus" name="ext" placeholder="" [(ngModel)]="formdata.ext" required>
+                </div>
+            </div>
+            <div class="inline fields">
+                <div class="three wide field"><label>Teilnahme:</label></div>
+                <div class="ui radio checkbox">
+                    <input type="radio" name="optInOut" [value]="optInString" [(ngModel)]="formdata.optInOut">
+                    <label>Ja (Einschluss)</label>
+                </div>
+                <div class="one wide field "></div>
+                <div class="ui radio checkbox">
+                    <input type="radio" name="optInOut" [value]="optOutString" [(ngModel)]="formdata.optInOut">
+                    <label>Nein (Ausschluss)</label>
+                </div>
+            </div>
+            <div class="inline fields">
+                <div class="three wide field"><label >Kommentar:</label></div>
+                <textarea rows="4" class="ui input focus thirteen wide field min-rows" name="comment" [(ngModel)]="formdata.comment"></textarea>
+            </div>
+
+            <!-- <div class="ui divider"></div> -->
+
+            <!-- <div class="nine wide field">
+                <label>Studie</label>
+                <select class="ui dropdown">
+                    <option value="">Wählen Sie eine Studie aus</option>
+                    <option value="enq">ENQUIRE</option>
+                    <option value="aktin">AKTIN</option>
+                </select>
+            </div>
+            <div class="sixteen wide field">
+                <label>Extension</label>
+                <input type=text class="ui input focus " name="ext" placeholder="">
+            </div>
+
+            <div class="sixteen wide field">
+                <label>Teilnahme</label>
+                <div class="ui radio checkbox">
+                    <input type="radio" name="optInOut">
+                    <label>Ja (Einschluss)</label>
+                </div>
+                <br>
+                <div class="ui radio checkbox">
+                    <div type="radio" name="optInOut">
+                    <label>Nein (Ausschluss)</label>
+                </div>
+            </div>
+
+            <div class="sixteen wide field">
+                <label>Kommentar</label>
+                <textarea rows="4" class="ui input focus min-rows"></textarea>
+            </div> -->
+
+            <br>
+            <div class="popup-message-buttons">
+                <button type="Submit" form="ngForm" class="ui animated fade button popup-message-okay-button"
+                    [ngClass]="buttons[0][1]">
+                    <div class="visible content">{{buttons[0][0]}}</div>
+                    <div class="hidden content">
+                        <i class="icon checkmark"></i>
+                        {{buttons[0][0]}}
+                    </div>
+                </button>
+
+                <div class="ui animated fade button popup-message-okay-button"
+                    [ngClass]="buttons[1][1]" (click)="msgCancel()">
+                    <div class="visible content">{{buttons[1][0]}}</div>
+                    <div class="hidden content">
+                        <i class="icon remove"></i>
+                        {{buttons[1][0]}}
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+<!-- </div> -->

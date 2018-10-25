@@ -78,10 +78,16 @@ export class AppComponent implements OnInit {
 
     get routings() {
         _.each(routings, route => {
-            // this.visibility[route.data['name']] = this._authService.userLocalCheckRoles(route.data['roles']);
             this.visibility[route.data['name']] = this._authService.userLocalCheckPermissions(route.data['permissions']);
+            if (route.hasOwnProperty('children')) {
+                let children = route.children;
+                for (let i = 0; i < children.length; i++) {
+                    if (children[i].hasOwnProperty('data') && children[i].data.hasOwnProperty('name')) {
+                        this.visibility[children[i].data['name']] = true;
+                    }
+                }
+            }
         });
-
         return routings;
     }
 

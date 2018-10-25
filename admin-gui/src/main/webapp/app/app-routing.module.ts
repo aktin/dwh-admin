@@ -82,7 +82,7 @@ const routes: Routes = [// array of routes
                 data: {
                     name: 'newReport',
                     permissions: [
-                        Permissions.WRITE_REPORTS 
+                        Permissions.WRITE_REPORTS
                     ]
                 }
             },
@@ -103,7 +103,6 @@ const routes: Routes = [// array of routes
             ],
             permissions : [
                 Permissions.LIST_VISITS,
-                Permissions.WRITE_STUDY_MANAGER
             ]
         },
     },

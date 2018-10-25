@@ -1,0 +1,62 @@
+.contentContainer {
+    overflow-x: scroll;
+}
+
+.margin-top-bottom {
+    margin: 1.5em 0 1.5em 0;
+}
+
+.tableContainer {
+    width: 500px;
+}
+
+.selectedRow {
+    background-color: lightgray;
+}
+
+tr:hover{
+    cursor: pointer;
+ }
+
+ .newButton:hover {
+    background: rgba(33, 186, 69, 1);
+    color: white;
+ }
+
+ .deleteButton:hover {
+    background: rgba(219, 40, 40, 1);
+    color: white;
+ }
+
+ .disabledButton, .disabledButton:hover {
+     background: lightgrey;
+     opacity: 0.5;
+     color: rgb(85, 85, 85);
+     cursor: auto;
+ }
+
+ .table, .buttonbar {
+    width: 1000px !important;
+    margin: 0px 0 0 -500px !important;
+    left: 50%;
+}
+
+.table {
+    border: 1px solid lightgray !important;
+    overflow-x: scroll;
+}
+
+.buttonbar {
+    border-top: 1px solid lightgray !important;
+    border-right: 1px solid lightgray !important;
+    border-left: 1px solid lightgray !important;
+}
+
+.container {
+    border: none !important;
+}
+
+.pagination /deep/ .ngx-pagination {
+    text-align: center;
+    margin: 0;
+}

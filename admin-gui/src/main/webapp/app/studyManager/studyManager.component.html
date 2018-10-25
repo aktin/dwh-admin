@@ -1,0 +1,112 @@
+<div class="ui grid">
+    <div class="row">
+        <div class="ui breadcrumb">
+            <div class="active section breadcrumb-header">Studien-Manager</div>
+        </div>
+    </div>
+
+    <div class="ui segment row">
+        <form ngNativeValidate class="ui form sixteen wide column">
+            <p>Bitte wählen Sie eine oder mehrere der nachfolgenden Option aus, um die Datensätze hiernach zu filtern.</p>
+            <div class="ui divider margin-top-bottom"></div>
+            <div class="three fields">
+                <div class="five wide field">
+                    <label>Studie</label>
+                    <select class="ui dropdown" name="studies" [(ngModel)]="filterdata.study">
+                        <option value="">Wählen Sie eine Studie aus.</option>
+                        <option *ngFor="let option of studies" [ngValue]="option.id">
+                                {{ option.title }}
+                              </option>
+                    </select>
+                </div>
+                <div class="one wide field"></div>
+                <div class="four wide field">
+                    <label class="">Teilnahme</label>
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="optIn" [(ngModel)]="filterdata.optIn">
+                        <label>Ja (Einschluss)</label>
+                    </div>
+                    <br>
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="optOut"  [(ngModel)]="filterdata.optOut">
+                        <label>Nein (Ausschluss)</label>
+                    </div>
+                </div>
+                <div class="one wide field"></div>
+                <div class="five wide field">
+                    <label>Datum</label>
+                    <my-date-picker style="width: 100%" class="ui input" name="DPStudyManager" [options]="DPOptions" [(ngModel)]="filterdata.date"></my-date-picker>
+                </div>
+            </div>
+            <br>
+            <button class="ui fluid large submit button" type="button" (click)="setEntries(true)">
+                Filtern
+            </button>
+        </form>
+    </div>
+    <!-- TODO: AuditTrail -->
+    <popup-newEntry [studies]="studies"></popup-newEntry>
+    <popup-message></popup-message>
+</div>
+
+<div class="ui segments container">
+    <div class="ui segment ui grid buttonbar">
+        <div class="ui sixteen wide column">
+            <div class="ui small labeled left floated icon button" [ngClass]="filterActive ? '' : 'disabledButton'" (click)="resetFilter()" ng-disabled="filterActive">
+                <i class="close icon"></i> Filter zurücksetzen
+            </div>
+            <!-- <div *ngIf="isAuthorized('WRITE_STUDY_MANAGER')" class="ui small labeled right floated icon button newButton" (click)="createEntry()"> -->
+            <div class="ui small labeled right floated icon button newButton" (click)="createEntry()">
+                <i class="plus icon"></i> Eintrag erstellen
+            </div>
+            <!-- <div *ngIf="isAuthorized('WRITE_STUDY_MANAGER')" class="ui small labeled right floated icon button deleteButton" (click)="deleteEntry()" [ngClass]="getSelectedEntries().length===0 ? 'disabledButton' : ''"> -->
+            <div class="ui small labeled right floated icon button deleteButton" (click)="deleteEntry()" [ngClass]="getSelectedEntries().length===0 ? 'disabledButton' : ''">
+                <i class="trash alternate outline icon"></i> Eintrag löschen
+            </div>
+        </div>
+    </div>
+    <table class="ui sortable celled table ui segment">
+        <thead>
+            <tr>
+                <th class="three wide sorted ascending">Studie</th>
+                <th class="two wide sorted ascending">SIC</th>
+                <th id="default-sort" class="two wide sorted ascending">Datum</th>
+                <th class="two wide sorted ascending">Teilnahme</th>
+                <th class="five wide sorted ascending">Kommentar</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let entry of filteredEntries | paginate: { itemsPerPage: 15, currentPage: p }" [ngClass]="entry['selected'] ? 'selectedRow' : ''" (click)="entry['selected']=!entry['selected']">
+            <td>
+                {{ entry.study.title }}
+            </td>
+
+            <td>
+                {{ entry.sic }}
+            </td>
+
+            <td>
+                {{ entry.timestamp | date: 'dd.MM.yyyy, HH:mm'}}
+            </td>
+
+            <td>
+                {{ entry.participationString }}
+            </td>
+
+            <td>
+                {{ entry.comment }}
+            </td>
+        </tr>
+        </tbody>
+        <tfoot>
+            <th colspan="5">
+                <pagination-controls class="pagination"
+                    (pageChange)="p = $event"
+                    autoHide="true"
+                    previousLabel="Vorherige Seite"
+                    nextLabel="Nächste Seite">
+                </pagination-controls>
+            </th>
+        </tfoot>
+    </table>
+</div>
