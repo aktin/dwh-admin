@@ -89,6 +89,9 @@ public class AuthEndpoint {
 	@Path("role")
 	public String getRole(){
 		I2b2Authentication auth = (I2b2Authentication)security.getUserPrincipal();
+		if(auth.isAdmin()) {
+			return "admin";
+		}
 		return auth.getRole();
 	}
 	

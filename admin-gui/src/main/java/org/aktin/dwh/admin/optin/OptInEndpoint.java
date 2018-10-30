@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
@@ -27,6 +28,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
 
 import org.aktin.Preferences;
 import org.aktin.dwh.admin.auth.Secured;
@@ -35,11 +37,9 @@ import org.aktin.dwh.optinout.PatientReference;
 import org.aktin.dwh.optinout.Study;
 import org.aktin.dwh.optinout.StudyManager;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
-
 @Path("optin")
 public class OptInEndpoint {
-	 private static final Logger log = Logger.getLogger(OptInEndpoint.class.getName());
+	private static final Logger log = Logger.getLogger(OptInEndpoint.class.getName());
 	@Inject
 	private StudyManager sm;
 	@Inject
@@ -48,25 +48,6 @@ public class OptInEndpoint {
 	@Context 
 	private SecurityContext security;
 
-	@Path("test")
-	@GET
-	public String testFunction() throws IOException {
-		StringBuilder b = new StringBuilder();
-		List<? extends Study> l = sm.getStudies();
-		for( Study s : l ) {
-			b.append(s.getId());
-			b.append(' ');
-		}
-		return b.toString();
-	}
-	
-	@Path("studies")
-	@GET
-	public List<? extends Study> getStudies() throws IOException {
-		return sm.getStudies();
-	}
-	
-	@Path("patientList")
 	@GET
 	public Response getAllPatients(@Context Request request) throws IOException {
 		long maxTimestamp = 0L;
@@ -93,31 +74,28 @@ public class OptInEndpoint {
 					   .build();
 	}
 	
-//	@Path("patientList/filter={studyId}+{date}+{optIn}+{optOut}")
-//	@GET
-//	public List<PatientEntry> getFilteredList(@PathParam("studyId") String id, @PathParam("date") String date, @PathParam("optIn") boolean optIn, @PathParam("optOut") boolean optOut) throws IOException {
-//		List<PatientEntry> listAll = this.getAllPatients();
-//		List<PatientEntry> filteredList = listAll.stream().filter(p -> {
-//			boolean res = true;
-//			if (!id.isEmpty()) {
-//				res = res && p.getStudy().getId().equals(id);
-//			}
-//			if (res && date != null) {
-//				LocalDate filterDate = LocalDate.parse(date, DateTimeFormatter.ISO_DATE_TIME));
-//				LocalDate creation = Instant.ofEpochMilli(p.getTimestamp()).toLocalDate();
-//				res = res && creation.equals(filterDate);
-//			}
-//			if(res && optIn) {
-//				res = res && p.getParticipation() == Participation.OptIn;
-//			}
-//			if(res && optOut) {
-//				res = res && p.getParticipation() == Participation.OptOut;
-//			}
-//			return res;
-//			}).collect(Collectors.toList());
-//		
-//		return filteredList;
-//	}
+	@Path("{studyId}")
+	@GET
+	public Response getEntriesByStudy(@PathParam("studyId") String id) throws IOException {
+		Optional<? extends Study> o = sm.getStudies().stream().filter(s -> s.getId().equals(id)).findFirst();
+		if (!o.isPresent()) {
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+		Study s = o.get();
+		List<PatientEntry> list = new ArrayList<>();
+		list.addAll(s.allPatients());
+		return Response.ok(list).build();
+	}
+	
+	@Path("studies")
+	@GET
+	public List<StudyWrapper> getStudies() throws IOException {
+		List<StudyWrapper> studies = new ArrayList<>();
+		for(Study s : sm.getStudies()) {
+			studies.add(new StudyWrapper(s));
+		}
+		return studies;
+	}
 	
 	@Secured
 	@Path("addPatientEntry/{studyId}")
@@ -156,8 +134,10 @@ public class OptInEndpoint {
 				patientEntry.id_ext = "";
 			}
 		}
+		// study.getPatientByID(arg0, arg1, arg2)
 		PatientEntry pat = study.addPatient(pat_ref, root, patientEntry.id_ext, patientEntry.opt, patientEntry.sic, patientEntry.comment, security.getUserPrincipal().getName());
 		return Response.ok(pat).build();
+		// return Response.created(location)
 	}
 	
 	@Secured
@@ -170,9 +150,9 @@ public class OptInEndpoint {
 		pat.delete(security.getUserPrincipal().getName());
 	}
 	
-	@Path("studyPreferences")
+	@Path("preferences")
 	@GET
-	public JsonObject getStudyPreferences() {
+	public JsonObject getPreferences() {
 		JsonObjectBuilder b = Json.createObjectBuilder();
 		b.add("reference", pref.get("study.id.reference"));
 		b.add("labelPatient", pref.get("study.id.patient.label"));
@@ -181,12 +161,5 @@ public class OptInEndpoint {
 		JsonObject p = b.build();
 		return p;
 	}
-	
-//	@Path("auditTrail")
-//	@GET
-//	public List<AuditTrailEntry> getAuditTrail() {
-//		return sm.getAuditTrail();
-//		
-//	}
-	
+		
 }
