@@ -33,7 +33,7 @@ export class StudyManagerService {
         return this._auth.userLocalCheckPermissions([perm]);
     }
 
-    getStudyPreferences() {
+    getPreferences() {
         return this._http.get(this._urls.parse('studyPrefs'))
             .map(res => { return JSON.parse(res.text()); });
     }
@@ -63,6 +63,26 @@ export class StudyManagerService {
                     }
                 }
                 return res;
+            })
+            .catch(err => { return this._http.handleError(err); });
+    }
+
+    getEntries(studyId: String) {
+        return this._http.get(this._urls.parse('entries', { studyId: studyId }))
+            .map(resp => {
+                let entries = JSON.parse(resp.text());
+                entries.forEach(function(e: any) {
+                    e.selected = false;
+                    switch (e.participation) {
+                        case 'OptIn':
+                            e.participationString = 'Einschluss';
+                            break;
+                        case 'OptOut':
+                            e.participationString = 'Ausschluss';
+                            break;
+                    }
+                })
+                return entries;
             })
             .catch(err => { return this._http.handleError(err); });
     }

@@ -6,6 +6,17 @@
     margin: 1.5em 0 1.5em 0;
 }
 
+.studies {
+    margin: auto;
+    width: 50%;
+}
+
+.filter > div {
+    display: flex; 
+    align-items: center;
+    margin: auto;
+}
+
 .tableContainer {
     width: 500px;
 }
@@ -33,6 +44,7 @@ tr:hover{
      opacity: 0.5;
      color: rgb(85, 85, 85);
      cursor: auto;
+     pointer-events: none;
  }
 
  .table, .buttonbar {

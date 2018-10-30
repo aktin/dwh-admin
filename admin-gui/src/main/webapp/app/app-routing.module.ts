@@ -92,20 +92,20 @@ const routes: Routes = [// array of routes
             },
         ],
     },
-    {
-        path: 'visits',
-        canActivate: [UserAuthGuard],
-        component: VisitsComponent,
-        data : {
-            name : 'Fallsuche',
-            roles : [
-                'LOGGEDIN',
-            ],
-            permissions : [
-                Permissions.LIST_VISITS,
-            ]
-        },
-    },
+    // {
+    //     path: 'visits',
+    //     canActivate: [UserAuthGuard],
+    //     component: VisitsComponent,
+    //     data : {
+    //         name : 'Fallsuche',
+    //         roles : [
+    //             'LOGGEDIN',
+    //         ],
+    //         permissions : [
+    //             Permissions.LIST_VISITS,
+    //         ]
+    //     },
+    // },
     {
         path: 'studyManager',
         canActivate: [UserAuthGuard],

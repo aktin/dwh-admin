@@ -1,7 +1,6 @@
 <div id="popup-message-overlay" (click)="closeMessage()" *ngIf="show">
 </div>
 
-<!-- <div ng-controller="PopUpNewEntryComponent as ctrl"> -->
 <div id="popup-message-content" class="ui text container very padded segment" *ngIf="show">
     <div class="ui header">
         {{head}}
@@ -21,8 +20,8 @@
         <form ngNativeValidate #form="ngForm" id="ngForm"  class="ui form sixteen wide column" (submit)="msgOk()">
             <div class="inline fields">
                 <div class="three wide field"><label>Studie:</label></div>
-                <select class="seven wide field ui dropdown" name="studyId" [(ngModel)]="formdata.studyId" required>
-                    <option value="">Wählen Sie eine Studie aus.</option>
+                <!-- <select class="seven wide field ui dropdown" name="study" [(ngModel)]="formdata.study" (change)="setStudy()" required> -->
+                        <select class="seven wide field ui dropdown" name="study" [(ngModel)]="formdata.study" (change)="setStudy()" required>
                     <option *ngFor="let option of studies" [ngValue]="option.id">
                         {{ option.title }}
                     </option>
@@ -36,54 +35,27 @@
             </div>
             <div class="inline fields">
                 <div class="three wide field"><label>Teilnahme:</label></div>
-                <div class="ui radio checkbox">
+                <!-- Buttons are disabled by css pointer-event property because ngDisabled is somehow not working with semanticUI. -->
+                <div class="ui radio checkbox" [ngClass]="optIn ? '' : 'disabledButton'">
                     <input type="radio" name="optInOut" [value]="optInString" [(ngModel)]="formdata.optInOut">
                     <label>Ja (Einschluss)</label>
                 </div>
-                <div class="one wide field "></div>
-                <div class="ui radio checkbox">
+                <div class="one wide field"></div>
+                <div class="ui radio checkbox" [ngClass]="optOut ? '' : 'disabledButton'">
                     <input type="radio" name="optInOut" [value]="optOutString" [(ngModel)]="formdata.optInOut">
                     <label>Nein (Ausschluss)</label>
+                </div>
+            </div>
+            <div class="inline fields" *ngIf="manualSic">
+                <div class="three wide field"><label> SIC: </label></div>
+                <div class="thirteen wide field">
+                    <input type=text class="ui input focus" name="sic" placeholder="" [(ngModel)]="formdata.sic" [disabled]="optOut">
                 </div>
             </div>
             <div class="inline fields">
                 <div class="three wide field"><label >Kommentar:</label></div>
                 <textarea rows="4" class="ui input focus thirteen wide field min-rows" name="comment" [(ngModel)]="formdata.comment"></textarea>
             </div>
-
-            <!-- <div class="ui divider"></div> -->
-
-            <!-- <div class="nine wide field">
-                <label>Studie</label>
-                <select class="ui dropdown">
-                    <option value="">Wählen Sie eine Studie aus</option>
-                    <option value="enq">ENQUIRE</option>
-                    <option value="aktin">AKTIN</option>
-                </select>
-            </div>
-            <div class="sixteen wide field">
-                <label>Extension</label>
-                <input type=text class="ui input focus " name="ext" placeholder="">
-            </div>
-
-            <div class="sixteen wide field">
-                <label>Teilnahme</label>
-                <div class="ui radio checkbox">
-                    <input type="radio" name="optInOut">
-                    <label>Ja (Einschluss)</label>
-                </div>
-                <br>
-                <div class="ui radio checkbox">
-                    <div type="radio" name="optInOut">
-                    <label>Nein (Ausschluss)</label>
-                </div>
-            </div>
-
-            <div class="sixteen wide field">
-                <label>Kommentar</label>
-                <textarea rows="4" class="ui input focus min-rows"></textarea>
-            </div> -->
-
             <br>
             <div class="popup-message-buttons">
                 <button type="Submit" form="ngForm" class="ui animated fade button popup-message-okay-button"
@@ -106,4 +78,3 @@
             </div>
         </form>
     </div>
-<!-- </div> -->

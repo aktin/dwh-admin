@@ -5,62 +5,59 @@
         </div>
     </div>
 
-    <div class="ui segment row">
-        <form ngNativeValidate class="ui form sixteen wide column">
-            <p>Bitte wählen Sie eine oder mehrere der nachfolgenden Option aus, um die Datensätze hiernach zu filtern.</p>
-            <div class="ui divider margin-top-bottom"></div>
-            <div class="three fields">
-                <div class="five wide field">
-                    <label>Studie</label>
-                    <select class="ui dropdown" name="studies" [(ngModel)]="filterdata.study">
-                        <option value="">Wählen Sie eine Studie aus.</option>
-                        <option *ngFor="let option of studies" [ngValue]="option.id">
-                                {{ option.title }}
-                              </option>
-                    </select>
-                </div>
+    <form ngNativeValidate class="ui form sixteen wide column">
+        <div class="ui row studies">
+            <div class="field">
+                <label>Studie</label>
+                <select class="ui dropdown" name="studies" [(ngModel)]="filterdata.study" (change)="setEntries(filterActive)">
+                    <option *ngFor="let option of studies" [ngValue]="option.id">
+                            {{ option.title }}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="ui segment row filter">
+            <div class="seven fields">
                 <div class="one wide field"></div>
-                <div class="four wide field">
-                    <label class="">Teilnahme</label>
-                    <div class="ui checkbox">
-                        <input type="checkbox" name="optIn" [(ngModel)]="filterdata.optIn">
-                        <label>Ja (Einschluss)</label>
-                    </div>
-                    <br>
-                    <div class="ui checkbox">
-                        <input type="checkbox" name="optOut"  [(ngModel)]="filterdata.optOut">
-                        <label>Nein (Ausschluss)</label>
-                    </div>
+                <div class="five wide field">
+                        <label>Teilnahme</label>
+                        <div class="three inline fields">
+                            <div class="ui checkbox">
+                                <input type="checkbox" name="optIn" [(ngModel)]="filterdata.optIn">
+                                <label>Einschluss</label>
+                            </div>
+                            <div class="one wide field"></div>
+                            <div class="ui checkbox">
+                                <input type="checkbox" name="optOut"  [(ngModel)]="filterdata.optOut">
+                                <label>Ausschluss</label>
+                            </div>
+                        </div>
                 </div>
                 <div class="one wide field"></div>
                 <div class="five wide field">
                     <label>Datum</label>
                     <my-date-picker style="width: 100%" class="ui input" name="DPStudyManager" [options]="DPOptions" [(ngModel)]="filterdata.date"></my-date-picker>
                 </div>
+                <div class="one wide field"></div>
+                <div class="ui small labeled left floated icon button" (click)="setEntries(true)">
+                    <i class="filter icon"></i> Filtern
+                </div>
             </div>
-            <br>
-            <button class="ui fluid large submit button" type="button" (click)="setEntries(true)">
-                Filtern
-            </button>
-        </form>
-    </div>
-    <!-- TODO: AuditTrail -->
-    <popup-newEntry [studies]="studies"></popup-newEntry>
-    <popup-message></popup-message>
-</div>
+        </div>
 
+    </form>
+    <!-- TODO: AuditTrail -->
+</div>
 <div class="ui segments container">
     <div class="ui segment ui grid buttonbar">
         <div class="ui sixteen wide column">
-            <div class="ui small labeled left floated icon button" [ngClass]="filterActive ? '' : 'disabledButton'" (click)="resetFilter()" ng-disabled="filterActive">
+            <div class="ui small labeled left floated icon button" (click)="resetFilter()" [ngClass]="filterActive ? '' : 'disabledButton'" >
                 <i class="close icon"></i> Filter zurücksetzen
             </div>
-            <!-- <div *ngIf="isAuthorized('WRITE_STUDY_MANAGER')" class="ui small labeled right floated icon button newButton" (click)="createEntry()"> -->
-            <div class="ui small labeled right floated icon button newButton" (click)="createEntry()">
+            <div *ngIf="isAuthorized('WRITE_STUDY_MANAGER')" class="ui small labeled right floated icon button newButton" (click)="createEntry()">
                 <i class="plus icon"></i> Eintrag erstellen
             </div>
-            <!-- <div *ngIf="isAuthorized('WRITE_STUDY_MANAGER')" class="ui small labeled right floated icon button deleteButton" (click)="deleteEntry()" [ngClass]="getSelectedEntries().length===0 ? 'disabledButton' : ''"> -->
-            <div class="ui small labeled right floated icon button deleteButton" (click)="deleteEntry()" [ngClass]="getSelectedEntries().length===0 ? 'disabledButton' : ''">
+            <div *ngIf="isAuthorized('WRITE_STUDY_MANAGER')" class="ui small labeled right floated icon button deleteButton" (click)="deleteEntry()" [ngClass]="getSelectedEntries().length===0 ? 'disabledButton' : ''">
                 <i class="trash alternate outline icon"></i> Eintrag löschen
             </div>
         </div>
@@ -110,3 +107,6 @@
         </tfoot>
     </table>
 </div>
+
+<popup-newEntry [studies]="studies" [selectedStudy]="filterdata.study"></popup-newEntry>
+<popup-message></popup-message>

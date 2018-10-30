@@ -7,8 +7,8 @@ import _ = require('underscore');
 @Injectable()
 export class UrlService {
     private _serverUrls = [
-        'http://134.106.36.86:8020/aktin/admin/rest/',
-        //'/aktin/admin/rest/',
+        // 'http://134.106.36.86:8020/aktin/admin/rest/',
+        '/aktin/admin/rest/',
     ];
     private _serverUrl = this._serverUrls[0];
     private _endUrls = {
@@ -55,7 +55,8 @@ export class UrlService {
 
         studyPrefs : 'optin/studyPreferences',
         studies : 'optin/studies',
-        patientList : 'optin/patientList',
+        patientList : 'optin',
+        entries : 'optin/@studyId@',
         newPatientEntry : 'optin/addPatientEntry/@studyId@',
         deletePatientEntry : 'optin/deletePatientEntry/@studyId@/@sic@',
 

@@ -38,6 +38,7 @@ export class StudyManagerComponent {
         study : '',
         optIn : false,
         optOut: false,
+        sic: ''
     };
 
     defaultDPOptions: IMyDpOptions = {
@@ -57,8 +58,7 @@ export class StudyManagerComponent {
     ngOnInit(): void {
         this.DPOptions = this.defaultDPOptions;
         this.setStudies();
-        this.setEntries(false);
-        ($('.table.sortable') as any).tablesort(); // .data('tablesort').sort($('#default-sort'));
+        ($('.table.sortable') as any).tablesort();
     }
 
     private formulateDate4DP (d: Date): any {
@@ -67,6 +67,10 @@ export class StudyManagerComponent {
 
     private DP2date (s: any): Date {
         return new Date(s.year, s.month - 1, s.day);
+    }
+
+    getFilterdata() {
+        return this.filterdata;
     }
 
     getSelectedEntries() {
@@ -83,20 +87,18 @@ export class StudyManagerComponent {
     setStudies() {
         this._managerService.getStudies().subscribe(res => {
             this.studies = res;
+            if (this.studies.length > 0) {
+                this.filterdata.study = this.studies[0].id;
+            }
         });
     }
 
     setEntries(filtered: boolean) {
-        // in case the response returns status 304 (not modified)
         this.filterActive = filtered;
-        this.filteredEntries = this.entries;
-        if (this.filterActive) {
-            this.filterEntries();
-        }
-        return this._managerService.getPatientList(this.etag)
+        let sm = this;
+        return this._managerService.getEntries(this.filterdata.study)
             .subscribe(res => {
-                this.entries = res['entries'];
-                this.etag = res['etag'];
+                this.entries = res;
                 this.entries.sort(function(a: any, b: any) {
                     return b['timestamp'] - a['timestamp'];
                 });
@@ -111,7 +113,6 @@ export class StudyManagerComponent {
         this.setEntries(false);
         this.filterdata.optIn = false;
         this.filterdata.optOut = false;
-        this.filterdata.study = '';
         this.filterdata.date = { date: this.formulateDate4DP(this.today) };
     }
 
@@ -119,9 +120,6 @@ export class StudyManagerComponent {
         let sm = this;
         this.filteredEntries = this.entries.filter(function(e: any) {
             let fullfilled = true;
-            if (fullfilled && sm.filterdata.study.trim() !== '') {
-                fullfilled = fullfilled && e.study.id === sm.filterdata.study;
-            }
             if (fullfilled && sm.filterdata.date) {
                 let filterDate = sm.DP2date(sm.filterdata.date.date);
                 let date = new Date(e.timestamp);
