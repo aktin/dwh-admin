@@ -1,5 +1,6 @@
 package org.aktin.dwh.admin.auth;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.SecurityContext;
 import org.aktin.dwh.Authentication;
 import org.aktin.dwh.Authenticator;
 import org.aktin.dwh.admin.I2b2Authentication;
+import org.aktin.dwh.admin.Permission;
 
 import de.sekmi.li2b2.services.token.Token;
 
@@ -93,6 +95,14 @@ public class AuthEndpoint {
 			return "admin";
 		}
 		return auth.getRole();
+	}
+	
+	@Secured
+	@GET
+	@Path("permissions")
+	public List<Permission> getPermissions(){
+		I2b2Authentication auth = (I2b2Authentication)security.getUserPrincipal();
+		return auth.getPermissions();
 	}
 	
 	@Deprecated
