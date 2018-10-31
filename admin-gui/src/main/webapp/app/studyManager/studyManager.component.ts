@@ -78,7 +78,7 @@ export class StudyManagerComponent {
         this.selectedEntries = [];
         this.filteredEntries.forEach(function(e: any) {
             if (e['selected']) {
-               sm.selectedEntries.push({id: e.study.id, sic: e.sic});
+               sm.selectedEntries.push(e);
             }
         });
         return this.selectedEntries;
@@ -135,12 +135,13 @@ export class StudyManagerComponent {
 
     createEntry() {
         if (this.isAuthorized('WRITE_STUDY_MANAGER')) {
-            this.popUp.setData((submit: boolean, studyId: String, ext: String, optInOut: String, comment: String) => {
+            this.popUp.setData((submit: boolean, id: String, ref: String, root: String, ext: String,
+                                opt: String, sic: String, comment: String) => {
                 if (submit) {
-                    this._managerService.createEntry(studyId, ext, optInOut, null, comment)
+                    this._managerService.createEntry(id, ref, root, ext, opt, sic, comment)
                         .subscribe(() => { this.setEntries(this.filterActive); },
                             error => {
-                                if (error.split('-')[0].trim() === '500') {
+                                if (error.split('-')[0].trim() === '409') {
                                     this.popUpMessage.setData(true, 'Fehler beim Erstellen',
                                     'Der Eintrag könnte nicht erstellt werden, weil für die ausgewählte Studie ' +
                                     'bereits ein Eintrag mit dieser ' + this.popUp.extLabel + ' existiert.');
@@ -164,9 +165,9 @@ export class StudyManagerComponent {
                 (submitDelete: boolean) => {
                     if (submitDelete) {
                         selected.forEach(function(e: any) {
-                            sm._managerService.deleteEntry(e.id, e.sic).subscribe();
-                            sm.filteredEntries.splice(sm.filteredEntries.findIndex((el: any) =>
-                                el.study.id === e.id && el.sic === e.sic ), 1);
+                            sm._managerService.deleteEntry(e.study.id, e.reference, e.idRoot, e.idExt).subscribe(() => {
+                                sm.setEntries(true);
+                            });
                         });
                     }
                 }

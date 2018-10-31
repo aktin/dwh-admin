@@ -53,12 +53,10 @@ export class UrlService {
         visitId : 'visit/@id@?xslt=@filter@',
         visitEide : 'visit/',
 
-        studyPrefs : 'optin/studyPreferences',
+        studyPrefs : 'optin/preferences',
         studies : 'optin/studies',
-        patientList : 'optin',
         entries : 'optin/@studyId@',
-        newPatientEntry : 'optin/addPatientEntry/@studyId@',
-        deletePatientEntry : 'optin/deletePatientEntry/@studyId@/@sic@',
+        entry : 'optin/@studyId@/@reference@/@root@/@extension@', // get/post/delete
 
         // versions endpoint
         version: 'info/version',

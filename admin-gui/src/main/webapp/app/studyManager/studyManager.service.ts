@@ -44,29 +44,6 @@ export class StudyManagerService {
             .catch(err => { return this._http.handleError(err); });
     }
 
-    getPatientList(etag: String) {
-        let options = { headers: new Headers({'If-None-Match': etag}),  observe: 'response' };
-        return this._http.get(this._urls.parse('patientList'), options)
-            .map(resp => {
-                let res = {};
-                res['etag'] = resp.headers.get('ETag');
-                res['entries'] = JSON.parse(resp.text());
-                for (let e of res['entries']) {
-                    e.selected = false;
-                    switch (e.participation) {
-                        case 'OptIn':
-                            e.participationString = 'Ja (Einschluss)';
-                            break;
-                        case 'OptOut':
-                            e.participationString = 'Nein (Ausschluss)';
-                            break;
-                    }
-                }
-                return res;
-            })
-            .catch(err => { return this._http.handleError(err); });
-    }
-
     getEntries(studyId: String) {
         return this._http.get(this._urls.parse('entries', { studyId: studyId }))
             .map(resp => {
@@ -87,15 +64,15 @@ export class StudyManagerService {
             .catch(err => { return this._http.handleError(err); });
     }
 
-    createEntry(id: String, id_ext: String, opt: String, sic: String, comment: String) {
-        return this._http.post(this._urls.parse('newPatientEntry', { studyId: id }),
-                { 'id_ext': id_ext, 'opt': opt, 'sic': sic, 'comment': comment },
+    createEntry(id: String, ref: String, root: String, ext: String, opt: String, sic: String, comment: String) {
+        return this._http.post(this._urls.parse('entry', { studyId: id, reference: ref, root: root, extension: ext }),
+                { 'opt': opt, 'sic': sic, 'comment': comment },
                 this._http.generateHeaderOptions('Content-Type', 'application/json'))
             .catch(err => { return this._http.handleError(err); });
     }
 
-    deleteEntry(id: String, sic: String) {
-        return this._http.delete(this._urls.parse('deletePatientEntry', { studyId: id, sic: sic }))
+    deleteEntry(id: String, ref: String, root: String, ext: String) {
+        return this._http.delete(this._urls.parse('entry', { studyId: id, reference: ref, root: root, extension: ext }))
             .catch(err => { return this._http.handleError(err); });
     }
 

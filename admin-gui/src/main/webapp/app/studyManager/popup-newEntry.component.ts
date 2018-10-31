@@ -23,6 +23,7 @@ export class PopUpNewEntryComponent implements OnInit {
         study: '',
         ext: '',
         optInOut: PopUpNewEntryComponent.OPT_IN,
+        sic: '',
         comment: ''
     }
 
@@ -122,12 +123,30 @@ export class PopUpNewEntryComponent implements OnInit {
     msgOk (): void {
         this.show = false;
         if (this.callback) {
-            this.callback(true, this.formdata.study, this.formdata.ext, this.formdata.optInOut, this.formdata.comment);
+            let root = this.prefs['root'];
+            let ext = this.formdata.ext;
+            let sic = this.formdata.sic;
+            if (sic.length > 0 && this.formdata.optInOut === 'OptOut') {
+                sic = '';
+            }
+            if (root.length === 0) {
+                if (ext.includes(this.prefs['separator'])) {
+                    let splits = ext.split(this.prefs['separator'], 2);
+                    root = splits[0];
+                    ext = splits[1];
+                } else {
+                    root = ext;
+                    ext = '';
+                }
+            }
+            this.callback(true, this.formdata.study, this.prefs['reference'], root, ext,
+                this.formdata.optInOut, sic, this.formdata.comment);
         }
         this.clear();
     }
 
     msgCancel (): void {
+        console.log(this.formdata.ext);
         this.show = false;
         if (this.callback) {
             this.callback(false);

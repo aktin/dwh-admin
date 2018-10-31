@@ -2,13 +2,10 @@ package org.aktin.dwh.admin.optin;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
@@ -18,20 +15,19 @@ import javax.json.JsonObjectBuilder;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import org.aktin.Preferences;
 import org.aktin.dwh.admin.auth.Secured;
+import org.aktin.dwh.optinout.Participation;
 import org.aktin.dwh.optinout.PatientEntry;
 import org.aktin.dwh.optinout.PatientReference;
 import org.aktin.dwh.optinout.Study;
@@ -49,42 +45,13 @@ public class OptInEndpoint {
 	private SecurityContext security;
 
 	@GET
-	public Response getAllPatients(@Context Request request) throws IOException {
-		long maxTimestamp = 0L;
-		int numberPat = 0;
+	public List<PatientEntry> getEntries() throws IOException {
 		List<PatientEntry> patientList = new ArrayList<>();
 		for(Study study : sm.getStudies()) {
 			List<? extends PatientEntry> patients = study.allPatients();
 			patientList.addAll(patients);
-			for(PatientEntry p : patients) {
-				numberPat++;
-				if(p.getTimestamp() > maxTimestamp) {
-					maxTimestamp = p.getTimestamp();
-				}
-			}
 		}
-		EntityTag etag = new EntityTag(Long.toString(maxTimestamp) + "-" + Integer.toString(numberPat));
-		ResponseBuilder b = request.evaluatePreconditions(etag);
-		if (b != null) {
-			return b.build();
-		}
-		return Response.ok(patientList)
-					   .tag(etag)
-					   .header("Access-Control-Expose-Headers", "ETag")
-					   .build();
-	}
-	
-	@Path("{studyId}")
-	@GET
-	public Response getEntriesByStudy(@PathParam("studyId") String id) throws IOException {
-		Optional<? extends Study> o = sm.getStudies().stream().filter(s -> s.getId().equals(id)).findFirst();
-		if (!o.isPresent()) {
-			return Response.status(Status.BAD_REQUEST).build();
-		}
-		Study s = o.get();
-		List<PatientEntry> list = new ArrayList<>();
-		list.addAll(s.allPatients());
-		return Response.ok(list).build();
+		return patientList;
 	}
 	
 	@Path("studies")
@@ -97,21 +64,62 @@ public class OptInEndpoint {
 		return studies;
 	}
 	
+	@Path("{studyId}")
+	@GET
+	public Response getEntriesByStudy(@PathParam("studyId") String id) throws IOException {
+		Study s = this.getStudy(id);
+		List<PatientEntry> list = new ArrayList<>();
+		list.addAll(s.allPatients());
+		return Response.ok(list).build();
+	}
+	
+
+	@Path("{studyId}/{reference}/{root}/{extension}")
+	@GET
+	public PatientEntry getEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root, 
+			@PathParam("extension") String ext) throws IOException {
+		Study study = this.getStudy(id);
+		return study.getPatientByID(ref, root, ext);
+	}
+	
 	@Secured
-	@Path("addPatientEntry/{studyId}")
+	@Path("{studyId}/{reference}/{root}/{extension}")
 	@POST
 	@Consumes({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
-	public Response addPatient(@PathParam("studyId") String studyId, PatientEntryRequest patientEntry) throws NoSuchElementException, IOException {
-		Study study = sm.getStudies().stream().filter(s -> s.getId().equals(studyId)).findFirst()
-				.orElseThrow( () -> new NoSuchElementException("Unable to find study with id " + studyId + ".") );
-		patientEntry.sic = study.generateSIC();
-		// TODO: manual codes optional or depending on prefs
-//		if(study.getManualCodes()) {
-//			patientEntry.sic = study.generateSIC();
-//		}
-		PatientReference pat_ref = PatientReference.valueOf(pref.get("study.id.reference"));
+	public Response createEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root, 
+				@PathParam("extension") String ext, PatientEntryRequest entry) throws IOException {
+		Study study = this.getStudy(id);
+		if ((!study.supportsManualSICs() || entry.sic.isEmpty()) && entry.opt == Participation.OptIn) {
+			entry.sic = study.generateSIC();
+		}
+		PatientEntry pat = study.getPatientByID(ref, root, ext);
+		if (pat != null) {
+			log.log(Level.WARNING, "Cannot create entry, PatientEntry already exists.");
+			return Response.status(Status.CONFLICT).build();
+		}
+		study.addPatient(ref, root, ext, entry.opt, entry.sic, entry.comment, security.getUserPrincipal().getName());
+		return Response.created(URI.create(id+"/"+ref+"/"+root+"/"+ext)).build();
+	}
+	
+	@Secured
+	@Path("{studyId}/{reference}/{root}/{extension}")
+	@DELETE
+	public Response deleteEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root, 
+			@PathParam("extension") String ext) throws FileNotFoundException, IOException {
+		Study study = this.getStudy(id);
+		PatientEntry pat = study.getPatientByID(ref, root, ext);
+		if (pat == null) {
+			return Response.status(Status.BAD_REQUEST).build();
+		} 
+		pat.delete(security.getUserPrincipal().getName());
+		return Response.ok().build();
+	}
+	
+	@Path("preferences")
+	@GET
+	public JsonObject getPreferences() {
 		String root;
-		switch (pat_ref) {
+		switch(PatientReference.valueOf(pref.get("study.id.reference"))) {
 			case Patient:
 				root = pref.get("cda.patient.root.preset");
 				break;
@@ -121,45 +129,24 @@ public class OptInEndpoint {
 			case Billing:
 				root = pref.get("cda.billing.root.preset");
 				break;
-		default:
-			throw new IllegalArgumentException("Empty string as reference type is not allowed.");
+			default:
+				throw new IllegalArgumentException("Empty string as reference type is not allowed.");
 		}
-		if (root.isEmpty()) {
-			if (patientEntry.id_ext.contains(pref.get("study.id.separator"))) {
-				String[] splits = patientEntry.id_ext.split(pref.get("study.id.separator"), 2);
-				root = splits[0];
-				patientEntry.id_ext = splits[1];
-			} else {
-				root = patientEntry.id_ext;
-				patientEntry.id_ext = "";
-			}
-		}
-		// study.getPatientByID(arg0, arg1, arg2)
-		PatientEntry pat = study.addPatient(pat_ref, root, patientEntry.id_ext, patientEntry.opt, patientEntry.sic, patientEntry.comment, security.getUserPrincipal().getName());
-		return Response.ok(pat).build();
-		// return Response.created(location)
-	}
-	
-	@Secured
-	@Path("deletePatientEntry/{studyId}/{sic}")
-	@DELETE
-	public void deletePatient(@PathParam("studyId") String id, @PathParam("sic") String sic) throws FileNotFoundException, IOException {
-		Study study = sm.getStudies().stream().filter(s -> s.getId().equals(id)).findFirst()
-				.orElseThrow( () -> new NoSuchElementException("Unable to find study with id " + id + ".") );
-		PatientEntry pat = study.getPatientBySIC(sic);
-		pat.delete(security.getUserPrincipal().getName());
-	}
-	
-	@Path("preferences")
-	@GET
-	public JsonObject getPreferences() {
 		JsonObjectBuilder b = Json.createObjectBuilder();
 		b.add("reference", pref.get("study.id.reference"));
+		b.add("root", root);
+		b.add("seperator", pref.get("study.id.seperator"));
 		b.add("labelPatient", pref.get("study.id.patient.label"));
 		b.add("labelEncounter", pref.get("study.id.encounter.label"));
 		b.add("labelBilling", pref.get("study.id.billing.label"));
 		JsonObject p = b.build();
 		return p;
 	}
+	
+	private Study getStudy(String id) throws IOException {
+		return sm.getStudies().stream().filter(s -> s.getId().equals(id)).findFirst()
+				.orElseThrow( () -> new NotFoundException("Unable to find study with id " + id + ".", Response.status(Status.NOT_FOUND).build()) );
+	}
+	
 		
 }
