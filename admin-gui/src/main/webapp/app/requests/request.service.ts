@@ -15,7 +15,7 @@ import FileSaver = require('file-saver');
 import { StorageService, UrlService, HttpInterceptorService, DownloadService } from '../helpers/index';
 import { LocalRequest, RequestMarker, RequestStatus, QueryBundle, Query, Rule, QueryRuleAction } from './request';
 import { AuthService } from './../users/auth.service';
-import { Permissions } from '../users/roles';
+import { Permission } from '../users/index';
 import Timer = NodeJS.Timer;
 
 @Injectable()
@@ -30,13 +30,13 @@ export class RequestService {
     ) {}
 
     checkPermission(permission: string): boolean {
-        let perm: Permissions;
+        let perm: Permission;
         switch (permission) {
             case 'READ_REQUESTS':
-                perm = Permissions.READ_REQUESTS;
+                perm = Permission.READ_REQUESTS;
                 break;
             case 'WRITE_REQUESTS':
-                perm = Permissions.WRITE_REQUESTS;
+                perm = Permission.WRITE_REQUESTS;
                 break;
             default:
                 return false;

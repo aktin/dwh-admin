@@ -15,7 +15,7 @@ import _ = require('underscore');
 import { StorageService, UrlService, HttpInterceptorService, DownloadService } from '../helpers/index';
 import { AuthService } from './../users/auth.service';
 import { Report, ReportTemplate } from './report';
-import { Permissions } from '../users/roles';
+import { Permission } from '../users/index';
 
 @Injectable()
 export class ReportService {
@@ -28,13 +28,13 @@ export class ReportService {
     ) {}
 
     checkPermission(permission: string): boolean {
-        let perm: Permissions;
+        let perm: Permission;
         switch (permission) {
             case 'READ_REPORTS':
-                perm = Permissions.READ_REPORTS;
+                perm = Permission.READ_REPORTS;
                 break;
             case 'WRITE_REPORTS':
-                perm = Permissions.WRITE_REPORTS;
+                perm = Permission.WRITE_REPORTS;
                 break;
             default:
                 return false;

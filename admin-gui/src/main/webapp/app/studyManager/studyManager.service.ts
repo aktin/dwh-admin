@@ -5,7 +5,7 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
-import { Permissions } from './../users/roles';
+import { Permission } from './../users/index';
 import { AuthService } from './../users/auth.service';
 import { UrlService, HttpInterceptorService } from '../helpers/index';
 
@@ -19,13 +19,13 @@ export class StudyManagerService {
     ) {}
 
     checkPermission(permission: string): boolean {
-        let perm: Permissions;
+        let perm: Permission;
         switch (permission) {
-            case 'READ_STUDY_MANAGER':
-                perm = Permissions.READ_STUDY_MANAGER;
+            case 'READ_STUDYMANAGER':
+                perm = Permission.READ_STUDYMANAGER;
                 break;
-            case 'WRITE_STUDY_MANAGER':
-                perm = Permissions.WRITE_STUDY_MANAGER;
+            case 'WRITE_STUDYMANAGER':
+                perm = Permission.WRITE_STUDYMANAGER;
                 break;
             default:
                 return false;

@@ -8,6 +8,11 @@
 export * from './user';
 
 /**
+ * enum
+ */
+export * from './permission';
+
+/**
  * services
  */
 export * from './auth.service';

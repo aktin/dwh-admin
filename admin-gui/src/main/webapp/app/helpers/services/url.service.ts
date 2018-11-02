@@ -17,7 +17,7 @@ export class UrlService {
         adminCheck : 'auth/has/admin',
         authCheck : 'auth/check/',
         userUpdate : 'auth/update',
-        aktinRole : 'auth/role',
+        permissions : 'auth/permissions',
 
         getUsers : 'users', // get
         editUser : 'users/@user@', // put / delete

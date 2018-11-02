@@ -21,9 +21,7 @@ import _ = require('underscore');
 import { StorageService, UrlService, HttpInterceptorService, CleanUpAuthService } from '../helpers/index';
 import { routings } from '../app-routing.module';
 import { User } from './user';
-import { Role, Permissions } from './roles';
-
-// TODO: wenn i2b2-admin, dann automatisch aktin-admin
+import { Permission } from './roles';
 
 /**
  * Service Class for AUTH and LOGIN
@@ -36,9 +34,6 @@ import { Role, Permissions } from './roles';
 export class AuthService {
 
     private _tokenValidTrustTime = 3000;
-    // private _visibility: any = {};
-    // private _aktinRole: Role;
-    // private _roleIsAuthorized = false;
 
     constructor (
         private _http: HttpInterceptorService,
@@ -66,9 +61,8 @@ export class AuthService {
                 this._store.setValue('user.auth.time', String(Date.now()));
                 this._store.setValue('user.name', user.username);
                 this._store.setValue('user.token', user.token);
-                this._http.get(this._urls.parse('aktinRole')).subscribe(role => { this._store.setValue('user.role', role.text()) });
                 this.adminCheck().subscribe();
-               // this.setVisibility();
+                this.setPermissions().subscribe();
                 return user;
             }
             return Observable.throw('Authentication Error, status code: ' + res.status);
@@ -89,9 +83,9 @@ export class AuthService {
         })
         // .catch(this._http.handleError)
         .finally(() => {
+            sessionStorage.removeItem('permissions');
             this._cleanUp.cleanUpStorage();
             this._cleanUp.redirect2Home('');
-            // this._aktinRole = null;
         });
     }
 
@@ -218,72 +212,33 @@ export class AuthService {
         return this._store.getValue('user.token') !== null;
     }
 
-    // getRole(): Observable<void> {
-    //     // if (this.userLocalCheck()) {
-    //     //     // this.userRoles().subscribe(ur => {
-    //     //         // if (ur.indexOf('admin') !== -1) {
-    //     //         //     this._aktinRole = new Role('admin');
-    //     //         // } else {
-    //     //             return this._http.get(this._urls.parse('aktinRole'))
-    //     //                 .map(role => { this._aktinRole = new Role(role.text()); });
-    //     //         // }
-    //     //     // });
-    //     //     // if (this.userLocalCheck()) {
-    //     //     //     this.redirect2Route();
-    //     //     // } else {
-    //     //     //     this.redirect2Home();
-    //     //     // }
-    //     // }
-    //     // return Observable.of(null);
-    //     return this._http.get(this._urls.parse('aktinRole'))
-    //                      .map(role => { this._store.setValue('aktinRole', role.text()) });
-    //     // this._store.setValue('aktinRole', 'admin');
-    //     // return Observable.of();
-    // }
+    /**
+     * Get permissions from server depending on user role and writes them to the sessionStorage.
+     */
+    setPermissions() {
+        return this._http.get(this._urls.parse('permissions'))
+            .map(res => {
+                sessionStorage.setItem('permissions', res.text());
+            });
+    }
 
-    // userLocalCheckPermissions(checkPermissions: Permissions[]): boolean {
-    //     // console.log("aktinRole: " + this._aktinRole.rolename);
-    //     // this.setRole();
-    //     console.log("checkPermissions");
-    //     if (!checkPermissions || checkPermissions.length === 0) {
-    //         return true;
-    //     }
-    //     if (this._aktinRole === undefined || this._aktinRole === null) {
-    //         console.log("before subscribe");
-    //         this.getRole().subscribe(res => { console.log(res);
-    //             console.log(this._aktinRole);
-    //             if (this._aktinRole) {
-    //                 for (let i = 0; i < checkPermissions.length; i++) {
-    //                     console.log(checkPermissions[i]);
-    //                     console.log(this._aktinRole.getPermissions().indexOf(checkPermissions[i]) !== -1 );
-    //                     if (this._aktinRole.getPermissions().indexOf(checkPermissions[i]) !== -1) {
-    //                         this._roleIsAuthorized = true;
-    //                     }
-    //                 }
-    //             }
-    //             this._roleIsAuthorized = false;
-    //         });
-    //     } else {
-    //         for (let i = 0; i < checkPermissions.length; i++) {
-    //             if (this._aktinRole.getPermissions().indexOf(checkPermissions[i]) !== -1) {
-    //                 this._roleIsAuthorized = true;
-    //             }
-    //         }
-    //     }
-    //     console.log(this._roleIsAuthorized);
-    //     return this._roleIsAuthorized;
-    // }
-
-    userLocalCheckPermissions(checkPermissions: Permissions[]): boolean {
+    // IMPROVE: better way than using sessionStorage?
+    /**
+     * Check permissions by comparing the given values with the values in the sessionStorage.
+     */
+    userLocalCheckPermissions(checkPermissions: Permission[]): boolean {
         if (!checkPermissions || checkPermissions.length === 0) {
             return true;
         }
-        if (this._store.getValue('user.role') === null) {
+        if (sessionStorage.getItem('permissions') === null) {
             return false;
         }
-        let role = new Role(this._store.getValue('user.role'));
+        let perm: Permission[] = [];
+            JSON.parse(sessionStorage.getItem('permissions')).forEach(function(p: String) {
+                perm.push(Permission[p as keyof typeof Permission]);
+            });
         for (let i = 0; i < checkPermissions.length; i++) {
-            if (role.getPermissions().indexOf(checkPermissions[i]) !== -1) {
+            if (perm.indexOf(checkPermissions[i]) !== -1) {
                 return true;
             }
         }
@@ -315,23 +270,5 @@ export class AuthService {
             return _.contains(userRoles, role);
         });
     }
-
-    // setVisibility() {
-    //     _.each(routings, route => {
-    //         this._visibility[route.data['name']] = this.userLocalCheckPermissions(route.data['permissions']);
-    //         if (route.hasOwnProperty('children')) {
-    //             let children = route.children;
-    //             for (let i = 0; i < children.length; i++) {
-    //                 if (children[i].hasOwnProperty('data') && children[i].data.hasOwnProperty('name')) {
-    //                     this._visibility[children[i].data['name']] = this.userLocalCheckPermissions(children[i].data['permissions']);
-    //                 }
-    //             }
-    //         }
-    //     });
-    // }
-
-    // getVisibility() {
-    //     return this._visibility;
-    // }
 
 }

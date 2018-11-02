@@ -19,7 +19,7 @@ import { VisitsComponent }  from './visits/index';
 import { RequestsComponent, RequestSingleComponent }     from './requests/index';
 import { StudyManagerComponent } from './studyManager/index';
 import { StatusComponent }       from './status/index';
-import { Permissions } from './users/roles';
+import { Permission } from './users/index';
 
 const routes: Routes = [// array of routes
     {
@@ -42,8 +42,8 @@ const routes: Routes = [// array of routes
                 'LOGGEDIN',
             ],
             permissions : [
-                Permissions.READ_REQUESTS,
-                Permissions.WRITE_REQUESTS,
+                Permission.READ_REQUESTS,
+                Permission.WRITE_REQUESTS,
             ]
         },
         children : [
@@ -67,8 +67,8 @@ const routes: Routes = [// array of routes
                 'LOGGEDIN',
             ],
             permissions : [
-                Permissions.READ_REPORTS,
-                Permissions.WRITE_REPORTS
+                Permission.READ_REPORTS,
+                Permission.WRITE_REPORTS
             ]
         },
         children : [
@@ -82,7 +82,7 @@ const routes: Routes = [// array of routes
                 data: {
                     name: 'newReport',
                     permissions: [
-                        Permissions.WRITE_REPORTS
+                        Permission.WRITE_REPORTS
                     ]
                 }
             },
@@ -113,8 +113,8 @@ const routes: Routes = [// array of routes
         data: {
             name: 'Studien-Manager',
             permissions: [
-                Permissions.READ_STUDY_MANAGER,
-                Permissions.WRITE_STUDY_MANAGER
+                Permission.READ_STUDYMANAGER,
+                Permission.WRITE_STUDYMANAGER
             ]
         }
     },
@@ -129,7 +129,7 @@ const routes: Routes = [// array of routes
                 'LOGGEDIN',
             ],
             permissions : [
-                Permissions.CONFIG
+                Permission.CONFIG
             ]
         },
     },
@@ -168,7 +168,7 @@ const routes: Routes = [// array of routes
                 'LOGGEDIN',
             ],
             permissions : [
-                Permissions.STATUS
+                Permission.STATUS
             ]
         },
     },

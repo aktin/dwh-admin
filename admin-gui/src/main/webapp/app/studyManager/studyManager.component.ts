@@ -125,7 +125,7 @@ export class StudyManagerComponent {
     }
 
     createEntry() {
-        if (this.isAuthorized('WRITE_STUDY_MANAGER')) {
+        if (this.isAuthorized('WRITE_STUDYMANAGER')) {
             this.popUp.setData((submit: boolean, id: String, ref: String, root: String, ext: String,
                                 opt: String, sic: String, comment: String) => {
                 if (submit) {
