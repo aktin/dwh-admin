@@ -49,7 +49,6 @@ export class StudyManagerService {
             .map(resp => {
                 let entries = JSON.parse(resp.text());
                 entries.forEach(function(e: any) {
-                    e.selected = false;
                     switch (e.participation) {
                         case 'OptIn':
                             e.participationString = 'Einschluss';

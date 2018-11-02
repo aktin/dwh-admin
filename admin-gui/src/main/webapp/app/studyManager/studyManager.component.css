@@ -48,15 +48,28 @@ tr:hover{
  }
 
  .table, .buttonbar {
-    width: 1000px !important;
-    margin: 0px 0 0 -500px !important;
-    left: 50%;
+    /* width: 1000px !important; */
+    /* margin: 0px 0 0 -500px !important; */
+    /* left: 50%; */
+}
+
+.container2 {
+    max-width: 700px !important;
 }
 
 .table {
     border: 1px solid lightgray !important;
-    overflow-x: scroll;
+    /* width: inherit;
+    max-width: 700px !important;
+    table-layout: inherit; */
 }
+
+.truncated {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* white-space: nowrap; */
+    /* width: 186px !important; */
+  }
 
 .buttonbar {
     border-top: 1px solid lightgray !important;

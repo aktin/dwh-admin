@@ -57,23 +57,20 @@
             <div *ngIf="isAuthorized('WRITE_STUDY_MANAGER')" class="ui small labeled right floated icon button newButton" (click)="createEntry()">
                 <i class="plus icon"></i> Eintrag erstellen
             </div>
-            <div *ngIf="isAuthorized('WRITE_STUDY_MANAGER')" class="ui small labeled right floated icon button deleteButton" (click)="deleteEntry()" [ngClass]="getSelectedEntries().length===0 ? 'disabledButton' : ''">
-                <i class="trash alternate outline icon"></i> Eintrag löschen
-            </div>
         </div>
     </div>
-    <table class="ui sortable celled table ui segment">
+    <table class="ui sortable selectable celled table ui segment">
         <thead>
             <tr>
                 <th class="three wide sorted ascending">Studie</th>
-                <th class="two wide sorted ascending">SIC</th>
-                <th id="default-sort" class="two wide sorted ascending">Datum</th>
+                <th class="three wide sorted ascending">SIC</th>
+                <th id="default-sort" class="four wide sorted ascending">Datum</th>
                 <th class="two wide sorted ascending">Teilnahme</th>
-                <th class="five wide sorted ascending">Kommentar</th>
+                <th class="four wide sorted ascending">Kommentar</th>
             </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let entry of filteredEntries | paginate: { itemsPerPage: 15, currentPage: p }" [ngClass]="entry['selected'] ? 'selectedRow' : ''" (click)="entry['selected']=!entry['selected']">
+        <tr *ngFor="let entry of filteredEntries | paginate: { itemsPerPage: 15, currentPage: p }" (click)="showEntry(entry)">
             <td>
                 {{ entry.study.title }}
             </td>
@@ -83,14 +80,14 @@
             </td>
 
             <td>
-                {{ entry.timestamp | date: 'dd.MM.yyyy, HH:mm'}}
+                {{ entry.timestamp | date: 'dd.MM.yyyy, HH:mm' }}
             </td>
 
             <td>
                 {{ entry.participationString }}
             </td>
 
-            <td>
+            <td title="{{entry.comment}}">
                 {{ entry.comment }}
             </td>
         </tr>
@@ -110,3 +107,4 @@
 
 <popup-newEntry [studies]="studies" [selectedStudy]="filterdata.study"></popup-newEntry>
 <popup-message></popup-message>
+<popup-detail [entry]="selectedEntry"></popup-detail>

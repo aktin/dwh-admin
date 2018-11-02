@@ -8,3 +8,4 @@ export * from './studyManager.service';
  */
 export * from './studyManager.component';
 export * from './popup-newEntry.component';
+export * from './popup-detail.component';

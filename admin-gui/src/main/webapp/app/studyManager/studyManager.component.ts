@@ -3,7 +3,7 @@ import { Component, Input, ViewChild, forwardRef, OnInit, OnDestroy } from '@ang
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 
-import { StudyManagerService, PopUpNewEntryComponent } from './index';
+import { StudyManagerService, PopUpNewEntryComponent, PopUpDetailComponent } from './index';
 import { PopUpMessageComponent } from './../helpers/popup-message.component';
 import { IMyDateModel, IMyDpOptions } from 'mydatepicker';
 
@@ -23,14 +23,16 @@ export class StudyManagerComponent {
     popUp: PopUpNewEntryComponent;
     @ViewChild(forwardRef(() => PopUpMessageComponent))
     popUpMessage: PopUpMessageComponent;
+    @ViewChild(forwardRef(() => PopUpDetailComponent))
+    popUpDetail: PopUpDetailComponent;
 
-    etag = '0';
+    // etag = '0';
     today = new Date();
     DPOptions: IMyDpOptions;
     studies: any = [];
     entries: any = [];
     filteredEntries: any = [];
-    selectedEntries: any = [];
+    selectedEntry: any;
     filterActive = false;
 
     filterdata = {
@@ -71,17 +73,6 @@ export class StudyManagerComponent {
 
     getFilterdata() {
         return this.filterdata;
-    }
-
-    getSelectedEntries() {
-        let sm = this;
-        this.selectedEntries = [];
-        this.filteredEntries.forEach(function(e: any) {
-            if (e['selected']) {
-               sm.selectedEntries.push(e);
-            }
-        });
-        return this.selectedEntries;
     }
 
     setStudies() {
@@ -153,26 +144,29 @@ export class StudyManagerComponent {
     }
 
     deleteEntry() {
-        if (this.getSelectedEntries().length > 0 && this.isAuthorized('WRITE_STUDY_MANAGER')) {
-            let sm = this;
-            let selected = this.getSelectedEntries();
-            let num = selected.length;
-            let buttons = [['Löschen', 'green'], ['Abbrechen', 'orange']];
-            this.popUpMessage.setConfirm(buttons);
-            this.popUpMessage.setData(true, 'Eintrag löschen',
-                'Sie haben ' + (num === 1 ? 'einen Eintrag' : num + ' Einträge') + ' zum Löschen ausgewählt.' +
-                ' Wollen Sie ' + (num === 1 ? 'diesen' : 'diese') + ' wirklich unwiderruflich löschen?',
-                (submitDelete: boolean) => {
-                    if (submitDelete) {
-                        selected.forEach(function(e: any) {
-                            sm._managerService.deleteEntry(e.study.id, e.reference, e.idRoot, e.idExt).subscribe(() => {
-                                sm.setEntries(true);
-                            });
+        let buttons = [['Löschen', 'green'], ['Abbrechen', 'orange']];
+        this.popUpMessage.setConfirm(buttons);
+        this.popUpMessage.setData(true, 'Eintrag löschen',
+            ' Wollen Sie diesen Eintrag wirklich unwiderruflich löschen?',
+            (submitDelete: boolean) => {
+                if (submitDelete) {
+                    this._managerService.deleteEntry(this.selectedEntry.study.id, this.selectedEntry.reference,
+                        this.selectedEntry.idRoot, this.selectedEntry.idExt).subscribe(() => {
+                            this.setEntries(true);
                         });
                     }
                 }
-            );
-        }
+        );
+    }
+
+    showEntry(entry: any) {
+        this.selectedEntry = entry;
+        this.popUpDetail.setData((submitDelete: boolean) => {
+            if (submitDelete) {
+                this.deleteEntry();
+            }
+        });
+
     }
 
     isAuthorized(permission: string) {

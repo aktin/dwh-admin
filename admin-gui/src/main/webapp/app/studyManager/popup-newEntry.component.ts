@@ -5,7 +5,7 @@ import { StudyManagerService } from './index';
 @Component({
     selector: 'popup-newEntry',
     templateUrl: './popup-newEntry.component.html',
-    styleUrls : ['./popup-newEntry.component.css'],
+    styleUrls : ['./popup-newEntry.component.css', './../helpers/popup-message.component.css'],
 })
 export class PopUpNewEntryComponent implements OnInit {
     static OPT_IN = 'OptIn';

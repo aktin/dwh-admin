@@ -1,0 +1,72 @@
+<div id="popup-message-overlay" (click)="closeMessage()" *ngIf="show">
+</div>
+
+<div id="popup-message-content" class="ui text container very padded segment" *ngIf="show">
+    <div class="ui header">
+        {{head}}
+    </div>
+    <div class="close-action">
+        <a class="ui compact  small icon red circular button" (click)="closeMessage()">
+            <i class="remove icon"></i>
+        </a>
+    </div>
+
+    <div *ngIf="entry">
+        <table class="ui table ">
+            <tbody>
+                <tr>
+                    <td >Studie:</td>
+                    <td> {{ entry.study.title }} </td>
+                </tr>
+                <tr *ngIf="entry.sic !== ''">
+                    <td>SIC:</td>
+                    <td> {{ entry.sic }} </td>
+                </tr>
+                <tr *ngIf="entry.idRoot !== prefs.root || entry.idExt === ''">
+                    <td *ngIf="entry.idExt !== ''">Root:</td>
+                    <td *ngIf="entry.idExt === ''"> {{ extLabel }}: </td>
+                    <td> {{ entry.idRoot }} </td>
+                </tr>
+                <tr *ngIf="entry.idExt !== ''">
+                    <td> {{ extLabel }}: </td>
+                    <td> {{ entry.idExt }} </td>
+                </tr>
+                <tr>
+                    <td>Teilnahme:</td>
+                    <td> {{ entry.participationString }} </td>
+                </tr>
+                <tr>
+                    <td>Datum:</td>
+                    <td> {{ entry.timestamp | date: 'dd.MM.yyyy, HH:mm' }} Uhr </td>
+                </tr>
+                <tr>
+                    <td>Ersteller:</td>
+                    <td> {{ entry.user }} </td>
+                </tr>
+                <tr>
+                    <td>Kommentar:</td>
+                    <td> {{ entry.comment }} </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <br>
+        <div class="popup-message-buttons">
+            <div *ngIf="isAuthorized('WRITE_STUDY_MANAGER')" form="ngForm" class="ui animated fade button popup-message-okay-button"
+                    [ngClass]="buttons[0][1]" (click)="msgOk()">
+                <div class="visible content">{{buttons[0][0]}}</div>
+                <div class="hidden content">
+                    <i class="icon trash"></i>
+                    {{buttons[0][0]}}
+                </div>
+            </div>
+            <div class="ui animated fade button popup-message-okay-button"
+                    [ngClass]="buttons[1][1]" (click)="msgCancel()">
+                <div class="visible content">{{buttons[1][0]}}</div>
+                <div class="hidden content">
+                    <i class="icon remove"></i>
+                    {{buttons[1][0]}}
+                </div>
+            </div>
+        </div>
+</div>
