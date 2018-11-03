@@ -1,7 +1,7 @@
-<div id="popup-message-overlay" (click)="closeMessage()" *ngIf="show">
+<div id="popup-message-overlay" [ngClass]="onTop ? 'on-top' : ''" (click)="closeMessage()" *ngIf="show">
 </div>
 
-<div id="popup-message-content" class="ui text container very padded segment" *ngIf="show">
+<div id="popup-message-content" [ngClass]="onTop ? 'on-top' : ''" class="ui text container very padded segment" *ngIf="show">
     <div class="ui header">
         {{head}}
     </div>

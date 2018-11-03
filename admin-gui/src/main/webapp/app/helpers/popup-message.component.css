@@ -9,7 +9,7 @@
 }
 
 #popup-message-content {
-    position: fixed;
+    position: absolute;
     top: 150px;
     z-index: 110;
     min-height: 150px;
@@ -23,4 +23,13 @@
 
 .fontBlack {
     color: black !important;
+}
+
+.on-top#popup-message-overlay {
+    z-index: 120;
+}
+
+.on-top#popup-message-content {
+    z-index: 130;
+    top: 280px ;
 }

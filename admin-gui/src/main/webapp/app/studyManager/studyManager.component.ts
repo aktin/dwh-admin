@@ -26,7 +26,6 @@ export class StudyManagerComponent {
     @ViewChild(forwardRef(() => PopUpDetailComponent))
     popUpDetail: PopUpDetailComponent;
 
-    // etag = '0';
     today = new Date();
     DPOptions: IMyDpOptions;
     studies: any = [];
@@ -36,7 +35,7 @@ export class StudyManagerComponent {
     filterActive = false;
 
     filterdata = {
-        date : { date: this.formulateDate4DP(this.today) },
+        date : {date: ''},
         study : '',
         optIn : false,
         optOut: false,
@@ -80,6 +79,7 @@ export class StudyManagerComponent {
             this.studies = res;
             if (this.studies.length > 0) {
                 this.filterdata.study = this.studies[0].id;
+                this.setEntries(false);
             }
         });
     }
@@ -104,14 +104,14 @@ export class StudyManagerComponent {
         this.setEntries(false);
         this.filterdata.optIn = false;
         this.filterdata.optOut = false;
-        this.filterdata.date = { date: this.formulateDate4DP(this.today) };
+        this.filterdata.date = null;
     }
 
     filterEntries() {
         let sm = this;
         this.filteredEntries = this.entries.filter(function(e: any) {
             let fullfilled = true;
-            if (fullfilled && sm.filterdata.date) {
+            if (fullfilled && sm.filterdata.date !== null && sm.filterdata.date.date !== '') {
                 let filterDate = sm.DP2date(sm.filterdata.date.date);
                 let date = new Date(e.timestamp);
                 fullfilled = fullfilled && sm.equalsDate(date, filterDate);
@@ -130,11 +130,16 @@ export class StudyManagerComponent {
                                 opt: String, sic: String, comment: String) => {
                 if (submit) {
                     this._managerService.createEntry(id, ref, root, ext, opt, sic, comment)
-                        .subscribe(() => { this.setEntries(this.filterActive); },
+                        .subscribe(() => {
+                            this.setEntries(this.filterActive);
+                            this.popUpMessage.setData(true, 'Eintrag erstellt', 'Der Eintrag wurde erfolgreich erstellt!');
+                            this.popUp.clear();
+                        },
                             error => {
                                 if (error.split('-')[0].trim() === '409') {
+                                    this.popUpMessage.onTop = true;
                                     this.popUpMessage.setData(true, 'Fehler beim Erstellen',
-                                    'Der Eintrag könnte nicht erstellt werden, weil für die ausgewählte Studie ' +
+                                    'Der Eintrag konnte nicht erstellt werden, weil für die ausgewählte Studie ' +
                                     'bereits ein Eintrag mit dieser ' + this.popUp.extLabel + ' existiert.');
                                 }
                         });
@@ -144,26 +149,38 @@ export class StudyManagerComponent {
     }
 
     deleteEntry() {
-        let buttons = [['Löschen', 'green'], ['Abbrechen', 'orange']];
-        this.popUpMessage.setConfirm(buttons);
-        this.popUpMessage.setData(true, 'Eintrag löschen',
-            ' Wollen Sie diesen Eintrag wirklich unwiderruflich löschen?',
-            (submitDelete: boolean) => {
-                if (submitDelete) {
-                    this._managerService.deleteEntry(this.selectedEntry.study.id, this.selectedEntry.reference,
-                        this.selectedEntry.idRoot, this.selectedEntry.idExt).subscribe(() => {
-                            this.setEntries(true);
-                        });
+        this._managerService.deleteEntry(this.selectedEntry.study.id, this.selectedEntry.reference,
+            this.selectedEntry.idRoot, this.selectedEntry.idExt)
+            .finally(() => {
+                this.setEntries(true);
+            })
+            .subscribe(() => {
+                this.popUpMessage.setData(true, 'Eintrag gelöscht', 'Der Eintrag wurde erfolgreich gelöscht!');
+            },
+                error => {
+                    if (error.split('-')[0].trim() === '400') {
+                        this.popUpMessage.setData(true, 'Fehler beim Löschen',
+                        'Der Eintrag konnte nicht gelöscht werden, da kein passender Datensatz hierfür gefunden werden konnte.');
                     }
-                }
-        );
+            });
     }
 
     showEntry(entry: any) {
         this.selectedEntry = entry;
         this.popUpDetail.setData((submitDelete: boolean) => {
             if (submitDelete) {
-                this.deleteEntry();
+                let buttons = [['Löschen', 'green'], ['Abbrechen', 'orange']];
+                this.popUpMessage.setConfirm(buttons);
+                this.popUpMessage.onTop = true;
+                this.popUpMessage.setData(true, 'Eintrag löschen',
+                    ' Wollen Sie diesen Eintrag wirklich unwiderruflich löschen?',
+                    (submit: boolean) => {
+                        if (submit) {
+                            this.deleteEntry();
+                            this.popUpDetail.clear();
+                        }
+                    }
+                );
             }
         });
 

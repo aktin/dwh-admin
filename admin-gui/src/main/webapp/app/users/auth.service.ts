@@ -21,7 +21,7 @@ import _ = require('underscore');
 import { StorageService, UrlService, HttpInterceptorService, CleanUpAuthService } from '../helpers/index';
 import { routings } from '../app-routing.module';
 import { User } from './user';
-import { Permission } from './roles';
+import { Permission } from './index';
 
 /**
  * Service Class for AUTH and LOGIN

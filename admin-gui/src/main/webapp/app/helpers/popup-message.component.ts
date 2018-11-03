@@ -15,6 +15,7 @@ export class PopUpMessageComponent {
     @Input() mode = 'info'; // 'confirm'
     @Input() buttons: string[][] = [['Weiter', 'green'], ['Abbrechen', 'red']];
     show = false;
+    onTop = false;
     checkBoxText: string[] = [];
     checkBoxTextQuery: string[] = [];
     checkBoxTextApply: string = null;
@@ -98,5 +99,6 @@ export class PopUpMessageComponent {
         this.checkedQuery = false;
         this.checkedApply = false;
         this.checkedMail = false;
+        this.onTop = false;
     }
 }

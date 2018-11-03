@@ -15,36 +15,36 @@
         <table class="ui table ">
             <tbody>
                 <tr>
-                    <td >Studie:</td>
+                    <td class="four wide cell">Studie:</td>
                     <td> {{ entry.study.title }} </td>
                 </tr>
                 <tr *ngIf="entry.sic !== ''">
-                    <td>SIC:</td>
+                    <td class="four wide cell">SIC:</td>
                     <td> {{ entry.sic }} </td>
                 </tr>
                 <tr *ngIf="entry.idRoot !== prefs.root || entry.idExt === ''">
-                    <td *ngIf="entry.idExt !== ''">Root:</td>
-                    <td *ngIf="entry.idExt === ''"> {{ extLabel }}: </td>
+                    <td class="four wide cell" *ngIf="entry.idExt !== ''">Root:</td>
+                    <td class="four wide cell" *ngIf="entry.idExt === ''"> {{ extLabel }}: </td>
                     <td> {{ entry.idRoot }} </td>
                 </tr>
                 <tr *ngIf="entry.idExt !== ''">
-                    <td> {{ extLabel }}: </td>
+                    <td class="four wide cell"> {{ extLabel }}: </td>
                     <td> {{ entry.idExt }} </td>
                 </tr>
                 <tr>
-                    <td>Teilnahme:</td>
+                    <td class="four wide cell">Teilnahme:</td>
                     <td> {{ entry.participationString }} </td>
                 </tr>
                 <tr>
-                    <td>Datum:</td>
+                    <td class="four wide cell">Datum:</td>
                     <td> {{ entry.timestamp | date: 'dd.MM.yyyy, HH:mm' }} Uhr </td>
                 </tr>
                 <tr>
-                    <td>Ersteller:</td>
+                    <td class="four wide cell">Ersteller:</td>
                     <td> {{ entry.user }} </td>
                 </tr>
                 <tr>
-                    <td>Kommentar:</td>
+                    <td class="four wide cell">Kommentar:</td>
                     <td> {{ entry.comment }} </td>
                 </tr>
             </tbody>

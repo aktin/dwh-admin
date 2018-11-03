@@ -66,11 +66,9 @@ export class PopUpDetailComponent implements OnInit {
     }
 
     msgOk (): void {
-        this.show = false;
         if (this.callback) {
             this.callback(true);
         }
-        this.clear();
     }
 
     msgCancel (): void {

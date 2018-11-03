@@ -62,32 +62,32 @@
     <table class="ui sortable selectable celled table ui segment">
         <thead>
             <tr>
-                <th class="three wide sorted ascending">Studie</th>
-                <th class="three wide sorted ascending">SIC</th>
-                <th id="default-sort" class="four wide sorted ascending">Datum</th>
-                <th class="two wide sorted ascending">Teilnahme</th>
-                <th class="four wide sorted ascending">Kommentar</th>
+                <th class="tsorted ascending" width="18%">Studie</th>
+                <th class="sorted ascending" width="18%">SIC</th>
+                <th id="default-sort" class="sorted ascending" width="20%">Datum</th>
+                <th class="sorted ascending" width="15%">Teilnahme</th>
+                <th class="sorted ascending" width="29%">Kommentar</th>
             </tr>
         </thead>
         <tbody>
         <tr *ngFor="let entry of filteredEntries | paginate: { itemsPerPage: 15, currentPage: p }" (click)="showEntry(entry)">
-            <td>
+            <td width="18%">
                 {{ entry.study.title }}
             </td>
 
-            <td>
+            <td width="18%">
                 {{ entry.sic }}
             </td>
 
-            <td>
+            <td width="20%">
                 {{ entry.timestamp | date: 'dd.MM.yyyy, HH:mm' }}
             </td>
 
-            <td>
+            <td width="15%">
                 {{ entry.participationString }}
             </td>
 
-            <td title="{{entry.comment}}">
+            <td title="{{entry.comment}}" class="truncated" width="29%">
                 {{ entry.comment }}
             </td>
         </tr>
@@ -106,5 +106,5 @@
 </div>
 
 <popup-newEntry [studies]="studies" [selectedStudy]="filterdata.study"></popup-newEntry>
-<popup-message></popup-message>
 <popup-detail [entry]="selectedEntry"></popup-detail>
+<popup-message></popup-message>

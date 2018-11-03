@@ -121,7 +121,6 @@ export class PopUpNewEntryComponent implements OnInit {
     }
 
     msgOk (): void {
-        this.show = false;
         if (this.callback) {
             let root = this.prefs['root'];
             let ext = this.formdata.ext;
@@ -142,11 +141,9 @@ export class PopUpNewEntryComponent implements OnInit {
             this.callback(true, this.formdata.study, this.prefs['reference'], root, ext,
                 this.formdata.optInOut, sic, this.formdata.comment);
         }
-        this.clear();
     }
 
     msgCancel (): void {
-        console.log(this.formdata.ext);
         this.show = false;
         if (this.callback) {
             this.callback(false);
@@ -157,7 +154,6 @@ export class PopUpNewEntryComponent implements OnInit {
     clear (): void {
         this.callback = null;
         this.show = false;
-        // this.formdata.study = '';
         this.formdata.ext = '';
         this.formdata.comment = '';
     }

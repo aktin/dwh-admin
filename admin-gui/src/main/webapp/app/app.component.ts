@@ -15,7 +15,6 @@ import { AuthService } from './users/index';
 import { HttpInterceptorService } from './helpers/services/http-interceptor.service';
 import { Response } from '@angular/http';
 import { UrlService } from './helpers/services/url.service';
-import { Role } from './users/roles';
 
 @Component({
     selector: 'my-app',
