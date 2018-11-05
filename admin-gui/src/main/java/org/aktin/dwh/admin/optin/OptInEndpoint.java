@@ -1,6 +1,5 @@
 package org.aktin.dwh.admin.optin;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -33,6 +32,10 @@ import org.aktin.dwh.optinout.PatientReference;
 import org.aktin.dwh.optinout.Study;
 import org.aktin.dwh.optinout.StudyManager;
 
+/**
+ * RESTful HTTP end point for creating, deleting and retrieving patient entries.
+ * 
+ */
 @Path("optin")
 public class OptInEndpoint {
 	private static final Logger log = Logger.getLogger(OptInEndpoint.class.getName());
@@ -44,6 +47,11 @@ public class OptInEndpoint {
 	@Context 
 	private SecurityContext security;
 
+	/**
+	 * Gets all patient entries of all existing studies.
+	 * @return list of all patient entries of all studies
+	 * @throws IOException
+	 */
 	@GET
 	public List<PatientEntry> getEntries() throws IOException {
 		List<PatientEntry> patientList = new ArrayList<>();
@@ -54,6 +62,11 @@ public class OptInEndpoint {
 		return patientList;
 	}
 	
+	/**
+	 * Gets a list of all studies.
+	 * @return list of studies
+	 * @throws IOException
+	 */
 	@Path("studies")
 	@GET
 	public List<StudyWrapper> getStudies() throws IOException {
@@ -64,6 +77,12 @@ public class OptInEndpoint {
 		return studies;
 	}
 	
+	/**
+	 * Get all patient entries that belong to the study of the specified id.
+	 * @param id
+	 * @return Response with status 'ok' and the list of entries
+	 * @throws IOException
+	 */
 	@Path("{studyId}")
 	@GET
 	public Response getEntriesByStudy(@PathParam("studyId") String id) throws IOException {
@@ -74,6 +93,15 @@ public class OptInEndpoint {
 	}
 	
 
+	/**
+	 * Gets an entry by the specified study id, reference type, root and extension parameters.
+	 * @param id: study id 
+	 * @param ref: type of the patient reference 
+	 * @param root: root number
+	 * @param ext: extension number, can be empty
+	 * @return PatientEntry that belongs to the given parameters
+	 * @throws IOException
+	 */
 	@Path("{studyId}/{reference}/{root}/{extension}")
 	@GET
 	public PatientEntry getEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root, 
@@ -82,6 +110,16 @@ public class OptInEndpoint {
 		return study.getPatientByID(ref, root, ext);
 	}
 	
+	/**
+	 * Creates an entry under the location of the specified parameters with the data of the given PatientEntryRequest object. 
+	 * @param id: study id
+	 * @param ref: type of the patient reference
+	 * @param root: root number
+	 * @param ext: extension number, can be empty
+	 * @param entry: object that contains further information (participation, sic, comment) about the entry
+	 * @return Response with status 'created' if the entry was successfully created, otherwise Response with status 'conflict' if the entry already exists
+	 * @throws IOException
+	 */
 	@Secured
 	@Path("{studyId}/{reference}/{root}/{extension}")
 	@POST
@@ -101,11 +139,20 @@ public class OptInEndpoint {
 		return Response.created(URI.create(id+"/"+ref+"/"+root+"/"+ext)).build();
 	}
 	
+	/**
+	 * Deletes an entry which matches the given id, reference, root and extension. 
+	 * @param id: study id
+	 * @param ref: type of the patient reference
+	 * @param root: root number
+	 * @param ext: extension number, can be empty
+	 * @return Response with status 'bad request' if no entry for these parameters was found, otherwise Response with status 'ok'
+	 * @throws IOException
+	 */
 	@Secured
 	@Path("{studyId}/{reference}/{root}/{extension}")
 	@DELETE
 	public Response deleteEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root, 
-			@PathParam("extension") String ext) throws FileNotFoundException, IOException {
+			@PathParam("extension") String ext) throws IOException {
 		Study study = this.getStudy(id);
 		PatientEntry pat = study.getPatientByID(ref, root, ext);
 		if (pat == null) {
@@ -115,6 +162,10 @@ public class OptInEndpoint {
 		return Response.ok().build();
 	}
 	
+	/**
+	 * Builds an JSON object with the preference values that are necessary for client side in context of the study manager.
+	 * @return JSON object with the study relevant preferences
+	 */
 	@Path("preferences")
 	@GET
 	public JsonObject getPreferences() {
@@ -135,7 +186,7 @@ public class OptInEndpoint {
 		JsonObjectBuilder b = Json.createObjectBuilder();
 		b.add("reference", pref.get("study.id.reference"));
 		b.add("root", root);
-		b.add("seperator", pref.get("study.id.seperator"));
+		b.add("separator", pref.get("study.id.separator"));
 		b.add("labelPatient", pref.get("study.id.patient.label"));
 		b.add("labelEncounter", pref.get("study.id.encounter.label"));
 		b.add("labelBilling", pref.get("study.id.billing.label"));
@@ -143,6 +194,13 @@ public class OptInEndpoint {
 		return p;
 	}
 	
+	/**
+	 * Gets the study by the given id.
+	 * @param id: study id
+	 * @return study object
+	 * @throws IOException
+	 * @throws NotFoundException if none of the existing study ids matches the given id
+	 */
 	private Study getStudy(String id) throws IOException {
 		return sm.getStudies().stream().filter(s -> s.getId().equals(id)).findFirst()
 				.orElseThrow( () -> new NotFoundException("Unable to find study with id " + id + ".", Response.status(Status.NOT_FOUND).build()) );
