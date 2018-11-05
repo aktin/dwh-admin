@@ -79,7 +79,7 @@ export class StudyManagerComponent {
             this.studies = res;
             if (this.studies.length > 0) {
                 this.filterdata.study = this.studies[0].id;
-                this.setEntries(false);
+                this.setEntries(false).subscribe();
             }
         });
     }
@@ -88,7 +88,7 @@ export class StudyManagerComponent {
         this.filterActive = filtered;
         let sm = this;
         return this._managerService.getEntries(this.filterdata.study)
-            .subscribe(res => {
+            .map(res => {
                 this.entries = res;
                 this.entries.sort(function(a: any, b: any) {
                     return b['timestamp'] - a['timestamp'];
@@ -101,7 +101,7 @@ export class StudyManagerComponent {
     }
 
     resetFilter() {
-        this.setEntries(false);
+        this.setEntries(false).subscribe();
         this.filterdata.optIn = false;
         this.filterdata.optOut = false;
         this.filterdata.date = null;
@@ -131,9 +131,13 @@ export class StudyManagerComponent {
                 if (submit) {
                     this._managerService.createEntry(id, ref, root, ext, opt, sic, comment)
                         .subscribe(() => {
-                            this.setEntries(this.filterActive);
-                            this.popUpMessage.setData(true, 'Eintrag erstellt', 'Der Eintrag wurde erfolgreich erstellt!');
-                            this.popUp.clear();
+                            this.setEntries(this.filterActive).subscribe(() => {
+                                this.popUp.clear();
+                                let created = this.entries.filter(function(e: any) {
+                                    return e.study.id === id && e.reference === ref && e.idRoot === root && e.idExt === ext;
+                                })[0];
+                                this.showEntry(created);
+                            });
                         },
                             error => {
                                 if (error.split('-')[0].trim() === '409') {
@@ -148,11 +152,11 @@ export class StudyManagerComponent {
         }
     }
 
-    deleteEntry() {
-        this._managerService.deleteEntry(this.selectedEntry.study.id, this.selectedEntry.reference,
-            this.selectedEntry.idRoot, this.selectedEntry.idExt)
+    deleteEntry(entry: any) {
+        this._managerService.deleteEntry(entry.study.id, entry.reference,
+            entry.idRoot, entry.idExt)
             .finally(() => {
-                this.setEntries(true);
+                this.setEntries(true).subscribe();
             })
             .subscribe(() => {
                 this.popUpMessage.setData(true, 'Eintrag gelöscht', 'Der Eintrag wurde erfolgreich gelöscht!');
@@ -176,7 +180,7 @@ export class StudyManagerComponent {
                     ' Wollen Sie diesen Eintrag wirklich unwiderruflich löschen?',
                     (submit: boolean) => {
                         if (submit) {
-                            this.deleteEntry();
+                            this.deleteEntry(entry);
                             this.popUpDetail.clear();
                         }
                     }

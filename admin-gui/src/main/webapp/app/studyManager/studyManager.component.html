@@ -9,7 +9,7 @@
         <div class="ui row studies">
             <div class="field">
                 <label>Studie</label>
-                <select class="ui dropdown" name="studies" [(ngModel)]="filterdata.study" (change)="setEntries(filterActive)">
+                <select class="ui dropdown" name="studies" [(ngModel)]="filterdata.study" (change)="setEntries(filterActive).subscribe()">
                     <option *ngFor="let option of studies" [ngValue]="option.id">
                             {{ option.title }}
                     </option>
@@ -39,7 +39,7 @@
                     <my-date-picker style="width: 100%" class="ui input" name="DPStudyManager" [options]="DPOptions" [(ngModel)]="filterdata.date"></my-date-picker>
                 </div>
                 <div class="one wide field"></div>
-                <div class="ui small labeled left floated icon button" (click)="setEntries(true)">
+                <div class="ui small labeled left floated icon button" (click)="setEntries(true).subscribe()">
                     <i class="filter icon"></i> Filtern
                 </div>
             </div>
