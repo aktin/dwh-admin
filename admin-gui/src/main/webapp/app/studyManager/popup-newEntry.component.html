@@ -37,12 +37,12 @@
                 <div class="three wide field"><label>Teilnahme:</label></div>
                 <!-- Buttons are disabled by css pointer-event property because ngDisabled is somehow not working with semanticUI. -->
                 <div class="ui radio checkbox" [ngClass]="optIn ? '' : 'disabledButton'">
-                    <input type="radio" name="optInOut" [value]="optInString" [(ngModel)]="formdata.optInOut">
+                    <input type="radio" name="optInOut" [value]="participationOptIn" [(ngModel)]="formdata.optInOut">
                     <label>Ja (Einschluss)</label>
                 </div>
                 <div class="one wide field"></div>
                 <div class="ui radio checkbox" [ngClass]="optOut ? '' : 'disabledButton'">
-                    <input type="radio" name="optInOut" [value]="optOutString" [(ngModel)]="formdata.optInOut">
+                    <input type="radio" name="optInOut" [value]="participationOptOut" [(ngModel)]="formdata.optInOut">
                     <label>Nein (Ausschluss)</label>
                 </div>
             </div>

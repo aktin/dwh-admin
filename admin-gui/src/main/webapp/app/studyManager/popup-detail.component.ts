@@ -1,6 +1,6 @@
 import { Component, Input, ViewChild, OnInit } from '@angular/core';
 
-import { StudyManagerService } from './index';
+import { StudyManagerService, Entry } from './index';
 
 @Component({
     selector: 'popup-detail',
@@ -15,7 +15,7 @@ export class PopUpDetailComponent implements OnInit {
     show = false;
     prefs: object;
 
-    @Input() entry: any = {};
+    @Input() entry: Entry;
 
     constructor( private _managerService: StudyManagerService ) {}
 

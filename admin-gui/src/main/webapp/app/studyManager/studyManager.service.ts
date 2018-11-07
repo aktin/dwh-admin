@@ -5,6 +5,7 @@ import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
+import { Entry, Study, Participation } from './entry'
 import { Permission } from './../users/index';
 import { AuthService } from './../users/auth.service';
 import { UrlService, HttpInterceptorService } from '../helpers/index';
@@ -38,32 +39,36 @@ export class StudyManagerService {
             .map(res => { return JSON.parse(res.text()); });
     }
 
-    getStudies(): Observable<Object> {
+    getStudies(): Observable<Study[]> {
         return this._http.get(this._urls.parse('studies'))
-            .map(res => { return JSON.parse(res.text()); })
-            .catch(err => { return this._http.handleError(err); });
-    }
-
-    getEntries(studyId: String) {
-        return this._http.get(this._urls.parse('entries', { studyId: studyId }))
             .map(resp => {
-                let entries = JSON.parse(resp.text());
-                entries.forEach(function(e: any) {
-                    switch (e.participation) {
-                        case 'OptIn':
-                            e.participationString = 'Einschluss';
-                            break;
-                        case 'OptOut':
-                            e.participationString = 'Ausschluss';
-                            break;
-                    }
-                })
-                return entries;
+                let result: Study[] = [];
+                let studies = JSON.parse(resp.text());
+                studies.forEach(function(s: any) {
+                    result.push(new Study(s));
+                });
+                return result;
             })
             .catch(err => { return this._http.handleError(err); });
     }
 
-    createEntry(id: String, ref: String, root: String, ext: String, opt: String, sic: String, comment: String) {
+    getEntries(studyId: String): Observable<Entry[]> {
+        return this._http.get(this._urls.parse('entries', { studyId: studyId }))
+            .map(resp => {
+                let result: Entry[] = [];
+                let entries = JSON.parse(resp.text());
+                entries.forEach(function(e: any) {
+                    result.push(new Entry(e));
+                });
+                result.sort(function(a: Entry, b: Entry) {
+                    return b.timestamp - a.timestamp;
+                });
+                return result;
+            })
+            .catch(err => { return this._http.handleError(err); });
+    }
+
+    createEntry(id: String, ref: String, root: String, ext: String, opt: Participation, sic: String, comment: String) {
         return this._http.post(this._urls.parse('entry', { studyId: id, reference: ref, root: root, extension: ext }),
                 { 'opt': opt, 'sic': sic, 'comment': comment },
                 this._http.generateHeaderOptions('Content-Type', 'application/json'))

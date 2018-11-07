@@ -3,7 +3,7 @@ import { Component, Input, ViewChild, forwardRef, OnInit, OnDestroy } from '@ang
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
 
-import { StudyManagerService, PopUpNewEntryComponent, PopUpDetailComponent } from './index';
+import { StudyManagerService, PopUpNewEntryComponent, PopUpDetailComponent, Entry, Study, Participation } from './index';
 import { PopUpMessageComponent } from './../helpers/popup-message.component';
 import { IMyDateModel, IMyDpOptions } from 'mydatepicker';
 
@@ -16,8 +16,6 @@ require('semantic-ui-tablesort');
 })
 
 export class StudyManagerComponent {
-    static OPT_IN = 'OptIn';
-    static OPT_OUT = 'OptOut';
 
     @ViewChild(forwardRef(() => PopUpNewEntryComponent))
     popUp: PopUpNewEntryComponent;
@@ -28,10 +26,10 @@ export class StudyManagerComponent {
 
     today = new Date();
     DPOptions: IMyDpOptions;
-    studies: any = [];
-    entries: any = [];
-    filteredEntries: any = [];
-    selectedEntry: any;
+    studies: Study[] = [];
+    entries: Entry[] = [];
+    filteredEntries: Entry[] = [];
+    selectedEntry: Entry;
     filterActive = false;
 
     filterdata = {
@@ -90,9 +88,6 @@ export class StudyManagerComponent {
         return this._managerService.getEntries(this.filterdata.study)
             .map(res => {
                 this.entries = res;
-                this.entries.sort(function(a: any, b: any) {
-                    return b['timestamp'] - a['timestamp'];
-                });
                 this.filteredEntries = this.entries;
                 if (this.filterActive) {
                     this.filterEntries();
@@ -127,14 +122,14 @@ export class StudyManagerComponent {
     createEntry() {
         if (this.isAuthorized('WRITE_STUDYMANAGER')) {
             this.popUp.setData((submit: boolean, id: String, ref: String, root: String, ext: String,
-                                opt: String, sic: String, comment: String) => {
+                                opt: Participation, sic: String, comment: String) => {
                 if (submit) {
                     this._managerService.createEntry(id, ref, root, ext, opt, sic, comment)
                         .subscribe(() => {
                             this.setEntries(this.filterActive).subscribe(() => {
                                 this.popUp.clear();
-                                let created = this.entries.filter(function(e: any) {
-                                    return e.study.id === id && e.reference === ref && e.idRoot === root && e.idExt === ext;
+                                let created = this.entries.filter(function(e: Entry) {
+                                    return e.study.id === id && e.reference === ref && e.root === root && e.ext === ext;
                                 })[0];
                                 this.showEntry(created);
                             });

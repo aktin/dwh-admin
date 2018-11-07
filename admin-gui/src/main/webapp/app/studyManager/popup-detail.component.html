@@ -22,14 +22,14 @@
                     <td class="four wide cell">SIC:</td>
                     <td> {{ entry.sic }} </td>
                 </tr>
-                <tr *ngIf="entry.idRoot !== prefs.root || entry.idExt === ''">
-                    <td class="four wide cell" *ngIf="entry.idExt !== ''">Root:</td>
-                    <td class="four wide cell" *ngIf="entry.idExt === ''"> {{ extLabel }}: </td>
-                    <td> {{ entry.idRoot }} </td>
+                <tr *ngIf="entry.root !== prefs.root || entry.ext === ''">
+                    <td class="four wide cell" *ngIf="entry.ext !== ''">Root:</td>
+                    <td class="four wide cell" *ngIf="entry.ext === ''"> {{ extLabel }}: </td>
+                    <td> {{ entry.root }} </td>
                 </tr>
-                <tr *ngIf="entry.idExt !== ''">
+                <tr *ngIf="entry.ext !== ''">
                     <td class="four wide cell"> {{ extLabel }}: </td>
-                    <td> {{ entry.idExt }} </td>
+                    <td> {{ entry.ext }} </td>
                 </tr>
                 <tr>
                     <td class="four wide cell">Teilnahme:</td>

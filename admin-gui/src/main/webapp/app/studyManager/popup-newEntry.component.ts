@@ -1,6 +1,6 @@
 import { Component, Input, ViewChild, OnInit } from '@angular/core';
 
-import { StudyManagerService } from './index';
+import { StudyManagerService, Study, Participation } from './index';
 
 @Component({
     selector: 'popup-newEntry',
@@ -8,8 +8,6 @@ import { StudyManagerService } from './index';
     styleUrls : ['./popup-newEntry.component.css', './../helpers/popup-message.component.css'],
 })
 export class PopUpNewEntryComponent implements OnInit {
-    static OPT_IN = 'OptIn';
-    static OPT_OUT = 'OptOut';
 
     callback: Function;
     buttons = [['Speichern', 'green'], ['Abbrechen', 'orange']];
@@ -17,18 +15,18 @@ export class PopUpNewEntryComponent implements OnInit {
     message = 'Bitte füllen Sie die folgenden Felder aus, um einen neuen Eintrag zu erstellen.';
     show = false;
     prefs: object;
-    study: any;
+    study: Study;
 
     formdata = {
         study: '',
         ext: '',
-        optInOut: PopUpNewEntryComponent.OPT_IN,
+        optInOut: Participation.OptIn,
         sic: '',
         comment: ''
     }
 
-    @Input() studies: any;
-    @Input() set selectedStudy(value: any) {
+    @Input() studies: Study[];
+    @Input() set selectedStudy(value: string) {
         this.formdata.study = value;
         this.setStudy();
      }
@@ -41,24 +39,24 @@ export class PopUpNewEntryComponent implements OnInit {
 
     setStudy() {
         let popup = this;
-        this.study = this.studies.filter(function(s: any) {
+        this.study = this.studies.filter(function(s: Study) {
             return s.id === popup.formdata.study;
-        });
-        if (this.study.length > 0) {
-            this.study = this.study[0];
+        })[0];
+        if (this.study) {
             if (this.study.supportsOptIn) {
-                this.formdata.optInOut = PopUpNewEntryComponent.OPT_IN;
+                this.formdata.optInOut = Participation.OptIn;
             } else if (this.study.supportsOptOut) {
-                this.formdata.optInOut = PopUpNewEntryComponent.OPT_OUT;
+                this.formdata.optInOut = Participation.OptOut;
             }
         }
     }
 
-    get optInString() {
-        return PopUpNewEntryComponent.OPT_IN;
+    get participationOptIn() {
+        return Participation.OptIn;
     }
-    get optOutString() {
-        return PopUpNewEntryComponent.OPT_OUT;
+
+    get participationOptOut() {
+        return Participation.OptOut;
     }
 
     get extLabel(): String {
@@ -82,24 +80,15 @@ export class PopUpNewEntryComponent implements OnInit {
     }
 
     get optIn(): boolean {
-        if (this.study.hasOwnProperty('supportsOptIn')) {
-            return this.study.supportsOptIn;
-        }
-        return true;
+        return this.study.supportsOptIn;
     }
 
     get optOut(): boolean {
-        if (this.study.hasOwnProperty('supportsOptOut')) {
-            return this.study.supportsOptOut;
-        }
-        return true;
+        return this.study.supportsOptOut;
     }
 
     get manualSic(): boolean {
-        if (this.study.hasOwnProperty('supportsManualSic')) {
-            return this.study.supportsManualSic;
-        }
-        return true;
+        return this.study.supportsManualSic;
     }
 
     setPreferences() {
@@ -125,7 +114,7 @@ export class PopUpNewEntryComponent implements OnInit {
             let root = this.prefs['root'];
             let ext = this.formdata.ext;
             let sic = this.formdata.sic;
-            if (sic.length > 0 && this.formdata.optInOut === 'OptOut') {
+            if (sic.length > 0 && this.formdata.optInOut === Participation.OptOut) {
                 sic = '';
             }
             if (root.length === 0) {
