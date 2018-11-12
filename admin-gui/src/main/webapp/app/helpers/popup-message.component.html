@@ -49,16 +49,16 @@
             </div>
         </div>
     </div>
-     <div class="ui extra" *ngIf="checkBoxTextMail">
+     <!-- <div class="ui extra" *ngIf="checkBoxTextMail">
         <div class="field">
             <div class="ui checkbox">
                 <input type="checkbox" name="mail" [(ngModel)]="checkedMail" [disabled]="!checkedQuery || checkedQuery && !checked">
                 <label>{{ checkBoxTextMail }}</label>
             </div>
         </div>
-     </div>
+     </div> -->
 
-     <div *ngIf="checkedQuery">
+     <!-- <div *ngIf="checkedQuery">
         <br>
         <ng-container *ngIf="!checked && checkBoxText">
             Sie erhalten Benachrichtigungen per E-Mail, wenn weitere Aktionen erforderlich sind.
@@ -70,7 +70,7 @@
             Sie erhalten Benachrichtigungen per E-Mail, wenn Ergebnisse übermittelt wurden.
         </ng-container>
         <br>
-     </div>
+     </div> -->
 
     <br>
     <div class="popup-message-buttons" *ngIf="mode === 'confirm'">

@@ -17,7 +17,7 @@
     </div>
 
     <div class="ui extra">
-        <form ngNativeValidate #form="ngForm" id="ngForm"  class="ui form sixteen wide column" (submit)="msgOk()">
+        <form ngNativeValidate #form="ngForm" id="ngForm" class="ui form sixteen wide column" (submit)="msgOk()">
             <div class="inline fields">
                 <div class="three wide field"><label>Studie:</label></div>
                 <!-- <select class="seven wide field ui dropdown" name="study" [(ngModel)]="formdata.study" (change)="setStudy()" required> -->
@@ -30,7 +30,8 @@
             <div class="inline fields">
                 <div class="three wide field"><label> {{ extLabel }}: </label></div>
                 <div class="thirteen wide field">
-                    <input type=text class="ui input focus" name="ext" placeholder="" [(ngModel)]="formdata.ext" required>
+                    <input *ngIf="prefs['separator']==='/' && prefs['root']===''" type="text" name="ext" pattern="[^/]+\/?[^/]*" title="Maximal ein Slash, der als Trennzeichen für Root und {{extLabel}} genutzt wird und nicht an erster Stelle steht." class="ui input focus" placeholder="" [(ngModel)]="formdata.ext" required>
+                    <input *ngIf="prefs['separator']!=='/' || prefs['root']!==''" type="text" name="ext" pattern="[^/]+" title="{{extLabel}} darf keinen / enthalten." class="ui input focus" placeholder="" [(ngModel)]="formdata.ext" required>
                 </div>
             </div>
             <div class="inline fields">

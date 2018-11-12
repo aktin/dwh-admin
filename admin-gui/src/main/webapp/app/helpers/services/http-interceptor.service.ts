@@ -84,6 +84,7 @@ export class HttpInterceptorService {
         let errMsg: string;
         if (error instanceof Response) {
             if (error.status === 401) {
+                sessionStorage.removeItem('permissions');
                 this._cleanUp.cleanUpStorage('Sitzung abgelaufen. Bitte erneut anmelden');
                 this._cleanUp.redirect2Home();
             }

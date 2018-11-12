@@ -105,7 +105,7 @@ export class RequestSingleViewComponent {
                             'Auch bereits bestehende Anfragen freigeben. ' +
                             'Anzahl der hiervon betroffenen Anfragen: ' + numAllow);
                         }
-                        this.popUp.setoptMail('E-Mail-Benachrichtigung nach der Übermittlung von Ergebnissen')
+                        // this.popUp.setoptMail('E-Mail-Benachrichtigung nach der Übermittlung von Ergebnissen')
                     }
             } else {
                 if (this.request.isRecurring()) {

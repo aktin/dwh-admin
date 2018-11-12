@@ -2,7 +2,12 @@ package org.aktin.dwh.admin.optin;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,6 +23,7 @@ import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -46,7 +52,7 @@ public class OptInEndpoint {
 	
 	@Context 
 	private SecurityContext security;
-
+	
 	/**
 	 * Gets all patient entries of all existing studies.
 	 * @return list of all patient entries of all studies
@@ -104,10 +110,13 @@ public class OptInEndpoint {
 	 */
 	@Path("{studyId}/{reference}/{root}/{extension}")
 	@GET
+	@Produces({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
 	public PatientEntry getEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root, 
 			@PathParam("extension") String ext) throws IOException {
+		String rootDec = URLDecoder.decode(new String(Base64.getDecoder().decode(root), Charset.forName("UTF-8")), StandardCharsets.UTF_8.name());
+		String extDec = URLDecoder.decode(new String(Base64.getDecoder().decode(ext), Charset.forName("UTF-8")), StandardCharsets.UTF_8.name());
 		Study study = this.getStudy(id);
-		return study.getPatientByID(ref, root, ext);
+		return study.getPatientByID(ref, rootDec, extDec);
 	}
 	
 	/**
@@ -136,7 +145,7 @@ public class OptInEndpoint {
 			return Response.status(Status.CONFLICT).build();
 		}
 		study.addPatient(ref, root, ext, entry.opt, entry.sic, entry.comment, security.getUserPrincipal().getName());
-		return Response.created(URI.create(id+"/"+ref+"/"+root+"/"+ext)).build();
+		return Response.created(URI.create(id+"/"+ref+"/"+URLEncoder.encode(root, StandardCharsets.UTF_8.name())+"/"+URLEncoder.encode(ext, StandardCharsets.UTF_8.name()))).build();
 	}
 	
 	/**

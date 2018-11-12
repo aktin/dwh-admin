@@ -14,6 +14,7 @@ export class PopUpDetailComponent implements OnInit {
     head = 'Details';
     show = false;
     prefs: object;
+    isNew: boolean;
 
     @Input() entry: Entry;
 

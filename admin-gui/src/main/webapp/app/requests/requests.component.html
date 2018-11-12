@@ -27,6 +27,7 @@
     </div>
 </div>
 <div class="ui divider"></div>
+<div *ngIf="!requests" class="ui active indeterminate text loader"> Lade Anfragen </div>
 <pagination-controls class="pagination"
     (pageChange)="p = $event"
     autoHide="true"

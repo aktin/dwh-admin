@@ -104,7 +104,7 @@ export class StudyManagerComponent {
 
     filterEntries() {
         let sm = this;
-        this.filteredEntries = this.entries.filter(function(e: any) {
+        this.filteredEntries = this.entries.filter(function(e: Entry) {
             let fullfilled = true;
             if (fullfilled && sm.filterdata.date !== null && sm.filterdata.date.date !== '') {
                 let filterDate = sm.DP2date(sm.filterdata.date.date);
@@ -112,8 +112,8 @@ export class StudyManagerComponent {
                 fullfilled = fullfilled && sm.equalsDate(date, filterDate);
             }
             if (fullfilled && (sm.filterdata.optIn || sm.filterdata.optOut)) {
-                fullfilled = fullfilled && ((e.participation === StudyManagerComponent.OPT_IN && sm.filterdata.optIn) ||
-                                            (e.participation === StudyManagerComponent.OPT_OUT && sm.filterdata.optOut));
+                fullfilled = fullfilled && ((e.participation === Participation.OptIn && sm.filterdata.optIn) ||
+                                            (e.participation === Participation.OptOut && sm.filterdata.optOut));
             }
             return fullfilled;
         });
@@ -121,17 +121,17 @@ export class StudyManagerComponent {
 
     createEntry() {
         if (this.isAuthorized('WRITE_STUDYMANAGER')) {
-            this.popUp.setData((submit: boolean, id: String, ref: String, root: String, ext: String,
-                                opt: Participation, sic: String, comment: String) => {
+            this.popUp.setData((submit: boolean, id: string, ref: string, root: string, ext: string,
+                                opt: Participation, sic: string, comment: string) => {
                 if (submit) {
                     this._managerService.createEntry(id, ref, root, ext, opt, sic, comment)
                         .subscribe(() => {
                             this.setEntries(this.filterActive).subscribe(() => {
                                 this.popUp.clear();
                                 let created = this.entries.filter(function(e: Entry) {
-                                    return e.study.id === id && e.reference === ref && e.root === root && e.ext === ext;
+                                    return e.study['id'] === id && e.reference === ref && e.root === root && e.ext === ext;
                                 })[0];
-                                this.showEntry(created);
+                                this.showEntry(created, true);
                             });
                         },
                             error => {
@@ -148,8 +148,8 @@ export class StudyManagerComponent {
     }
 
     deleteEntry(entry: any) {
-        this._managerService.deleteEntry(entry.study.id, entry.reference,
-            entry.idRoot, entry.idExt)
+        this._managerService.deleteEntry(entry.study['id'], entry.reference,
+            entry.root, entry.ext)
             .finally(() => {
                 this.setEntries(true).subscribe();
             })
@@ -164,8 +164,9 @@ export class StudyManagerComponent {
             });
     }
 
-    showEntry(entry: any) {
+    showEntry(entry: any, isNew: boolean) {
         this.selectedEntry = entry;
+        this.popUpDetail.isNew = isNew;
         this.popUpDetail.setData((submitDelete: boolean) => {
             if (submitDelete) {
                 let buttons = [['Löschen', 'green'], ['Abbrechen', 'orange']];

@@ -70,7 +70,7 @@
             </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let entry of filteredEntries | paginate: { itemsPerPage: 15, currentPage: p }" (click)="showEntry(entry)">
+        <tr *ngFor="let entry of filteredEntries | paginate: { itemsPerPage: 15, currentPage: p }" (click)="showEntry(entry, false)">
             <td width="18%">
                 {{ entry.study.title }}
             </td>

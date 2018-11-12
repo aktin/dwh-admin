@@ -19,11 +19,11 @@ export class PopUpMessageComponent {
     checkBoxText: string[] = [];
     checkBoxTextQuery: string[] = [];
     checkBoxTextApply: string = null;
-    checkBoxTextMail: string = null;
+    // checkBoxTextMail: string = null;
     checked = false;
     checkedQuery = false;
     checkedApply = false;
-    checkedMail = false;
+    // checkedMail = false;
 
     setData (show: boolean, title: string, message: string, callback?: Function): void {
         this.show = show;
@@ -47,9 +47,9 @@ export class PopUpMessageComponent {
         this.checkBoxTextApply = text;
     }
 
-    setoptMail (text: string): void {
-        this.checkBoxTextMail = text;
-    }
+    // setoptMail (text: string): void {
+    //     this.checkBoxTextMail = text;
+    // }
 
     // call after setData
     setConfirm (buttons?: string[][]): void {
@@ -94,11 +94,11 @@ export class PopUpMessageComponent {
         this.checkBoxText = null;
         this.checkBoxTextQuery = null;
         this.checkBoxTextApply = null;
-        this.checkBoxTextMail = null;
+        // this.checkBoxTextMail = null;
         this.checked = false;
         this.checkedQuery = false;
         this.checkedApply = false;
-        this.checkedMail = false;
+        // this.checkedMail = false;
         this.onTop = false;
     }
 }

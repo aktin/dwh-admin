@@ -2,6 +2,9 @@
 </div>
 
 <div id="popup-message-content" class="ui text container very padded segment" *ngIf="show">
+    <div *ngIf="isNew" class="ui segment green">
+            <h3 class="ui header"><i class="check circle icon green"></i>Der Eintrag wurde erfolgreich erstellt!</h3>
+    </div>
     <div class="ui header">
         {{head}}
     </div>

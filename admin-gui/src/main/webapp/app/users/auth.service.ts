@@ -103,9 +103,11 @@ export class AuthService {
             }, (err: Response) => {
                 if (err.status === 401) {
                     // console.log('unauthorized');
+                    sessionStorage.removeItem('permissions');
                     this._cleanUp.cleanUpStorage();
                     this._cleanUp.redirect2Home();
                 }
+                sessionStorage.removeItem('permissions');
                 this._cleanUp.cleanUpStorage();
                 this._cleanUp.redirect2Home();
                 return err;
@@ -126,6 +128,7 @@ export class AuthService {
             }, (err: Response) => {
                 if (err.status === 401) {
                     // console.log('unauthorized');
+                    sessionStorage.removeItem('permissions');
                     this._cleanUp.cleanUpStorage();
                     this._cleanUp.redirect2Home();
                 }
@@ -197,6 +200,7 @@ export class AuthService {
         if (this.userLocalCheck()) {
             if (this._store.getValue('user.name') === null) {
                 // some thing went wrong. user name error. we will wipe it then
+                sessionStorage.removeItem('permissions');
                 this._cleanUp.cleanUpStorage();
             }
             return new User (this._store.getValue('user.name'), this._store.getValue('user.token'));
@@ -258,6 +262,7 @@ export class AuthService {
             if ( this._store.getValue('user.token') !== null ) {
                 return JSON.parse(this._store.getValue('user.admin')) || false;
             }
+            sessionStorage.removeItem('permissions');
             this._cleanUp.cleanUpStorage();
             // this._cleanUp.redirect2Home();
             return false;

@@ -52,7 +52,7 @@ export class StudyManagerService {
             .catch(err => { return this._http.handleError(err); });
     }
 
-    getEntries(studyId: String): Observable<Entry[]> {
+    getEntries(studyId: string): Observable<Entry[]> {
         return this._http.get(this._urls.parse('entries', { studyId: studyId }))
             .map(resp => {
                 let result: Entry[] = [];
@@ -68,14 +68,18 @@ export class StudyManagerService {
             .catch(err => { return this._http.handleError(err); });
     }
 
-    createEntry(id: String, ref: String, root: String, ext: String, opt: Participation, sic: String, comment: String) {
+    createEntry(id: string, ref: string, root: string, ext: string, opt: Participation, sic: string, comment: string) {
+        root = encodeURIComponent(root);
+        ext = encodeURIComponent(ext);
         return this._http.post(this._urls.parse('entry', { studyId: id, reference: ref, root: root, extension: ext }),
                 { 'opt': opt, 'sic': sic, 'comment': comment },
                 this._http.generateHeaderOptions('Content-Type', 'application/json'))
             .catch(err => { return this._http.handleError(err); });
     }
 
-    deleteEntry(id: String, ref: String, root: String, ext: String) {
+    deleteEntry(id: string, ref: string, root: string, ext: string) {
+        root = encodeURIComponent(root);
+        ext = encodeURIComponent(ext);
         return this._http.delete(this._urls.parse('entry', { studyId: id, reference: ref, root: root, extension: ext }))
             .catch(err => { return this._http.handleError(err); });
     }
