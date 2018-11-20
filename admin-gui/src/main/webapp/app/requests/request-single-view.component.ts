@@ -112,9 +112,11 @@ export class RequestSingleViewComponent {
                     this.popUp.setOptQuery(['Serien-Ablehnung',
                     'Nur diese Anfrage ablehnen.', 'Diese und alle zukünftigen Anfragen der Serie ablehnen.']);
                     let numReject = this.getNumApplyRule();
-                    this.popUp.setOptApply(
-                        'Auch bereits bestehende Anfragen ablehnen. Anzahl der hiervon betroffenen Anfragen: '
-                        + numReject);
+                    if (numReject > 0) {
+                        this.popUp.setOptApply(
+                            'Auch bereits bestehende Anfragen ablehnen. Anzahl der hiervon betroffenen Anfragen: '
+                            + numReject);
+                    }
                 }
                 buttons[0] = ['Jetzt ablehnen', 'red'];
             }

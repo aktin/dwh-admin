@@ -2,9 +2,9 @@
     min-height: 38px;
 }
 
- .disabledButton, .disabledButton:hover {
+.disabledButton, .disabledButton:hover {
      opacity: 0.5;
      color: rgb(85, 85, 85);
      cursor: auto;
      pointer-events: none;
- }
+}

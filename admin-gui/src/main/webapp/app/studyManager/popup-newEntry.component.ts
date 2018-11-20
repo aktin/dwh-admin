@@ -16,6 +16,7 @@ export class PopUpNewEntryComponent implements OnInit {
     show = false;
     prefs: object;
     study: Study;
+    showError = false;
 
     formdata = {
         study: '',
@@ -23,6 +24,14 @@ export class PopUpNewEntryComponent implements OnInit {
         optInOut: Participation.OptIn,
         sic: '',
         comment: ''
+    }
+
+    valid = {
+        required: true,
+        slashSep: true,
+        slash: true,
+        separator: true,
+        point: true
     }
 
     @Input() studies: Study[];
@@ -35,6 +44,47 @@ export class PopUpNewEntryComponent implements OnInit {
 
     ngOnInit() {
        this.setPreferences();
+    }
+
+    get extValid() {
+        return Object.keys(this.valid).every(key => this.valid[key]);
+    }
+
+    validate() {
+        Object.keys(this.valid).forEach(k => this.valid[k] = true);
+        if (this.formdata.ext === '') {
+            this.valid.required = false;
+        }
+        // max one slash as separator
+        if (this.prefs['separator'] === '/' && this.prefs['root'] === '' && (this.formdata.ext.match(/\//g) || []).length > 1) {
+            this.valid.slashSep = false;
+        }
+        // no slash allowed
+        if ((this.prefs['separator'] !== '/' || this.prefs['root'] !== '') && this.formdata.ext.includes('/')) {
+            this.valid.slash = false;
+        }
+        // separator not as first char
+        if (this.prefs['root'] === '' && this.formdata.ext.slice(0, 1) === this.prefs['separator']) {
+            this.valid.separator = false;
+        }
+        // value of root and extension may not be . or ..
+        if (this.prefs['root'].length === 0) {
+            let root, ext = '';
+            if (this.formdata.ext.includes(this.prefs['separator'])) {
+                let splits = this.formdata.ext.split(this.prefs['separator']);
+                root = splits[0];
+                ext = this.formdata.ext.slice(this.formdata.ext.indexOf(this.prefs['separator']) + 1);
+            } else {
+                root = this.formdata.ext;
+                ext = '';
+            }
+            if (ext === '.' || ext === '..' || root === '.' || root === '..') {
+                this.valid.point = false;
+            }
+        }
+        if (this.extValid) {
+            this.msgOk();
+        }
     }
 
     setStudy() {
@@ -119,9 +169,9 @@ export class PopUpNewEntryComponent implements OnInit {
             }
             if (root.length === 0) {
                 if (ext.includes(this.prefs['separator'])) {
-                    let splits = ext.split(this.prefs['separator'], 2);
+                    let splits = ext.split(this.prefs['separator']);
                     root = splits[0];
-                    ext = splits[1];
+                    ext = ext.slice(ext.indexOf(this.prefs['separator']) + 1);
                 } else {
                     root = ext;
                     ext = '';
@@ -145,5 +195,7 @@ export class PopUpNewEntryComponent implements OnInit {
         this.show = false;
         this.formdata.ext = '';
         this.formdata.comment = '';
+        this.formdata.sic = '';
+        Object.keys(this.valid).forEach(k => this.valid[k] = true);
     }
 }

@@ -1,7 +1,7 @@
 <div class="ui grid">
     <div class="row">
         <div class="ui breadcrumb">
-            <div class="active section breadcrumb-header">Studien-Manager</div>
+            <div class="active section breadcrumb-header">Consent-Manager</div>
         </div>
     </div>
 
@@ -80,7 +80,7 @@
             </td>
 
             <td width="20%">
-                {{ entry.timestamp | date: 'dd.MM.yyyy, HH:mm' }}
+                {{ entry.timestamp | momentDate: 'DD.MM.YYYY, HH:mm' }}
             </td>
 
             <td width="15%">

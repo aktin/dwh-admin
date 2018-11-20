@@ -14,6 +14,7 @@ import { LocalRequest, RequestMarker, RequestStatus } from './request';
 })
 
 export class RequestsComponent implements OnDestroy {
+    p: number;
     requestsData: LocalRequest[];
     etag = '0';
     status: RequestStatus = null;
@@ -84,16 +85,9 @@ export class RequestsComponent implements OnDestroy {
     updateQueryDetails() {
         for (let i = 0; i < this.requestsData.length; i++) {
             let currReq = this.requestsData[i];
-            if (currReq.isRecurring() && !this.queryDetails.hasOwnProperty(currReq.queryId)) {
+            if (currReq.isRecurring()) {
                 let query = this.requestsData.filter(function(req) {
                     return req.queryId === currReq.queryId;
-                });
-                query.sort((req1: LocalRequest, req2: LocalRequest) => {
-                    if (+new Date(req1.query.reference) === +new Date(req2.query.reference)) {
-                        return req1.requestId - req2.requestId;
-                    } else {
-                        return +new Date(req1.query.reference) - +new Date(req2.query.reference);
-                    }
                 });
                 let order: number[] = [];
                 query.forEach(request => {

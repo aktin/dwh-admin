@@ -107,11 +107,11 @@ const routes: Routes = [// array of routes
     //     },
     // },
     {
-        path: 'studyManager',
+        path: 'consentManager',
         canActivate: [UserAuthGuard],
         component: StudyManagerComponent,
         data: {
-            name: 'Studien-Manager',
+            name: 'Consent-Manager',
             permissions: [
                 Permission.READ_STUDYMANAGER,
                 Permission.WRITE_STUDYMANAGER

@@ -53,7 +53,7 @@ export class RequestService {
                 res['etag'] = resp.headers.get('ETag');
                 res['req'] = _.map(JSON.parse(resp.text()), req => LocalRequest.parseRequest(req));
                 res['req'].sort((req1: LocalRequest, req2: LocalRequest) => {
-                    return +new Date(req1.query.reference) - +new Date(req2.query.reference);
+                    return req1.requestId - req2.requestId;
                 });
                 return res;
             });

@@ -1,13 +1,11 @@
 <div>
-        <div *ngIf="request.isRecurring()">
-                <h4 class="ui header left floated">
-                    Serien-Anfrage {{ getNumRequest(request) }}:
-                    Ausführung am {{ request.query.scheduled | date: 'mediumDate' }}
-                    [{{ queryDetails[request.queryId].rejected }} abgelehnt,
-                    {{ queryDetails[request.queryId].accepted }} freigegeben,
-                    {{ queryDetails[request.queryId].submitted }} übertragen]
-                </h4>
-            </div>
+    <h4 *ngIf="request.isRecurring()" class="ui header left floated request-query-header">
+        Serien-Anfrage {{ getNumRequest(request) }}:
+        Ausführung am {{ request.query.scheduled | date: 'mediumDate' }}
+        [{{ queryDetails[request.queryId].rejected }} abgelehnt,
+        {{ queryDetails[request.queryId].accepted }} freigegeben,
+        {{ queryDetails[request.queryId].submitted }} übertragen]
+    </h4>
     <div class="request-status-bar-box" [class.single]="single">
         <div class="request-status-line">
             <div class="request-status-line-fill" [ngStyle]="{'width': fillBar }" [ngClass]="{'failed': failed, 'expired': expired}"></div>

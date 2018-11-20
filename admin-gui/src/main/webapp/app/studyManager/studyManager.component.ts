@@ -18,12 +18,13 @@ require('semantic-ui-tablesort');
 export class StudyManagerComponent {
 
     @ViewChild(forwardRef(() => PopUpNewEntryComponent))
-    popUp: PopUpNewEntryComponent;
+    popUpNew: PopUpNewEntryComponent;
     @ViewChild(forwardRef(() => PopUpMessageComponent))
     popUpMessage: PopUpMessageComponent;
     @ViewChild(forwardRef(() => PopUpDetailComponent))
     popUpDetail: PopUpDetailComponent;
 
+    p: number;
     today = new Date();
     DPOptions: IMyDpOptions;
     studies: Study[] = [];
@@ -87,6 +88,7 @@ export class StudyManagerComponent {
         let sm = this;
         return this._managerService.getEntries(this.filterdata.study)
             .map(res => {
+                this.p = 1;
                 this.entries = res;
                 this.filteredEntries = this.entries;
                 if (this.filterActive) {
@@ -104,6 +106,7 @@ export class StudyManagerComponent {
 
     filterEntries() {
         let sm = this;
+        this.filterActive = true;
         this.filteredEntries = this.entries.filter(function(e: Entry) {
             let fullfilled = true;
             if (fullfilled && sm.filterdata.date !== null && sm.filterdata.date.date !== '') {
@@ -121,13 +124,13 @@ export class StudyManagerComponent {
 
     createEntry() {
         if (this.isAuthorized('WRITE_STUDYMANAGER')) {
-            this.popUp.setData((submit: boolean, id: string, ref: string, root: string, ext: string,
+            this.popUpNew.setData((submit: boolean, id: string, ref: string, root: string, ext: string,
                                 opt: Participation, sic: string, comment: string) => {
                 if (submit) {
                     this._managerService.createEntry(id, ref, root, ext, opt, sic, comment)
                         .subscribe(() => {
                             this.setEntries(this.filterActive).subscribe(() => {
-                                this.popUp.clear();
+                                this.popUpNew.clear();
                                 let created = this.entries.filter(function(e: Entry) {
                                     return e.study['id'] === id && e.reference === ref && e.root === root && e.ext === ext;
                                 })[0];
@@ -139,7 +142,8 @@ export class StudyManagerComponent {
                                     this.popUpMessage.onTop = true;
                                     this.popUpMessage.setData(true, 'Fehler beim Erstellen',
                                     'Der Eintrag konnte nicht erstellt werden, weil für die ausgewählte Studie ' +
-                                    'bereits ein Eintrag mit dieser ' + this.popUp.extLabel + ' existiert.');
+                                    'bereits ein Eintrag mit dieser ' + this.popUpNew.extLabel + ' existiert.');
+                                    this.setEntries(this.filterActive).subscribe();
                                 }
                         });
                 }
@@ -151,7 +155,7 @@ export class StudyManagerComponent {
         this._managerService.deleteEntry(entry.study['id'], entry.reference,
             entry.root, entry.ext)
             .finally(() => {
-                this.setEntries(true).subscribe();
+                this.setEntries(this.filterActive).subscribe();
             })
             .subscribe(() => {
                 this.popUpMessage.setData(true, 'Eintrag gelöscht', 'Der Eintrag wurde erfolgreich gelöscht!');

@@ -2,12 +2,9 @@ package org.aktin.dwh.admin.optin;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -108,15 +105,13 @@ public class OptInEndpoint {
 	 * @return PatientEntry that belongs to the given parameters
 	 * @throws IOException
 	 */
-	@Path("{studyId}/{reference}/{root}/{extension}")
+	@Path("{studyId}/{reference}/{root}{p:/?}{extension:.*}")
 	@GET
 	@Produces({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
 	public PatientEntry getEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root, 
 			@PathParam("extension") String ext) throws IOException {
-		String rootDec = URLDecoder.decode(new String(Base64.getDecoder().decode(root), Charset.forName("UTF-8")), StandardCharsets.UTF_8.name());
-		String extDec = URLDecoder.decode(new String(Base64.getDecoder().decode(ext), Charset.forName("UTF-8")), StandardCharsets.UTF_8.name());
 		Study study = this.getStudy(id);
-		return study.getPatientByID(ref, rootDec, extDec);
+		return study.getPatientByID(ref, root, ext);
 	}
 	
 	/**
@@ -130,7 +125,7 @@ public class OptInEndpoint {
 	 * @throws IOException
 	 */
 	@Secured
-	@Path("{studyId}/{reference}/{root}/{extension}")
+	@Path("{studyId}/{reference}/{root}{p:/?}{extension:.*}")
 	@POST
 	@Consumes({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
 	public Response createEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root, 
@@ -158,7 +153,7 @@ public class OptInEndpoint {
 	 * @throws IOException
 	 */
 	@Secured
-	@Path("{studyId}/{reference}/{root}/{extension}")
+	@Path("{studyId}/{reference}/{root}{p:/?}{extension:.*}")
 	@DELETE
 	public Response deleteEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root, 
 			@PathParam("extension") String ext) throws IOException {

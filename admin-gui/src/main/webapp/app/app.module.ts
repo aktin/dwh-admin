@@ -18,7 +18,7 @@ import { AppComponent } from './app.component';
 
 import { HomeComponent, TestComponent } from './home/index';
 import { StorageService, UrlService, HttpInterceptorService, DownloadService, CleanUpAuthService,
-            SafeUrlPipe, OrderByPipe, DurationDataPipe, DurationQueryPipe,
+            SafeUrlPipe, OrderByPipe, DurationDataPipe, DurationQueryPipe, MomentDatePipe,
             PopUpMessageComponent, LoadingComponent } from './helpers/index';
 import { UsersComponent, UserSingleComponent, UserSingleViewComponent, UserNewComponent, UserService,
             UserLoginComponent, UserAuthGuard, AuthService } from './users/index';
@@ -74,6 +74,7 @@ import { RestrictedComponent } from './restricted/restricted.component';
         SafeUrlPipe,
         DurationDataPipe,
         DurationQueryPipe,
+        MomentDatePipe,
         SuccessReportsPipe,
         RequestFilterPipe,
     ],

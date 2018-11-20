@@ -5,7 +5,7 @@
     <div class="ui form right aligned eight wide column">
         <div class="inline field">
             <label>Nach Status filtern:</label>
-            <select class="ui inline dropdown" (change)="stateFilter=$event.target['value']">
+            <select class="ui inline dropdown" (change)="stateFilter=$event.target['value']; p=1">
             <ng-container *ngFor="let filter of stateFilterArray">
                 <ng-container *ngIf="filter[1] === null">
                     <optgroup label = "{{filter[0]}}" class="filterOptgroup">
@@ -28,13 +28,13 @@
 </div>
 <div class="ui divider"></div>
 <div *ngIf="!requests" class="ui active indeterminate text loader"> Lade Anfragen </div>
-<pagination-controls class="pagination"
-    (pageChange)="p = $event"
-    autoHide="true"
-    previousLabel="Vorherige Seite"
-    nextLabel="Nächste Seite">
-</pagination-controls>
 <div *ngIf="requests">
+    <pagination-controls class="pagination"
+        (pageChange)="p = $event"
+        autoHide="true"
+        previousLabel="Vorherige Seite"
+        nextLabel="Nächste Seite">
+    </pagination-controls>
     <div class="ui vertical segment" *ngFor="let request of requests | requestFilter:stateFilter | orderBy: ['-requestId'] | paginate: { itemsPerPage: 12, currentPage: p }">
         <div class="ui vertical basic segment request-single-view grid container" id="request-list-{{request.requestId}}">
             <div class="twelve wide column">

@@ -17,7 +17,7 @@
     </div>
 
     <div class="ui extra">
-        <form ngNativeValidate #form="ngForm" id="ngForm" class="ui form sixteen wide column" (submit)="msgOk()">
+        <form ngNativeValidate #form="ngForm" id="ngForm" class="ui form sixteen wide column form" (submit)="validate()">
             <div class="inline fields">
                 <div class="three wide field"><label>Studie:</label></div>
                 <!-- <select class="seven wide field ui dropdown" name="study" [(ngModel)]="formdata.study" (change)="setStudy()" required> -->
@@ -30,8 +30,21 @@
             <div class="inline fields">
                 <div class="three wide field"><label> {{ extLabel }}: </label></div>
                 <div class="thirteen wide field">
-                    <input *ngIf="prefs['separator']==='/' && prefs['root']===''" type="text" name="ext" pattern="[^/]+\/?[^/]*" title="Maximal ein Slash, der als Trennzeichen für Root und {{extLabel}} genutzt wird und nicht an erster Stelle steht." class="ui input focus" placeholder="" [(ngModel)]="formdata.ext" required>
-                    <input *ngIf="prefs['separator']!=='/' || prefs['root']!==''" type="text" name="ext" pattern="[^/]+" title="{{extLabel}} darf keinen / enthalten." class="ui input focus" placeholder="" [(ngModel)]="formdata.ext" required>
+                    <input id="extField" type="text" name="ext" [ngClass]="true ? 'visible error' : ''" class="ui input focus" placeholder="" [(ngModel)]="formdata.ext">
+                </div>
+            </div>
+            <div *ngIf="!extValid" class="inline fields">
+                <div class="three wide field"></div>
+                <div class="thirteen wide field">
+                    <div class="ui visible error message">
+                        <ul class="list">
+                            <li *ngIf="!valid.required"> Bitte füllen Sie dieses Feld aus. </li>
+                            <li *ngIf="!valid.slashSep"> Maximal ein / als Trennzeichen von Root und {{extLabel}} erlaubt. </li>
+                            <li *ngIf="!valid.slash"> Kein / erlaubt. </li>
+                            <li *ngIf="!valid.separator"> Trennzeichen darf nicht an erster Stelle stehen. </li>
+                            <li *ngIf="!valid.point"> Root und {{extLabel}} dürfen nicht aus . oder .. bestehen. </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div class="inline fields">
