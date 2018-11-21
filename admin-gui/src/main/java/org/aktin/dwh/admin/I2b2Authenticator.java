@@ -52,19 +52,27 @@ public class I2b2Authenticator implements Authenticator{
 			client.setAuthorisation(user, new String(password), domain);
 			client.setProjectId(project);
 			UserConfiguration uc = client.PM().requestUserConfiguration();
-//			String[] roles = null;
-//			for( UserProject p : uc.getProjects() ){
-//				if( p.id.equals(project) ){
-//					roles = p.role;
-//				}
-//			}
-//			log.info("Roles from config: "+Arrays.toString(roles));
-			String role = null;
-			for(Param p : client.PM().getUserParams(user)) {
-				if (p.name.equals("AKTIN_ROLE")) {
-					role = p.value;
+			String[] roles = null; // i2b2 roles
+			String role = null; // relevant AKTIN role
+			for( UserProject p : uc.getProjects() ){
+				if( p.id.equals(project) ){
+					roles = p.role;
+					Param[] params = p.params;
+					for( int i=0; i<params.length; i++ ) {
+						if( params[i].name.equals("AKTIN_ROLE") ) {
+							role = params[i].value;
+						}
+					}
 				}
 			}
+			log.info("i2b2 roles from config: "+Arrays.toString(roles));
+			log.info("AKTIN role from config: "+role);
+
+//			for(Param p : client.PM().getUserParams(user)) {
+//				if (p.name.equals("AKTIN_ROLE")) {
+//					role = p.value;
+//				}
+//			}
 			auth = new I2b2Authentication(uc.getUserName(), uc.getSessionKey(), uc.getUserDomain(), role, uc.isAdmin());
 		} catch (ErrorResponseException e) {
 			// unauthorized
