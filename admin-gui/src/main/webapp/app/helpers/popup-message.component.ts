@@ -71,7 +71,6 @@ export class PopUpMessageComponent {
         this.show = false;
         if (this.callback) {
             this.callback(true, this.checked, this.checkedQuery, this.checkedApply);
-            // this.callback(true);
         }
         this.clear();
     }

@@ -6,8 +6,7 @@ import _ = require('underscore');
 
 @Injectable()
 export class StorageService {
-    myStore: Storage = localStorage;
-    // myStore: Storage = sessionStorage;
+    myStore: Storage = sessionStorage;
 
     setValue (key: string, value: string): void {
         this.myStore.setItem(key, value);

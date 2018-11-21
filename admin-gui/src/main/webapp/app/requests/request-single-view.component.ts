@@ -122,25 +122,21 @@ export class RequestSingleViewComponent {
             }
             this.popUp.setConfirm(buttons);
             this.popUp.setData(true, title, message,
-                (answer: boolean, checkedAuto: boolean, checkedQuery: boolean, checkedApply: boolean, checkedMail: boolean) => {
-                    // checkedQuery = this.request.isRecurring() && checkedQuery && (checkedAuto || !allow);
-                    checkedQuery = this.request.isRecurring() && checkedQuery || !allow;
-                    checkedApply = this.request.isRecurring() && checkedQuery && checkedApply;
+                (answer: boolean, checkedAuto: boolean, checkedQuery: boolean, checkedApply: boolean) => {
                     if (answer) {
+                        checkedApply = this.request.isRecurring() && checkedQuery && checkedApply;
+                        checkedQuery = this.request.isRecurring() && checkedQuery;
                         // set status of current request
                         if (!this.request.isRecurring() || !checkedQuery || !checkedApply) {
                             this.requestData.status = this.setStatus(this.requestData, allow, checkedAuto);
                         }
-                        // query rule has to be set
+                        // set query rule
                         if (checkedQuery) {
                             let newRuleAction: QueryRuleAction;
                             if (allow && !checkedAuto) {
                                 newRuleAction = QueryRuleAction.ACCEPT_EXECUTE;
                             } else if (allow && checkedAuto) {
                                 newRuleAction = QueryRuleAction.ACCEPT_SUBMIT;
-                                if (checkedMail) {
-                                    // TODO: set email flag
-                                }
                             } else {
                                 newRuleAction = QueryRuleAction.REJECT;
                             }
@@ -186,12 +182,11 @@ export class RequestSingleViewComponent {
         let reqId = this.requestData.requestId;
         let requests = this.queryBundle.requests.filter(function(req) {
             return req.requestId !== reqId &&
-                  (req.status === RequestStatus.Retrieved ||
-                   req.status === RequestStatus.Seen ||
-                   req.status === RequestStatus.Queued ||
-                   req.status === RequestStatus.Processing ||
-                   req.status === RequestStatus.Completed);
-
+            (req.status === RequestStatus.Retrieved ||
+            req.status === RequestStatus.Seen ||
+            req.status === RequestStatus.Queued ||
+            req.status === RequestStatus.Processing ||
+            req.status === RequestStatus.Completed);
         });
         return requests.length;
     }
