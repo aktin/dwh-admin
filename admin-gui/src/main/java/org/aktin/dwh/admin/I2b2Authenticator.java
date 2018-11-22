@@ -55,15 +55,16 @@ public class I2b2Authenticator implements Authenticator{
 			String[] roles = null; // i2b2 roles
 			String role = null; // relevant AKTIN role
 			for( UserProject p : uc.getProjects() ){
-				if( p.id.equals(project) ){
-					roles = p.role;
+//	allow mismatch of preference i2b2.project to actual project.. XXX TODO fix that i2b2.project matches actual one
+//				if( p.id.equals(project) ){
+//					roles = p.role;
 					Param[] params = p.params;
 					for( int i=0; i<params.length; i++ ) {
 						if( params[i].name.equals("AKTIN_ROLE") ) {
 							role = params[i].value;
 						}
 					}
-				}
+//				}
 			}
 			log.info("i2b2 roles from config: "+Arrays.toString(roles));
 			log.info("AKTIN role from config: "+role);
