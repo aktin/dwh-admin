@@ -7,9 +7,6 @@ import { StudyManagerService, PopUpNewEntryComponent, PopUpDetailComponent, Entr
 import { PopUpMessageComponent } from './../helpers/popup-message.component';
 import { IMyDateModel, IMyDpOptions } from 'mydatepicker';
 
-import $ = require('jquery');
-require('semantic-ui-tablesort');
-
 @Component({
     templateUrl: './studyManager.component.html',
     styleUrls: ['./studyManager.component.css'],
@@ -32,6 +29,9 @@ export class StudyManagerComponent {
     filteredEntries: Entry[] = [];
     selectedEntry: Entry;
     filterActive = false;
+    reverse = true;
+    sortAttribute = 'timestamp';
+    sorted = false;
 
     filterdata = {
         date : {date: ''},
@@ -58,7 +58,6 @@ export class StudyManagerComponent {
     ngOnInit(): void {
         this.DPOptions = this.defaultDPOptions;
         this.setStudies();
-        ($('.table.sortable') as any).tablesort();
     }
 
     private formulateDate4DP (d: Date): any {
@@ -120,6 +119,21 @@ export class StudyManagerComponent {
             }
             return fullfilled;
         });
+    }
+
+    setSortAttribute(attr: string) {
+        if (this.sortAttribute === attr) {
+            this.reverse = !this.reverse;
+        }
+        this.sortAttribute = attr;
+    }
+
+    getSortAttribute() {
+        if (this.reverse) {
+            return '-' + this.sortAttribute;
+        } else {
+            return '+' + this.sortAttribute;
+        }
     }
 
     createEntry() {

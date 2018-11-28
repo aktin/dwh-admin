@@ -60,4 +60,5 @@ tr:hover{
 .pagination /deep/ .ngx-pagination {
     text-align: center;
     margin: 0;
+    padding: 0;
 }

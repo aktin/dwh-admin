@@ -59,28 +59,32 @@
             </div>
         </div>
     </div>
-    <table class="ui sortable selectable celled table ui segment">
+    <table class="ui sortable selectable celled table segment">
         <thead>
             <tr>
-                <th class="tsorted ascending" width="18%">Studie</th>
-                <th class="sorted ascending" width="18%">SIC</th>
-                <th id="default-sort" class="sorted ascending" width="20%">Datum</th>
-                <th class="sorted ascending" width="15%">Teilnahme</th>
-                <th class="sorted ascending" width="29%">Kommentar</th>
+                <th [ngClass]="{'sorted':sorted&&sortAttribute==='sic', 'descending':reverse, 'ascending':!reverse}" width="14%" (click)="sorted=true; setSortAttribute('sic')">SIC <i *ngIf="!sorted" class="sort icon"></i></th>
+                <th [ngClass]="{'sorted':sorted&&sortAttribute==='timestamp', 'descending':reverse, 'ascending':!reverse}" width="20%" (click)="sorted=true; setSortAttribute('timestamp')">Datum <i *ngIf="!sorted" class="sort icon"></i></th>
+                <th [ngClass]="{'sorted':sorted&&sortAttribute==='ext', 'descending':reverse, 'ascending':!reverse}" width="22%" (click)="sorted=true; setSortAttribute('ext')">KIS-ID <i *ngIf="!sorted" class="sort icon"></i></th>
+                <th [ngClass]="{'sorted':sorted&&sortAttribute==='participationString', 'descending':reverse, 'ascending':!reverse}" width="15%" (click)="sorted=true; setSortAttribute('participationString')">Teilnahme <i *ngIf="!sorted" class="sort icon"></i></th>
+                <th [ngClass]="{'sorted':sorted&&sortAttribute==='comment', 'descending':reverse, 'ascending':!reverse}" width="29%" (click)="sorted=true; setSortAttribute('comment')">Kommentar <i *ngIf="!sorted" class="sort icon"></i></th>
             </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let entry of filteredEntries | paginate: { itemsPerPage: 15, currentPage: p }" (click)="showEntry(entry, false)">
-            <td width="18%">
-                {{ entry.study.title }}
-            </td>
-
-            <td width="18%">
+        <tr *ngFor="let entry of filteredEntries | orderBy: [getSortAttribute()] | paginate: { itemsPerPage: 15, currentPage: p }" (click)="showEntry(entry, false)">
+            <td width="14%">
                 {{ entry.sic }}
             </td>
 
             <td width="20%">
                 {{ entry.timestamp | momentDate: 'DD.MM.YYYY, HH:mm' }}
+            </td>
+
+            <td *ngIf="entry.ext !== ''" width="22%">
+                {{ entry.ext }}
+            </td>
+
+            <td *ngIf="entry.ext === ''" width="22%">
+                {{ entry.root }}
             </td>
 
             <td width="15%">

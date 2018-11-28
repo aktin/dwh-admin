@@ -32,7 +32,6 @@
             'mydatepicker':               'npm:mydatepicker/mydatepicker.umd.js',
             'ngx-pagination':             'npm:ngx-pagination/ngx-pagination.umd.js',
             'semantic-ui':                'npm:semantic-ui/semantic.min.js',
-            'semantic-ui-tablesort':      'npm:semantic-ui/tablesort.js',
             'moment':                     'npm:moment/moment.js'
         },
         // packages tells the System loader how to load when no filename and/or no extension
