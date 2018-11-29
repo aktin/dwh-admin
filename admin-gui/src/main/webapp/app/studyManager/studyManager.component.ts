@@ -72,6 +72,18 @@ export class StudyManagerComponent {
         return this.filterdata;
     }
 
+    get study() {
+        let sm = this;
+        let selected = this.studies.filter(function(s) {
+            return s.id === sm.filterdata.study;
+        });
+        if (selected.length > 0) {
+            return selected[0];
+        } else {
+            return false;
+        }
+    }
+
     setStudies() {
         this._managerService.getStudies().subscribe(res => {
             this.studies = res;

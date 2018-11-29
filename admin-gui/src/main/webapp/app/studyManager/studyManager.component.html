@@ -62,16 +62,16 @@
     <table class="ui sortable selectable celled table segment">
         <thead>
             <tr>
-                <th [ngClass]="{'sorted':sorted&&sortAttribute==='sic', 'descending':reverse, 'ascending':!reverse}" width="14%" (click)="sorted=true; setSortAttribute('sic')">SIC <i *ngIf="!sorted" class="sort icon"></i></th>
+                <th *ngIf="study.supportsOptIn" [ngClass]="{'sorted':sorted&&sortAttribute==='sic', 'descending':reverse, 'ascending':!reverse}" width="14%" (click)="sorted=true; setSortAttribute('sic')">SIC <i *ngIf="!sorted" class="sort icon"></i></th>
                 <th [ngClass]="{'sorted':sorted&&sortAttribute==='timestamp', 'descending':reverse, 'ascending':!reverse}" width="20%" (click)="sorted=true; setSortAttribute('timestamp')">Datum <i *ngIf="!sorted" class="sort icon"></i></th>
                 <th [ngClass]="{'sorted':sorted&&sortAttribute==='ext', 'descending':reverse, 'ascending':!reverse}" width="22%" (click)="sorted=true; setSortAttribute('ext')">KIS-ID <i *ngIf="!sorted" class="sort icon"></i></th>
                 <th [ngClass]="{'sorted':sorted&&sortAttribute==='participationString', 'descending':reverse, 'ascending':!reverse}" width="15%" (click)="sorted=true; setSortAttribute('participationString')">Teilnahme <i *ngIf="!sorted" class="sort icon"></i></th>
-                <th [ngClass]="{'sorted':sorted&&sortAttribute==='comment', 'descending':reverse, 'ascending':!reverse}" width="29%" (click)="sorted=true; setSortAttribute('comment')">Kommentar <i *ngIf="!sorted" class="sort icon"></i></th>
+                <th [ngClass]="{'sorted':sorted&&sortAttribute==='comment', 'descending':reverse, 'ascending':!reverse}" [style.width]="study.supportsOptIn ? '29%' : '43%'" (click)="sorted=true; setSortAttribute('comment')">Kommentar <i *ngIf="!sorted" class="sort icon"></i></th>
             </tr>
         </thead>
         <tbody>
         <tr *ngFor="let entry of filteredEntries | orderBy: [getSortAttribute()] | paginate: { itemsPerPage: 15, currentPage: p }" (click)="showEntry(entry, false)">
-            <td width="14%">
+            <td *ngIf="study.supportsOptIn" width="14%">
                 {{ entry.sic }}
             </td>
 
@@ -91,7 +91,7 @@
                 {{ entry.participationString }}
             </td>
 
-            <td title="{{entry.comment}}" class="truncated" width="29%">
+            <td title="{{entry.comment}}" class="truncated" [style.width]="study.supportsOptIn ? '29%' : '43%'">
                 {{ entry.comment }}
             </td>
         </tr>
