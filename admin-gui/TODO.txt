@@ -1,0 +1,5 @@
+TODO
+====
+
+Query description könnte platzhalter erlauben: e.G: ${data.timestamp}
+Möglicherweise auch mit Formatierung: ${data.timestamp#date:LLLL} für Monatsnamen
