@@ -27,7 +27,7 @@
             'angular-in-memory-web-api':  'npm:angular-in-memory-web-api/in-memory-web-api.umd.js',
             'rxjs':                       'npm:rxjs',
             'underscore':                 'npm:underscore/underscore-min.js',
-            'jquery':                     'npm:jquery/jquery.min.js',
+            'jquery':                     'npm:jquery/jquery.slim.min.js',
             'file-saver':                 'npm:file-saver/FileSaver.js',
             'mydatepicker':               'npm:mydatepicker/mydatepicker.umd.js',
             'ngx-pagination':             'npm:ngx-pagination/ngx-pagination.umd.js',
