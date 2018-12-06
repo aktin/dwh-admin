@@ -4,7 +4,7 @@
 	
 	<groupId>org.aktin.dwh</groupId>
 	<artifactId>dwh-admin</artifactId>
-	<version>0.6rc1</version>
+	<version>0.6rc2-SNAPSHOT</version>
   
 	<name>AKTIN : DWH Admin</name>
 	<description>AKTIN Software</description>
@@ -17,7 +17,7 @@
 	
 	<scm>
 		<developerConnection>scm:git:git@gitlab.uni-oldenburg.de:AKTIN/dwh-admin.git</developerConnection>
-		<tag>v0.6rc1</tag>
+		<tag>HEAD</tag>
 	</scm>
 	
 	<modules>
