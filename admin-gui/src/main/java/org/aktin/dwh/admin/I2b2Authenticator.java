@@ -69,12 +69,18 @@ public class I2b2Authenticator implements Authenticator{
 			log.info("i2b2 roles from config: "+Arrays.toString(roles));
 			log.info("AKTIN role from config: "+role);
 
-//			for(Param p : client.PM().getUserParams(user)) {
-//				if (p.name.equals("AKTIN_ROLE")) {
-//					role = p.value;
-//				}
-//			}
-			auth = new I2b2Authentication(uc.getUserName(), uc.getSessionKey(), uc.getUserDomain(), role, uc.isAdmin());
+			if( role == null && uc.isAdmin() ){
+				// no AKTIN role defined for user, but user has admin privileges in i2b2,
+				// automatically grant AKTIN admin
+				role = I2b2Authentication.ROLE_ADMIN;
+			}
+			
+			if( role != null ){
+				auth = new I2b2Authentication(uc.getUserName(), uc.getSessionKey(), uc.getUserDomain(), role, uc.isAdmin());
+			}else {
+				// no permission to use AKTIN frontend
+				log.warning("Authentication access denied. No AKTIN_ROLE defined for user "+user);
+			}
 		} catch (ErrorResponseException e) {
 			// unauthorized
 		} catch( IOException | HiveException e ){

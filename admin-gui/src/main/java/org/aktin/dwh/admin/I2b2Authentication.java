@@ -7,8 +7,15 @@ import org.aktin.dwh.Authentication;
 
 import de.sekmi.li2b2.hive.Credentials;
 
+/**
+ * Implementation of data structure containing i2b2 authentication information for AKTIN
+ * @author R.W.Majeed
+ *
+ */
 public class I2b2Authentication implements Authentication{
-
+	public static final String ROLE_ADMIN = "admin";
+	public static final String ROLE_STUDYNURSE = "study_nurse";
+	
 	private String userId;
 	private String sessionKey;
 	private String domain;
@@ -16,6 +23,14 @@ public class I2b2Authentication implements Authentication{
 	private boolean isAdmin;
 	private final List<Permission> permissions;
 
+	/**
+	 * Construct instance of I2b2Authentication.
+	 * @param user user name
+	 * @param session i2b2 session
+	 * @param domain i2b2 domain
+	 * @param role AKTIN role
+	 * @param isAdmin whether the user has i2b2 admin privileges
+	 */
 	public I2b2Authentication(String user, String session, String domain, String role, boolean isAdmin) {
 		this.userId = user;
 		this.sessionKey = session;
@@ -25,12 +40,12 @@ public class I2b2Authentication implements Authentication{
 		
 		permissions = new ArrayList<>();
 		switch(role) {
-			case "admin":
+			case ROLE_ADMIN:
 				for (Permission perm : Permission.values()) {
 					permissions.add(perm);
 				}
 				break;
-			case "study_nurse":
+			case ROLE_STUDYNURSE:
 				permissions.add(Permission.READ_STUDYMANAGER);
 				permissions.add(Permission.WRITE_STUDYMANAGER);
 				break;
