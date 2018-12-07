@@ -1,5 +1,10 @@
-import { Scheduler } from '../Scheduler';
-import { Subscription } from '../Subscription';
+"use strict";
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var Subscription_1 = require('../Subscription');
 /**
  * A unit of work to be executed in a {@link Scheduler}. An action is typically
  * created from within a Scheduler and an RxJS user does not need to concern
@@ -14,8 +19,11 @@ import { Subscription } from '../Subscription';
  *
  * @class Action<T>
  */
-export declare class Action<T> extends Subscription {
-    constructor(scheduler: Scheduler, work: (this: Action<T>, state?: T) => void);
+var Action = (function (_super) {
+    __extends(Action, _super);
+    function Action(scheduler, work) {
+        _super.call(this);
+    }
     /**
      * Schedules this action on its parent Scheduler for execution. May be passed
      * some context object, `state`. May happen at some point in the future,
@@ -26,5 +34,11 @@ export declare class Action<T> extends Subscription {
      * time unit is implicit and defined by the Scheduler.
      * @return {void}
      */
-    schedule(state?: T, delay?: number): Subscription;
-}
+    Action.prototype.schedule = function (state, delay) {
+        if (delay === void 0) { delay = 0; }
+        return this;
+    };
+    return Action;
+}(Subscription_1.Subscription));
+exports.Action = Action;
+//# sourceMappingURL=Action.js.map

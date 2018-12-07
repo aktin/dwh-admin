@@ -1,4 +1,6 @@
-import { QueueScheduler } from './QueueScheduler';
+"use strict";
+var QueueAction_1 = require('./QueueAction');
+var QueueScheduler_1 = require('./QueueScheduler');
 /**
  *
  * Queue Scheduler
@@ -60,4 +62,5 @@ import { QueueScheduler } from './QueueScheduler';
  * @name queue
  * @owner Scheduler
  */
-export declare const queue: QueueScheduler;
+exports.queue = new QueueScheduler_1.QueueScheduler(QueueAction_1.QueueAction);
+//# sourceMappingURL=queue.js.map
