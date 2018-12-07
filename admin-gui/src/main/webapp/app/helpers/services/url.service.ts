@@ -30,7 +30,6 @@ export class UrlService {
         status : 'import-summary',
 
         reportsList : 'report/archive',
-        report: 'report/archive/@reportId@/info',
         newMonthlyReport : 'report/monthly/email',
         reportTemplates : 'report/template', // get
         newReport : 'report/template/@templateId@', // post, with start and end in data, json in header

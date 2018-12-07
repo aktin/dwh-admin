@@ -1,12 +1,10 @@
-
 /**
  * Created by Xu on 09.05.2017.
  *
  * Reports Service
  */
-import { Injectable } from '@angular/core';
-import { Response, ResponseContentType, Http, Headers, RequestOptions } from '@angular/http';
-import { Observable } from 'rxjs/Observable';
+import { Injectable }   from '@angular/core';
+import { Response }     from '@angular/http';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
@@ -20,9 +18,12 @@ import { Permission } from '../users/index';
 @Injectable()
 export class ReportService {
 
+    private _dataInterval = 3000;
+
     constructor(
         private _http: HttpInterceptorService,
         private _urls: UrlService,
+        private _store: StorageService,
         private _download: DownloadService,
         private _auth: AuthService
     ) {}
@@ -42,28 +43,69 @@ export class ReportService {
         return this._auth.userLocalCheckPermissions([perm]);
     }
 
-    getReports(etag: string): Observable<Object> {
-        let options = { headers: new Headers({'If-None-Match': etag}), 'observe': 'response' };
-        return this._http.get(this._urls.parse('reportsList'), options)
-            .catch(err => { return this._http.handleError(err) })
-            .map(resp => {
-                let res = {};
-                res['etag'] = resp.headers.get('ETag');
-                res['reports'] = _.map(JSON.parse(resp.text()), rep => Report.parseObj(rep));
-                return res;
-            });
+    private _updateReport (): void {
+        this._http.debouncedGet<void> (
+            'reports',
+            null, null,
+            this._dataInterval,
+            this._urls.parse('reportsList'),
+            (res: Response) => {
+                // console.log(res.json());
+                return _.map(res.json(), rawRep => {
+                    return Report.parseObj(rawRep, this._urls.parse('reportsList'));
+                });
+            }, (err: Response) => {
+                return err;
+            }
+        ).subscribe(
+            rep => {
+                if (rep) {
+                    this._store.setValue('reports.data', JSON.stringify(rep));
+                }
+            },
+            error => console.log(error)
+        );
     }
 
-    getReport(id: number, etag: string): Observable<Object> {
-        let options = { headers: new Headers({'If-None-Match': etag}), 'observe': 'response' };
-        return this._http.get(this._urls.parse('report', {reportId: id}), options)
-            .catch(err => { return this._http.handleError(err) })
-            .map(resp => {
-                let res = {};
-                res['etag'] = resp.headers.get('ETag');
-                res['report'] = Report.parseObj(JSON.parse(resp.text()));
-                return res;
-            });
+    private _updateReportTemplates (): void {
+        this._http.debouncedGet<string> (
+            'reports.templates',
+            this._store.getValue('reports.templates'), null,
+            this._dataInterval,
+            this._urls.parse('reportTemplates'),
+            (res: Response) => {
+                // console.log(res);
+                return res.text();
+            }, (err: Response) => {
+                return err;
+            }
+        ).subscribe(
+            (rep: string) => {
+                if (rep) {
+                    this._store.setValue('reports.templates', rep);
+                }
+            },
+            error => console.log(error)
+        );
+    }
+
+    getReports (): Report[] {
+        this._updateReport();
+        return _.map(JSON.parse(this._store.getValue('reports.data')), rep => { return Report.parseObj(rep); } );
+    }
+
+    getReport (id: number = -1): Report {
+
+        this._updateReport();
+        let reports: Report[] = JSON.parse(this._store.getValue('reports.data'));
+
+        if (!reports) {
+            return null;
+        }
+        if (id < 0) {
+            id = reports.length;
+        }
+        return Report.parseObj(_.find(reports, (rep) => rep['id'] === id));
     }
 
     newReportMonthly (): void {
@@ -81,12 +123,14 @@ export class ReportService {
             .subscribe();
     }
 
-    getReportTemplates(): Observable<ReportTemplate[]> {
-        return this._http.get(this._urls.parse('reportTemplates'))
-            .catch(err => { return this._http.handleError(err) })
-            .map(resp => {
-               return <ReportTemplate[]> JSON.parse(resp.text());
-            });
+    getReportTemplates (): ReportTemplate[] {
+        this._updateReportTemplates();
+        return JSON.parse(this._store.getValue('reports.templates'));
+    }
+
+    getDefaultTemplate (): ReportTemplate {
+        this._updateReportTemplates();
+        return (JSON.parse(this._store.getValue('reports.templates')) || [])[0];
     }
 
     downloadReportFile (report: Report) {
