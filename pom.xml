@@ -4,7 +4,7 @@
 	
 	<groupId>org.aktin.dwh</groupId>
 	<artifactId>dwh-admin</artifactId>
-	<version>0.6rc5-SNAPSHOT</version>
+	<version>0.6rc4-SNAPSHOT</version>
   
 	<name>AKTIN : DWH Admin</name>
 	<description>AKTIN Software</description>
