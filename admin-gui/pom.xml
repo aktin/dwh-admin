@@ -245,8 +245,7 @@
                         </goals>
                         <phase>generate-resources</phase>
                         <configuration>
-                            <!--<nodeVersion>v6.7.0</nodeVersion>-->
-							<nodeVersion>v10.14.1</nodeVersion>
+                            <nodeVersion>v6.7.0</nodeVersion>
                         </configuration>
                     </execution>
 
