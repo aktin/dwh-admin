@@ -8,12 +8,12 @@
 	
 	<groupId>org.aktin.dwh</groupId>
 	<artifactId>admin-gui</artifactId>
-	<version>0.6rc5-SNAPSHOT</version>
+	<version>0.6rc4-SNAPSHOT</version>
 
 	<parent>
 		<groupId>org.aktin.dwh</groupId>
 		<artifactId>dwh-admin</artifactId>
-		<version>0.6rc5-SNAPSHOT</version>
+		<version>0.6rc4-SNAPSHOT</version>
 	</parent>
 	
 	<dependencies>
@@ -245,7 +245,8 @@
                         </goals>
                         <phase>generate-resources</phase>
                         <configuration>
-                            <nodeVersion>v6.7.0</nodeVersion>
+                            <!--<nodeVersion>v6.7.0</nodeVersion>-->
+							<nodeVersion>v10.14.1</nodeVersion>
                         </configuration>
                     </execution>
 
