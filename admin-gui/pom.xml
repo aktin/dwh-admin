@@ -225,6 +225,39 @@
 					<warSourceExcludes>node_modules/**,**/*.ts,**/*.js.map</warSourceExcludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<excludeDefaultDirectories>false</excludeDefaultDirectories>
+					<filesets>
+						<fileset>
+							<directory>src/main/webapp/node_modules</directory>
+							<includes>
+								<include>**</include>
+							</includes>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+						<fileset>
+							<directory>local-node</directory>
+							<includes>
+								<include>**</include>
+							</includes>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
+						<fileset>
+							<directory>src/main/webapp</directory>
+							<includes>
+								<include>package-lock.json</include>
+								<include>node-modules/**</include>
+								<include>app/**/*.js</include>
+								<include>app/**/*.js.map</include>
+							</includes>
+							<followSymlinks>false</followSymlinks>
+						</fileset>						
+					</filesets>
+				</configuration>
+			</plugin>
 		    <plugin>
 		        <groupId>com.github.eirslett</groupId>
 		        <artifactId>frontend-maven-plugin</artifactId>
