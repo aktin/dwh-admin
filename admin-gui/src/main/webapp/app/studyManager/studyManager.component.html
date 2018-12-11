@@ -79,11 +79,11 @@
                 {{ entry.timestamp | momentDate: 'DD.MM.YYYY, HH:mm' }}
             </td>
 
-            <td *ngIf="entry.ext !== ''" width="22%">
+            <td *ngIf="entry.ext !== ''" width="22%" title="{{entry.ext}}" class="truncated">
                 {{ entry.ext }}
             </td>
 
-            <td *ngIf="entry.ext === ''" width="22%">
+            <td *ngIf="entry.ext === ''" width="22%" title="{{entry.root}}" class="truncated">
                 {{ entry.root }}
             </td>
 

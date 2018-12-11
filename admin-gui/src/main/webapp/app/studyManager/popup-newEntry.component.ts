@@ -68,8 +68,9 @@ export class PopUpNewEntryComponent implements OnInit {
             this.valid.separator = false;
         }
         // value of root and extension may not be . or ..
+        let root = this.prefs['root'];
+        let ext = this.formdata.ext;
         if (this.prefs['root'].length === 0) {
-            let root, ext = '';
             if (this.formdata.ext.includes(this.prefs['separator'])) {
                 let splits = this.formdata.ext.split(this.prefs['separator']);
                 root = splits[0];
@@ -78,9 +79,9 @@ export class PopUpNewEntryComponent implements OnInit {
                 root = this.formdata.ext;
                 ext = '';
             }
-            if (ext === '.' || ext === '..' || root === '.' || root === '..') {
-                this.valid.point = false;
-            }
+        }
+        if (ext === '.' || ext === '..' || root === '.' || root === '..') {
+            this.valid.point = false;
         }
         if (this.extValid) {
             this.msgOk();
