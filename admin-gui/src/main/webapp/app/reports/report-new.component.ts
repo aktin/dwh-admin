@@ -83,6 +83,17 @@ export class ReportNewComponent {
         return this._reportService.getReportTemplates();
     }
 
+    getDescription(): String {
+        let comp = this;
+        let temp = this._reportService.getReportTemplates().filter(t => {
+            return t.id === comp.template;
+        });
+        if (temp.length > 0) {
+            return temp[0].description;
+        }
+        return this.template;
+    }
+
     generateReport(): void {
         let from = this.DP2date(this.fromDateModel.date);
         let to = this.DP2date(this.toDateModel.date);
@@ -97,8 +108,8 @@ export class ReportNewComponent {
             return;
         }
         this._reportService.newReport(this.template, from, to);
-        this.popUp.setData(true, 'Neuer Bericht',
-                    'Neuer ' + this.template + ' wird erzeugt und im Übersicht angezeigt.',
+        this.popUp.setData(true, 'Neuer Bericht wird erstellt',
+                    'Der Bericht "' + this.getDescription() + '" wird erstellt und steht danach in der Berichtsübersicht bereit.',
                     () => {this._router.navigate(['/report'])} );
     }
 }
