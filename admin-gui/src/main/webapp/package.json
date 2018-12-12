@@ -39,6 +39,7 @@
     "@types/lodash": "4.14.77",
     "@types/node": "8.0.34",
     "@types/semantic-ui": "2.2.5",
+    "@types/semantic-ui-form": "2.2.4",
     "@types/underscore": "1.8.3",
     "canonical-path": "0.0.2",
     "concurrently": "3.5.0",
