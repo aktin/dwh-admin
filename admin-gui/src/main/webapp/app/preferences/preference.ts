@@ -37,6 +37,16 @@ export const predefinedPreferenceCategories: PreferenceCategory[] = [
         description : 'Bericht Ablage',
     },
     {
+        value : 'cda',
+        name : 'CDA-IDs',
+        description : 'Einstellungen der CDA-IDs',
+    },
+    {
+        value : 'study',
+        name : 'Studienspezifische Einstellungen',
+        description : 'Studienspezifische Einstellungen',
+    },
+    {
         value : 'wildfly',
         name : 'Wildfly',
         description : 'Wildlfy Konfiguration',
@@ -68,6 +78,15 @@ export const predefinedPreferences = {
     'report.temp.path': 'Temporärer Ablageort der Berichte während der Generierung',
     'report.archive.path': 'Ablageort der archivierten Berichte',
 
+    'cda.patient.root.preset': 'Root-Nummer bei Verwendung der Patientennummer (Patient)',
+    'cda.encounter.root.preset': 'Root-Nummer bei Verwendung der Episodennummer (Encounter)',
+    'cda.billing.root.preset': 'Root-Nummer bei Verwendung der Fallnummer (Billing)',
+
+    'study.id.reference': 'Patientenreferenz, die im Consent-Manager zur Identifizierung von Patienten verwendet wird. Erlaubte Werte: Patient, Encounter, Billing',
+    'study.id.patient.label': 'Textfeld-Label im Consent-Manager bei Verwendung der Patientennummer',
+    'study.id.encounter.label': 'Textfeld-Label im Consent-Manager bei Verwendung der Episodennummer',
+    'study.id.billing.label': 'Textfeld-Label im Consent-Manager bei Verwendung der Fallnummer',
+    'study.id.separator': 'Trennzeichen für Root und Extension. Wird verwendet, wenn keine Root hinterlegt ist.',
 
     'broker.data.path': 'Ablageort der eingegangene Daten vom Broker',
     'broker.uris': 'Aktin Broker Url',
