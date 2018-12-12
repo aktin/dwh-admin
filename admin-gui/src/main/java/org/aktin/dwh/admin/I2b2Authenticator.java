@@ -58,12 +58,16 @@ public class I2b2Authenticator implements Authenticator{
 //	allow mismatch of preference i2b2.project to actual project.. XXX TODO fix that i2b2.project matches actual one
 //				if( p.id.equals(project) ){
 //					roles = p.role;
-					Param[] params = p.params;
-					for( int i=0; i<params.length; i++ ) {
-						if( params[i].name.equals("AKTIN_ROLE") ) {
-							role = params[i].value;
-						}
+				if( p.params == null ) {
+					// no project params available, skip this project
+					continue;
+				}
+				Param[] params = p.params;
+				for( int i=0; i<params.length; i++ ) {
+					if( params[i].name.equals("AKTIN_ROLE") ) {
+						role = params[i].value;
 					}
+				}
 //				}
 			}
 			log.info("i2b2 roles from config: "+Arrays.toString(roles));
