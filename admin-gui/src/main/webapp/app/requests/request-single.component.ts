@@ -27,7 +27,6 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
 
     private _dataInterval = 5000;
     private _timerSubscription: Subscription;
-    private _paramsSubscription: Subscription;
 
     constructor(
         private _route: ActivatedRoute,
@@ -38,6 +37,7 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
         this._route.params
             .subscribe((params: Params) => {
                 this.reqId = +params['id'];
+                // set request and belonging etag
                 this._requestService.getRequest(this.reqId, this.requestEtag)
                     .subscribe(res => {
                         this.request = res['req'];
@@ -46,6 +46,7 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
                         if (!this.request.isRecurring()) {
                             this.bundleLoaded = true;
                         } else {
+                            // set query bundle and belonging etag
                             this._requestService.getQueryBundle(this.request.queryId, this.bundleEtag)
                                 .subscribe(bundle => {
                                     this.queryBundle = bundle['bundle'];
@@ -56,6 +57,7 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
                         }
                     });
             });
+        // set timer to update request and query bundle in the given interval in case the etag changed (hence request was modified)
         let timer = TimerObservable.create(0, this._dataInterval);
         this._timerSubscription = timer.subscribe(() => {
             if (this.request) {
@@ -72,6 +74,11 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
         this._timerSubscription.unsubscribe();
     }
 
+    /**
+     * Checks if the request and the query bundle (if request is recurring) are initialized.
+     * Makes sure that the view is rendered after the asynch call is completed.
+     * @returns true if necessary data is loaded, false otherwise
+     */
     get dataLoaded() {
         if (this.requestLoaded && this.bundleLoaded) {
             return true;
@@ -79,6 +86,9 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
         return false;
     }
 
+    /**
+     * Updates the request if the etag changed (hence request was modified).
+     */
     updateRequest(): void {
         this._requestService.getRequest(this.reqId, this.requestEtag)
             .subscribe(res => {
@@ -88,6 +98,9 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
             });
     }
 
+    /**
+     * Updates the query bundle if the etag changed (hence one of the request of the bundle or the query rule was modified).
+     */
     updateQueryBundle() {
         this._requestService.getQueryBundle(this.request.queryId, this.bundleEtag)
             .subscribe(res => {
@@ -98,6 +111,9 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
             });
     }
 
+    /**
+     * Updates the query details by calculating all values new using the requests of the query bundle as base.
+     */
     updateQueryDetails() {
         let query = this.queryBundle.requests;
         let order: number[] = [];

@@ -26,6 +26,7 @@ export class PopUpNewEntryComponent implements OnInit {
         comment: ''
     }
 
+    // object of booleans which handels which error messages have to be shown in case of invalid user input
     valid = {
         required: true,
         slashSep: true,
@@ -50,24 +51,30 @@ export class PopUpNewEntryComponent implements OnInit {
         return Object.keys(this.valid).every(key => this.valid[key]);
     }
 
+    /**
+     * Validates the user input. If all inputs are valid the data will be submitted and the dialog closes.
+     * Otherwise the corresponding error messages will be shown.
+     */
     validate() {
+        // set value of all keys (possible invalidations) initially to true
         Object.keys(this.valid).forEach(k => this.valid[k] = true);
+        // extension field must not be empty
         if (this.formdata.ext === '') {
             this.valid.required = false;
         }
-        // max one slash as separator
+        // maximal one slash as separator if root is not set in properties
         if (this.prefs['separator'] === '/' && this.prefs['root'] === '' && (this.formdata.ext.match(/\//g) || []).length > 1) {
             this.valid.slashSep = false;
         }
-        // no slash allowed
+        // no slash allowed if root is set in properties (reserved for path syntax)
         if ((this.prefs['separator'] !== '/' || this.prefs['root'] !== '') && this.formdata.ext.includes('/')) {
             this.valid.slash = false;
         }
-        // separator not as first char
+        // separator not as first character if root is not set in properties
         if (this.prefs['root'] === '' && this.formdata.ext.slice(0, 1) === this.prefs['separator']) {
             this.valid.separator = false;
         }
-        // value of root and extension may not be . or ..
+        // set correct root and extension by possibly splitting input on separator
         let root = this.prefs['root'];
         let ext = this.formdata.ext;
         if (this.prefs['root'].length === 0) {
@@ -80,9 +87,11 @@ export class PopUpNewEntryComponent implements OnInit {
                 ext = '';
             }
         }
+        // value of root and extension may not be . or .. (reserved for path syntax)
         if (ext === '.' || ext === '..' || root === '.' || root === '..') {
             this.valid.point = false;
         }
+        // submit data and close dialog if input is valid
         if (this.extValid) {
             this.msgOk();
         }
@@ -110,6 +119,11 @@ export class PopUpNewEntryComponent implements OnInit {
         return Participation.OptOut;
     }
 
+    /**
+     * Returns the label for the extension based on the underlying reference.
+     * @returns the extension label
+     * @throws error if no label is set in the properties file
+     */
     get extLabel(): String {
         let label: String;
         switch (this.prefs['reference']) {
@@ -165,9 +179,11 @@ export class PopUpNewEntryComponent implements OnInit {
             let root = this.prefs['root'];
             let ext = this.formdata.ext;
             let sic = this.formdata.sic;
+            // don't set sic for optOut
             if (sic.length > 0 && this.formdata.optInOut === Participation.OptOut) {
                 sic = '';
             }
+            // set root and extension correctly depending on underlying properties file
             if (root.length === 0) {
                 if (ext.includes(this.prefs['separator'])) {
                     let splits = ext.split(this.prefs['separator']);

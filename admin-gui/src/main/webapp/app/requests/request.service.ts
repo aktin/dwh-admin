@@ -29,6 +29,11 @@ export class RequestService {
         private _auth: AuthService
     ) {}
 
+    /**
+     * Checks if the user has the given permission.
+     * @param permission The permission that will be checked.
+     * @returns true if user has the permission, false otherwise
+     */
     checkPermission(permission: string): boolean {
         let perm: Permission;
         switch (permission) {
@@ -44,6 +49,13 @@ export class RequestService {
         return this._auth.userLocalCheckPermissions([perm]);
     }
 
+    /**
+     * Gets all available requests from the server ordered by the id. Uses a 'conditional get' by setting an etag.
+     * Only if the etag from the response differs from the given one, the actual data will be send in the response.
+     * Otherwise the cached data will be used (HTTP status 304).
+     * @param etag The current etag that will be compared with the one from the response.
+     * @returns Observable of an object that includes the requests and the new etag
+     */
     getRequests(etag: string): Observable<Object> {
         let options = { headers: new Headers({'If-None-Match': etag}),  'observe': 'response' };
         return this._http.get(this._urls.parse('requestList'), options)
@@ -59,6 +71,13 @@ export class RequestService {
             });
     }
 
+     /**
+     * Gets the request with the given id from the server. Uses a 'conditional get' by setting an etag.
+     * Only if the etag from the response differs from the given one, the actual data will be send in the response.
+     * Otherwise the cached data will be used (HTTP status 304).
+     * @param etag The current etag that will be compared with the one from the response.
+     * @returns Observable of an object that includes the request and the new etag
+     */
     getRequest(requestId: number, etag: string): Observable<Object> {
         let options = { headers: new Headers({'If-None-Match': etag}),  observe: 'response' };
         return this._http.get(this._urls.parse('request', {requestId: requestId}), options)
@@ -74,6 +93,13 @@ export class RequestService {
             });
     }
 
+     /**
+     * Gets the query bundle (requests + rule of series) with the given id from the server. Uses a 'conditional get' by setting an etag.
+     * Only if the etag from the response differs from the given one, the actual data will be send in the response.
+     * Otherwise the cached data will be used (HTTP status 304).
+     * @param etag The current etag that will be compared with the one from the response.
+     * @returns Observable of an object that includes the query bundel and the new etag, null if the given query id is null
+     */
     getQueryBundle(queryId: number, etag: string): Observable<Object> {
         let options = { headers: new Headers({'If-None-Match': etag}),  observe: 'response' };
         if (queryId === null) {
@@ -100,27 +126,46 @@ export class RequestService {
             });
     }
 
+    /**
+     * Sets the query rule for the series to which the given request id belongs to by post request.
+     * @param requestId The id of the request for whose belonging series the rule will be set.
+     * @param action The rule that will be set.
+     * @returns Observable of response
+     */
     setQueryRule(requestId: number, action: QueryRuleAction): Observable<Response> {
-        // let currentRoute = this._router.url;
         return this._http.post(
             this._urls.parse('setQueryRule', {requestId: requestId, action: QueryRuleAction[action]}), {})
-            .catch(err => { return this._http.handleError(err) })
-            // .subscribe( (res) => {
-            //     setTimeout(() => this._router.navigate([currentRoute]), 600);
-            // });
+            .catch(err => { return this._http.handleError(err) });
     }
 
+    /**
+     * Deletes the query rule specified by the given query id.
+     * @param queryId The id of the series whose rule will be deleted.
+     * @returns Observable of response
+     */
     deleteQueryRule(queryId: number): Observable<Response> {
         return this._http.delete(this._urls.parse('queryRule', {queryId: queryId}))
         .catch(err => { return this._http.handleError(err) })
     }
 
+    /**
+     * Applies the given rule to the series with the given query id.
+     * This includes every already existing request of the series without a final status.
+     * @param queryId The id of the series to whose requests the rule will be applied.
+     * @param ruleAction The rule that will be applied.
+     * @returns Observable of response
+     */
     applyRule(queryId: number, ruleAction: QueryRuleAction): Observable<Response> {
         return this._http.post(this._urls.parse('applyRule', {queryId: queryId}), JSON.stringify(ruleAction),
             this._http.generateHeaderOptions('Content-Type', 'application/json'))
             .catch(err => { return this._http.handleError(err) })
     }
 
+    /**
+     * Updates the marker of the request specified by the given request id.
+     * @param requestId The id of the request whose marker will be updated.
+     * @param marker The marker value (STARRED, HIDDEN or null).
+     */
     updateMarker (requestId: number, marker: RequestMarker): void {
         let currentRoute = this._router.url;
         if (marker === null) {
@@ -147,6 +192,13 @@ export class RequestService {
         }
     }
 
+    /**
+     * Updates the status of the request specified by the given id.
+     * @param requestId The id of the request whose status will be updated.
+     * @param status The new status of the request.
+     * @param autoSubmit Optional: Whether auto submit is selected.
+     * @returns the new status
+     */
     updateStatus (requestId: number, status: RequestStatus, autoSubmit?: boolean): RequestStatus {
         let currentRoute = this._router.url;
         let setStatusPost = this._http.post(this._urls.parse('setRequestStatus', {requestId: requestId, status: RequestStatus[status]}), {})
@@ -169,6 +221,15 @@ export class RequestService {
         return status;
     }
 
+    /**
+     * Determines and updates the new status of the request specified by the given id.
+     * New status depends on the current status, wheteher auto submit is selected and wheteher request was accepted or rejected.
+     * @param requestId The id of the request whose status will be determined.
+     * @param status The current status of the request.
+     * @param allow Whether the request was accepted or rejected.
+     * @param autoSubmit Optional: Whether auto submit is selected.
+     * @returns the new status
+     */
     authorizeRequest (requestId: number, status: RequestStatus, allow: boolean, autoSubmit?: boolean): RequestStatus {
         let newStatus = LocalRequest.nextStatus(status, allow);
         if (newStatus === null) {
@@ -177,6 +238,11 @@ export class RequestService {
         return this.updateStatus(requestId, newStatus, autoSubmit);
     }
 
+    /**
+     * Downloads the results of a completed request execution.
+     * @param requestId The id of the request whose results will be downloaded.
+     * @param results Optional: The result type (in this case application/zip).
+     */
     downloadResultFile (requestId: number, result?: string) {
         this._download.get('aktin_anfragen_' + requestId + '_ergebnisse.zip',
             result,

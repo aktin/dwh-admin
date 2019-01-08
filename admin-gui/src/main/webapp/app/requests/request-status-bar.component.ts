@@ -87,6 +87,10 @@ export class RequestStatusBarComponent implements OnInit {
         return this.myItems;
     }
 
+    /**
+     * Returns the position of the request inside the belonging series (ordered by reference date).
+     * @returns position of request in the belonging series
+     */
     getNumRequest(request: LocalRequest): number {
         return this.queryDetails[request.queryId].order.indexOf(request.requestId) + 1;
     }

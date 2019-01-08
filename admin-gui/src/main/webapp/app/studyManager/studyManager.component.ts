@@ -21,18 +21,19 @@ export class StudyManagerComponent {
     @ViewChild(forwardRef(() => PopUpDetailComponent))
     popUpDetail: PopUpDetailComponent;
 
-    p: number;
+    p: number; // page number
     today = new Date();
     DPOptions: IMyDpOptions;
     studies: Study[] = [];
-    entries: Entry[] = [];
-    filteredEntries: Entry[] = [];
+    entries: Entry[] = []; // includes all entries for the selected study
+    filteredEntries: Entry[] = []; // includes the entries that will be shown in the table (filtered and unfiltered)
     selectedEntry: Entry;
     filterActive = false;
-    reverse = true;
+    reverse = true; // sort order ascending/descending
     sortAttribute = 'timestamp';
     sorted = false;
 
+    // filter attributes (including selection of study)
     filterdata = {
         date : {date: ''},
         study : '',
@@ -60,10 +61,20 @@ export class StudyManagerComponent {
         this.setStudies();
     }
 
+    /**
+     * Transforms a date object to the format which is needed by the datepicker.
+     * @param d the date object that will be transformed
+     * @returns the given date in the format that is requested by the datepicker
+     */
     private formulateDate4DP (d: Date): any {
         return {year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate()};
     }
 
+    /**
+     * Transforms the given object to the corresponding date object.
+     * @param s the object in datepicker format that should be transformed
+     * @returns date object
+     */
     private DP2date (s: any): Date {
         return new Date(s.year, s.month - 1, s.day);
     }
@@ -115,16 +126,21 @@ export class StudyManagerComponent {
         this.filterdata.date = null;
     }
 
+    /**
+     * Filters all entries on the attributes of filterdata.
+     */
     filterEntries() {
         let sm = this;
         this.filterActive = true;
         this.filteredEntries = this.entries.filter(function(e: Entry) {
             let fullfilled = true;
+            // filter date
             if (fullfilled && sm.filterdata.date !== null && sm.filterdata.date.date !== '') {
                 let filterDate = sm.DP2date(sm.filterdata.date.date);
                 let date = new Date(e.timestamp);
                 fullfilled = fullfilled && sm.equalsDate(date, filterDate);
             }
+            // filter participation
             if (fullfilled && (sm.filterdata.optIn || sm.filterdata.optOut)) {
                 fullfilled = fullfilled && ((e.participation === Participation.OptIn && sm.filterdata.optIn) ||
                                             (e.participation === Participation.OptOut && sm.filterdata.optOut));
@@ -133,6 +149,10 @@ export class StudyManagerComponent {
         });
     }
 
+    /**
+     * Sets the sort attribut that allows the sorting of table columns.
+     * Toggles the descending/ascending order if the attribute stays the same.
+     */
     setSortAttribute(attr: string) {
         if (this.sortAttribute === attr) {
             this.reverse = !this.reverse;
@@ -148,11 +168,16 @@ export class StudyManagerComponent {
         }
     }
 
+    /**
+     * Creates a new entry (if the user is authorized) based on the user input.
+     * If the entry already exists the entry cannot be created and the user will be informed.
+     */
     createEntry() {
         if (this.isAuthorized('WRITE_STUDYMANAGER')) {
             this.popUpNew.setData((submit: boolean, id: string, ref: string, root: string, ext: string,
                                 opt: Participation, sic: string, comment: string) => {
                 if (submit) {
+                    // create entry
                     this._managerService.createEntry(id, ref, root, ext, opt, sic, comment)
                         .subscribe(() => {
                             this.setEntries(this.filterActive).subscribe(() => {
@@ -160,10 +185,12 @@ export class StudyManagerComponent {
                                 let created = this.entries.filter(function(e: Entry) {
                                     return e.study['id'] === id && e.reference === ref && e.root === root && e.ext === ext;
                                 })[0];
+                                // show the detail dialog of the newly created entry
                                 this.showEntry(created, true);
                             });
                         },
                             error => {
+                                // entry already exists
                                 if (error.split('-')[0].trim() === '409') {
                                     this.popUpMessage.onTop = true;
                                     this.popUpMessage.setData(true, 'Fehler beim Erstellen',
@@ -177,6 +204,10 @@ export class StudyManagerComponent {
         }
     }
 
+    /**
+     * Deletes the given entry. If the entry does not exists anymore on the server an error will be shown.
+     * @param entry the entry object that should be deleted
+     */
     deleteEntry(entry: any) {
         this._managerService.deleteEntry(entry.study['id'], entry.reference,
             entry.root, entry.ext)
@@ -194,14 +225,19 @@ export class StudyManagerComponent {
             });
     }
 
+    /**
+     * Shows the detail dialog (which includes deleting option) of the given entry.
+     * @param entry the entry whose details will be shown
+     * @param isNew whether the entry is newly created
+     */
     showEntry(entry: any, isNew: boolean) {
         this.selectedEntry = entry;
-        this.popUpDetail.isNew = isNew;
+        this.popUpDetail.isNew = isNew; // show 'successfully created' message if the entry is new
         this.popUpDetail.setData((submitDelete: boolean) => {
             if (submitDelete) {
                 let buttons = [['Löschen', 'green'], ['Abbrechen', 'orange']];
                 this.popUpMessage.setConfirm(buttons);
-                this.popUpMessage.onTop = true;
+                this.popUpMessage.onTop = true; // set the delete dialog in front of the detail dialog
                 this.popUpMessage.setData(true, 'Eintrag löschen',
                     ' Wollen Sie diesen Eintrag wirklich unwiderruflich löschen?',
                     (submit: boolean) => {
@@ -216,10 +252,20 @@ export class StudyManagerComponent {
 
     }
 
+    /**
+     * Checks if the user has the given permission.
+     * @returns the permission that will be checked
+     */
     isAuthorized(permission: string) {
         return this._managerService.checkPermission(permission);
     }
 
+    /**
+     * Compares to date objects.
+     * @param d1 first date object
+     * @param d2 second date object
+     * @returns true if the date objects describe the same day, month and year; false otherwise
+     */
     equalsDate(d1: Date, d2: Date) {
         return  d1.getDate() === d2.getDate() &&
                 d1.getMonth() === d2.getMonth() &&

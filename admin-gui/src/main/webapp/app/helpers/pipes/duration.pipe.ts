@@ -1,5 +1,8 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
+/**
+ * Transforms a positive iso interval (e.g. P7D) into an user-friendlier string. Is used for the interval of query requests.
+ */
 @Pipe({name: 'durationQuery'})
 export class DurationQueryPipe implements PipeTransform {
     transform(isoFormat: string): string {
@@ -34,6 +37,9 @@ export class DurationQueryPipe implements PipeTransform {
     }
 }
 
+/**
+ * Transforms an iso interval (e.g. P-1M) into an user-friendlier string. Is used for the interval of the used data of a request.
+ */
 @Pipe({name: 'durationData'})
 export class DurationDataPipe implements PipeTransform {
     transform(isoFormat: string): string {
@@ -77,7 +83,7 @@ export class DurationDataPipe implements PipeTransform {
             splits.sign = '-';
         } else {
             splits.sign = '+';
-            isoFormat = isoFormat.slice(0, 1) + '+' + isoFormat.slice(1);
+            isoFormat = isoFormat.slice(0, 1) + '+' + isoFormat.slice(1); // ad the + sign to the iso string
         }
         splits.number = Number(isoFormat.substring(2, isoFormat.length - 1));
         splits.unit = isoFormat.slice(-1);

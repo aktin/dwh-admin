@@ -23,8 +23,6 @@ export class RequestSingleViewComponent {
     @Input() queryDetails: object;
     @Input() single = false;
     @Input() popUp: PopUpMessageComponent = null;
-    // requestsData = this._requestService.getRequests();
-    // queryDetails: Object = this.queryDetails[this.request.queryId] = { 'order': [], 'rejected': 0, 'accepted': 0, 'submitted': 0 };
     hideSql = true;
     hiddenLoading = false;
     downloadLoading = false;
@@ -43,6 +41,7 @@ export class RequestSingleViewComponent {
     get starred (): boolean {
         return this.requestData.marker === RequestMarker.STARRED;
     }
+
     get hidden (): boolean {
         return this.requestData.marker === RequestMarker.HIDDEN;
     }
@@ -65,10 +64,22 @@ export class RequestSingleViewComponent {
         return RequestStatus[this.requestData.status];
     }
 
+    /**
+     * Checks if the user has the given permission.
+     * @param permission The permission that will be checked.
+     * @returns true if user has the permission, false otherwise
+     */
     isAuthorized(permission: string) {
         return this._requestService.checkPermission(permission);
     }
 
+    /**
+     * Sets the next possible status of the given request depending on the current status, whether the request was accepted or rejected and
+     * whether auto submit was selected.
+     * @param request The request whose status will be set.
+     * @param allow Wheteher the request was accepted or rejected.
+     * @param checkedAuto Optional: Wheteher auto submit was selected.
+     */
     setStatus(request: LocalRequest, allow: boolean, checkedAuto?: boolean): RequestStatus {
         return this._requestService.authorizeRequest(
             request.requestId,
@@ -78,6 +89,10 @@ export class RequestSingleViewComponent {
         );
     }
 
+    /**
+     * Apply the selected rule (reject, accept_execute or accept_submit) to all request (including the current one)
+     * of the belonging series which don't have a final status yet. After that the query bundle is updated.
+     */
     applyRule(checkedApply: boolean, action: QueryRuleAction) {
         if (checkedApply) {
             this._requestService.applyRule(this.request.queryId, action)
@@ -85,6 +100,10 @@ export class RequestSingleViewComponent {
         }
     }
 
+    /**
+     * Set popup content and the callback function depending on the selected options.
+     * @param allow True if request is accepted, false if request is rejected.
+     */
     authorize (allow: boolean) {
         if (this.request.isNew()) {
             let title = allow ? 'Anfrage freigeben:' : 'Anfrage ablehnen:';
@@ -92,7 +111,7 @@ export class RequestSingleViewComponent {
                 : 'Bitte bestätigen Sie, dass die Anfrage abgelehnt werden soll. ' +
                 'Dieser Schritt kann nicht rückgängig gemacht werden.';
             let buttons = [['Jetzt freigeben', 'green'], ['Zurück', 'orange']];
-            if (allow) {
+            if (allow) {    // ACCEPT
                 this.popUp.setOptIn(['Ergebnisprüfung vor der Übermittlung',
                     'Vor der Übermittlung der Ergebnisse wird erneut nachgefragt.',
                     'Nach der Berechnung werden die Ergebnisse direkt übertragen.']);
@@ -107,7 +126,7 @@ export class RequestSingleViewComponent {
                         }
                         // this.popUp.setoptMail('E-Mail-Benachrichtigung nach der Übermittlung von Ergebnissen')
                     }
-            } else {
+            } else {    // REJECT
                 if (this.request.isRecurring()) {
                     this.popUp.setOptQuery(['Serien-Ablehnung',
                     'Nur diese Anfrage ablehnen.', 'Diese und alle zukünftigen Anfragen der Serie ablehnen.']);
@@ -122,6 +141,8 @@ export class RequestSingleViewComponent {
             }
             this.popUp.setConfirm(buttons);
             this.popUp.setData(true, title, message,
+                // answer: whether the dialog options are submitted; checkedAuto: whether auto submit is selected; checkedQuery: whether a
+                // rule for the series should be created; checkedApply: whether the rule should be applied to already existing requests
                 (answer: boolean, checkedAuto: boolean, checkedQuery: boolean, checkedApply: boolean) => {
                     if (answer) {
                         checkedApply = this.request.isRecurring() && checkedQuery && checkedApply;
@@ -159,7 +180,7 @@ export class RequestSingleViewComponent {
                         }
                     }
                 });
-        } else {
+        } else { // accept or reject sending the results to broker
             let title = allow ? 'Ergebnisse der Anfrage freigeben:' : 'Senden der Ergebnisse ablehnen:';
             let message = allow ? 'Bitte bestätigen Sie, dass die Ergebnisse der Anfrage an den zentralen Server übertragen werden dürfen.'
                 : 'Bitte bestätigen Sie, dass die Anfrage abgelehnt werden soll. Es werden keine Ergebnisse übermittelt. ' +
@@ -178,6 +199,11 @@ export class RequestSingleViewComponent {
         }
     }
 
+    /**
+     * Counts the number of requests to which the selected rule can be applied in the current series (excluding the current request),
+     * hence the number of requests which don't have a final status.
+     * @returns number of requests without final status of current series (excluding current request)
+     */
     getNumApplyRule(): number {
         let reqId = this.requestData.requestId;
         let requests = this.queryBundle.requests.filter(function(req) {
@@ -191,6 +217,10 @@ export class RequestSingleViewComponent {
         return requests.length;
     }
 
+    /**
+     * Returns the rule of the current series.
+     * @returns query rule
+     */
     get queryRule() {
         if (this.queryBundle) {
             return this.queryBundle.rule;
@@ -198,6 +228,10 @@ export class RequestSingleViewComponent {
         return null;
     }
 
+    /**
+     * Deletes the rule of the current series and updates the query bundle.
+     * @returns subscription
+     */
     deleteQueryRule() {
         return this._requestService.deleteQueryRule(this.request.queryId)
             .subscribe(() => { this._requestSingleComponent.updateQueryBundle()});
@@ -218,10 +252,18 @@ export class RequestSingleViewComponent {
         }, 500);
     }
 
+    /**
+     * Returns the query details, e.g. order of request in the current series and how many of them have been accepted or rejected.
+     * @returns query details
+     */
     getQueryDetails() {
         return this._requestSingleComponent.queryDetails;
     }
 
+    /**
+     * Returns all requests of current series in reversed order.
+     * @returns requests of current series
+     */
     get recurrRequests(): LocalRequest[] {
         return this.queryBundle.requests.slice().reverse();
     }

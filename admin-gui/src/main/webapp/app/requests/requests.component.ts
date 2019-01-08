@@ -1,7 +1,7 @@
 /**
  * Created by Xu on 04.05.2017.
  */
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TimerObservable } from 'rxjs/observable/TimerObservable';
 import { Subscription } from 'rxjs';
 
@@ -13,7 +13,7 @@ import { LocalRequest, RequestMarker, RequestStatus } from './request';
     styleUrls: ['./requests.component.css'],
 })
 
-export class RequestsComponent implements OnDestroy {
+export class RequestsComponent implements OnInit, OnDestroy {
     p: number;
     requestsData: LocalRequest[];
     etag = '0';
@@ -38,6 +38,11 @@ export class RequestsComponent implements OnDestroy {
         this._timerSubscription.unsubscribe();
     }
 
+    /**
+     * Returns requests filter.
+     * @returns array of arrays which have the following values: the shown text, the belonging state
+     * and substates of the same form (or null if no substates are available)
+     */
     get stateFilterArray(): [string, RequestStatus|string, any][] {
         return [
             [ 'Alle anzeigen', 'all', null ],
@@ -68,6 +73,9 @@ export class RequestsComponent implements OnDestroy {
         ];
     }
 
+    /**
+     * Updates the list of requests and the belonging etag.
+     */
     updateRequests(): void {
         this._requestService.getRequests(this.etag)
             .subscribe(res => {
@@ -82,6 +90,9 @@ export class RequestsComponent implements OnDestroy {
         return this.requestsData;
     }
 
+    /**
+     * Updates the query details of every series by calculating all values new using the requests of the belonging query bundle as base.
+     */
     updateQueryDetails() {
         for (let i = 0; i < this.requestsData.length; i++) {
             let currReq = this.requestsData[i];

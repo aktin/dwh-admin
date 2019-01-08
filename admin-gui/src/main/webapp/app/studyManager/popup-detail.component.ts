@@ -24,10 +24,19 @@ export class PopUpDetailComponent implements OnInit {
       this.setPreferences();
     }
 
+    /**
+     * Checks if the user has the given permission.
+     * @param The permission that will be checked.
+     */
     isAuthorized(permission: string) {
         return this._managerService.checkPermission(permission);
     }
 
+    /**
+     * Returns the label for the extension based on the underlying reference.
+     * @returns the extension label
+     * @throws error if no label is set in the properties file
+     */
     get extLabel(): String {
         let label: String;
         switch (this.entry.reference) {
