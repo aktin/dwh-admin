@@ -16,6 +16,9 @@ import { HttpInterceptorService } from './helpers/services/http-interceptor.serv
 import { Response } from '@angular/http';
 import { UrlService } from './helpers/services/url.service';
 
+import $ = require('jquery');
+require('semantic-ui');
+
 @Component({
     selector: 'my-app',
     templateUrl: './app.component.html',
@@ -36,6 +39,16 @@ export class AppComponent implements OnInit {
     ngOnInit(): void {
         let title = 'AKTIN - Adminverwaltung';
         this._titleService.setTitle(title);
+
+        $('.main.menu').visibility({
+            type: 'fixed'
+        });
+
+        $('.ui.sticky.go2top')
+            .sticky({
+                context: '.app',
+            })
+        ;
 
         this._router.events
             .filter(event => event instanceof NavigationEnd)

@@ -1,12 +1,13 @@
 <div class="header-version">Version {{version}}</div>
-<div class="ui main container padded grid middle aligned">
-    <a routerLink="/home" class="ui small image three wide column header-logo">
-        <img src="img/AKTIN_Logo_final_alpha.png">
-    </a>
-    <div class="ui header bottom aligned eight wide column header-title">Notaufnahmeregister <br /> Data-Warehouse-Manager</div>
+<div class="ui container">
+    <div class="ui padded grid middle aligned">
+        <a routerLink="/home" class="ui small image three wide column header-logo">
+            <img src="img/AKTIN_Logo_final_alpha.png">
+        </a>
+        <div class="ui header bottom aligned eight wide column header-title">Notaufnahmeregister <br /> Data-Warehouse-Manager</div>
+    </div>
 </div>
 <div class="ui borderless main menu" id="header-menu">
-
     <div class="ui container">
         <ng-container *ngFor="let route of routings">
             <a *ngIf="visible[route.data['name']]" class="item" routerLinkActive="active" routerLink="{{route.path}}">
@@ -21,5 +22,38 @@
 
 <div class="ui text container app">
     <router-outlet></router-outlet>
+    <!--<div class="ui right tiny rail">-->
+        <!--<div class="ui basic button Fixed Bottom sticky go2top">TOP</div>-->
+    <!--</div>-->
+</div>
+<div class="ui vertical footer segment">
+    <div class="ui divider"></div>
+    <div class="ui container">
+        <div class="ui stackable padded grid">
+            <div class="six wide column">
+                <div class="ui basic segment">
+                    Nähere Informationen zum Projekt finden Sie auf den Seiten des Bundesministeriums für Bildung und Forschung - BMBF: https://www.gesundheitsforschung-bmbf.de/de/verbundprojekt-verbesserung-der-versorgungsforschung-in-der-akutmedizin-durch-den-aufbau-4400.php
+                </div>
+                <div class="ui basic segment">
+                    AKTIN ist im Deutschen Register Klinischer Studien (DRKS) erfasst: https://www.drks.de
+                </div>
+                <div class="ui basic segment">
+                    DRKS-ID der Studie: DRKS00009805
+                </div>
+            </div>
+            <div class="six wide center aligned column">
+                <h4 class="ui header">Links</h4>
+                <div class="ui link list">
+                    <a href="#" class="item">Link One</a>
+                    <a href="#" class="item">Link Two</a>
+                    <a href="#" class="item">Link Three</a>
+                    <a href="#" class="item">Link Four</a>
+                </div>
+            </div>
+            <div class="three wide column right aligned ui small image">
+                <img src="img/BMBF_FARBE_Gefoerdert_vom.jpg">
+            </div>
+        </div>
+    </div>
 </div>
 

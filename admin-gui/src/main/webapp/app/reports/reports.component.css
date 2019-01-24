@@ -3,7 +3,7 @@
 }
 
 .reports-filter-checkbox {
-    z-index: 100;
+    z-index: 5;
 }
 .reports-filter-checkbox label {
     cursor: pointer;
