@@ -1,13 +1,19 @@
-.settings/
-.classpath
-.project
+# compiled output
+/dist
+/tmp
+/out-tsc
 target/
-*.zip
 
-node_modules
-local-node/
-package-lock.json
-.idea
-.editorconfig
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
 
-_temp*
+
+# System Files
+.DS_Store
+Thumbs.db
