@@ -3,7 +3,11 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  serverUrls: [
+    "http://134.106.36.86:8087/aktin/admin/rest/",
+    "/aktin/admin/rest/"
+  ]
 };
 
 /*
