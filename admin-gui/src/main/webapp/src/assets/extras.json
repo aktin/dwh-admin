@@ -1,5 +1,19 @@
 {
-  "test": {
-    "url": "extra/test"
-  }
+  "plugins": [
+    {
+      "url": "assets/plugins/plugin-1.bundle.js",
+      "moduleName": "Plugin1Module",
+      "path": "plugin1"
+    },
+    {
+      "url": "assets/plugins/plugin-2.bundle.js",
+      "moduleName": "Plugin2Module",
+      "path": "plugin2"
+    },
+    {
+      "url": "http://ulicor.de/files/plugin-a.bundle.js",
+      "moduleName": "PluginAModule",
+      "path": "plugin-a"
+    }
+  ]
 }

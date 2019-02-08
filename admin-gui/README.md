@@ -1,75 +1,81 @@
-DWH Admin User Interface
-========================
+# DWH Admin User Interface
 
+https://ngrx.io/guide/store
+https://github.com/ngx-api-utils/ngx-api-utils
+https://angular.io/cli/serve#options
+https://material.angular.io/guide/getting-started#step-4-include-a-theme
+https://angular.io/guide/architecture-modules
+https://angular.io/guide/workspace-config
+https://google.github.io/material-design-icons/
+https://angular.io/guide/sharing-ngmodules
+https://angular.io/guide/dynamic-component-loader
+https://angular.io/guide/http
+https://angular.io/guide/router
+https://stackblitz.com/angular/pxxnmodlaykp
+https://itnext.io/how-to-build-a-plugin-extensible-application-architecture-in-angular5-736890278f3f
+https://blog.angularindepth.com/here-is-what-you-need-to-know-about-dynamic-components-in-angular-ac1e96167f9e
+https://angular-2-training-book.rangle.io/handout/modules/lazy-loading-module.html
+https://angular.io/guide/elements
+https://medium.com/@tomsu/building-web-components-with-angular-elements-746cd2a38d5b
 
 No access to secured resources without access token. The call
+
 ```
 curl http://localhost:8080/aktin/admin/auth/test/secured
 ```
+
 will return error status 403 unauthorized.
 
 Login to get a security token:
+
 ```
 curl -i -X POST -H 'Content-Type: application/json' -d '{"username": "userA", "password": "passwD"}' http://localhost:8080/aktin/admin/auth/login
 ```
+
 Remember the returned token UUID.
 
 Use the token to access secured areas:
+
 ```
 curl -H "Authorization: Bearer fe4798-1d90-41d4-a228-21e891d2bb65" http://localhost:8080/aktin/admin/auth/test/secured
 ```
 
+## Testing
 
-Testing
--------
-
-Test the database scripts with jdbc:hsqldb:mem:tempdb... 
+Test the database scripts with jdbc:hsqldb:mem:tempdb...
 e.g. similar to `http://stackoverflow.com/questions/11396219/init-database-for-test-purpose-during-maven-test-phase`
 
+# TODO Webapp
 
-
-TODO Webapp
-====
-
-Naming conventions: _name for private variables
+Naming conventions: \_name for private variables
 Berichte nicht in zukunft stellen
 
 - Container anpassen und Design erzeugen
 - Use loshdash instead of underscore
-- use webpack instead of systemjs   -- https://stackoverflow.com/questions/41436370/going-from-systemjs-to-webpack-with-angular-2-2-4
-- use ahead of time compilation      -- https://angular.io/docs/ts/latest/cookbook/aot-compiler.html
+- use webpack instead of systemjs -- https://stackoverflow.com/questions/41436370/going-from-systemjs-to-webpack-with-angular-2-2-4
+- use ahead of time compilation -- https://angular.io/docs/ts/latest/cookbook/aot-compiler.html
 
 - locale anfragen verwaltung
 
-
 -- breadcrumbs
 
-
 Reports:
-New Report als Formular mit anfang und end datumsfelder [als popup]
-    [default letzten Monat wenn es klappt] mit zeitspann von letzter monat
-    oder letzter monat button wenn nicht
+New Report als Formular mit anfang und end datumsfelder [als popup][default letzten monat wenn es klappt] mit zeitspann von letzter monat
+oder letzter monat button wenn nicht
 
     template auswahl mit rest call von allen templates [default monatsbericht (aktuell einziger)]
 
-
 7. Benutzerverwaltung sehe ich auch nichts.
 
-
-
-
-
-
-Konfigurationen: 
-Beschreibung zum ändern 
+Konfigurationen:
+Beschreibung zum ändern
 
 properties in tabellenform
 3 spalten: Beschreibung - id - wert
 
+---
 
-------
-
-Anfragen: 
+Anfragen:
 
 ToDos (aktions required) [standard]
 Waiting for user interaction
@@ -79,7 +85,6 @@ currently queued anfragen (requests for later)
 
 Detailansicht einer anfrage
 
-
 Farbkodierung (grau, rot)
 
 list:
@@ -87,43 +92,37 @@ Kurztitel,
 Eingang(szeit),
 status (eingegangen, Freigabe erforderlich, abgelehnt, wartet auf Auführung, wird ausgeführt, fehlgeschlagen, Freigabe erforderlich, abgelehnt, wird gesendet, abgeschlossen, ... ),
 Name + Organization des Erstellers
-ist das eine Serie? 
+ist das eine Serie?
 
-
-detail view: [bearbeiten nur mit Rechte] 
+detail view: [bearbeiten nur mit Rechte]
 Abfrageergebnis Anzeigen / Download button (Das Ergebnis der Anfragen können Sie hier herunterladen)
 --> action Freigeben (action box)
 ---- Checkbox Ergebnis der Abfrage vor dem Versenden erneut manuell prüfen und versenden
----- Checkbox (periodisch) Weitere Anfragen aus dieser Serie erneugt zur Freigabe vorlegen 
+---- Checkbox (periodisch) Weitere Anfragen aus dieser Serie erneugt zur Freigabe vorlegen
 --> action Ablehnen
 ---- Textfeld Grund
 Kurztitel,
 Eingang(szeit),
 Zeitraum (scheduled)
 Deadline
-status 
+status
 name / Orga des erstellers
 Beschreibung
 (periodisch) Weitere Anfragen aus der Serie
-request quell text [on request as overlay or second page] 
+request quell text [on request as overlay or second page]
 actionLog der Anfrage (wann angenommen von wem)
 passende regeln (Serie) <--- Sliderbutton für abbruch der Serie
 
-
-actionbox: 
+actionbox:
 +Freigeben------------------+
-| 						  	|
-| O Ergebnis ...			|
-|							|
-| O Serie					|
-| 						  	|
-| Freigeben				  	|
-| 						  	|
+| |
+| O Ergebnis ... |
+| |
+| O Serie |
+| |
+| Freigeben |
+| |
 +---------------------------+
 
-
-
-URLs - REST endpoint in admin gui - request manager (interface, inject) - retrieved request 
+URLs - REST endpoint in admin gui - request manager (interface, inject) - retrieved request
 /requests/
-
-

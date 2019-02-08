@@ -1,5 +1,17 @@
-import { Injectable } from "@angular/core";
+import {
+  Injectable,
+  AfterViewInit,
+  Compiler,
+  Component,
+  ElementRef,
+  EmbeddedViewRef,
+  Injector,
+  Renderer2,
+  ViewChild,
+  ViewContainerRef
+} from "@angular/core";
 import { HttpClient } from "@angular/common/http";
+import _ from "lodash";
 
 export interface Config {
   heroesUrl: string;

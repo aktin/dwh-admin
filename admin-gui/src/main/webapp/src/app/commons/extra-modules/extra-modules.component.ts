@@ -23,12 +23,17 @@ export class ExtraModulesComponent implements AfterViewInit {
   @ViewChild("one") d1: ElementRef;
 
   plugs = [
-    { url: "assets/plugins/plugin-a.bundle.js", moduleName: "PluginAModule" },
+    // { url: "assets/plugins/plugin-a.bundle.js", moduleName: "PluginAModule" },
     { url: "assets/plugins/plugin-1.bundle.js", moduleName: "Plugin1Module" },
-    { url: "assets/plugins/plugin-2.bundle.js", moduleName: "Plugin2Module" }
+    { url: "assets/plugins/plugin-2.bundle.js", moduleName: "Plugin2Module" },
+    {
+      url: "http://ulicor.de/files/plugin-a.bundle.js",
+      moduleName: "PluginAModule"
+    }
   ];
 
   elements: HTMLElement[] = [];
+  components: any = {};
 
   constructor(
     private _compiler: Compiler,
@@ -41,9 +46,10 @@ export class ExtraModulesComponent implements AfterViewInit {
       this.loadMultiPlugin(plug.url, plug.moduleName);
     });
     let i = 2;
-    this.loadPlugins(this.content, this.plugs[i].url, this.plugs[i].moduleName);
+    //this.loadPlugin(this.content, this.plugs[i].url, this.plugs[i].moduleName);
 
     console.log(this.elements);
+    console.log(this.components);
   }
 
   private async loadPluginComponentFactory(url: string, moduleName: string) {
@@ -70,7 +76,7 @@ export class ExtraModulesComponent implements AfterViewInit {
     );
   }
 
-  private async loadPlugins(
+  private async loadPlugin(
     content: ViewContainerRef,
     url: string,
     moduleName: string
@@ -92,8 +98,11 @@ export class ExtraModulesComponent implements AfterViewInit {
     var currentElement = (curComp.hostView as EmbeddedViewRef<any>)
       .rootNodes[0] as HTMLElement;
     this.elements.push(currentElement);
+    this.components[moduleName] = curComp.instance;
 
-    this._renderer.appendChild(this.d1.nativeElement, currentElement);
+    this.content.insert(curComp.hostView);
+
+    //this._renderer.appendChild(this.d1.nativeElement, currentElement);
   }
 }
 
