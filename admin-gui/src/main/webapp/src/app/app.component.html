@@ -1,11 +1,16 @@
 <div>header {{ title }}</div>
 <mat-toolbar>
-  <a mat-button href="/">Menu</a>
-  <button mat-button>Menu</button>
+  <a mat-button href="/">Home</a>
+  <!--<button mat-button>Menu</button>-->
+  <ng-container *ngFor="let route of routings">
+    <a mat-button routerLinkActive="active" routerLink="{{ route.path }}">
+      <span class="header-menu-item-content">{{ route.data["name"] }}</span>
+    </a>
+  </ng-container>
 </mat-toolbar>
 <div>
   <div>body</div>
-  <test-dummy></test-dummy>
+  routs {{ routings }}
   <router-outlet></router-outlet>
 </div>
 <!--<div>footer</div>-->

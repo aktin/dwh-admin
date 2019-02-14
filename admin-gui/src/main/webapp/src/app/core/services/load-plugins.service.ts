@@ -1,12 +1,12 @@
-import { Compiler, Injectable, Injector } from "@angular/core";
+import { Compiler, Injectable, Injector, NgModuleRef } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import _ from "lodash";
 declare const SystemJS: any;
 
 export interface PluginConfig {
   url: string;
   moduleName: string;
   path: string;
+  name: string;
 }
 
 @Injectable({
@@ -21,38 +21,54 @@ export class LoadPluginsService {
 
   components: any = {};
   configUrl = "assets/extras.json";
+  routes: any = [];
+  plugins: PluginConfig[] = null;
 
-  getConfig() {
-    return this._http.get(this.configUrl);
+  getPluginRouts() {
+    return this.routes;
   }
 
-  loadConfigFile() {
-    this._http.get(this.configUrl).subscribe((data: any) => {
-      console.log(123);
-      console.log(data["plugins"]);
-      var plugins: PluginConfig[] = data["plugins"];
-      _.forEach(plugins, plug => {
-        console.log(plug.moduleName);
-        this.loadPlugin(plug);
-      });
+  async asyncForEach(array, callback) {
+    console.log(array);
+    for (let index = 0; index < array.length; index++) {
+      await callback(array[index], index, array);
+    }
+  }
+
+  async loadConfigFile() {
+    let data = await this._http.get(this.configUrl).toPromise();
+    this.plugins = data["plugins"];
+    await this.asyncForEach(this.plugins, async plug => {
+      await this.loadPlugin(plug);
     });
   }
 
   async loadPlugin(plug: PluginConfig) {
-    this.components[plug.moduleName] = await this.loadPluginComponent(plug);
-    console.log(this.components);
+    const moduleRef = await this.loadPluginModuleRef(plug);
+    const component = await this.getComponentFromModuleRef(moduleRef);
+    this.components[plug.moduleName] = component;
+    this.routes.push({
+      path: plug.path,
+      component: component,
+      data: {
+        name: plug.name
+      }
+      //loadChildren: moduleRef.instance
+    });
   }
 
-  private async loadPluginComponent(plug: PluginConfig) {
+  private async loadPluginModuleRef(plug: PluginConfig) {
     // import external module bundle
     const module = await SystemJS.import(plug.url);
-    console.log(plug.moduleName, module, plug.url);
+    // console.log(plug.moduleName, module, plug.url);
     // compile module
     const moduleFactory = await this._compiler.compileModuleAsync<any>(
       module[plug.moduleName]
     );
-    // resolve component factory
-    const moduleRef = moduleFactory.create(this._injector);
+    return moduleFactory.create(this._injector);
+  }
+
+  private async getComponentFromModuleRef(moduleRef: NgModuleRef<any>) {
     // const componentProvider = moduleRef.injector.get("plugins");
     const componentProvider = moduleRef.injector.get<PluginDeclaration>(
       // @ts-ignore
@@ -65,7 +81,6 @@ export class LoadPluginsService {
     >(componentProvider[0][0].component);
 
     return componentFactory.create(this._injector).instance;
-    // this.components[plug.moduleName] = curComp.instance;
   }
 }
 
