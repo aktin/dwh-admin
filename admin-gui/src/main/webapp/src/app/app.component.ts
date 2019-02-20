@@ -1,9 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router, Route, Routes } from "@angular/router";
 import { Title } from "@angular/platform-browser";
-import { appRoutings } from "@app/app.routes";
-import { LoadPluginsService } from "@app/core";
+import { APP_ROUTES_FUSING } from "@app/app.routes";
 import { TestDummyComponent } from "@app/test-dummy/test-dummy.component";
+
+import { LoadPluginsService, LoadExternalComponent } from "@app/core";
 import _ from "lodash";
 
 @Component({
@@ -26,27 +27,43 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     let title = "AKTIN - Adminverwaltung";
     this._titleService.setTitle(title);
-    let curRoutes = this._router.config;
-    let someRoutes: Route[] = [
+    let someRoutes: Routes = [
       {
         path: "test",
         component: TestDummyComponent,
         data: {
-          name: "BLub"
+          name: "Blub"
         }
       }
     ];
 
-    this._plugins.loadConfigFile().then(() => {
-      this._router.resetConfig(
-        _.concat(curRoutes, someRoutes, this._plugins.routes)
+    this._plugins.loadConfigFile(LoadExternalComponent).then(() => {
+      let curRoutes = this._router.config;
+      curRoutes = APP_ROUTES_FUSING(
+        // @ts-ignore
+        curRoutes,
+        // @ts-ignore
+        someRoutes,
+        // @ts-ignore
+        this._plugins.routes
       );
-      console.log(this._router.config);
+      this._router.resetConfig(curRoutes);
     });
   }
 
   get routings() {
-    return this._router.config;
+    let routs = _.reduce(
+      this._router.config,
+      (memo, route) => {
+        if (route.data && route.data["name"]) {
+          memo.push(route);
+        }
+        return memo;
+      },
+      []
+    );
+
+    return routs;
   }
   /*export const appRoutings = _.reduce(
   routes,

@@ -18,13 +18,14 @@ import { StoreRouterConnectingModule } from "@ngrx/router-store";
 
 import { environment } from "@env/environment";
 
-import { APP_ROUTES } from "@app/app.routes";
+import { APP_ROUTES_FUSING } from "@app/app.routes";
 import { CoreModule } from "@app/core";
 import { SharedModule } from "@app/shared";
 import { MaterialModule } from "@app/material";
 
 import { AppComponent } from "@app/app.component";
 import { TestDummyComponent } from "@app/test-dummy/test-dummy.component";
+import { ReportsModule } from "@app/reports";
 
 export function createCompiler(fn: CompilerFactory): Compiler {
   return fn.createCompiler();
@@ -33,11 +34,12 @@ export function createCompiler(fn: CompilerFactory): Compiler {
 @NgModule({
   declarations: [AppComponent, TestDummyComponent],
   imports: [
-    RouterModule.forRoot(APP_ROUTES, { useHash: true }),
+    RouterModule.forRoot(APP_ROUTES_FUSING(), { useHash: true }),
     BrowserModule,
     CoreModule.forRoot(),
     SharedModule.forRoot(),
     MaterialModule,
+    ReportsModule,
     StoreModule.forRoot(reducers, { metaReducers }),
     StoreDevtoolsModule.instrument({
       maxAge: 25,

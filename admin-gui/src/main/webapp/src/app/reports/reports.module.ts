@@ -8,6 +8,9 @@ import { REPORTS_ROUTES } from "./reports.routes";
 
 @NgModule({
   declarations: [ReportsListComponent, ReportComponent],
-  imports: [RouterModule.forChild(REPORTS_ROUTES), CommonModule]
+  imports: [
+    // RouterModule.forChild(REPORTS_ROUTES),
+    CommonModule
+  ]
 })
 export class ReportsModule {}

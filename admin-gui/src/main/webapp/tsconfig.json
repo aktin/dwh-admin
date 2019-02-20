@@ -11,7 +11,8 @@
       "@env/*": ["src/environments/*"]
     },
     "declaration": false,
-    "module": "es2015",
+    //    "module": "es2015",
+    "module": "esNext",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,

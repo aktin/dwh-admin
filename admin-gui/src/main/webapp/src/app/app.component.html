@@ -1,6 +1,6 @@
 <div>header {{ title }}</div>
 <mat-toolbar>
-  <a mat-button href="/">Home</a>
+  <!--<a mat-button href="/">Home</a>-->
   <!--<button mat-button>Menu</button>-->
   <ng-container *ngFor="let route of routings">
     <a mat-button routerLinkActive="active" routerLink="{{ route.path }}">
@@ -9,8 +9,6 @@
   </ng-container>
 </mat-toolbar>
 <div>
-  <div>body</div>
-  routs {{ routings }}
   <router-outlet></router-outlet>
 </div>
 <!--<div>footer</div>-->

@@ -1,5 +1,7 @@
-import { Compiler, Injectable, Injector, NgModuleRef } from "@angular/core";
+import { Compiler, Injectable, Injector } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
+import { Route, Routes } from "@angular/router";
+
 declare const SystemJS: any;
 
 export interface PluginConfig {
@@ -20,55 +22,39 @@ export class LoadPluginsService {
   ) {}
 
   components: any = {};
+  componentFactory: any = {};
+  modules: any = {};
   configUrl = "assets/extras.json";
-  routes: any = [];
+  routes: Routes = [];
   plugins: PluginConfig[] = null;
 
-  getPluginRouts() {
-    return this.routes;
-  }
-
   async asyncForEach(array, callback) {
-    console.log(array);
+    // console.log(array);
     for (let index = 0; index < array.length; index++) {
       await callback(array[index], index, array);
     }
   }
 
-  async loadConfigFile() {
+  async loadConfigFile(pathComponent: any) {
     let data = await this._http.get(this.configUrl).toPromise();
     this.plugins = data["plugins"];
     await this.asyncForEach(this.plugins, async plug => {
-      await this.loadPlugin(plug);
+      await this.loadPlugin(plug, pathComponent);
     });
   }
 
-  async loadPlugin(plug: PluginConfig) {
-    const moduleRef = await this.loadPluginModuleRef(plug);
-    const component = await this.getComponentFromModuleRef(moduleRef);
-    this.components[plug.moduleName] = component;
-    this.routes.push({
-      path: plug.path,
-      component: component,
-      data: {
-        name: plug.name
-      }
-      //loadChildren: moduleRef.instance
-    });
-  }
-
-  private async loadPluginModuleRef(plug: PluginConfig) {
+  async loadPlugin(plug: PluginConfig, pathComponent: any) {
     // import external module bundle
     const module = await SystemJS.import(plug.url);
+
     // console.log(plug.moduleName, module, plug.url);
     // compile module
     const moduleFactory = await this._compiler.compileModuleAsync<any>(
       module[plug.moduleName]
     );
-    return moduleFactory.create(this._injector);
-  }
 
-  private async getComponentFromModuleRef(moduleRef: NgModuleRef<any>) {
+    const moduleRef = await moduleFactory.create(this._injector);
+
     // const componentProvider = moduleRef.injector.get("plugins");
     const componentProvider = moduleRef.injector.get<PluginDeclaration>(
       // @ts-ignore
@@ -80,7 +66,28 @@ export class LoadPluginsService {
       any
     >(componentProvider[0][0].component);
 
-    return componentFactory.create(this._injector).instance;
+    // console.log(componentProvider);
+    const component = await componentFactory.create(this._injector);
+
+    this.components[plug.moduleName] = component;
+    this.componentFactory[plug.moduleName] = componentFactory;
+    this.modules[plug.moduleName] = moduleRef;
+
+    let route = {
+      path: plug.path,
+      component: pathComponent,
+      data: {
+        name: plug.name,
+        plugin: plug.moduleName,
+        factory: componentFactory
+      }
+    };
+    if (componentProvider[0].length >= 2) {
+      // console.log(componentProvider[0][1].component);
+      route["children"] = componentProvider[0][1].component;
+    }
+
+    this.routes.push(route);
   }
 }
 

@@ -18664,6 +18664,10 @@ and limitations under the License.
                 {
                   name: "plugin-2-component",
                   component: Plugin2Component
+                },
+                {
+                  name: "PLUGIN_2_ROUTES",
+                  component: PLUGIN_2_ROUTES
                 }
               ],
               multi: true
