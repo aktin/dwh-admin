@@ -1,3 +1,3 @@
 export * from "./core.module";
 
-export * from "./services/load-external/load-external.component";
+export * from "./load-external/load-external.component";

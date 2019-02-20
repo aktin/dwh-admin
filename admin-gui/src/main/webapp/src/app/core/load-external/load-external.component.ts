@@ -9,7 +9,7 @@ import { ActivatedRoute } from "@angular/router";
 
 @Component({
   selector: "admin-gui-load-external",
-  template: "hallo external <div #content></div>"
+  template: "hallo external<br> <div #content></div>"
 })
 export class LoadExternalComponent implements AfterViewInit {
   @ViewChild("content", { read: ViewContainerRef }) content: ViewContainerRef;

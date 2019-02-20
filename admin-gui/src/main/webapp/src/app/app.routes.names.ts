@@ -2,32 +2,24 @@ import { REPORTS_ROUTES_NAMES } from "@app/reports";
 import _ from "lodash";
 
 export const APP_ROUTES_NAMES = {
-  HOME: { path: "home" },
+  HOME: { path: "home", name: "Start" },
   REPORT: {
     path: "report",
+    name: "Bericht",
     children: REPORTS_ROUTES_NAMES
   }
 };
 
-export interface AppRouteName {
-  path: string;
-  children?: any;
-}
-
 export function APP_ROUTE_LINK(routes: string[]) {
   let url = "";
-  let names_obj = APP_ROUTES_NAMES;
+  let names = APP_ROUTES_NAMES;
   _.each(routes, r => {
-    if (names_obj === undefined || names_obj[r] === undefined) {
-      console.log(names_obj, r);
+    if (names === undefined || names[r] === undefined) {
       return false;
     }
-    url += "/" + names_obj[r].path;
-    names_obj = names_obj[r].children;
+    url += "/" + names[r].path;
+    names = names[r].children;
   });
-  return url;
-}
 
-export function APP_ROUTE_ALT_LINK(...routes) {
-  return APP_ROUTE_LINK(routes);
+  return url;
 }

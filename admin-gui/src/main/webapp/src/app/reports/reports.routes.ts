@@ -1,6 +1,5 @@
 import { ReportsListComponent } from "./reports-list.component";
 import { ReportComponent } from "./report.component";
-import { Routes } from "@angular/router";
 
 export const REPORTS_ROUTES_NAMES = {
   HOME: { path: "" },
@@ -21,25 +20,25 @@ export const REPORTS_ROUTES_NAMES = {
   }
 };
 
-export const REPORTS_ROUTES: Routes = [
-  { path: REPORTS_ROUTES_NAMES.HOME.path, component: ReportsListComponent },
-  { path: REPORTS_ROUTES_NAMES.SINGLE.path, component: ReportComponent },
-  {
-    path: REPORTS_ROUTES_NAMES.TEST.path,
-    children: [
-      {
-        path: REPORTS_ROUTES_NAMES.TEST.children.TEST.path,
+export const REPORTS_ROUTES_OBJ = {
+  HOME: {
+    component: ReportsListComponent
+  },
+  SINGLE: {
+    component: ReportComponent
+  },
+  TEST: {
+    childrenObj: {
+      HOME: {
         component: ReportComponent
       },
-      {
-        path: REPORTS_ROUTES_NAMES.TEST.children.HOME.path,
+      TEST: {
         component: ReportComponent
       },
-      {
-        path: REPORTS_ROUTES_NAMES.TEST.children.SINGLE.path,
+      SINGLE: {
         component: ReportsListComponent
       }
-    ]
+    }
   }
   // { path: ":id", component: RequestSingleComponent }
-];
+};

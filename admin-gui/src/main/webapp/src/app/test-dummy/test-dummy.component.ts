@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { APP_ROUTE_ALT_LINK, APP_ROUTE_LINK } from "@app/app.routes.names";
+import { LinkerService } from "@app/core/services/linker.service";
 
 @Component({
   selector: "test-dummy",
@@ -8,18 +8,16 @@ import { APP_ROUTE_ALT_LINK, APP_ROUTE_LINK } from "@app/app.routes.names";
   styleUrls: ["./test-dummy.component.css"]
 })
 export class TestDummyComponent implements OnInit {
-  constructor(private _route: ActivatedRoute) {}
+  constructor(private _route: ActivatedRoute, private _linker: LinkerService) {}
 
   config: any = "hallo";
 
   showConfig() {}
   ngOnInit() {
     console.log(this._route);
-    console.log(APP_ROUTE_ALT_LINK("REPORT"));
   }
 
   getUrls(...routes) {
-    console.log(routes);
-    return APP_ROUTE_LINK(routes);
+    return this._linker.parse(routes);
   }
 }

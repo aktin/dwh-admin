@@ -1,6 +1,6 @@
 import { Compiler, Injectable, Injector } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Route, Routes } from "@angular/router";
+import { Routes } from "@angular/router";
 
 declare const SystemJS: any;
 
