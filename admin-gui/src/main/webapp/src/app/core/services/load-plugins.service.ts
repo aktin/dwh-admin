@@ -1,6 +1,9 @@
-import { Compiler, Injectable, Injector } from "@angular/core";
+import { Compiler, Component, Injectable, Injector } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Routes } from "@angular/router";
+import { LinkerService } from "./linker.service";
+import _ from "lodash";
+import { ROUTE_REDUCE } from "@app/app.routes.names";
 
 declare const SystemJS: any;
 
@@ -18,7 +21,8 @@ export class LoadPluginsService {
   constructor(
     private _http: HttpClient,
     private _compiler: Compiler,
-    private _injector: Injector
+    private _injector: Injector,
+    private _linker: LinkerService
   ) {}
 
   components: any = {};
@@ -32,6 +36,12 @@ export class LoadPluginsService {
     // console.log(array);
     for (let index = 0; index < array.length; index++) {
       await callback(array[index], index, array);
+    }
+  }
+  async asyncForEachObject(obj, callback) {
+    // console.log(array);
+    for (let key in obj) {
+      await callback(obj[key], key, obj);
     }
   }
 
@@ -54,37 +64,70 @@ export class LoadPluginsService {
     );
 
     const moduleRef = await moduleFactory.create(this._injector);
-
     // const componentProvider = moduleRef.injector.get("plugins");
     const componentProvider = moduleRef.injector.get<PluginDeclaration>(
       // @ts-ignore
       "plugins",
       "No Injector Found - error"
     );
-    //from plugins array load the component on position 0
-    const componentFactory = await moduleRef.componentFactoryResolver.resolveComponentFactory<
-      any
-    >(componentProvider[0][0].component);
 
-    // console.log(componentProvider);
-    const component = await componentFactory.create(this._injector);
-
-    this.components[plug.moduleName] = component;
-    this.componentFactory[plug.moduleName] = componentFactory;
     this.modules[plug.moduleName] = moduleRef;
 
     let route = {
       path: plug.path,
-      component: pathComponent,
       data: {
         name: plug.name,
-        plugin: plug.moduleName,
-        factory: componentFactory
+        plugin: plug.moduleName
       }
     };
-    if (componentProvider[0].length >= 2) {
-      // console.log(componentProvider[0][1].component);
-      route["children"] = componentProvider[0][1].component;
+
+    // const componentFactory = await moduleRef.componentFactoryResolver.resolveComponentFactory<any>(componentProvider[0][0].component);
+    // this.componentFactory[plug.moduleName] = componentFactory;
+    // const component = await componentFactory.create(this._injector);
+    // this.components[plug.moduleName] = component;
+
+    let provider = _.clone(componentProvider[0]);
+
+    let provRoutNames = _.remove(provider, item => {
+      return item.name.includes("ROUTES_NAMES");
+    })[0];
+    let provRoutes = _.remove(provider, item => {
+      return item.name.includes("ROUTES");
+    })[0];
+
+    if (!provRoutes) {
+      // no routes, just load the component of the first item from the plugins array
+      route.data["component"] = provider[0].component;
+      route["component"] = pathComponent;
+      route.data[
+        "factory"
+      ] = await moduleRef.componentFactoryResolver.resolveComponentFactory<any>(
+        route.data["component"]
+      );
+    } else {
+      let children = provRoutes.component;
+      _.each(children, item => {
+        if (!item.component) return;
+        if (!item.data) item.data = {};
+        item.data["component"] = item.component;
+        item["component"] = pathComponent;
+      });
+
+      route["children"] = ROUTE_REDUCE(
+        children,
+        provRoutNames.component,
+        [plug.moduleName.toUpperCase()],
+        plug.path
+      );
+
+      await this.asyncForEachObject(children, async item => {
+        if (!item.data["component"]) return;
+        item.data[
+          "factory"
+        ] = await moduleRef.componentFactoryResolver.resolveComponentFactory<
+          any
+        >(item.data["component"]);
+      });
     }
 
     this.routes.push(route);

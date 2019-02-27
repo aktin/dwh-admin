@@ -27,15 +27,6 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     let title = "AKTIN - Adminverwaltung";
     this._titleService.setTitle(title);
-    let someRoutes: Routes = [
-      {
-        path: "test",
-        component: TestDummyComponent,
-        data: {
-          name: "Blub"
-        }
-      }
-    ];
 
     this._plugins.loadConfigFile(LoadExternalComponent).then(() => {
       let curRoutes = this._router.config;
@@ -43,11 +34,10 @@ export class AppComponent implements OnInit {
         // @ts-ignore
         curRoutes,
         // @ts-ignore
-        someRoutes,
-        // @ts-ignore
         this._plugins.routes
       );
       this._router.resetConfig(curRoutes);
+      console.log(this._router.config);
     });
   }
 
@@ -65,14 +55,4 @@ export class AppComponent implements OnInit {
 
     return routs;
   }
-  /*export const appRoutings = _.reduce(
-  routes,
-  (list, route) => {
-    if (route.data && route.data["name"]) {
-      list.push(route);
-    }
-    return list;
-  },
-  []
-);*/
 }

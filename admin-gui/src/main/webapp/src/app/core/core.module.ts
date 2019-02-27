@@ -1,9 +1,8 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 
-import { LoadPluginsService } from "./services/load-plugins.service";
 import { LoadExternalComponent } from "./load-external/load-external.component";
-import { LinkerService } from "./services/linker.service";
+import { LoadPluginsService, LinkerService } from "./services";
 
 @NgModule({
   declarations: [LoadExternalComponent],

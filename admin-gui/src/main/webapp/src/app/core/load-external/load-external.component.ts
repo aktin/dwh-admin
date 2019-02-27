@@ -1,9 +1,9 @@
 import {
   Component,
-  OnInit,
   AfterViewInit,
   ViewChild,
-  ViewContainerRef
+  ViewContainerRef,
+  Injector
 } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 
@@ -13,15 +13,18 @@ import { ActivatedRoute } from "@angular/router";
 })
 export class LoadExternalComponent implements AfterViewInit {
   @ViewChild("content", { read: ViewContainerRef }) content: ViewContainerRef;
-  constructor(private _route: ActivatedRoute) {}
-
-  ngOnInit() {}
+  constructor(private _route: ActivatedRoute, private _injector: Injector) {}
 
   ngAfterViewInit(): void {
     this._route.data.subscribe(data => {
       let factory = data["factory"];
       if (factory) {
-        this.content.createComponent(factory);
+        console.log(factory, factory.inputs, factory.outputs);
+        let pluginComponent = this.content.createComponent(
+          factory,
+          0,
+          this._injector
+        );
       }
     });
   }
