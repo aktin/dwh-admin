@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { APP_ROUTE_LINK } from "@app/app.routes.names";
+import { UrlService } from "@app/routing";
 
 @Injectable({
   providedIn: "root"
@@ -8,6 +8,6 @@ export class LinkerService {
   constructor() {}
 
   parse(routes: string[]) {
-    return APP_ROUTE_LINK(routes);
+    return UrlService.link(routes);
   }
 }

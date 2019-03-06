@@ -1,8 +1,8 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute, Router, Route, Routes } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { Title } from "@angular/platform-browser";
-import { APP_ROUTES_FUSING } from "@app/app.routes";
-import { TestDummyComponent } from "@app/test-dummy/test-dummy.component";
+
+import { APP_ROUTES_FUSING } from "@app/routing/app.routes";
 
 import { LoadPluginsService, LoadExternalComponent } from "@app/core";
 import _ from "lodash";

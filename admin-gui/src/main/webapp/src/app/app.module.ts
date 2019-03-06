@@ -18,14 +18,15 @@ import { StoreRouterConnectingModule } from "@ngrx/router-store";
 
 import { environment } from "@env/environment";
 
-import { APP_ROUTES_FUSING } from "@app/app.routes";
 import { CoreModule } from "@app/core";
 import { SharedModule } from "@app/shared";
 import { MaterialModule } from "@app/material";
 
 import { AppComponent } from "@app/app.component";
-import { TestDummyComponent } from "@app/test-dummy/test-dummy.component";
+import { TestDummyComponent } from "@app/test-dummy";
 import { ReportsModule } from "@app/reports";
+import { UrlService } from "@app/routing";
+import { APP_ROUTES_FUSING, APP_LAST_ROUTES } from "@app/routing/app.routes";
 
 export function createCompiler(fn: CompilerFactory): Compiler {
   return fn.createCompiler();
@@ -34,7 +35,7 @@ export function createCompiler(fn: CompilerFactory): Compiler {
 @NgModule({
   declarations: [AppComponent, TestDummyComponent],
   imports: [
-    RouterModule.forRoot(APP_ROUTES_FUSING(), { useHash: true }),
+    RouterModule.forRoot([], { useHash: true }),
     BrowserModule,
     CoreModule.forRoot(),
     SharedModule.forRoot(),
@@ -51,6 +52,7 @@ export function createCompiler(fn: CompilerFactory): Compiler {
   ],
   exports: [],
   providers: [
+    UrlService,
     {
       provide: COMPILER_OPTIONS,
       useValue: {},

@@ -1,9 +1,8 @@
-import { Compiler, Component, Injectable, Injector } from "@angular/core";
+import { Compiler, Injectable, Injector } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Routes } from "@angular/router";
-import { LinkerService } from "./linker.service";
 import _ from "lodash";
-import { ROUTE_REDUCE } from "@app/app.routes.names";
+import { ROUTE_REDUCE } from "@app/routing";
 
 declare const SystemJS: any;
 
@@ -21,12 +20,9 @@ export class LoadPluginsService {
   constructor(
     private _http: HttpClient,
     private _compiler: Compiler,
-    private _injector: Injector,
-    private _linker: LinkerService
+    private _injector: Injector
   ) {}
 
-  components: any = {};
-  componentFactory: any = {};
   modules: any = {};
   configUrl = "assets/extras.json";
   routes: Routes = [];

@@ -1,8 +1,8 @@
-import { Routes, RouterModule, Route } from "@angular/router";
-import _ from "lodash";
+import { Routes } from "@angular/router";
 import { TestDummyComponent } from "@app/test-dummy/";
 import { REPORTS_ROUTES_OBJ } from "@app/reports";
-import { APP_ROUTES_NAMES, ROUTE_REDUCE } from "@app/app.routes.names";
+import { APP_ROUTES_NAMES, ROUTE_REDUCE } from "./app.routes.names";
+import _ from "lodash";
 // https://medium.com/@shairez/angular-routing-a-better-pattern-for-large-scale-apps-f2890c952a18
 
 export const APP_ROUTES_OBJ = {
@@ -15,7 +15,7 @@ export const APP_ROUTES_OBJ = {
   }
 };
 
-const APP_LAST_ROUTES: Routes = [
+export const APP_LAST_ROUTES: Routes = [
   /*last resort*/
   {
     path: "**",
@@ -29,12 +29,13 @@ const APP_LAST_ROUTES: Routes = [
   }
 ];
 
-export function APP_ROUTES_FUSING(...routesArrays) {
+export function APP_ROUTES_FUSING(...routesArrays): Routes {
+  console.log(routesArrays);
   if (routesArrays.length == 0) {
-    return ROUTE_REDUCE(APP_ROUTES_OBJ, APP_ROUTES_NAMES).concat(
-      APP_LAST_ROUTES
-    );
+    routesArrays.push([]);
   }
+  if (routesArrays[0].length == 0)
+    routesArrays[0] = ROUTE_REDUCE(APP_ROUTES_OBJ, APP_ROUTES_NAMES);
   let array: Routes = [];
   routesArrays.forEach(routes => {
     _.each(APP_LAST_ROUTES, dR => _.remove(routes, _.matches(dR)));
