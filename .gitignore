@@ -3,5 +3,6 @@
 .recommenders/
 .classpath
 .project
+.idea/
 target/
 dwh-mail/
