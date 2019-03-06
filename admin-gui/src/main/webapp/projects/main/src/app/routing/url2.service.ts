@@ -5,7 +5,7 @@ import _ from "lodash";
 @Injectable({
   providedIn: "root"
 })
-export class UrlService {
+export class Url2Service {
   constructor() {}
 
   static link(routes: string[]) {

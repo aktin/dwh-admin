@@ -1,11 +1,11 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
-  "newProjectRoot": "adminGui",
+  "newProjectRoot": "projects",
   "projects": {
     "aktin-dwh-admin-gui": {
-      "root": "",
-      "sourceRoot": "src",
+      "root": "projects/main",
+      "sourceRoot": "projects/main/src",
       "projectType": "application",
       "prefix": "admin-gui",
       "schematics": {
@@ -36,14 +36,17 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "../../../target/aktin-dwh-admin-gui",
-            "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.app.json",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "index": "projects/main/src/index.html",
+            "main": "projects/main/src/main.ts",
+            "polyfills": "projects/main/src/polyfills.ts",
+            "tsConfig": "projects/main/tsconfig.app.json",
+            "assets": [
+              "projects/main/src/favicon.ico",
+              "projects/main/src/assets"
+            ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "src/styles.css"
+              "projects/main/src/styles.css"
             ],
             "scripts": [
               "node_modules/systemjs/dist/system.js",
@@ -56,8 +59,8 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
+                  "replace": "projects/main/src/environments/environment.ts",
+                  "with": "projects/main/src/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,
@@ -96,25 +99,10 @@
             "browserTarget": "aktin-dwh-admin-gui:build"
           }
         },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
-            "tsConfig": "src/tsconfig.spec.json",
-            "karmaConfig": "src/karma.conf.js",
-            "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "src/styles.css"
-            ],
-            "scripts": [],
-            "assets": ["src/favicon.ico", "src/assets"]
-          }
-        },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": ["src/tsconfig.app.json", "src/tsconfig.spec.json"],
+            "tsConfig": ["projects/main/tsconfig.app.json"],
             "exclude": ["**/node_modules/**"]
           }
         }

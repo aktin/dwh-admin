@@ -25,8 +25,9 @@ import { MaterialModule } from "@app/material";
 import { AppComponent } from "@app/app.component";
 import { TestDummyComponent } from "@app/test-dummy";
 import { ReportsModule } from "@app/reports";
-import { UrlService } from "@app/routing";
-import { APP_ROUTES_FUSING, APP_LAST_ROUTES } from "@app/routing/app.routes";
+import { APP_ROUTES_NAMES, Url2Service } from "@app/routing";
+
+import { DwhAdminUtilsModule } from "@lib/utils";
 
 export function createCompiler(fn: CompilerFactory): Compiler {
   return fn.createCompiler();
@@ -35,6 +36,7 @@ export function createCompiler(fn: CompilerFactory): Compiler {
 @NgModule({
   declarations: [AppComponent, TestDummyComponent],
   imports: [
+    DwhAdminUtilsModule.forRoot(APP_ROUTES_NAMES),
     RouterModule.forRoot([], { useHash: true }),
     BrowserModule,
     CoreModule.forRoot(),
@@ -52,7 +54,7 @@ export function createCompiler(fn: CompilerFactory): Compiler {
   ],
   exports: [],
   providers: [
-    UrlService,
+    Url2Service,
     {
       provide: COMPILER_OPTIONS,
       useValue: {},
