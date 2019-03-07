@@ -1,0 +1,23 @@
+# compiled output
+/dist
+/tmp
+/out-tsc
+target/
+
+# dependencies
+/node_modules
+/.rpt2_cache
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+
+# System Files
+.DS_Store
+Thumbs.db
