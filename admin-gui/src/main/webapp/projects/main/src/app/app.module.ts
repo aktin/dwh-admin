@@ -24,9 +24,6 @@ import { MaterialModule } from "@app/material";
 import { AppComponent } from "@app/app.component";
 import { ReportsModule } from "@app/reports";
 
-// import { APP_ROUTES_NAMES } from "@app/routing";
-// import { DwhAdminUtilsModule } from "@app/core";
-
 import { AppRouterModule } from "@app/routing/app-router.module";
 import {
   HomeComponent,

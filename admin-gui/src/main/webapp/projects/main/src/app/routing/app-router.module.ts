@@ -1,8 +1,7 @@
 import { NgModule } from "@angular/core";
 import { Router, RouterModule, Routes } from "@angular/router";
 import { APP_LAST_ROUTES, APP_ROUTES_OBJ } from "./app.routes";
-import { APP_ROUTES_NAMES } from "./app.routes.names";
-import { ROUTE_REDUCE } from "./route-reduce.function";
+import { APP_ROUTES_NAMES, ROUTE_REDUCE } from "./names";
 import _ from "lodash";
 import { DwhAdminUtilsModule, UrlService } from "@app/core";
 

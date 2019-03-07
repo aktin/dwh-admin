@@ -9,7 +9,6 @@ import { LoadPluginsService } from "./services";
   imports: [CommonModule],
   entryComponents: [LoadExternalComponent],
   exports: [LoadExternalComponent]
-  // providers: [LoadPluginsService]
 })
 export class CoreModule {
   static forRoot() {

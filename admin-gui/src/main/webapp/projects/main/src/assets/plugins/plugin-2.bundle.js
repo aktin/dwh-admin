@@ -91,13 +91,14 @@
                 providers: [{
                         provide: 'plugins',
                         useValue: [
-                            {
-                                name: 'plugin-2-component',
-                                component: Plugin2Component
-                            }, {
-                                name: 'sub-component',
-                                component: SubComponent
-                            },
+                            // {
+                            //     name: 'plugin-2-component',
+                            //     component: Plugin2Component
+                            // },
+                            // {
+                            //     name: 'sub-component',
+                            //     component: SubComponent
+                            // },
                             {
                                 name: 'METADATA',
                                 routesNames: PLUGIN_2_ROUTES_NAMES,

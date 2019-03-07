@@ -1,2 +1,2 @@
-export * from "./app.routes.names";
-export * from "./route-reduce.function";
+export * from "./app.routes";
+export * from "./app-router.module";

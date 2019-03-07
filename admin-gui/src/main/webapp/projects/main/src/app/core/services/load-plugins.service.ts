@@ -2,13 +2,13 @@ import { Compiler, Injectable, Injector } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Routes } from "@angular/router";
 import _ from "lodash";
-import { ROUTE_REDUCE } from "@app/routing";
+import { ROUTE_REDUCE } from "@app/routing/names";
 
 declare const SystemJS: any;
 
 export interface PluginConfig {
   url: string;
-  moduleName: string;
+  moduleName?: string;
 }
 
 @Injectable({
@@ -52,7 +52,8 @@ export class LoadPluginsService {
     // import external module bundle
     const module = await SystemJS.import(plug.url);
 
-    // console.log(plug.moduleName, module, plug.url);
+    if (!plug.moduleName) plug.moduleName = "MainModule";
+
     // compile module
     const moduleFactory = await this._compiler.compileModuleAsync<any>(
       module[plug.moduleName]

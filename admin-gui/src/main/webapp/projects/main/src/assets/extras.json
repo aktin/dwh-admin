@@ -11,6 +11,9 @@
     {
       "url": "http://ulicor.de/files/plugin-a.bundle.js",
       "moduleName": "PluginAModule"
+    },
+    {
+      "url": "assets/plugins/enquire.bundle.js"
     }
   ]
 }
