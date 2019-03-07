@@ -25,9 +25,10 @@ import { MaterialModule } from "@app/material";
 import { AppComponent } from "@app/app.component";
 import { TestDummyComponent } from "@app/test-dummy";
 import { ReportsModule } from "@app/reports";
-import { APP_ROUTES_NAMES, Url2Service } from "@app/routing";
+import { APP_ROUTES_NAMES } from "@app/routing";
 
-import { DwhAdminUtilsModule } from "@lib/utils";
+import { DwhAdminUtilsModule } from "@app/core";
+import { Url2Service } from "@app/routing/url2.service";
 
 export function createCompiler(fn: CompilerFactory): Compiler {
   return fn.createCompiler();

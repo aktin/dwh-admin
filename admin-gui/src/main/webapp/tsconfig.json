@@ -9,8 +9,8 @@
       //      "@app/core/*": ["src/app/core/*"],
       //      "@app/shared/*": ["src/app/shared/*"],
       "@env/*": ["projects/main/src/environments/*"],
-      "@lib/*": ["dist/*"]
-      //      "dwh-utils": ["dist/utils"]
+      "@lib/*": ["dist/*"],
+      "dwh-utils": ["dist/utils"]
     },
     "declaration": false,
     //    "module": "es2015",

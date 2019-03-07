@@ -1,7 +1,8 @@
 import { Routes } from "@angular/router";
 import { TestDummyComponent } from "@app/test-dummy/";
 import { REPORTS_ROUTES_OBJ } from "@app/reports";
-import { APP_ROUTES_NAMES, ROUTE_REDUCE } from "./app.routes.names";
+import { APP_ROUTES_NAMES } from "./app.routes.names";
+import { ROUTE_REDUCE } from "./route-reduce.function";
 import _ from "lodash";
 // https://medium.com/@shairez/angular-routing-a-better-pattern-for-large-scale-apps-f2890c952a18
 

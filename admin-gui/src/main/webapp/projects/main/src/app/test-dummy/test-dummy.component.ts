@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { LinkerService } from "@app/core/services/linker.service";
+import { UrlService } from "@app/core";
+import { Url2Service } from "@app/routing/url2.service";
 
 @Component({
   selector: "test-dummy",
@@ -8,7 +9,7 @@ import { LinkerService } from "@app/core/services/linker.service";
   styleUrls: ["./test-dummy.component.css"]
 })
 export class TestDummyComponent implements OnInit {
-  constructor(private _route: ActivatedRoute, private _linker: LinkerService) {}
+  constructor(private _route: ActivatedRoute, private _url: UrlService) {}
 
   config: any = "hallo";
 
@@ -18,6 +19,7 @@ export class TestDummyComponent implements OnInit {
   }
 
   getUrls(...routes) {
-    return this._linker.parse(routes);
+    // return this._url.link(routes);
+    return Url2Service.link(routes);
   }
 }

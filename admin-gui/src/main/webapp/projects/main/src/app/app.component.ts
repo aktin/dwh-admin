@@ -6,6 +6,7 @@ import { APP_ROUTES_FUSING } from "@app/routing/app.routes";
 
 import { LoadPluginsService, LoadExternalComponent } from "@app/core";
 import _ from "lodash";
+import { UrlService } from "@app/core";
 
 @Component({
   selector: "admin-gui-root",
@@ -21,7 +22,8 @@ export class AppComponent implements OnInit {
     private _titleService: Title,
     private _router: Router,
     private _route: ActivatedRoute,
-    private _plugins: LoadPluginsService
+    private _plugins: LoadPluginsService,
+    private _url: UrlService
   ) {}
 
   ngOnInit(): void {
@@ -30,6 +32,7 @@ export class AppComponent implements OnInit {
 
     this._plugins.loadConfigFile(LoadExternalComponent).then(() => {
       let curRoutes = this._router.config;
+
       curRoutes = APP_ROUTES_FUSING(
         // @ts-ignore
         curRoutes,
@@ -42,6 +45,8 @@ export class AppComponent implements OnInit {
   }
 
   get routings() {
+    console.log(this._url.link(["REPORT", "SINGLE"]));
+
     let routs = _.reduce(
       this._router.config,
       (memo, route) => {
