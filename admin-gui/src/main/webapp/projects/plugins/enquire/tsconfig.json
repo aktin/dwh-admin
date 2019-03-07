@@ -16,9 +16,9 @@
       "lib": [
         "es2017",
         "dom"
-      ],
-      "paths": {
-        "@aktin/utils": ["../../dist/utils"]
-      }
+      ]
+//      "paths": {
+//        "@aktin/utils": ["../../dist/utils"]
+//      }
     }
   }

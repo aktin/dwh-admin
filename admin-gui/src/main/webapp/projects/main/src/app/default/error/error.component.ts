@@ -3,7 +3,7 @@ import { Component, OnInit } from "@angular/core";
 @Component({
   selector: "admin-gui-error",
   templateUrl: "./error.component.html",
-  styleUrls: ["./error.component.css"]
+  styles: [""]
 })
 export class ErrorComponent implements OnInit {
   constructor() {}

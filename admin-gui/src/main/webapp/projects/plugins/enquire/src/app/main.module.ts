@@ -2,10 +2,9 @@ import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { EnquireComponent } from "./enquire.component";
 import { PATH, PLUGIN_NAME, ROUTE_NAME, ROUTES, ROUTES_NAMES } from "./meta";
-import { RouterModule } from "@angular/router";
 
 @NgModule({
-  imports: [CommonModule, RouterModule.forChild([])],
+  imports: [CommonModule],
   declarations: [EnquireComponent],
   entryComponents: [EnquireComponent],
   providers: [

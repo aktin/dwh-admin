@@ -38,7 +38,7 @@
         Plugin2Component = __decorate([
             core.Component({
                 selector: 'plugin-2-component',
-                template: "<div class=\"plugin-2\">this is the some awesome plugin with <a href=\"#/plugin2/sub\">url</a> and beans beans</div>\n\n"
+                template: "<div class=\"plugin-2\">this is the some awesome plugin with <a href=\"#/plugin2/sub\">url</a></div>\n"
             }),
             __metadata("design:paramtypes", [])
         ], Plugin2Component);
@@ -51,7 +51,7 @@
         SubComponent = __decorate([
             core.Component({
                 selector: 'sub-component',
-                template: "hallo hier ist die subseite des ganzen\n<br>\nund hier die url back <a href=\"#/plugin2\">some link</a>\n"
+                template: "hallo hier ist die subseite des ganzen\n<br>und hier die url back <a href=\"#/plugin2\">some link</a>\n"
             }),
             __metadata("design:paramtypes", [])
         ], SubComponent);

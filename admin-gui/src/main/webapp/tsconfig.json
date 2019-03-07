@@ -4,14 +4,6 @@
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
-    "paths": {
-      "@app/*": ["projects/main/src/app/*"],
-      //      "@app/core/*": ["src/app/core/*"],
-      //      "@app/shared/*": ["src/app/shared/*"],
-      "@env/*": ["projects/main/src/environments/*"],
-      "@lib/*": ["dist/*"],
-      "dwh-utils": ["dist/utils"]
-    },
     "declaration": false,
     //    "module": "es2015",
     "module": "esNext",
@@ -21,6 +13,10 @@
     "importHelpers": true,
     "target": "es5",
     "typeRoots": ["node_modules/@types"],
-    "lib": ["es2018", "dom"]
+    "lib": ["es2018", "dom"],
+    "paths": {
+      "@app/*": ["projects/main/src/app/*"],
+      "@env/*": ["projects/main/src/environments/*"]
+    }
   }
 }

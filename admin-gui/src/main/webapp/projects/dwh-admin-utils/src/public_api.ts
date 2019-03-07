@@ -6,4 +6,4 @@
 export * from "./lib/dwh-admin-utils.module";
 
 /* Services */
-export * from "./lib/services/url.service";
+// export * from "./lib/routing/url.service";

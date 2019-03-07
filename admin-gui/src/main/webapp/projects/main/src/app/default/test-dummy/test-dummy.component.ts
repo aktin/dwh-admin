@@ -5,14 +5,11 @@ import { UrlService } from "../../core";
 @Component({
   selector: "test-dummy",
   templateUrl: "./test-dummy.component.html",
-  styleUrls: ["./test-dummy.component.css"]
+  styles: [""]
 })
 export class TestDummyComponent implements OnInit {
   constructor(private _route: ActivatedRoute, private _url: UrlService) {}
 
-  config: any = "hallo";
-
-  showConfig() {}
   ngOnInit() {
     console.log(this._route);
   }

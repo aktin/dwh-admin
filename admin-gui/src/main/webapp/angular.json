@@ -10,11 +10,11 @@
       "prefix": "admin-gui",
       "schematics": {
         "@schematics/angular:class": {
-          "inlineTemplate": true,
-          "inlineStyle": true,
           "skipTests": true
         },
         "@schematics/angular:component": {
+          "inlineTemplate": true,
+          "inlineStyle": true,
           "skipTests": true
         },
         "@schematics/angular:directive": {

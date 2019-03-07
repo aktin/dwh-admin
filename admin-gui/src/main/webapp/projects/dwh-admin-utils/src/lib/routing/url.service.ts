@@ -6,6 +6,7 @@ import _ from "lodash";
 })
 export class UrlService {
   private _routeNames: any = undefined;
+
   constructor(@Optional() @Inject("ROUTE_NAMES") routeNames: any) {
     if (routeNames) {
       this._routeNames = routeNames;
@@ -22,7 +23,7 @@ export class UrlService {
     return this._routeNames;
   }
 
-  link(routes: string[]) {
+  link(routes: string[], hash: boolean = false) {
     let url = "";
     let names = this._routeNames;
     _.each(routes, r => {
@@ -32,6 +33,9 @@ export class UrlService {
       url += "/" + names[r].path;
       names = names[r].children;
     });
+    if (hash) {
+      url = "#/" + url;
+    }
 
     return url;
   }

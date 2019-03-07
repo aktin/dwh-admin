@@ -1,21 +1,21 @@
 import { enableProdMode } from "@angular/core";
 import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
 
-import { AppModule } from "./app/app.module";
-import { environment } from "./environments/environment";
+import { AppModule } from "@app/app.module";
+import { environment } from "@env/environment";
 
 declare const SystemJS: any;
 
 import * as angularCore from "@angular/core";
 import * as angularCommon from "@angular/common";
 import * as angularForms from "@angular/forms";
-import * as aktinutils from "../../../dist/utils";
+import * as aktinUtils from "@aktin/utils";
 import * as lodash from "lodash";
 
 SystemJS.set("@angular/core", SystemJS.newModule(angularCore));
 SystemJS.set("@angular/common", SystemJS.newModule(angularCommon));
 SystemJS.set("@angular/forms", SystemJS.newModule(angularForms));
-SystemJS.set("@aktin/utils", SystemJS.newModule(aktinutils));
+SystemJS.set("@aktin/utils", SystemJS.newModule(aktinUtils));
 SystemJS.set("lodash", SystemJS.newModule(lodash));
 
 if (environment.production) {

@@ -1,5 +1,5 @@
-import { ReportComponent } from "./report.component";
-import { ReportsListComponent } from "./reports-list.component";
+import { ReportComponent } from "./components/report.component";
+import { ReportsListComponent } from "./components/list/reports-list.component";
 
 export const REPORTS_ROUTES_NAMES = {
   HOME: { path: "" },

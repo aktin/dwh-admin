@@ -3,12 +3,14 @@ import { Router, RouterModule, Routes } from "@angular/router";
 import { APP_LAST_ROUTES, APP_ROUTES_OBJ } from "./app.routes";
 import { APP_ROUTES_NAMES, ROUTE_REDUCE } from "./names";
 import _ from "lodash";
-import { DwhAdminUtilsModule, UrlService } from "@app/core";
+import { DwhAdminUtilsModule, UrlService } from "@aktin/utils";
+import { environment } from "@env/environment.prod";
 
 @NgModule({
   imports: [
     DwhAdminUtilsModule.forRoot(APP_ROUTES_NAMES),
     RouterModule.forRoot(APP_ROUTES_FUSING(), {
+      enableTracing: !environment.production, // <-- debugging purposes only
       useHash: true
     })
   ],
@@ -22,11 +24,18 @@ export class AppRouterModule {
    * @returns the new Router Routes
    */
   addRoutes2Router(addRoutes: Routes, routeNameObj?): Routes {
-    let curRoutes = this._router.config;
+    let curRoutes = this.getRoutes();
     curRoutes = APP_ROUTES_FUSING(curRoutes, addRoutes);
-    this._router.resetConfig(curRoutes);
-    this._url.updateRouteNames(_.merge({}, routeNameObj, APP_ROUTES_NAMES));
+    this.updateRoutes(curRoutes, _.merge({}, routeNameObj, APP_ROUTES_NAMES));
     return curRoutes;
+  }
+
+  updateRoutes(routes: Routes, routeNameObj) {
+    this._router.resetConfig(routes);
+    this._url.updateRouteNames(routeNameObj);
+  }
+  getRoutes(): Routes {
+    return this._router.config;
   }
 }
 

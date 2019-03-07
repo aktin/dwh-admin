@@ -1,12 +1,12 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 
-import { ReportsListComponent } from "./reports-list.component";
-import { ReportComponent } from "./report.component";
+import { ReportsListComponent, ReportComponent } from "./components";
+import { SharedModule } from "@app/shared";
 
 @NgModule({
   declarations: [ReportsListComponent, ReportComponent],
-  imports: [CommonModule],
+  imports: [CommonModule, SharedModule],
   exports: [],
   entryComponents: [ReportsListComponent, ReportComponent]
 })

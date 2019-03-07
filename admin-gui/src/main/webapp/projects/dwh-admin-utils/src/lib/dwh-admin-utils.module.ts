@@ -1,10 +1,8 @@
 import { NgModule } from "@angular/core";
-import { UrlService } from "./services/url.service";
+import { UrlService } from "./routing/url.service";
 
 @NgModule({
-  declarations: [],
-  imports: [],
-  exports: []
+  declarations: []
 })
 export class DwhAdminUtilsModule {
   constructor() {}
@@ -17,4 +15,4 @@ export class DwhAdminUtilsModule {
   }
 }
 
-export { UrlService } from "./services/url.service";
+export { UrlService } from "./routing/url.service";
