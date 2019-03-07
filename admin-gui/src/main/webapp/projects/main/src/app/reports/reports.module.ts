@@ -7,6 +7,7 @@ import { ReportComponent } from "./report.component";
 @NgModule({
   declarations: [ReportsListComponent, ReportComponent],
   imports: [CommonModule],
-  exports: []
+  exports: [],
+  entryComponents: [ReportsListComponent, ReportComponent]
 })
 export class ReportsModule {}

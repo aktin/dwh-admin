@@ -1,12 +1,11 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { Title } from "@angular/platform-browser";
-
-import { APP_ROUTES_FUSING } from "@app/routing/app.routes";
 
 import { LoadPluginsService, LoadExternalComponent } from "@app/core";
 import _ from "lodash";
 import { UrlService } from "@app/core";
+import { AppRouterModule } from "@app/routing/app-router.module";
 
 @Component({
   selector: "admin-gui-root",
@@ -17,10 +16,11 @@ import { UrlService } from "@app/core";
 export class AppComponent implements OnInit {
   visibility: any = {};
   title = "aktin-dwh-admin-gui";
+  routes = [];
 
   constructor(
     private _titleService: Title,
-    private _router: Router,
+    private _router: AppRouterModule,
     private _route: ActivatedRoute,
     private _plugins: LoadPluginsService,
     private _url: UrlService
@@ -31,24 +31,15 @@ export class AppComponent implements OnInit {
     this._titleService.setTitle(title);
 
     this._plugins.loadConfigFile(LoadExternalComponent).then(() => {
-      let curRoutes = this._router.config;
+      let curRoutes = this._router.addRoutes2Router(this._plugins.routes);
 
-      curRoutes = APP_ROUTES_FUSING(
-        // @ts-ignore
-        curRoutes,
-        // @ts-ignore
-        this._plugins.routes
-      );
-      this._router.resetConfig(curRoutes);
-      console.log(this._router.config);
+      this.setRoutes(curRoutes);
     });
   }
 
-  get routings() {
-    console.log(this._url.link(["REPORT", "SINGLE"]));
-
-    let routs = _.reduce(
-      this._router.config,
+  setRoutes(routes) {
+    this.routes = _.reduce(
+      routes,
       (memo, route) => {
         if (route.data && route.data["name"]) {
           memo.push(route);
@@ -57,7 +48,9 @@ export class AppComponent implements OnInit {
       },
       []
     );
+  }
 
-    return routs;
+  get routings() {
+    return this.routes;
   }
 }

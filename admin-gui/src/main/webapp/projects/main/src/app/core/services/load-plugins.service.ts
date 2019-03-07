@@ -69,6 +69,17 @@ export class LoadPluginsService {
 
     this.modules[plug.moduleName] = moduleRef;
 
+    // const componentFactory = await moduleRef.componentFactoryResolver.resolveComponentFactory<any>(componentProvider[0][0].component);
+    // this.componentFactory[plug.moduleName] = componentFactory;
+    // const component = await componentFactory.create(this._injector);
+    // this.components[plug.moduleName] = component;
+
+    let provider = _.clone(componentProvider[0]);
+
+    console.log(componentProvider[0]);
+    let metadata = _.remove(provider, item => {
+      return item.name.includes("METADATA");
+    })[0];
     let route = {
       path: plug.path,
       data: {
@@ -77,21 +88,7 @@ export class LoadPluginsService {
       }
     };
 
-    // const componentFactory = await moduleRef.componentFactoryResolver.resolveComponentFactory<any>(componentProvider[0][0].component);
-    // this.componentFactory[plug.moduleName] = componentFactory;
-    // const component = await componentFactory.create(this._injector);
-    // this.components[plug.moduleName] = component;
-
-    let provider = _.clone(componentProvider[0]);
-
-    let provRoutNames = _.remove(provider, item => {
-      return item.name.includes("ROUTES_NAMES");
-    })[0];
-    let provRoutes = _.remove(provider, item => {
-      return item.name.includes("ROUTES");
-    })[0];
-
-    if (!provRoutes) {
+    if (!metadata) {
       // no routes, just load the component of the first item from the plugins array
       route.data["component"] = provider[0].component;
       route["component"] = pathComponent;
@@ -101,7 +98,7 @@ export class LoadPluginsService {
         route.data["component"]
       );
     } else {
-      let children = provRoutes.component;
+      let children = metadata["routes"];
       _.each(children, item => {
         if (!item.component) return;
         if (!item.data) item.data = {};
@@ -111,10 +108,13 @@ export class LoadPluginsService {
 
       route["children"] = ROUTE_REDUCE(
         children,
-        provRoutNames.component,
+        metadata["routesNames"],
         [plug.moduleName.toUpperCase()],
         plug.path
       );
+
+      if (metadata["routesNames"]) {
+      }
 
       await this.asyncForEachObject(children, async item => {
         if (!item.data["component"]) return;

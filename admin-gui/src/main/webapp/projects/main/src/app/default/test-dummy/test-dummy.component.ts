@@ -1,7 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { UrlService } from "@app/core";
-import { Url2Service } from "@app/routing/url2.service";
+import { UrlService } from "../../core";
 
 @Component({
   selector: "test-dummy",
@@ -19,7 +18,6 @@ export class TestDummyComponent implements OnInit {
   }
 
   getUrls(...routes) {
-    // return this._url.link(routes);
-    return Url2Service.link(routes);
+    return this._url.link(routes);
   }
 }

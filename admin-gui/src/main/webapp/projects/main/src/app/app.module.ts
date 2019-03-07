@@ -7,7 +7,6 @@ import {
 import { BrowserModule } from "@angular/platform-browser";
 import { JitCompilerFactory } from "@angular/platform-browser-dynamic";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { RouterModule } from "@angular/router";
 
 import { StoreModule } from "@ngrx/store";
 import { StoreDevtoolsModule } from "@ngrx/store-devtools";
@@ -23,22 +22,36 @@ import { SharedModule } from "@app/shared";
 import { MaterialModule } from "@app/material";
 
 import { AppComponent } from "@app/app.component";
-import { TestDummyComponent } from "@app/test-dummy";
 import { ReportsModule } from "@app/reports";
-import { APP_ROUTES_NAMES } from "@app/routing";
 
-import { DwhAdminUtilsModule } from "@app/core";
-import { Url2Service } from "@app/routing/url2.service";
+// import { APP_ROUTES_NAMES } from "@app/routing";
+// import { DwhAdminUtilsModule } from "@app/core";
+
+import { AppRouterModule } from "@app/routing/app-router.module";
+import {
+  HomeComponent,
+  TestDummyComponent,
+  ErrorComponent
+} from "@app/default";
 
 export function createCompiler(fn: CompilerFactory): Compiler {
   return fn.createCompiler();
 }
 
+const APPCOMPONENTS = [
+  AppComponent,
+  HomeComponent,
+  TestDummyComponent,
+  ErrorComponent
+];
+
 @NgModule({
-  declarations: [AppComponent, TestDummyComponent],
+  declarations: APPCOMPONENTS,
+  entryComponents: APPCOMPONENTS,
   imports: [
-    DwhAdminUtilsModule.forRoot(APP_ROUTES_NAMES),
-    RouterModule.forRoot([], { useHash: true }),
+    AppRouterModule,
+    // DwhAdminUtilsModule.forRoot(APP_ROUTES_NAMES),
+    // RouterModule.forRoot(APP_ROUTES_FUSING(), { useHash: true }),
     BrowserModule,
     CoreModule.forRoot(),
     SharedModule.forRoot(),
@@ -55,7 +68,6 @@ export function createCompiler(fn: CompilerFactory): Compiler {
   ],
   exports: [],
   providers: [
-    Url2Service,
     {
       provide: COMPILER_OPTIONS,
       useValue: {},
