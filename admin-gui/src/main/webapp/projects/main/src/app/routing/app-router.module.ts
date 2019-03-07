@@ -4,7 +4,7 @@ import { APP_LAST_ROUTES, APP_ROUTES_OBJ } from "./app.routes";
 import { APP_ROUTES_NAMES } from "./app.routes.names";
 import { ROUTE_REDUCE } from "./route-reduce.function";
 import _ from "lodash";
-import { DwhAdminUtilsModule, UrlService } from "dwh-utils";
+import { DwhAdminUtilsModule, UrlService } from "@app/core";
 
 @NgModule({
   imports: [
@@ -19,15 +19,14 @@ export class AppRouterModule {
   constructor(private _router: Router, private _url: UrlService) {}
 
   /**
-   *
-   * @param addRoutes
+   * updates the urlservice with the new routing names, providing updated links
    * @returns the new Router Routes
    */
-  addRoutes2Router(addRoutes: Routes): Routes {
+  addRoutes2Router(addRoutes: Routes, routeNameObj?): Routes {
     let curRoutes = this._router.config;
     curRoutes = APP_ROUTES_FUSING(curRoutes, addRoutes);
     this._router.resetConfig(curRoutes);
-    this._url.updateRouteNames(APP_ROUTES_NAMES);
+    this._url.updateRouteNames(_.merge({}, routeNameObj, APP_ROUTES_NAMES));
     return curRoutes;
   }
 }

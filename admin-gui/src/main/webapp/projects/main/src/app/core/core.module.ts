@@ -2,7 +2,7 @@ import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 
 import { LoadExternalComponent } from "./load-external/load-external.component";
-import { LoadPluginsService, LinkerService } from "./services";
+import { LoadPluginsService } from "./services";
 
 @NgModule({
   declarations: [LoadExternalComponent],
@@ -15,10 +15,9 @@ export class CoreModule {
   static forRoot() {
     return {
       ngModule: CoreModule,
-      providers: [LoadPluginsService, LinkerService]
+      providers: [LoadPluginsService]
     };
   }
 }
 
 export { LoadPluginsService } from "./services/load-plugins.service";
-export { LinkerService } from "./services/linker.service";

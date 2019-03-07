@@ -31,7 +31,10 @@ export class AppComponent implements OnInit {
     this._titleService.setTitle(title);
 
     this._plugins.loadConfigFile(LoadExternalComponent).then(() => {
-      let curRoutes = this._router.addRoutes2Router(this._plugins.routes);
+      let curRoutes = this._router.addRoutes2Router(
+        this._plugins.routes,
+        this._plugins.routeNames
+      );
 
       this.setRoutes(curRoutes);
     });

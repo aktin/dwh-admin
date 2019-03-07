@@ -77,6 +77,7 @@
         SUB: { path: "sub" }
     };
 
+    var PLUGIN_PATH = "plugin2";
     var Plugin2Module = /** @class */ (function () {
         function Plugin2Module() {
         }
@@ -103,7 +104,7 @@
                                 routes: PLUGIN_2_ROUTES,
                                 routeName: "AWESOMEP",
                                 pluginName: "Awesome Plugin",
-                                path: "plugin2"
+                                path: PLUGIN_PATH
                             },
                         ],
                         multi: true

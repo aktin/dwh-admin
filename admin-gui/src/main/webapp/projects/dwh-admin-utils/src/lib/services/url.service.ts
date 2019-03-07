@@ -18,7 +18,7 @@ export class UrlService {
     this._routeNames = routeNames;
   }
 
-  get routes() {
+  get routeNames() {
     return this._routeNames;
   }
 

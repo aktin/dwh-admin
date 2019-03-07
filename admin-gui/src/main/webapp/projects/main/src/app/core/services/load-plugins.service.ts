@@ -9,8 +9,6 @@ declare const SystemJS: any;
 export interface PluginConfig {
   url: string;
   moduleName: string;
-  path: string;
-  name: string;
 }
 
 @Injectable({
@@ -27,6 +25,7 @@ export class LoadPluginsService {
   configUrl = "assets/extras.json";
   routes: Routes = [];
   plugins: PluginConfig[] = null;
+  routeNames = {};
 
   async asyncForEach(array, callback) {
     // console.log(array);
@@ -80,15 +79,30 @@ export class LoadPluginsService {
     let metadata = _.remove(provider, item => {
       return item.name.includes("METADATA");
     })[0];
+    if (!metadata) metadata = {};
+
+    let routeName = metadata["routeName"]
+      ? metadata["routeName"]
+      : plug.moduleName.toUpperCase();
+
+    let routeNameObj = {
+      path: metadata["path"] ? metadata["path"] : plug.moduleName,
+      name: metadata["pluginName"] ? metadata["pluginName"] : plug.moduleName
+    };
+    if (metadata["routesNames"]) {
+      routeNameObj["children"] = metadata["routesNames"];
+    }
+    this.routeNames[routeName] = routeNameObj;
+
     let route = {
-      path: plug.path,
+      path: routeNameObj.path,
       data: {
-        name: plug.name,
+        name: routeNameObj.name,
         plugin: plug.moduleName
       }
     };
 
-    if (!metadata) {
+    if (!metadata["routes"]) {
       // no routes, just load the component of the first item from the plugins array
       route.data["component"] = provider[0].component;
       route["component"] = pathComponent;
@@ -109,13 +123,10 @@ export class LoadPluginsService {
       route["children"] = ROUTE_REDUCE(
         children,
         metadata["routesNames"],
-        [plug.moduleName.toUpperCase()],
-        plug.path
+        [routeName],
+        route.path
       );
-
-      if (metadata["routesNames"]) {
-      }
-
+      route["childrenObj"] = children;
       await this.asyncForEachObject(children, async item => {
         if (!item.data["component"]) return;
         item.data[

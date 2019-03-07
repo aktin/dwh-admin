@@ -2,21 +2,15 @@
   "plugins": [
     {
       "url": "assets/plugins/plugin-1.bundle.js",
-      "moduleName": "Plugin1Module",
-      "path": "plugin1",
-      "name": "Nr 1 Plugin"
+      "moduleName": "Plugin1Module"
     },
     {
       "url": "assets/plugins/plugin-2.bundle.js",
-      "moduleName": "Plugin2Module",
-      "path": "plugin2",
-      "name": "Awesome Plugin"
+      "moduleName": "Plugin2Module"
     },
     {
       "url": "http://ulicor.de/files/plugin-a.bundle.js",
-      "moduleName": "PluginAModule",
-      "path": "plugin-a",
-      "name": "Plugin Ace"
+      "moduleName": "PluginAModule"
     }
   ]
 }
