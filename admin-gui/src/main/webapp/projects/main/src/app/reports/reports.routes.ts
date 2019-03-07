@@ -1,4 +1,4 @@
-import { ReportComponent } from "./components/report.component";
+import { ReportComponent } from "./components/single/report.component";
 import { ReportsListComponent } from "./components/list/reports-list.component";
 
 export const REPORTS_ROUTES_NAMES = {

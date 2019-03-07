@@ -4,10 +4,12 @@ import { CommonModule } from "@angular/common";
 import { ReportsListComponent, ReportComponent } from "./components";
 import { SharedModule } from "@app/shared";
 
+const REPORTSCOMPONENTS = [ReportsListComponent, ReportComponent];
+
 @NgModule({
-  declarations: [ReportsListComponent, ReportComponent],
+  declarations: REPORTSCOMPONENTS,
+  entryComponents: REPORTSCOMPONENTS,
   imports: [CommonModule, SharedModule],
-  exports: [],
-  entryComponents: [ReportsListComponent, ReportComponent]
+  exports: []
 })
 export class ReportsModule {}

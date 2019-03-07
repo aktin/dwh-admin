@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { UrlService } from "../../core";
+import { UrlService } from "@aktin/utils";
 
 @Component({
   selector: "test-dummy",
