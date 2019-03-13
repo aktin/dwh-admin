@@ -1,6 +1,6 @@
 import { EnquireComponent } from "./enquire.component";
 
-export const PLUGIN_NAME = "Enquire";
+export const PLUGIN_NAME = "ENQuIRE";
 export const PATH = "enquire";
 export const ROUTE_NAME = "ENQUIRE";
 

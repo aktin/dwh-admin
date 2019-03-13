@@ -57,7 +57,7 @@
         return EnquireComponent;
     }());
 
-    var PLUGIN_NAME = "Enquire";
+    var PLUGIN_NAME = "ENQuIRE";
     var PATH = "enquire";
     var ROUTE_NAME = "ENQUIRE";
     var ROUTES_NAMES = {
