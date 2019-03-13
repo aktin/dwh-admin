@@ -52,16 +52,20 @@ const APPCOMPONENTS = [
     BrowserModule,
     CoreModule.forRoot(),
     SharedModule.forRoot(),
-    MaterialModule,
     ReportsModule,
+
+    MaterialModule,
+    BrowserAnimationsModule,
+
     StoreModule.forRoot(reducers, { metaReducers }),
-    StoreDevtoolsModule.instrument({
-      maxAge: 25,
-      logOnly: environment.production
-    }),
     EffectsModule.forRoot([AppEffects]),
-    StoreRouterConnectingModule.forRoot(),
-    BrowserAnimationsModule
+    !environment.production
+      ? StoreDevtoolsModule.instrument({
+          maxAge: 25,
+          logOnly: environment.production
+        })
+      : [],
+    StoreRouterConnectingModule.forRoot()
   ],
   exports: [],
   providers: [
