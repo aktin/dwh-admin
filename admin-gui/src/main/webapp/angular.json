@@ -31,6 +31,15 @@
         },
         "@schematics/angular:service": {
           "skipTests": true
+        },
+        "@ngrx/schematics:entity": {
+          "skipTests": true
+        },
+        "@ngrx/schematics:reducer": {
+          "skipTests": true
+        },
+        "@ngrx/schematics:effect": {
+          "skipTests": true
         }
       },
       "architect": {
@@ -42,10 +51,7 @@
             "main": "projects/main/src/main.ts",
             "polyfills": "projects/main/src/polyfills.ts",
             "tsConfig": "projects/main/tsconfig.app.json",
-            "assets": [
-              "projects/main/src/favicon.ico",
-              "projects/main/src/assets"
-            ],
+            "assets": ["projects/main/src/favicon.ico", "projects/main/src/assets"],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "projects/main/src/styles.css"
@@ -158,5 +164,8 @@
       }
     }
   },
-  "defaultProject": "aktin-dwh-admin-gui"
+  "defaultProject": "aktin-dwh-admin-gui",
+  "cli": {
+    "defaultCollection": "@ngrx/schematics"
+  }
 }
