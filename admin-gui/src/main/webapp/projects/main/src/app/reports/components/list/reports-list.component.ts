@@ -1,9 +1,11 @@
 import { Component, OnInit } from "@angular/core";
 import { UrlService } from "@aktin/utils";
-import { Store } from "@ngrx/store";
-import { ReportState } from "@app/reports/store/report.state";
-import { LoadReports, UpdateReports } from "@app/reports/store/actions/report.actions";
-import { ReportService } from "@app/reports/report.service";
+import { select, Store } from "@ngrx/store";
+import { ReportService } from "../../report.service";
+import { Observable } from "rxjs";
+import { Report } from "@app/reports/models";
+import { getReportsAsArray, ReportUpdate } from "@app/reports/store";
+import { AppState } from "@app/app.state";
 
 @Component({
   selector: "admin-gui-reports-list",
@@ -11,19 +13,18 @@ import { ReportService } from "@app/reports/report.service";
   styleUrls: ["../../reports.css"],
 })
 export class ReportsListComponent implements OnInit {
-  constructor(
-    private _url: UrlService,
-    private _store: Store<ReportState>,
-    private _report: ReportService,
-  ) {}
+  reports$: Observable<Report[]>;
+  constructor(private _url: UrlService, private _store: Store<AppState>) {}
 
   ngOnInit() {
     console.log("init list");
-    this._store.dispatch(new UpdateReports());
-    this._report.updateReports();
+    this._store.dispatch(new ReportUpdate());
+    this.reports$ = this._store.pipe(select(getReportsAsArray));
   }
 
   getUrls(...routes) {
     return this._url.link(routes);
   }
+
+  printReports() {}
 }

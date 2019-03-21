@@ -1,52 +1,64 @@
 import { Action } from "@ngrx/store";
-import { Report } from "../../models/report.interface";
-import { ReportTemplate } from "../../models/report-template.interface";
-import { Update } from "@ngrx/entity";
+import { Report, ReportTemplate } from "../../models";
 
 export enum ReportActionTypes {
-  LoadReports = "[Report] Load Reports",
-  UpdateReports = "[Report] Update Reports",
-  UpdateReportsSuccess = "[Report] Update Reports Success",
-  AddReport = "[Report] Add Report",
-  NewReport = "[Report] New Report",
-  LoadReportTemplates = "[Report] Load Report Templates",
+  ReportsList = "[Report List Page] list all Reports",
+  ReportsUpdate = "[Report Service] Load Reports from Server",
+  ReportsUpdated = "[Report API] Update Reports Success",
+  ReportCreate = "[Report List Page] Create New Report",
+  ReportCreated = "[Report API] Create Report Success", // reload all reports from server
+  TemplateList = "[New Report Page] Load All Report Templates",
+  TemplateUpdate = "[Report Service] Load Report Templates from Server",
+  TemplateUpdated = "[Report API] Update Report Templates Success",
 }
 
-export class LoadReports implements Action {
-  readonly type = ReportActionTypes.LoadReports;
+export class ReportsLoadAll implements Action {
+  readonly type = ReportActionTypes.ReportsList;
 
   constructor(public payload: { reports: Report[] }) {}
 }
 
-export class UpdateReports implements Action {
-  readonly type = ReportActionTypes.UpdateReports;
+export class ReportUpdate implements Action {
+  readonly type = ReportActionTypes.ReportsUpdate;
 }
 
-export class UpdateReportsSuccess implements Action {
-  readonly type = ReportActionTypes.UpdateReportsSuccess;
+export class ReportUpdateSuccess implements Action {
+  readonly type = ReportActionTypes.ReportsUpdated;
+
+  constructor(public payload: { reports: Report[] }) {}
+}
+export class ReportNew implements Action {
+  readonly type = ReportActionTypes.ReportCreate;
+}
+
+export class ReportNewSuccess implements Action {
+  readonly type = ReportActionTypes.ReportCreated;
 
   constructor(public payload: { reports: Report[] }) {}
 }
 
-export class AddReport implements Action {
-  readonly type = ReportActionTypes.AddReport;
-
-  constructor(public payload: { report: Report }) {}
-}
-
-export class NewReport implements Action {
-  readonly type = ReportActionTypes.NewReport;
-}
-
-export class LoadReportTemplates implements Action {
-  readonly type = ReportActionTypes.LoadReportTemplates;
+export class ReportTemplatesLoadAll implements Action {
+  readonly type = ReportActionTypes.TemplateList;
 
   constructor(public payload: { reportTemplates: ReportTemplate[] }) {}
 }
+
+export class ReportTemplatesUpdateSuccess implements Action {
+  readonly type = ReportActionTypes.TemplateUpdated;
+
+  constructor(public payload: { reportTemplates: ReportTemplate[] }) {}
+}
+
+export class ReportTemplateUpdateAll implements Action {
+  readonly type = ReportActionTypes.TemplateUpdate;
+}
+
 export type ReportActions =
-  | LoadReports
-  | UpdateReports
-  | UpdateReportsSuccess
-  | AddReport
-  | NewReport
-  | LoadReportTemplates;
+  | ReportsLoadAll
+  | ReportUpdate
+  | ReportUpdateSuccess
+  | ReportNew
+  | ReportNewSuccess
+  | ReportTemplatesLoadAll
+  | ReportTemplatesUpdateSuccess
+  | ReportTemplateUpdateAll;

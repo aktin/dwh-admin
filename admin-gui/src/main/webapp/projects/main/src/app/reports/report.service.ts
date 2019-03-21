@@ -19,30 +19,21 @@ export class ReportService {
 
   updateReports(): Observable<Report[]> {
     console.log("hier in service");
-    this._http
+    return this._http
       .get<Report[]>("http://134.106.36.86:8087/aktin/admin/rest/" + "report/archive")
       .pipe(
         map(reports => {
-          console.log(123, reports[0]);
           return reports.map(
             (report, index): Report => {
               return this._parseReport(report);
             },
           );
         }),
-        map(reports => {
-          console.log(222, reports[0]);
-          return reports;
-        }),
         catchError(error => {
-          console.log(error);
+          console.log("ERROR", error);
           return EMPTY;
         }),
-      )
-      .subscribe(rep => {
-        console.log(rep);
-      });
-    return new Observable<Report[]>();
+      );
   }
 
   private _parseReport(report: Report) {
