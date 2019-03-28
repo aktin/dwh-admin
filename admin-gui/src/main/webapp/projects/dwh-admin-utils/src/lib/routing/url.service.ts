@@ -1,18 +1,24 @@
 import { Inject, Injectable, Optional } from "@angular/core";
 import _ from "lodash";
+import { HttpClient } from "@angular/common/http";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class UrlService {
   private _routeNames: any = undefined;
+  private _url_start = "http://134.106.36.86:8087/aktin/admin/rest/";
 
-  constructor(@Optional() @Inject("ROUTE_NAMES") routeNames: any) {
+  constructor(@Optional() @Inject("ROUTE_NAMES") routeNames: any, private _http: HttpClient) {
     if (routeNames) {
       this._routeNames = routeNames;
     } else {
       this._routeNames = undefined;
     }
+  }
+
+  get<T>(url_end: string) {
+    return this._http.get<T>(this._url_start + url_end);
   }
 
   updateRouteNames(routeNames: any) {

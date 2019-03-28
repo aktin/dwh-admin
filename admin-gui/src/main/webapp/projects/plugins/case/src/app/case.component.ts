@@ -1,16 +1,27 @@
-import { Component } from "@angular/core";
-import { UrlService } from "@aktin/utils";
+import { Component, OnInit } from "@angular/core";
+import { UrlService, AppState } from "@aktin/utils";
+import { select, Store } from "@ngrx/store";
+import { getReportsAsArray, ReportUpdate } from "./store";
+import { Observable } from "rxjs";
+import { Report } from "./models";
 
 @Component({
   selector: "case-component",
   templateUrl: "./case.component.html",
   styleUrls: ["./case.component.css"],
 })
-export class CaseComponent {
+export class CaseComponent implements OnInit {
   state = { link: "" };
-  constructor(private _url: UrlService) {
+  reports$: Observable<Report[]>;
+  constructor(private _url: UrlService, private _store: Store<AppState>) {
     console.log(this._url.link(["HOME"]));
     this.state.link = this.getUrls("REPORT", "SINGLE");
+  }
+
+  ngOnInit() {
+    console.log("init list");
+    this._store.dispatch(new ReportUpdate());
+    this.reports$ = this._store.pipe(select(getReportsAsArray));
   }
   getUrls(...routes) {
     if (!this._url) return routes.join("/");

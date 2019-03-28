@@ -1,5 +1,5 @@
 import { ActionReducerMap } from "@ngrx/store";
-import { ReportState } from "../state/report.state";
+import { ReportState } from "../state";
 import { reportsReducer } from "./report.reducer";
 import { reportTemplatesReducer } from "./report-template.reducer";
 

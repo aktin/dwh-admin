@@ -1,5 +1,5 @@
 import { EntityState, EntityAdapter, createEntityAdapter } from "@ngrx/entity";
-import { ReportTemplate } from "@app/reports/models";
+import { ReportTemplate } from "../../../models";
 
 export interface State extends EntityState<ReportTemplate> {
   // additional entities state properties
