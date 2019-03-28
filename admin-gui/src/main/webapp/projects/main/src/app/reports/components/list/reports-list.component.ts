@@ -1,12 +1,9 @@
 import { Component, OnInit } from "@angular/core";
-import { UrlService } from "@aktin/utils";
+import { UrlService, State } from "@aktin/utils";
 import { select, Store } from "@ngrx/store";
-import { ReportService } from "../../report.service";
 import { Observable } from "rxjs";
-import { Report } from "@app/reports/models";
-import { getReportsAsArray, ReportUpdate } from "@app/reports/store";
-// import { AppState } from "@app/store/state/app.state";
-import { AppState } from "@aktin/utils";
+import { Report } from "../../models";
+import { getReportsAsArray, ReportUpdate } from "../../store";
 
 @Component({
   selector: "admin-gui-reports-list",
@@ -15,7 +12,7 @@ import { AppState } from "@aktin/utils";
 })
 export class ReportsListComponent implements OnInit {
   reports$: Observable<Report[]>;
-  constructor(private _url: UrlService, private _store: Store<AppState>) {}
+  constructor(private _url: UrlService, private _store: Store<State>) {}
 
   ngOnInit() {
     console.log("init list");

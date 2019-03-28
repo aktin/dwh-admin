@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { UrlService, AppState } from "@aktin/utils";
+import { UrlService, State } from "@aktin/utils";
 import { select, Store } from "@ngrx/store";
 import { getReportsAsArray, ReportUpdate } from "./store";
 import { Observable } from "rxjs";
@@ -13,7 +13,7 @@ import { Report } from "./models";
 export class CaseComponent implements OnInit {
   state = { link: "" };
   reports$: Observable<Report[]>;
-  constructor(private _url: UrlService, private _store: Store<AppState>) {
+  constructor(private _url: UrlService, private _store: Store<State>) {
     console.log(this._url.link(["HOME"]));
     this.state.link = this.getUrls("REPORT", "SINGLE");
   }

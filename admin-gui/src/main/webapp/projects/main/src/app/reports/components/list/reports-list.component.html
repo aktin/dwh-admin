@@ -2,7 +2,5 @@
   reports-list works!
 </p>
 <button (click)="printReports()">print</button>
-<ul *ngFor="let report of reports$ | async as reports; index as i">
-  <li>{{ report.id }}</li>
-  <li>{{ report.name }}</li>
-</ul>
+
+<report-view *ngFor="let report of reports$ | async as reports; index as i" [data]="report"></report-view>

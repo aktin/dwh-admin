@@ -4,11 +4,7 @@ import { Title } from "@angular/platform-browser";
 
 import { LoadPluginsService, LoadExternalComponent } from "@app/core";
 import _ from "lodash";
-import { UrlService } from "@app/core";
 import { AppRouterModule } from "@app/routing/app-router.module";
-import { Store } from "@ngrx/store";
-// import { AppState } from "@app/store/state/app.state";
-import { AppState } from "@aktin/utils";
 
 @Component({
   selector: "admin-gui-root",
@@ -26,8 +22,6 @@ export class AppComponent implements OnInit {
     private _router: AppRouterModule,
     private _route: ActivatedRoute,
     private _plugins: LoadPluginsService,
-    private _url: UrlService,
-    private _store: Store<AppState>,
   ) {}
 
   ngOnInit(): void {

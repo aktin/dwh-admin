@@ -1,11 +1,8 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import { Report } from "@app/reports/models/report.interface";
-import { HttpClient } from "@angular/common/http";
-import { EMPTY } from "rxjs";
+import { Observable, EMPTY } from "rxjs";
 import { catchError, map } from "rxjs/operators";
-import { ReportStatus } from "@app/reports/models/report-status.enum";
 import { UrlService } from "@aktin/utils";
+import { Report, ReportStatus } from "./models";
 
 @Injectable({
   providedIn: "root",
@@ -13,27 +10,25 @@ import { UrlService } from "@aktin/utils";
 export class ReportService {
   private baseURL = "";
   private _locale = "de-DE";
-  constructor(private _http: HttpClient, private _url: UrlService) {
+  constructor(private _url: UrlService) {
     this.baseURL = this._url.link(["REPORT"]);
   }
 
   updateReports(): Observable<Report[]> {
     console.log("hier in service");
-    return this._http
-      .get<Report[]>("http://134.106.36.86:8087/aktin/admin/rest/" + "report/archive")
-      .pipe(
-        map(reports => {
-          return reports.map(
-            (report, index): Report => {
-              return this._parseReport(report);
-            },
-          );
-        }),
-        catchError(error => {
-          console.log("ERROR", error);
-          return EMPTY;
-        }),
-      );
+    return this._url.get<Report[]>("report/archive").pipe(
+      map(reports => {
+        return reports.map(
+          (report, index): Report => {
+            return this._parseReport(report);
+          },
+        );
+      }),
+      catchError(error => {
+        console.log("ERROR", error);
+        return EMPTY;
+      }),
+    );
   }
 
   private _parseReport(report: Report) {
