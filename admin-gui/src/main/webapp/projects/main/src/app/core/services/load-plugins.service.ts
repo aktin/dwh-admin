@@ -12,13 +12,13 @@ export interface PluginConfig {
 }
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class LoadPluginsService {
   constructor(
     private _http: HttpClient,
     private _compiler: Compiler,
-    private _injector: Injector
+    private _injector: Injector,
   ) {}
 
   modules: any = {};
@@ -26,6 +26,8 @@ export class LoadPluginsService {
   routes: Routes = [];
   plugins: PluginConfig[] = null;
   routeNames = {};
+  pluginStates = {};
+  pluginInitialStates = {};
 
   async asyncForEach(array, callback) {
     // console.log(array);
@@ -55,16 +57,14 @@ export class LoadPluginsService {
     if (!plug.moduleName) plug.moduleName = "MainModule";
 
     // compile module
-    const moduleFactory = await this._compiler.compileModuleAsync<any>(
-      module[plug.moduleName]
-    );
+    const moduleFactory = await this._compiler.compileModuleAsync<any>(module[plug.moduleName]);
 
     const moduleRef = await moduleFactory.create(this._injector);
     // const componentProvider = moduleRef.injector.get("plugins");
     const componentProvider = moduleRef.injector.get<PluginDeclaration>(
       // @ts-ignore
       "plugins",
-      "No Injector Found - error"
+      "No Injector Found - error",
     );
 
     this.modules[plug.moduleName] = moduleRef;
@@ -82,14 +82,18 @@ export class LoadPluginsService {
     })[0];
     if (!metadata) metadata = {};
 
-    let routeName = metadata["routeName"]
-      ? metadata["routeName"]
-      : plug.moduleName.toUpperCase();
+    let routeName = metadata["routeName"] || plug.moduleName.toUpperCase();
 
     let routeNameObj = {
-      path: metadata["path"] ? metadata["path"] : plug.moduleName,
-      name: metadata["pluginName"] ? metadata["pluginName"] : plug.moduleName
+      path: metadata["path"] || plug.moduleName,
+      name: metadata["pluginName"] || plug.moduleName,
     };
+
+    if (metadata["store"]) {
+      this.pluginStates[routeNameObj.name] = metadata["store"]["state"];
+      this.pluginStates[routeNameObj.name] = metadata["store"]["initial"];
+    }
+
     if (metadata["routesNames"]) {
       routeNameObj["children"] = metadata["routesNames"];
     }
@@ -99,18 +103,16 @@ export class LoadPluginsService {
       path: routeNameObj.path,
       data: {
         name: routeNameObj.name,
-        plugin: plug.moduleName
-      }
+        plugin: plug.moduleName,
+      },
     };
 
     if (!metadata["routes"]) {
       // no routes, just load the component of the first item from the plugins array
       route.data["component"] = provider[0].component;
       route["component"] = pathComponent;
-      route.data[
-        "factory"
-      ] = await moduleRef.componentFactoryResolver.resolveComponentFactory<any>(
-        route.data["component"]
+      route.data["factory"] = await moduleRef.componentFactoryResolver.resolveComponentFactory<any>(
+        route.data["component"],
       );
     } else {
       let children = metadata["routes"];
@@ -121,18 +123,11 @@ export class LoadPluginsService {
         item["component"] = pathComponent;
       });
 
-      route["children"] = ROUTE_REDUCE(
-        children,
-        metadata["routesNames"],
-        [routeName],
-        route.path
-      );
+      route["children"] = ROUTE_REDUCE(children, metadata["routesNames"], [routeName], route.path);
       route["childrenObj"] = children;
       await this.asyncForEachObject(children, async item => {
         if (!item.data["component"]) return;
-        item.data[
-          "factory"
-        ] = await moduleRef.componentFactoryResolver.resolveComponentFactory<
+        item.data["factory"] = await moduleRef.componentFactoryResolver.resolveComponentFactory<
           any
         >(item.data["component"]);
       });

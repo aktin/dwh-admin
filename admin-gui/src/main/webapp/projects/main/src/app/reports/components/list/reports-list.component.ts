@@ -5,7 +5,8 @@ import { ReportService } from "../../report.service";
 import { Observable } from "rxjs";
 import { Report } from "@app/reports/models";
 import { getReportsAsArray, ReportUpdate } from "@app/reports/store";
-import { AppState } from "@app/app.state";
+// import { AppState } from "@app/store/state/app.state";
+import { AppState } from "@aktin/utils";
 
 @Component({
   selector: "admin-gui-reports-list",

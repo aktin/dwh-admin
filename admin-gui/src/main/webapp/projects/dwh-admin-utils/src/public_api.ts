@@ -7,3 +7,6 @@ export * from "./lib/dwh-admin-utils.module";
 
 /* Services */
 // export * from "./lib/routing/url.service";
+
+/* State Store */
+export * from "./lib/app.state";
