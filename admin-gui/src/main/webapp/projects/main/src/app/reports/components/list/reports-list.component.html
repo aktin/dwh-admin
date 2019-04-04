@@ -1,6 +1,6 @@
-<p>
-  reports-list works!
-</p>
-<button (click)="printReports()">print</button>
-
-<report-view *ngFor="let report of reports$ | async as reports; index as i" [data]="report"></report-view>
+<div class="reports-list">
+  <report-view
+    *ngFor="let report of (reports$ | async) as reports; index as i"
+    [data]="report"
+  ></report-view>
+</div>

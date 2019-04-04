@@ -3,14 +3,14 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
+    "prestart": "ngtw build",
+    "start": "ng serve & ngtw watch",
+    "build": "ngtw build && ng build",
     "build-lib": "ng build dwh-admin-utils",
     "npm-pack-lib": "cd dist/@aktin/utils && npm pack",
     "package-lib": "npm run build-lib && npm run npm-pack-lib",
-    "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "purge": "ngtw purge"
   },
   "private": true,
   "dependencies": {
@@ -47,11 +47,13 @@
     "@angular/cli": "~7.2.4",
     "@angular/compiler-cli": "~7.2.4",
     "@angular/language-service": "~7.2.4",
+    "@fortawesome/fontawesome-free": "^5.8.1",
     "@ngrx/schematics": "^7.3.0",
     "@ngrx/store-devtools": "^7.2.4",
-    "ng-packagr": "^4.7.1",
     "@types/node": "~8.9.4",
+    "ng-packagr": "^4.7.1",
     "prettier": "1.16.2",
+    "tailwindcss": "^0.7.4",
     "ts-node": "~7.0.0",
     "tsickle": ">=0.34.0",
     "tslib": "^1.9.0",

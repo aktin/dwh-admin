@@ -1,8 +1,13 @@
 enquire
-<a href="{{state.link}}">link to report single?</a>
+<a href="{{ state.link }}">link to report single?</a>
 
-<ul *ngFor="let report of reports$ | async as reports; index as i">
+<ul *ngFor="let report of (reports$ | async) as reports; index as i">
   <li>{{ report.id }}</li>
   <li>{{ report.name }}</li>
 </ul>
 
+<button
+  class="bg-blue hover:bg-blue-light text-white font-bold py-2 px-4 border-b-4 border-blue-dark hover:border-blue rounded"
+>
+  print
+</button>

@@ -5684,7 +5684,7 @@
         CaseComponent = __decorate([
             core.Component({
                 selector: "case-component",
-                template: "enquire\n<a href=\"{{state.link}}\">link to report single?</a>\n\n<ul *ngFor=\"let report of reports$ | async as reports; index as i\">\n  <li>{{ report.id }}</li>\n  <li>{{ report.name }}</li>\n</ul>\n\n",
+                template: "enquire\n<a href=\"{{ state.link }}\">link to report single?</a>\n\n<ul *ngFor=\"let report of (reports$ | async) as reports; index as i\">\n  <li>{{ report.id }}</li>\n  <li>{{ report.name }}</li>\n</ul>\n\n<button\n  class=\"bg-blue hover:bg-blue-light text-white font-bold py-2 px-4 border-b-4 border-blue-dark hover:border-blue rounded\"\n>\n  print\n</button>\n",
                 styles: ["table {\n    font-family: arial, sans-serif;\n    border-collapse: collapse;\n    width: 100%;\n}\n\ntd, th {\n    border: 1px solid #dddddd;\n    text-align: left;\n    padding: 8px;\n}\n\ntr:nth-child(even) {\n    background-color: #dddddd;\n}\n"],
             }),
             __metadata("design:paramtypes", [utils.UrlService, store.Store])

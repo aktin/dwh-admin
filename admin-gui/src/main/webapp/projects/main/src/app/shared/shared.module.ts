@@ -5,12 +5,12 @@ import { HttpClientModule } from "@angular/common/http";
 @NgModule({
   declarations: [],
   imports: [CommonModule, HttpClientModule],
-  exports: [HttpClientModule]
+  exports: [HttpClientModule],
 })
 export class SharedModule {
   static forRoot() {
     return {
-      ngModule: SharedModule
+      ngModule: SharedModule,
     };
   }
 }

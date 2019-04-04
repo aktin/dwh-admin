@@ -4,7 +4,9 @@ import { select, Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 import { Report } from "../../models";
 import { getReportsAsArray, ReportUpdate } from "../../store";
-
+/**
+ *
+ */
 @Component({
   selector: "admin-gui-reports-list",
   templateUrl: "./reports-list.component.html",

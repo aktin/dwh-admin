@@ -4,7 +4,7 @@ import { Report } from "../../models";
 @Component({
   selector: "report-view",
   templateUrl: "./report-view.component.html",
-  styles: [],
+  styleUrls: ["../../reports.css"],
 })
 export class ReportViewComponent {
   @Input() data: Report;

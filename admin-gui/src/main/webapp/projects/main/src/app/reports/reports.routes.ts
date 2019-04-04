@@ -1,5 +1,5 @@
-import { ReportComponent } from "./components/single/report.component";
-import { ReportsListComponent } from "./components/list/reports-list.component";
+import { ReportComponent } from "./components";
+import { ReportsListComponent } from "./components";
 
 export const REPORTS_ROUTES_NAMES = {
   HOME: { path: "" },
@@ -8,37 +8,37 @@ export const REPORTS_ROUTES_NAMES = {
     path: "test",
     children: {
       HOME: {
-        path: ""
+        path: "",
       },
       TEST: {
-        path: "test"
+        path: "test",
       },
       SINGLE: {
-        path: "single"
-      }
-    }
-  }
+        path: "single",
+      },
+    },
+  },
 };
 
 export const REPORTS_ROUTES_OBJ = {
   HOME: {
-    component: ReportsListComponent
+    component: ReportsListComponent,
   },
   SINGLE: {
-    component: ReportComponent
+    component: ReportComponent,
   },
   TEST: {
     childrenObj: {
       HOME: {
-        component: ReportComponent
+        component: ReportComponent,
       },
       TEST: {
-        component: ReportComponent
+        component: ReportComponent,
       },
       SINGLE: {
-        component: ReportsListComponent
-      }
-    }
-  }
+        component: ReportsListComponent,
+      },
+    },
+  },
   // { path: ":id", component: RequestSingleComponent }
 };

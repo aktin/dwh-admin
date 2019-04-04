@@ -9,7 +9,7 @@
       "moduleName": "Plugin2Module"
     },
     {
-      "url": "http://ulicor.de/files/plugin-a.bundle.js",
+      "url": "assets/plugins/plugin-a.bundle.js",
       "moduleName": "PluginAModule"
     },
     {
