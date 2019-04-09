@@ -10,7 +10,7 @@ import { AppRouterModule } from "@app/routing/app-router.module";
   selector: "admin-gui-root",
   providers: [],
   templateUrl: "./app.component.html",
-  styles: [],
+  styleUrls: [],
 })
 export class AppComponent implements OnInit {
   visibility: any = {};

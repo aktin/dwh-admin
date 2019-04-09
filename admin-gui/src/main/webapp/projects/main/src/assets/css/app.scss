@@ -1,0 +1,25 @@
+.divider {
+  border-top: 1px solid rgba(34, 36, 38, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-icon {
+  @apply cursor-pointer rounded-full flex items-center justify-center w-8 h-8 bg-grey-light;
+  &:hover {
+    @apply bg-grey;
+  }
+
+  &.btn-green {
+    @apply bg-green-light text-white;
+    &:hover {
+      @apply bg-green;
+    }
+  }
+
+  &.btn-border-green {
+    @apply border-2 bg-transparent border-green-light text-green-light;
+    &:hover {
+      @apply border-green text-green bg-green-lightest;
+    }
+  }
+}

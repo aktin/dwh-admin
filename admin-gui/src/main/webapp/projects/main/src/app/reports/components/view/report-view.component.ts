@@ -1,5 +1,8 @@
 import { Component, Input } from "@angular/core";
-import { Report } from "../../models";
+import { Report, ReportStatus } from "../../models";
+import { ActivatedRoute } from "@angular/router";
+import { UrlService } from "@aktin/utils";
+import { ReportService } from "../../report.service";
 
 @Component({
   selector: "report-view",
@@ -8,11 +11,22 @@ import { Report } from "../../models";
 })
 export class ReportViewComponent {
   @Input() data: Report;
-  constructor() {}
+  @Input() listView = true;
+  constructor(private _route: ActivatedRoute, private _url: UrlService, private s: ReportService) {}
+
+  ngOnInit() {}
 
   get report(): Report {
     return this.data;
   }
 
-  ngOnInit() {}
+  get success(): boolean {
+    return this.data.state === ReportStatus.Completed;
+  }
+
+  get endDate() {
+    let next = new Date(this.data.timespan[1].getTime());
+    next.setDate(this.data.timespan[1].getDate() - 1);
+    return next;
+  }
 }

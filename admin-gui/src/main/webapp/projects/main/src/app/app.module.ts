@@ -1,4 +1,4 @@
-import { Compiler, COMPILER_OPTIONS, CompilerFactory, NgModule } from "@angular/core";
+import { Compiler, COMPILER_OPTIONS, CompilerFactory, NgModule, LOCALE_ID } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { JitCompilerFactory } from "@angular/platform-browser-dynamic";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
@@ -25,6 +25,10 @@ import { HomeComponent, TestDummyComponent, ErrorComponent } from "@app/default"
 export function createCompiler(fn: CompilerFactory): Compiler {
   return fn.createCompiler();
 }
+
+import { getLocaleId, registerLocaleData } from "@angular/common";
+import localeDe from "@angular/common/locales/de";
+registerLocaleData(localeDe, "de");
 
 const APPCOMPONENTS = [AppComponent, HomeComponent, TestDummyComponent, ErrorComponent];
 
@@ -55,6 +59,7 @@ const APPCOMPONENTS = [AppComponent, HomeComponent, TestDummyComponent, ErrorCom
   ],
   exports: [],
   providers: [
+    { provide: LOCALE_ID, useValue: "de-DE" },
     {
       provide: COMPILER_OPTIONS,
       useValue: {},
@@ -73,4 +78,6 @@ const APPCOMPONENTS = [AppComponent, HomeComponent, TestDummyComponent, ErrorCom
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+  constructor() {}
+}

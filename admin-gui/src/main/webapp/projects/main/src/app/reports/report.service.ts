@@ -1,17 +1,27 @@
-import { Injectable } from "@angular/core";
+import { Inject, Injectable, LOCALE_ID } from "@angular/core";
 import { Observable, EMPTY } from "rxjs";
 import { catchError, map } from "rxjs/operators";
 import { UrlService } from "@aktin/utils";
 import { Report, ReportStatus } from "./models";
+import i18DeData from "./i18n/de.json";
+import { I18nService } from "./i18n/i18n.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class ReportService {
   private baseURL = "";
-  private _locale = "de-DE";
-  constructor(private _url: UrlService) {
+  @Inject(LOCALE_ID) private _locale: string;
+  constructor(private _url: UrlService, private _i18n: I18nService) {
     this.baseURL = this._url.link(["REPORT"]);
+    console.log(this._locale);
+    if (!this._i18n.hasKey("report")) {
+      this._i18n.addI18NData("de", "report", i18DeData);
+    }
+  }
+
+  parse(key): string {
+    return this._i18n.parse("report", key);
   }
 
   updateReports(): Observable<Report[]> {

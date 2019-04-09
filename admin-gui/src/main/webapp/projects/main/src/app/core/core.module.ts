@@ -20,4 +20,4 @@ export class CoreModule {
   }
 }
 
-export { LoadPluginsService } from "./services/load-plugins.service";
+export { LoadPluginsService } from "./services";

@@ -1,37 +1,45 @@
+<div class="divider"></div>
+
 <div
-  class="report-single-view container my-5 mx-auto p-5 rounded bg-grey-lightest"
+  class="report-single-view container my-5 mx-auto p-3"
   id="report-list-{{ report.id }}"
+  [ngClass]="{ 'text-grey-dark': !success }"
 >
   <div class="flex justify-between">
-    <div class="w-1/2 font-medium text-xl">
+    <div
+      class="w-1/2 font-medium items-baseline cursor-pointer"
+      [ngClass]="{ 'text-xl': success }"
+      routerLink="{{ _url.link(['REPORT', 'SINGLE']) }}"
+    >
       {{ report.name }}
     </div>
     <div class="flex report-view-actions">
-      <a title="Diesen Bericht herunterladen" class="w-1/3 p-3 w-12 h-12">
-        <i class="fas fa-cloud-download-alt"></i>
+      <a *ngIf="success" [title]="s.parse('actions.download')" class="btn-icon btn-green">
+        <i class="fas fa-cloud-download-alt fa-xs"></i>
       </a>
-      <a title="Detailansicht des Berichts" class="w-1/3  p-3 w-12 h-12">
-        <i class="far fa-eye"></i>
+      <a *ngIf="listView" [title]="s.parse('actions.detail')" class="btn-icon ml-2">
+        <i class="far fa-eye fa-xs"></i>
       </a>
-      <a title="Zurück zum Berichtsübersicht" class="w-1/3  p-3 w-12 h-12">
-        <i class="fas fa-angle-double-left"></i>
+      <a *ngIf="!listView" [title]="s.parse('actions.list')" class="btn-icon btn-border-green ml-2">
+        <i class="fas fa-angle-double-left fa-xs"></i>
       </a>
     </div>
   </div>
-  <div class="flex flex-row mt-1">
-    <div class="w-1/5">Status:</div>
-    <div class="">
-      <b>{{ report.status }}</b>
+  <div class="flex flex-row mt-1 text-sm" *ngIf="!success" [ngClass]="{ 'text-failed': !success }">
+    <div class="w-1/5">{{ s.parse("view.status") }}</div>
+    <div class="font-medium">
+      {{ s.parse("view.status" + report.status) }}
     </div>
   </div>
-  <div class="flex flex-row mt-1">
-    <div class="w-1/5">Erstelldatum:</div>
-    <div class="">{{ report.generationDate | date: "mediumDate" }}</div>
+  <div class="flex flex-row mt-1 text-sm" *ngIf="success">
+    <div class="w-1/5">{{ s.parse("view.creationDate") }}</div>
+    <div class="">{{ report.generationDate | date: "longDate" }}</div>
   </div>
-  <div class="flex flex-row mt-1">
-    <div class="w-1/5">Zeitraum:</div>
+  <div class="flex flex-row mt-1 text-sm">
+    <div class="w-1/5">{{ s.parse("view.timeSpan") }}</div>
     <div class="">
-      {{ report.timespan[0] | date: "shortDate" }} bis {{ report.timespan[1] | date: "shortDate" }}
+      {{ report.timespan[0] | date: "shortDate" }} {{ s.parse("view.timeSpanTill") }}
+      {{ endDate | date: "shortDate" }}
     </div>
   </div>
 </div>

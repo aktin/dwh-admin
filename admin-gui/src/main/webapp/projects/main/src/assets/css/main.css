@@ -487,6 +487,12 @@ textarea::-webkit-input-placeholder {
   opacity: .5;
 }
 
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+  color: inherit;
+  opacity: .5;
+}
+
 input::-ms-input-placeholder,
 textarea::-ms-input-placeholder {
   color: inherit;
@@ -590,6 +596,10 @@ table {
 
 .bg-scroll {
   background-attachment: scroll;
+}
+
+.bg-failed {
+  background-color: #cc1f1a;
 }
 
 .bg-transparent {
@@ -884,6 +894,10 @@ table {
   background-color: #ffebef;
 }
 
+.hover\:bg-failed:hover {
+  background-color: #cc1f1a;
+}
+
 .hover\:bg-transparent:hover {
   background-color: transparent;
 }
@@ -1174,6 +1188,10 @@ table {
 
 .hover\:bg-pink-lightest:hover {
   background-color: #ffebef;
+}
+
+.focus\:bg-failed:focus {
+  background-color: #cc1f1a;
 }
 
 .focus\:bg-transparent:focus {
@@ -1540,6 +1558,10 @@ table {
   border-collapse: separate;
 }
 
+.border-failed {
+  border-color: #cc1f1a;
+}
+
 .border-transparent {
   border-color: transparent;
 }
@@ -1832,6 +1854,10 @@ table {
   border-color: #ffebef;
 }
 
+.hover\:border-failed:hover {
+  border-color: #cc1f1a;
+}
+
 .hover\:border-transparent:hover {
   border-color: transparent;
 }
@@ -2122,6 +2148,10 @@ table {
 
 .hover\:border-pink-lightest:hover {
   border-color: #ffebef;
+}
+
+.focus\:border-failed:focus {
+  border-color: #cc1f1a;
 }
 
 .focus\:border-transparent:focus {
@@ -4879,6 +4909,10 @@ table {
   text-align: justify;
 }
 
+.text-failed {
+  color: #cc1f1a;
+}
+
 .text-transparent {
   color: transparent;
 }
@@ -5171,6 +5205,10 @@ table {
   color: #ffebef;
 }
 
+.hover\:text-failed:hover {
+  color: #cc1f1a;
+}
+
 .hover\:text-transparent:hover {
   color: transparent;
 }
@@ -5461,6 +5499,10 @@ table {
 
 .hover\:text-pink-lightest:hover {
   color: #ffebef;
+}
+
+.focus\:text-failed:focus {
+  color: #cc1f1a;
 }
 
 .focus\:text-transparent:focus {
@@ -6184,6 +6226,50 @@ table {
  * @import "utilities/skew-transforms";
  */
 
+/** Import my own CSS */
+
+.divider {
+  border-top: 1px solid rgba(34, 36, 38, .15);
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+
+.btn-icon {
+  cursor: pointer;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background-color: #dae1e7;
+}
+
+.btn-icon:hover {
+  background-color: #b8c2cc;
+}
+
+.btn-icon.btn-green {
+  background-color: #51d88a;
+  color: #fff;
+}
+
+.btn-icon.btn-green:hover {
+  background-color: #38c172;
+}
+
+.btn-icon.btn-border-green {
+  border-width: 2px;
+  background-color: transparent;
+  border-color: #51d88a;
+  color: #51d88a;
+}
+
+.btn-icon.btn-border-green:hover {
+  border-color: #38c172;
+  color: #38c172;
+  background-color: #e3fcec;
+}
+
 @media (min-width: 576px) {
   .sm\:list-reset {
     list-style: none;
@@ -6206,6 +6292,10 @@ table {
 
   .sm\:bg-scroll {
     background-attachment: scroll;
+  }
+
+  .sm\:bg-failed {
+    background-color: #cc1f1a;
   }
 
   .sm\:bg-transparent {
@@ -6500,6 +6590,10 @@ table {
     background-color: #ffebef;
   }
 
+  .sm\:hover\:bg-failed:hover {
+    background-color: #cc1f1a;
+  }
+
   .sm\:hover\:bg-transparent:hover {
     background-color: transparent;
   }
@@ -6790,6 +6884,10 @@ table {
 
   .sm\:hover\:bg-pink-lightest:hover {
     background-color: #ffebef;
+  }
+
+  .sm\:focus\:bg-failed:focus {
+    background-color: #cc1f1a;
   }
 
   .sm\:focus\:bg-transparent:focus {
@@ -7148,6 +7246,10 @@ table {
     background-size: contain;
   }
 
+  .sm\:border-failed {
+    border-color: #cc1f1a;
+  }
+
   .sm\:border-transparent {
     border-color: transparent;
   }
@@ -7440,6 +7542,10 @@ table {
     border-color: #ffebef;
   }
 
+  .sm\:hover\:border-failed:hover {
+    border-color: #cc1f1a;
+  }
+
   .sm\:hover\:border-transparent:hover {
     border-color: transparent;
   }
@@ -7730,6 +7836,10 @@ table {
 
   .sm\:hover\:border-pink-lightest:hover {
     border-color: #ffebef;
+  }
+
+  .sm\:focus\:border-failed:focus {
+    border-color: #cc1f1a;
   }
 
   .sm\:focus\:border-transparent:focus {
@@ -10471,6 +10581,10 @@ table {
     text-align: justify;
   }
 
+  .sm\:text-failed {
+    color: #cc1f1a;
+  }
+
   .sm\:text-transparent {
     color: transparent;
   }
@@ -10763,6 +10877,10 @@ table {
     color: #ffebef;
   }
 
+  .sm\:hover\:text-failed:hover {
+    color: #cc1f1a;
+  }
+
   .sm\:hover\:text-transparent:hover {
     color: transparent;
   }
@@ -11053,6 +11171,10 @@ table {
 
   .sm\:hover\:text-pink-lightest:hover {
     color: #ffebef;
+  }
+
+  .sm\:focus\:text-failed:focus {
+    color: #cc1f1a;
   }
 
   .sm\:focus\:text-transparent:focus {
@@ -11786,6 +11908,10 @@ table {
     background-attachment: scroll;
   }
 
+  .md\:bg-failed {
+    background-color: #cc1f1a;
+  }
+
   .md\:bg-transparent {
     background-color: transparent;
   }
@@ -12078,6 +12204,10 @@ table {
     background-color: #ffebef;
   }
 
+  .md\:hover\:bg-failed:hover {
+    background-color: #cc1f1a;
+  }
+
   .md\:hover\:bg-transparent:hover {
     background-color: transparent;
   }
@@ -12368,6 +12498,10 @@ table {
 
   .md\:hover\:bg-pink-lightest:hover {
     background-color: #ffebef;
+  }
+
+  .md\:focus\:bg-failed:focus {
+    background-color: #cc1f1a;
   }
 
   .md\:focus\:bg-transparent:focus {
@@ -12726,6 +12860,10 @@ table {
     background-size: contain;
   }
 
+  .md\:border-failed {
+    border-color: #cc1f1a;
+  }
+
   .md\:border-transparent {
     border-color: transparent;
   }
@@ -13018,6 +13156,10 @@ table {
     border-color: #ffebef;
   }
 
+  .md\:hover\:border-failed:hover {
+    border-color: #cc1f1a;
+  }
+
   .md\:hover\:border-transparent:hover {
     border-color: transparent;
   }
@@ -13308,6 +13450,10 @@ table {
 
   .md\:hover\:border-pink-lightest:hover {
     border-color: #ffebef;
+  }
+
+  .md\:focus\:border-failed:focus {
+    border-color: #cc1f1a;
   }
 
   .md\:focus\:border-transparent:focus {
@@ -16049,6 +16195,10 @@ table {
     text-align: justify;
   }
 
+  .md\:text-failed {
+    color: #cc1f1a;
+  }
+
   .md\:text-transparent {
     color: transparent;
   }
@@ -16341,6 +16491,10 @@ table {
     color: #ffebef;
   }
 
+  .md\:hover\:text-failed:hover {
+    color: #cc1f1a;
+  }
+
   .md\:hover\:text-transparent:hover {
     color: transparent;
   }
@@ -16631,6 +16785,10 @@ table {
 
   .md\:hover\:text-pink-lightest:hover {
     color: #ffebef;
+  }
+
+  .md\:focus\:text-failed:focus {
+    color: #cc1f1a;
   }
 
   .md\:focus\:text-transparent:focus {
@@ -17364,6 +17522,10 @@ table {
     background-attachment: scroll;
   }
 
+  .lg\:bg-failed {
+    background-color: #cc1f1a;
+  }
+
   .lg\:bg-transparent {
     background-color: transparent;
   }
@@ -17656,6 +17818,10 @@ table {
     background-color: #ffebef;
   }
 
+  .lg\:hover\:bg-failed:hover {
+    background-color: #cc1f1a;
+  }
+
   .lg\:hover\:bg-transparent:hover {
     background-color: transparent;
   }
@@ -17946,6 +18112,10 @@ table {
 
   .lg\:hover\:bg-pink-lightest:hover {
     background-color: #ffebef;
+  }
+
+  .lg\:focus\:bg-failed:focus {
+    background-color: #cc1f1a;
   }
 
   .lg\:focus\:bg-transparent:focus {
@@ -18304,6 +18474,10 @@ table {
     background-size: contain;
   }
 
+  .lg\:border-failed {
+    border-color: #cc1f1a;
+  }
+
   .lg\:border-transparent {
     border-color: transparent;
   }
@@ -18596,6 +18770,10 @@ table {
     border-color: #ffebef;
   }
 
+  .lg\:hover\:border-failed:hover {
+    border-color: #cc1f1a;
+  }
+
   .lg\:hover\:border-transparent:hover {
     border-color: transparent;
   }
@@ -18886,6 +19064,10 @@ table {
 
   .lg\:hover\:border-pink-lightest:hover {
     border-color: #ffebef;
+  }
+
+  .lg\:focus\:border-failed:focus {
+    border-color: #cc1f1a;
   }
 
   .lg\:focus\:border-transparent:focus {
@@ -21627,6 +21809,10 @@ table {
     text-align: justify;
   }
 
+  .lg\:text-failed {
+    color: #cc1f1a;
+  }
+
   .lg\:text-transparent {
     color: transparent;
   }
@@ -21919,6 +22105,10 @@ table {
     color: #ffebef;
   }
 
+  .lg\:hover\:text-failed:hover {
+    color: #cc1f1a;
+  }
+
   .lg\:hover\:text-transparent:hover {
     color: transparent;
   }
@@ -22209,6 +22399,10 @@ table {
 
   .lg\:hover\:text-pink-lightest:hover {
     color: #ffebef;
+  }
+
+  .lg\:focus\:text-failed:focus {
+    color: #cc1f1a;
   }
 
   .lg\:focus\:text-transparent:focus {
@@ -22942,6 +23136,10 @@ table {
     background-attachment: scroll;
   }
 
+  .xl\:bg-failed {
+    background-color: #cc1f1a;
+  }
+
   .xl\:bg-transparent {
     background-color: transparent;
   }
@@ -23234,6 +23432,10 @@ table {
     background-color: #ffebef;
   }
 
+  .xl\:hover\:bg-failed:hover {
+    background-color: #cc1f1a;
+  }
+
   .xl\:hover\:bg-transparent:hover {
     background-color: transparent;
   }
@@ -23524,6 +23726,10 @@ table {
 
   .xl\:hover\:bg-pink-lightest:hover {
     background-color: #ffebef;
+  }
+
+  .xl\:focus\:bg-failed:focus {
+    background-color: #cc1f1a;
   }
 
   .xl\:focus\:bg-transparent:focus {
@@ -23882,6 +24088,10 @@ table {
     background-size: contain;
   }
 
+  .xl\:border-failed {
+    border-color: #cc1f1a;
+  }
+
   .xl\:border-transparent {
     border-color: transparent;
   }
@@ -24174,6 +24384,10 @@ table {
     border-color: #ffebef;
   }
 
+  .xl\:hover\:border-failed:hover {
+    border-color: #cc1f1a;
+  }
+
   .xl\:hover\:border-transparent:hover {
     border-color: transparent;
   }
@@ -24464,6 +24678,10 @@ table {
 
   .xl\:hover\:border-pink-lightest:hover {
     border-color: #ffebef;
+  }
+
+  .xl\:focus\:border-failed:focus {
+    border-color: #cc1f1a;
   }
 
   .xl\:focus\:border-transparent:focus {
@@ -27205,6 +27423,10 @@ table {
     text-align: justify;
   }
 
+  .xl\:text-failed {
+    color: #cc1f1a;
+  }
+
   .xl\:text-transparent {
     color: transparent;
   }
@@ -27497,6 +27719,10 @@ table {
     color: #ffebef;
   }
 
+  .xl\:hover\:text-failed:hover {
+    color: #cc1f1a;
+  }
+
   .xl\:hover\:text-transparent:hover {
     color: transparent;
   }
@@ -27787,6 +28013,10 @@ table {
 
   .xl\:hover\:text-pink-lightest:hover {
     color: #ffebef;
+  }
+
+  .xl\:focus\:text-failed:focus {
+    color: #cc1f1a;
   }
 
   .xl\:focus\:text-transparent:focus {
