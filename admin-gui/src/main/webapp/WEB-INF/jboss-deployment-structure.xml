@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>  
+<jboss-deployment-structure>
+	<!-- FIX for RESTEASY008205: JSON Binding serialization error -->
+	<deployment>
+		<exclusions>
+			<module name="org.jboss.resteasy.resteasy-json-binding-provider"/>
+		</exclusions>
+	</deployment>
+</jboss-deployment-structure>
