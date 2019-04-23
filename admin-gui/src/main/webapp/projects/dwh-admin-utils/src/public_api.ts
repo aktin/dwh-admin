@@ -3,11 +3,10 @@
  */
 
 /* Module */
-
 export * from "./lib/dwh-admin-utils.module";
 
-/* Services */
-// export * from "./lib/routing/url.service";
-
 /* State Store */
-export * from "./lib/main.state";
+export * from "./lib/state";
+
+/* Components */
+// export * from "./lib/components";

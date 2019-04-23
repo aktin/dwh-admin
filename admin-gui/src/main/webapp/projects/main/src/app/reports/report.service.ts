@@ -1,20 +1,25 @@
 import { Inject, Injectable, LOCALE_ID } from "@angular/core";
+import { formatDate } from "@angular/common";
 import { Observable, EMPTY } from "rxjs";
 import { catchError, map } from "rxjs/operators";
-import { UrlService } from "@aktin/utils";
 import { Report, ReportStatus } from "./models";
+// @ts-ignore
+import { UrlService, I18nService } from "@aktin/utils";
+// @ts-ignore
 import i18DeData from "./i18n/de.json";
-import { I18nService } from "./i18n/i18n.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class ReportService {
   private baseURL = "";
-  @Inject(LOCALE_ID) private _locale: string;
-  constructor(private _url: UrlService, private _i18n: I18nService) {
-    this.baseURL = this._url.link(["REPORT"]);
-    console.log(this._locale);
+
+  constructor(
+    @Inject(LOCALE_ID) private _locale: string,
+    private _url: UrlService,
+    private _i18n: I18nService,
+  ) {
+    this.baseURL = this._url.getUrl("report/archive"); // this._url.link(["REPORT"]);
     if (!this._i18n.hasKey("report")) {
       this._i18n.addI18NData("de", "report", i18DeData);
     }
@@ -27,7 +32,7 @@ export class ReportService {
   updateReports(): Observable<Report[]> {
     console.log("hier in service");
     return this._url.get<Report[]>("report/archive").pipe(
-      map(reports => {
+      map((reports: Report[]) => {
         return reports.map(
           (report, index): Report => {
             return this._parseReport(report);
@@ -70,11 +75,7 @@ export class ReportService {
     } else {
       name += report.template;
     }
-    name +=
-      " " +
-      report.timespan[0].toLocaleDateString(this._locale, { month: "long" }) +
-      " " +
-      report.timespan[0].getFullYear();
+    name += formatDate(report.timespan[0], " MMMM yyyy", this._locale);
     return name;
   }
 }

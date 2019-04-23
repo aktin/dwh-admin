@@ -7,15 +7,15 @@ import { HomeComponent } from "@app/default";
 
 export const APP_ROUTES_OBJ = {
   HOME: {
-    component: HomeComponent
+    component: HomeComponent,
   },
   TEST: {
-    component: TestDummyComponent
+    component: TestDummyComponent,
   },
   REPORT: {
     data: {},
-    childrenObj: REPORTS_ROUTES_OBJ
-  }
+    childrenObj: REPORTS_ROUTES_OBJ,
+  },
 };
 
 export const APP_LAST_ROUTES: Routes = [
@@ -23,11 +23,11 @@ export const APP_LAST_ROUTES: Routes = [
   {
     path: "",
     redirectTo: "home",
-    pathMatch: "full"
+    pathMatch: "full",
   },
   {
     /*Error 404*/
     path: "**",
-    component: ErrorComponent
-  }
+    component: ErrorComponent,
+  },
 ];

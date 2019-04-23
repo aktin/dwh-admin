@@ -4,6 +4,7 @@ import { select, Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 import { Report } from "../../models";
 import { getReportsAsArray, ReportUpdate } from "../../store";
+import { ReportService } from "../../report.service";
 /**
  *
  */
@@ -14,7 +15,7 @@ import { getReportsAsArray, ReportUpdate } from "../../store";
 })
 export class ReportsListComponent implements OnInit {
   reports$: Observable<Report[]>;
-  constructor(private _url: UrlService, private _store: Store<State>) {}
+  constructor(private _url: UrlService, private _store: Store<State>, private s: ReportService) {}
 
   ngOnInit() {
     console.log("init list");
@@ -25,6 +26,4 @@ export class ReportsListComponent implements OnInit {
   getUrls(...routes) {
     return this._url.link(routes);
   }
-
-  printReports() {}
 }

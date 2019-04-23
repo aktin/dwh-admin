@@ -2,6 +2,41 @@
   border-top: 1px solid rgba(34, 36, 38, 0.15);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
+.menu-box {
+  border-top: 1px solid rgba(34, 36, 38, 0.15);
+  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
+  box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
+}
+
+.menu-bar {
+  @apply h-16 flex justify-between max-w-288 mx-auto;
+}
+.menu-button {
+  @apply inline-block cursor-pointer py-6 px-4;
+  &:hover {
+    @apply bg-grey-lighter;
+  }
+  &.active {
+    @apply bg-grey-light;
+  }
+}
+
+.breadcrumb-item {
+  @apply inline-block;
+  &.first {
+    @apply text-xl;
+  }
+  &.link {
+    @apply text-link cursor-pointer;
+  }
+  &.current {
+    @apply font-medium;
+  }
+}
+
+.breadcrumb-divider {
+  @apply inline-block mx-3 text-grey-dark;
+}
 
 .btn-icon {
   @apply cursor-pointer rounded-full flex items-center justify-center w-8 h-8 bg-grey-light;

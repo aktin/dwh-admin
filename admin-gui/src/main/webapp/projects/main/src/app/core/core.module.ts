@@ -1,15 +1,16 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
+import { HttpClientModule } from "@angular/common/http";
 
 import { LoadExternalComponent } from "./load-external/load-external.component";
 import { LoadPluginsService } from "./services";
-import { BreadcrumbComponent } from "./breadcrumb/breadcrumb.component";
+import { RouterModule } from "@angular/router";
 
 @NgModule({
-  declarations: [LoadExternalComponent, BreadcrumbComponent],
-  imports: [CommonModule],
+  declarations: [LoadExternalComponent],
+  imports: [CommonModule, RouterModule, HttpClientModule],
   entryComponents: [LoadExternalComponent],
-  exports: [LoadExternalComponent, BreadcrumbComponent],
+  exports: [LoadExternalComponent, HttpClientModule],
 })
 export class CoreModule {
   static forRoot() {

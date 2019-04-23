@@ -7,20 +7,35 @@
 >
   <div class="flex justify-between">
     <div
-      class="w-1/2 font-medium items-baseline cursor-pointer"
+      class="w-auto inline-block font-medium items-baseline cursor-pointer"
       [ngClass]="{ 'text-xl': success }"
-      routerLink="{{ _url.link(['REPORT', 'SINGLE']) }}"
+      [routerLink]="_url.link(['REPORT', 'SINGLE'], { id: report.id })"
     >
-      {{ report.name }}
+      {{ report.id }}: {{ report.name }}
     </div>
     <div class="flex report-view-actions">
-      <a *ngIf="success" [title]="s.parse('actions.download')" class="btn-icon btn-green">
+      <a
+        *ngIf="success"
+        [title]="s.parse('actions.download')"
+        class="btn-icon btn-green"
+        (click)="download()"
+      >
         <i class="fas fa-cloud-download-alt fa-xs"></i>
       </a>
-      <a *ngIf="listView" [title]="s.parse('actions.detail')" class="btn-icon ml-2">
+      <a
+        *ngIf="listView"
+        [title]="s.parse('actions.detail')"
+        class="btn-icon ml-2"
+        [routerLink]="_url.link(['REPORT', 'SINGLE'], { id: report.id })"
+      >
         <i class="far fa-eye fa-xs"></i>
       </a>
-      <a *ngIf="!listView" [title]="s.parse('actions.list')" class="btn-icon btn-border-green ml-2">
+      <a
+        *ngIf="!listView"
+        [title]="s.parse('actions.list')"
+        [routerLink]="_url.link(['REPORT'])"
+        class="btn-icon btn-border-green ml-2"
+      >
         <i class="fas fa-angle-double-left fa-xs"></i>
       </a>
     </div>
@@ -42,4 +57,8 @@
       {{ endDate | date: "shortDate" }}
     </div>
   </div>
+</div>
+
+<div class="row" *ngIf="!listView && report && success">
+  <iframe [src]="report.url | safe" style="width: 100%; height: 700px;"></iframe>
 </div>

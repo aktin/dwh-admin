@@ -3,7 +3,12 @@ import { ReportsListComponent } from "./components";
 
 export const REPORTS_ROUTES_NAMES = {
   HOME: { path: "" },
-  SINGLE: { path: "single" },
+  /*SINGLE: {
+    path: "single",
+  },*/
+  SINGLE: {
+    path: ":id",
+  },
   TEST: {
     path: "test",
     children: {
@@ -13,9 +18,7 @@ export const REPORTS_ROUTES_NAMES = {
       TEST: {
         path: "test",
       },
-      SINGLE: {
-        path: "single",
-      },
+      SINGLE: { path: "single" },
     },
   },
 };

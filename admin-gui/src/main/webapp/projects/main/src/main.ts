@@ -17,7 +17,6 @@ import * as ngrxRouterStore from "@ngrx/router-store";
 import * as aktinUtils from "@aktin/utils";
 import * as rxjs from "rxjs";
 import * as lodash from "lodash";
-import * as material from "material";
 
 SystemJS.set("@angular/core", SystemJS.newModule(angularCore));
 SystemJS.set("@angular/common", SystemJS.newModule(angularCommon));
@@ -30,7 +29,6 @@ SystemJS.set("@ngrx/router-store", SystemJS.newModule(ngrxRouterStore));
 SystemJS.set("@aktin/utils", SystemJS.newModule(aktinUtils));
 SystemJS.set("rxjs", SystemJS.newModule(rxjs));
 SystemJS.set("lodash", SystemJS.newModule(lodash));
-SystemJS.set("material", SystemJS.newModule(material));
 
 if (environment.production) {
   enableProdMode();

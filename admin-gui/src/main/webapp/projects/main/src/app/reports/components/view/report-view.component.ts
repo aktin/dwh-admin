@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
-import { Report, ReportStatus } from "../../models";
 import { ActivatedRoute } from "@angular/router";
 import { UrlService } from "@aktin/utils";
+import { Report, ReportStatus } from "../../models";
 import { ReportService } from "../../report.service";
 
 @Component({
@@ -21,12 +21,16 @@ export class ReportViewComponent {
   }
 
   get success(): boolean {
-    return this.data.state === ReportStatus.Completed;
+    return this.data && this.data.state === ReportStatus.Completed;
   }
 
   get endDate() {
     let next = new Date(this.data.timespan[1].getTime());
     next.setDate(this.data.timespan[1].getDate() - 1);
     return next;
+  }
+
+  download() {
+    console.log("downloading this now ... ", this.data.id);
   }
 }

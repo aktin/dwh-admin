@@ -13,8 +13,6 @@ import { StoreRouterConnectingModule } from "@ngrx/router-store";
 import { environment } from "@env/environment";
 
 import { CoreModule } from "@app/core";
-import { SharedModule } from "@app/shared";
-import { MaterialModule } from "@app/material";
 
 import { AppComponent } from "@app/app.component";
 import { ReportsModule } from "@app/reports";
@@ -41,10 +39,7 @@ const APPCOMPONENTS = [AppComponent, HomeComponent, TestDummyComponent, ErrorCom
     // RouterModule.forRoot(APP_ROUTES_FUSING(), { useHash: true }),
     BrowserModule,
     CoreModule.forRoot(),
-    SharedModule.forRoot(),
     ReportsModule,
-
-    MaterialModule,
     BrowserAnimationsModule,
 
     StoreModule.forRoot(reducers, { metaReducers }),

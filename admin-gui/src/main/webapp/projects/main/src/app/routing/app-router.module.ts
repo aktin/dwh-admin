@@ -11,10 +11,10 @@ import { environment } from "@env/environment.prod";
     DwhAdminUtilsModule.forRoot(APP_ROUTES_NAMES),
     RouterModule.forRoot(APP_ROUTES_FUSING(), {
       enableTracing: !environment.production, // <-- debugging purposes only
-      useHash: true
-    })
+      useHash: true,
+    }),
   ],
-  exports: [DwhAdminUtilsModule, RouterModule]
+  exports: [DwhAdminUtilsModule, RouterModule],
 })
 export class AppRouterModule {
   constructor(private _router: Router, private _url: UrlService) {}
@@ -44,8 +44,10 @@ export function APP_ROUTES_FUSING(...routesArrays): Routes {
   if (routesArrays.length == 0) {
     routesArrays.push([]);
   }
-  if (routesArrays[0].length == 0)
+  if (routesArrays[0].length == 0) {
+    console.log(APP_ROUTES_NAMES, APP_ROUTES_OBJ);
     routesArrays[0] = ROUTE_REDUCE(APP_ROUTES_OBJ, APP_ROUTES_NAMES);
+  }
   let array: Routes = [];
   routesArrays.forEach(routes => {
     _.each(APP_LAST_ROUTES, dR => _.remove(routes, _.matches(dR)));

@@ -1,0 +1,14 @@
+<div class="my-5">
+  <ng-container *ngFor="let elem of path; index as i">
+    <div
+      class="breadcrumb-item"
+      [routerLink]="elem[0]"
+      [ngClass]="{ first: isFirst(i), link: !isCurrent(i), current: isCurrent(i) }"
+    >
+      {{ elem[1] }}
+    </div>
+    <div class="breadcrumb-divider" *ngIf="!isCurrent(i)">
+      <i class="fas fa-angle-right fa-xs"></i>
+    </div>
+  </ng-container>
+</div>

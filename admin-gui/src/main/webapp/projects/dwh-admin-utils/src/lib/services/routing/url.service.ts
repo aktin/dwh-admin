@@ -18,7 +18,11 @@ export class UrlService {
   }
 
   get<T>(url_end: string) {
-    return this._http.get<T>(this._url_start + url_end);
+    return this._http.get<T>(this.getUrl(url_end));
+  }
+
+  getUrl(url_end: string) {
+    return this._url_start + url_end;
   }
 
   updateRouteNames(routeNames: any) {
@@ -29,20 +33,25 @@ export class UrlService {
     return this._routeNames;
   }
 
-  link(routes: string[], hash: boolean = false) {
+  link(routes: string[], param: object = {}, hash: boolean = false) {
     let url = "";
     let names = this._routeNames;
     _.each(routes, r => {
       if (names === undefined || names[r] === undefined) {
         return false;
       }
-      url += "/" + names[r].path;
+      if (names[r].path.startsWith(":")) {
+        // parameter
+        let paramName = names[r].path.slice(1);
+        url += "/" + param[paramName];
+      } else {
+        url += "/" + names[r].path;
+      }
       names = names[r].children;
     });
     if (hash) {
       url = "#/" + url;
     }
-
     return url;
   }
 }

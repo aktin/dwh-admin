@@ -1,5 +1,6 @@
 import { ReportEntity, ReportTemplateEntity, ReportState } from "../state";
 import { createFeatureSelector, createSelector } from "@ngrx/store";
+import { Report } from "../../models";
 // Appstate -> ReportState
 export const selectReportState = createFeatureSelector<ReportState>("reports");
 
@@ -17,12 +18,29 @@ export const getReportsCount = createSelector(
   ReportEntity.selectTotal,
 );
 
+export const getReportsEntities = createSelector(
+  getReportsEntity,
+  ReportEntity.selectEntities,
+);
+
 export const getSelectedReportId = (state: ReportEntity.State) => state.selectedId;
 export const getSelectedTemplateId = (state: ReportTemplateEntity.State) => state.selectedId;
 export const selectCurrentReportId = createSelector(
   getReportsEntity,
   getSelectedReportId,
 );
+
+export const selectCurrentReport = createSelector(
+  getReportsEntities,
+  getSelectedReportId,
+  (reports, reportId: number) => reports[reportId],
+);
+
+export const selectReport = (id: number) =>
+  createSelector(
+    getReportsEntities,
+    reports => reports[id],
+  );
 
 // ReportState -> ReporttemplateEntity
 export const getReportTemplatesEntity = createSelector(
