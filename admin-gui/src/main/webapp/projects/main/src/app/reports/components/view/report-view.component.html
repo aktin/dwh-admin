@@ -6,12 +6,10 @@
   [ngClass]="{ 'text-grey-dark': !success }"
 >
   <div class="flex justify-between">
-    <div
-      class="w-auto inline-block font-medium items-baseline cursor-pointer"
-      [ngClass]="{ 'text-xl': success }"
-      [routerLink]="_url.link(['REPORT', 'SINGLE'], { id: report.id })"
-    >
-      {{ report.id }}: {{ report.name }}
+    <div class="w-auto inline-block font-medium items-baseline" [ngClass]="{ 'text-xl': success }">
+      <a [routerLink]="_url.link(['REPORT', 'SINGLE'], { id: report.id })">
+        {{ report.id }}: {{ report.name }}
+      </a>
     </div>
     <div class="flex report-view-actions">
       <a

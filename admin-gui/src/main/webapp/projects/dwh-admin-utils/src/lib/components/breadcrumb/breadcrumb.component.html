@@ -1,12 +1,17 @@
 <div class="my-5">
   <ng-container *ngFor="let elem of path; index as i">
-    <div
-      class="breadcrumb-item"
-      [routerLink]="elem[0]"
-      [ngClass]="{ first: isFirst(i), link: !isCurrent(i), current: isCurrent(i) }"
-    >
-      {{ elem[1] }}
-    </div>
+    <div *ngIf="isCurrent(i); then BreadCrumbCurrentBlock; else BreadCrumbLinkBlock"></div>
+    <ng-template #BreadCrumbLinkBlock>
+      <div class="breadcrumb-item link" [ngClass]="{ first: isFirst(i) }">
+        <a [routerLink]="elem[0]">{{ elem[1] }}</a>
+      </div>
+    </ng-template>
+    <ng-template #BreadCrumbCurrentBlock>
+      <div class="breadcrumb-item current" [ngClass]="{ first: isFirst(i) }">
+        {{ elem[1] }}
+      </div>
+    </ng-template>
+
     <div class="breadcrumb-divider" *ngIf="!isCurrent(i)">
       <i class="fas fa-angle-right fa-xs"></i>
     </div>
