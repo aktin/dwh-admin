@@ -10,7 +10,7 @@ import { ReportService } from "../../report.service";
 @Component({
   selector: "admin-gui-report",
   templateUrl: "./report.component.html",
-  styleUrls: ["../../reports.css"],
+  styleUrls: ["../reports.scss"],
 })
 export class ReportComponent implements OnInit {
   repId: number;

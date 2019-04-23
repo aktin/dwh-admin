@@ -11,7 +11,7 @@ import { ReportService } from "../../report.service";
 @Component({
   selector: "admin-gui-reports-list",
   templateUrl: "./reports-list.component.html",
-  styleUrls: ["../../reports.css"],
+  styleUrls: ["../reports.scss"],
 })
 export class ReportsListComponent implements OnInit {
   reports$: Observable<Report[]>;

@@ -1,7 +1,7 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
-import { UrlService, I18nService } from "./services";
+import { UrlService, I18nService, DownloadService } from "./services";
 import { BreadcrumbComponent } from "./components";
 import { OrderByPipe, SafeUrlPipe } from "./pipes";
 
@@ -16,13 +16,18 @@ export class DwhAdminUtilsModule {
   static forRoot(routeNames: any) {
     return {
       ngModule: DwhAdminUtilsModule,
-      providers: [{ provide: "ROUTE_NAMES", useValue: routeNames }, UrlService, I18nService],
+      providers: [
+        { provide: "ROUTE_NAMES", useValue: routeNames },
+        UrlService,
+        I18nService,
+        DownloadService,
+      ],
     };
   }
 }
 
 /* Services */
-export { UrlService, I18nService } from "./services";
+export * from "./services";
 
 /* Components */
 // export * from "./components";

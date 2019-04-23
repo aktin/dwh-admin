@@ -7,7 +7,7 @@ import { ReportService } from "../../report.service";
 @Component({
   selector: "report-view",
   templateUrl: "./report-view.component.html",
-  styleUrls: ["../../reports.css"],
+  styleUrls: ["../reports.scss"],
 })
 export class ReportViewComponent {
   @Input() data: Report;
@@ -31,6 +31,7 @@ export class ReportViewComponent {
   }
 
   download() {
-    console.log("downloading this now ... ", this.data.id);
+    console.log("downloading this now ... ", this.data.url, this.data.name);
+    this.s.download(this.data);
   }
 }

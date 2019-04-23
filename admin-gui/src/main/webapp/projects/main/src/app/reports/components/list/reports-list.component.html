@@ -2,7 +2,7 @@
 
 <div class="reports-list">
   <report-view
-    *ngFor="let report of (reports$ | async) as reports; index as i"
+    *ngFor="let report of (reports$ | async | orderBy: ['-id']) as reports; index as i"
     [data]="report"
   ></report-view>
 </div>

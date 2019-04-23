@@ -4,7 +4,7 @@ import { Observable, EMPTY } from "rxjs";
 import { catchError, map } from "rxjs/operators";
 import { Report, ReportStatus } from "./models";
 // @ts-ignore
-import { UrlService, I18nService } from "@aktin/utils";
+import { UrlService, I18nService, DownloadService } from "@aktin/utils";
 // @ts-ignore
 import i18DeData from "./i18n/de.json";
 
@@ -18,6 +18,7 @@ export class ReportService {
     @Inject(LOCALE_ID) private _locale: string,
     private _url: UrlService,
     private _i18n: I18nService,
+    private _downloader: DownloadService,
   ) {
     this.baseURL = this._url.getUrl("report/archive"); // this._url.link(["REPORT"]);
     if (!this._i18n.hasKey("report")) {
@@ -27,6 +28,10 @@ export class ReportService {
 
   parse(key): string {
     return this._i18n.parse("report", key);
+  }
+
+  download(report: Report): void {
+    this._downloader.get(report.name, "application/pdf", report.url);
   }
 
   updateReports(): Observable<Report[]> {
