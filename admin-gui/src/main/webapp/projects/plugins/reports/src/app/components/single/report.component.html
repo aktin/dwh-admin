@@ -1,0 +1,16 @@
+<breadcrumb
+  *ngIf="(report$ | async)"
+  [path]="[
+    [_url.link(['REPORT']), s.parse('bread.list')],
+    [
+      _url.link(['REPORT', 'SINGLE'], { id: (report$ | async).id }),
+      (report$ | async).id + ': ' + (report$ | async).name
+    ]
+  ]"
+></breadcrumb>
+
+<div class="report">
+  <div *ngIf="loading">loading!</div>
+  <div *ngIf="error">error!</div>
+  <report-view *ngIf="!loading && !error" [data]="report$ | async" [listView]="false"></report-view>
+</div>

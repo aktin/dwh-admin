@@ -1,0 +1,13 @@
+{
+  "bread.list": "Berichtsübersicht",
+  "actions.download": "Diesen Bericht herunterladen",
+  "actions.detail": "Detailansicht des Berichts",
+  "actions.list": "Zurück zum Berichtsübersicht",
+  "view.status": "Status:",
+  "view.statusCompleted": "Erfolg",
+  "view.statusInsufficientData": "nicht ausreichend Daten vorhanden",
+  "view.statusWaiting": "wird erstellt",
+  "view.creationDate": "Erstelldatum:",
+  "view.timeSpan": "Zeitraum:",
+  "view.timeSpanTill": "bis"
+}
