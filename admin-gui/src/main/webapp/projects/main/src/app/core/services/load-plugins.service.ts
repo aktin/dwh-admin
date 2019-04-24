@@ -91,7 +91,7 @@ export class LoadPluginsService {
 
     if (metadata["store"]) {
       this.pluginStates[routeNameObj.name] = metadata["store"]["state"];
-      this.pluginStates[routeNameObj.name] = metadata["store"]["initial"];
+      this.pluginInitialStates[routeNameObj.name] = metadata["store"]["initial"];
     }
 
     if (metadata["routesNames"]) {
