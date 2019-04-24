@@ -35,12 +35,12 @@ export class ReportService {
   }
 
   updateReports(): Observable<Report[]> {
-    console.log("hier in service");
     return this._url.get<Report[]>("report/archive").pipe(
       map((reports: Report[]) => {
         return reports.map(
           (report, index): Report => {
-            return this._parseReport(report);
+            let betterReport = this._parseReport(report);
+            return betterReport;
           },
         );
       }),
@@ -66,12 +66,11 @@ export class ReportService {
     }
     return null;
   }
+  getUrl(report: Report): string {
+    return this.getLink(report, this.baseURL);
+  }
   private getLink(report: Report, base: string): string {
-    let url = null;
-    if (report.state === ReportStatus.Completed) {
-      url = base + "/" + report.id;
-    }
-    return url;
+    return base + "/" + report.id;
   }
   private genName(report: Report): string {
     let name = "";

@@ -18,12 +18,7 @@ export class ReportsListComponent implements OnInit {
   constructor(private _url: UrlService, private _store: Store<State>, private s: ReportService) {}
 
   ngOnInit() {
-    console.log("init list");
     this._store.dispatch(new ReportUpdate());
     this.reports$ = this._store.pipe(select(getReportsAsArray));
-  }
-
-  getUrls(...routes) {
-    return this._url.link(routes);
   }
 }

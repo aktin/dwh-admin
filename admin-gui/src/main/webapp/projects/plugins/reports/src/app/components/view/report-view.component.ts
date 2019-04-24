@@ -30,6 +30,10 @@ export class ReportViewComponent {
     return next;
   }
 
+  get url() {
+    return this.s.getUrl(this.data);
+  }
+
   download() {
     console.log("downloading this now ... ", this.data.url, this.data.name);
     this.s.download(this.data);

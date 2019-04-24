@@ -56,7 +56,6 @@
     </div>
   </div>
 </div>
-
 <div class="row" *ngIf="!listView && report && success">
-  <iframe [src]="report.url | safe" style="width: 100%; height: 700px;"></iframe>
+  <iframe [src]="url | safe" style="width: 100%; height: 700px;"></iframe>
 </div>

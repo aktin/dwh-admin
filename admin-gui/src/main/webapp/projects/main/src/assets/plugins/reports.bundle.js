@@ -5614,10 +5614,10 @@
         };
         ReportService.prototype.updateReports = function () {
             var _this = this;
-            console.log("hier in service");
             return this._url.get("report/archive").pipe(map(function (reports) {
                 return reports.map(function (report, index) {
-                    return _this._parseReport(report);
+                    var betterReport = _this._parseReport(report);
+                    return betterReport;
                 });
             }), catchError(function (error) {
                 console.log("ERROR", error);
@@ -5638,12 +5638,11 @@
             }
             return null;
         };
+        ReportService.prototype.getUrl = function (report) {
+            return this.getLink(report, this.baseURL);
+        };
         ReportService.prototype.getLink = function (report, base) {
-            var url = null;
-            if (report.state === ReportStatus.Completed) {
-                url = base + "/" + report.id;
-            }
-            return url;
+            return base + "/" + report.id;
         };
         ReportService.prototype.genName = function (report) {
             var name = "";
@@ -5757,16 +5756,8 @@
             this.s = s;
         }
         ReportsListComponent.prototype.ngOnInit = function () {
-            console.log("init list");
             this._store.dispatch(new ReportUpdate());
             this.reports$ = this._store.pipe(store.select(getReportsAsArray));
-        };
-        ReportsListComponent.prototype.getUrls = function () {
-            var routes = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                routes[_i] = arguments[_i];
-            }
-            return this._url.link(routes);
         };
         ReportsListComponent = __decorate([
             core.Component({
@@ -5810,6 +5801,13 @@
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(ReportViewComponent.prototype, "url", {
+            get: function () {
+                return this.s.getUrl(this.data);
+            },
+            enumerable: true,
+            configurable: true
+        });
         ReportViewComponent.prototype.download = function () {
             console.log("downloading this now ... ", this.data.url, this.data.name);
             this.s.download(this.data);
@@ -5825,7 +5823,7 @@
         ReportViewComponent = __decorate([
             core.Component({
                 selector: "report-view",
-                template: "<div class=\"divider\"></div>\n\n<div\n  class=\"report-single-view container my-5 mx-auto p-3\"\n  id=\"report-list-{{ report.id }}\"\n  [ngClass]=\"{ 'text-grey-dark': !success }\"\n>\n  <div class=\"flex justify-between\">\n    <div class=\"w-auto inline-block font-medium items-baseline\" [ngClass]=\"{ 'text-xl': success }\">\n      <a [routerLink]=\"_url.link(['REPORT', 'SINGLE'], { id: report.id })\">\n        {{ report.id }}: {{ report.name }}\n      </a>\n    </div>\n    <div class=\"flex report-view-actions\">\n      <a\n        *ngIf=\"success\"\n        [title]=\"s.parse('actions.download')\"\n        class=\"btn-icon btn-green\"\n        (click)=\"download()\"\n      >\n        <i class=\"fas fa-cloud-download-alt fa-xs\"></i>\n      </a>\n      <a\n        *ngIf=\"listView\"\n        [title]=\"s.parse('actions.detail')\"\n        class=\"btn-icon ml-2\"\n        [routerLink]=\"_url.link(['REPORT', 'SINGLE'], { id: report.id })\"\n      >\n        <i class=\"far fa-eye fa-xs\"></i>\n      </a>\n      <a\n        *ngIf=\"!listView\"\n        [title]=\"s.parse('actions.list')\"\n        [routerLink]=\"_url.link(['REPORT'])\"\n        class=\"btn-icon btn-border-green ml-2\"\n      >\n        <i class=\"fas fa-angle-double-left fa-xs\"></i>\n      </a>\n    </div>\n  </div>\n  <div class=\"flex flex-row mt-1 text-sm\" *ngIf=\"!success\" [ngClass]=\"{ 'text-failed': !success }\">\n    <div class=\"w-1/5\">{{ s.parse(\"view.status\") }}</div>\n    <div class=\"font-medium\">\n      {{ s.parse(\"view.status\" + report.status) }}\n    </div>\n  </div>\n  <div class=\"flex flex-row mt-1 text-sm\" *ngIf=\"success\">\n    <div class=\"w-1/5\">{{ s.parse(\"view.creationDate\") }}</div>\n    <div class=\"\">{{ report.generationDate | date: \"longDate\" }}</div>\n  </div>\n  <div class=\"flex flex-row mt-1 text-sm\">\n    <div class=\"w-1/5\">{{ s.parse(\"view.timeSpan\") }}</div>\n    <div class=\"\">\n      {{ report.timespan[0] | date: \"shortDate\" }} {{ s.parse(\"view.timeSpanTill\") }}\n      {{ endDate | date: \"shortDate\" }}\n    </div>\n  </div>\n</div>\n\n<div class=\"row\" *ngIf=\"!listView && report && success\">\n  <iframe [src]=\"report.url | safe\" style=\"width: 100%; height: 700px;\"></iframe>\n</div>\n",
+                template: "<div class=\"divider\"></div>\n\n<div\n  class=\"report-single-view container my-5 mx-auto p-3\"\n  id=\"report-list-{{ report.id }}\"\n  [ngClass]=\"{ 'text-grey-dark': !success }\"\n>\n  <div class=\"flex justify-between\">\n    <div class=\"w-auto inline-block font-medium items-baseline\" [ngClass]=\"{ 'text-xl': success }\">\n      <a [routerLink]=\"_url.link(['REPORT', 'SINGLE'], { id: report.id })\">\n        {{ report.id }}: {{ report.name }}\n      </a>\n    </div>\n    <div class=\"flex report-view-actions\">\n      <a\n        *ngIf=\"success\"\n        [title]=\"s.parse('actions.download')\"\n        class=\"btn-icon btn-green\"\n        (click)=\"download()\"\n      >\n        <i class=\"fas fa-cloud-download-alt fa-xs\"></i>\n      </a>\n      <a\n        *ngIf=\"listView\"\n        [title]=\"s.parse('actions.detail')\"\n        class=\"btn-icon ml-2\"\n        [routerLink]=\"_url.link(['REPORT', 'SINGLE'], { id: report.id })\"\n      >\n        <i class=\"far fa-eye fa-xs\"></i>\n      </a>\n      <a\n        *ngIf=\"!listView\"\n        [title]=\"s.parse('actions.list')\"\n        [routerLink]=\"_url.link(['REPORT'])\"\n        class=\"btn-icon btn-border-green ml-2\"\n      >\n        <i class=\"fas fa-angle-double-left fa-xs\"></i>\n      </a>\n    </div>\n  </div>\n  <div class=\"flex flex-row mt-1 text-sm\" *ngIf=\"!success\" [ngClass]=\"{ 'text-failed': !success }\">\n    <div class=\"w-1/5\">{{ s.parse(\"view.status\") }}</div>\n    <div class=\"font-medium\">\n      {{ s.parse(\"view.status\" + report.status) }}\n    </div>\n  </div>\n  <div class=\"flex flex-row mt-1 text-sm\" *ngIf=\"success\">\n    <div class=\"w-1/5\">{{ s.parse(\"view.creationDate\") }}</div>\n    <div class=\"\">{{ report.generationDate | date: \"longDate\" }}</div>\n  </div>\n  <div class=\"flex flex-row mt-1 text-sm\">\n    <div class=\"w-1/5\">{{ s.parse(\"view.timeSpan\") }}</div>\n    <div class=\"\">\n      {{ report.timespan[0] | date: \"shortDate\" }} {{ s.parse(\"view.timeSpanTill\") }}\n      {{ endDate | date: \"shortDate\" }}\n    </div>\n  </div>\n</div>\n<div class=\"row\" *ngIf=\"!listView && report && success\">\n  <iframe [src]=\"url | safe\" style=\"width: 100%; height: 700px;\"></iframe>\n</div>\n",
                 styles: ["html {\n  line-height: 1.15; \n  -webkit-text-size-adjust: 100%; \n}\n\nmain {\n  display: block;\n}\n\na {\n  background-color: transparent;\n}\n\nstrong {\n  font-weight: bolder;\n}\n\nbutton,\ninput,\nselect {\n  font-family: inherit; \n  font-size: 100%; \n  line-height: 1.15; \n  margin: 0; \n}\n\nbutton,\ninput {\n  \n  overflow: visible;\n}\n\nbutton,\nselect {\n  \n  text-transform: none;\n}\n\nbutton,\n[type=\"button\"],\n[type=\"reset\"],\n[type=\"submit\"] {\n  -webkit-appearance: button;\n}\n\nbutton::-moz-focus-inner,\n[type=\"button\"]::-moz-focus-inner,\n[type=\"reset\"]::-moz-focus-inner,\n[type=\"submit\"]::-moz-focus-inner {\n  border-style: none;\n  padding: 0;\n}\n\nbutton:-moz-focusring,\n[type=\"button\"]:-moz-focusring,\n[type=\"reset\"]:-moz-focusring,\n[type=\"submit\"]:-moz-focusring {\n  outline: 1px dotted ButtonText;\n}\n\nlegend {\n  box-sizing: border-box; \n  color: inherit; \n  display: table; \n  max-width: 100%; \n  padding: 0; \n  white-space: normal; \n}\n\n[type=\"checkbox\"],\n[type=\"radio\"] {\n  box-sizing: border-box; \n  padding: 0; \n}\n\n[type=\"number\"]::-webkit-inner-spin-button,\n[type=\"number\"]::-webkit-outer-spin-button {\n  height: auto;\n}\n\n[type=\"search\"] {\n  -webkit-appearance: textfield; \n  outline-offset: -2px; \n}\n\n[type=\"search\"]::-webkit-search-decoration {\n  -webkit-appearance: none;\n}\n\n::-webkit-file-upload-button {\n  -webkit-appearance: button; \n  font: inherit; \n}\n\ntemplate {\n  display: none;\n}\n\n[hidden] {\n  display: none;\n}\n\nhtml {\n  box-sizing: border-box; \n  font-family: sans-serif; \n}\n\n*,\n*::before,\n*::after {\n  box-sizing: inherit;\n}\n\nbutton {\n  background: transparent;\n  padding: 0;\n}\n\nbutton:focus {\n  outline: 1px dotted;\n  outline: 5px auto -webkit-focus-ring-color;\n}\n\n*,\n*::before,\n*::after {\n  border-width: 0;\n  border-style: solid;\n  border-color: #dae1e7;\n}\n\ninput::-webkit-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::-moz-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput:-ms-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::-ms-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\nbutton,\n[role=\"button\"] {\n  cursor: pointer;\n}\n\n.container {\n  width: 100%;\n}\n\n@media (min-width: 576px) {\n  .container {\n    max-width: 576px;\n  }\n}\n\n@media (min-width: 768px) {\n  .container {\n    max-width: 768px;\n  }\n}\n\n@media (min-width: 992px) {\n  .container {\n    max-width: 992px;\n  }\n}\n\n@media (min-width: 1200px) {\n  .container {\n    max-width: 1200px;\n  }\n}\n\n.inline-block {\n  display: inline-block;\n}\n\n.flex {\n  display: flex;\n}\n\n.flex-row {\n  flex-direction: row;\n}\n\n.items-baseline {\n  align-items: baseline;\n}\n\n.justify-between {\n  justify-content: space-between;\n}\n\n.font-medium {\n  font-weight: 500;\n}\n\n.my-5 {\n  margin-top: 1.25rem;\n  margin-bottom: 1.25rem;\n}\n\n.mx-auto {\n  margin-left: auto;\n  margin-right: auto;\n}\n\n.mt-1 {\n  margin-top: .25rem;\n}\n\n.ml-2 {\n  margin-left: .5rem;\n}\n\n.p-3 {\n  padding: .75rem;\n}\n\n.text-grey-dark {\n  color: #8795a1;\n}\n\n.text-sm {\n  font-size: .875rem;\n}\n\n.text-xl {\n  font-size: 1.25rem;\n}\n\n.w-auto {\n  width: auto;\n}\n\n.w-1/5 {\n  width: 20%;\n}\n\n.btn-icon {\n  cursor: pointer;\n  border-radius: 9999px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 2rem;\n  height: 2rem;\n  background-color: #dae1e7;\n}\n\n.btn-icon:hover {\n  background-color: #b8c2cc;\n}\n\n.btn-icon.btn-green {\n  background-color: #51d88a;\n  color: #fff;\n}\n\n.btn-icon.btn-green:hover {\n  background-color: #38c172;\n}\n\n.btn-icon.btn-border-green {\n  border-width: 2px;\n  background-color: transparent;\n  border-color: #51d88a;\n  color: #51d88a;\n}\n\n.btn-icon.btn-border-green:hover {\n  border-color: #38c172;\n  color: #38c172;\n  background-color: #e3fcec;\n}"],
             }),
             __metadata("design:paramtypes", [router.ActivatedRoute, utils.UrlService, ReportService])
