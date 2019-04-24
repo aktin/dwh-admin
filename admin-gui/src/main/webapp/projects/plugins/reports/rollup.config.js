@@ -7,7 +7,7 @@ import json from 'rollup-plugin-json';
 export default [{
    input: 'src/main.ts',
    output: {
-     file: '../../main/src/assets/plugins/case.bundle.js',
+     file: '../../main/src/assets/plugins/reports.bundle.js',
      format: 'umd',
      name: 'case',
 },

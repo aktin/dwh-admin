@@ -1,6 +1,9 @@
 {
   "plugins": [
     {
+      "url": "assets/plugins/reports.bundle.js"
+    },
+    {
       "url": "assets/plugins/plugin-1.bundle.js",
       "moduleName": "Plugin1Module"
     },

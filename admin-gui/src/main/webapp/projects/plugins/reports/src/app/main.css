@@ -252,3 +252,40 @@ button,
 .w-1\/5 {
   width: 20%;
 }
+
+.btn-icon {
+  cursor: pointer;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background-color: #dae1e7;
+}
+
+.btn-icon:hover {
+  background-color: #b8c2cc;
+}
+
+.btn-icon.btn-green {
+  background-color: #51d88a;
+  color: #fff;
+}
+
+.btn-icon.btn-green:hover {
+  background-color: #38c172;
+}
+
+.btn-icon.btn-border-green {
+  border-width: 2px;
+  background-color: transparent;
+  border-color: #51d88a;
+  color: #51d88a;
+}
+
+.btn-icon.btn-border-green:hover {
+  border-color: #38c172;
+  color: #38c172;
+  background-color: #e3fcec;
+}

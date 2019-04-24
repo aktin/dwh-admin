@@ -15,7 +15,6 @@ import { environment } from "@env/environment";
 import { CoreModule } from "@app/core";
 
 import { AppComponent } from "@app/app.component";
-import { ReportsModule } from "@app/reports";
 
 import { AppRouterModule } from "@app/routing/app-router.module";
 import { HomeComponent, TestDummyComponent, ErrorComponent } from "@app/default";
@@ -39,7 +38,6 @@ const APPCOMPONENTS = [AppComponent, HomeComponent, TestDummyComponent, ErrorCom
     // RouterModule.forRoot(APP_ROUTES_FUSING(), { useHash: true }),
     BrowserModule,
     CoreModule.forRoot(),
-    ReportsModule,
     BrowserAnimationsModule,
 
     StoreModule.forRoot(reducers, { metaReducers }),

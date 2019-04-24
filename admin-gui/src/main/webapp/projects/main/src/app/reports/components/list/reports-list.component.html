@@ -1,8 +1,0 @@
-<breadcrumb [path]="[[_url.link(['REPORT']), s.parse('bread.list')]]"></breadcrumb>
-
-<div class="reports-list">
-  <report-view
-    *ngFor="let report of (reports$ | async | orderBy: ['-id']) as reports; index as i"
-    [data]="report"
-  ></report-view>
-</div>
