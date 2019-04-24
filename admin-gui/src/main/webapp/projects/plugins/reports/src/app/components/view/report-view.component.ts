@@ -35,7 +35,8 @@ export class ReportViewComponent {
   }
 
   download() {
-    console.log("downloading this now ... ", this.data.url, this.data.name);
+    // console.log("downloading this now ... ", this.url, this.data.name);
+    this.data.url = this.url;
     this.s.download(this.data);
   }
 }

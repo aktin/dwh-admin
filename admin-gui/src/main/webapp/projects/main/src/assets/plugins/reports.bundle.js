@@ -5809,7 +5809,7 @@
             configurable: true
         });
         ReportViewComponent.prototype.download = function () {
-            console.log("downloading this now ... ", this.data.url, this.data.name);
+            this.data.url = this.url;
             this.s.download(this.data);
         };
         __decorate([
