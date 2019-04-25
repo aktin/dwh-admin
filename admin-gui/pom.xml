@@ -20,24 +20,24 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>dwh-api</artifactId>
-			<version>0.4</version>
+			<version>0.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>de.li2b2.facade</groupId>
 			<artifactId>li2b2-client</artifactId>
-			<version>0.5</version>
+			<version>0.6</version>
 		</dependency>
 		<dependency>
 			<!-- for token authentication -->
 			<groupId>de.li2b2.facade</groupId>
 			<artifactId>li2b2-server</artifactId>
-			<version>0.5</version>
+			<version>0.6</version>
   		</dependency>
 		<!-- request/query management -->
 		<dependency>
 			<groupId>org.aktin.broker</groupId>
 			<artifactId>query-model</artifactId>
-			<version>0.7</version>
+			<version>0.8-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
@@ -140,19 +140,19 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>report-manager</artifactId>
-			<version>0.6</version>
+			<version>0.7-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>report-archive</artifactId>
-			<version>0.6</version>
+			<version>0.7-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>report-manager</artifactId>
-			<version>0.6</version>
+			<version>0.7-SNAPSHOT</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
@@ -166,7 +166,7 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>r-script</artifactId>
-			<version>0.6</version>
+			<version>1.1</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
@@ -185,13 +185,13 @@
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>request-manager</artifactId>
-			<version>0.6</version>
+			<version>0.7-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.aktin</groupId>
 			<artifactId>study-manager</artifactId>
-			<version>0.6</version>
+			<version>0.7-SNAPSHOT</version>
 			<scope>test</scope>
 		</dependency>
 
