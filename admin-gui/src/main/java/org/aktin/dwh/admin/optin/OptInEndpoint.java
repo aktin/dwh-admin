@@ -35,6 +35,7 @@ import org.aktin.dwh.optinout.PatientEntry;
 import org.aktin.dwh.optinout.PatientReference;
 import org.aktin.dwh.optinout.Study;
 import org.aktin.dwh.optinout.StudyManager;
+import org.eclipse.jetty.http.HttpHeader;
 
 /**
  * RESTful HTTP end point for creating, deleting and retrieving patient entries.
@@ -138,7 +139,7 @@ public class OptInEndpoint {
 		PatientEntry pat = study.getPatientByID(ref, root, ext);
 		if (pat != null) {
 			log.log(Level.WARNING, "Cannot create entry, PatientEntry already exists.");
-			return Response.status(Status.CONFLICT).build();
+			return Response.status(Status.CONFLICT).location(buildEntryLocation(pat)).build();
 		}
 		pat = study.addPatient(ref, root, ext, entry.opt, entry.sic, entry.comment, security.getUserPrincipal().getName());
 		return Response.created(buildEntryLocation(pat)).build();
