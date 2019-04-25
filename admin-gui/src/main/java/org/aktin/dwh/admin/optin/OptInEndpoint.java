@@ -35,7 +35,6 @@ import org.aktin.dwh.optinout.PatientEntry;
 import org.aktin.dwh.optinout.PatientReference;
 import org.aktin.dwh.optinout.Study;
 import org.aktin.dwh.optinout.StudyManager;
-import org.eclipse.jetty.http.HttpHeader;
 
 /**
  * RESTful HTTP end point for creating, deleting and retrieving patient entries.
