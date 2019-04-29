@@ -1,6 +1,7 @@
 package org.aktin.dwh.admin.optin;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -131,16 +132,19 @@ public class OptInEndpoint {
 	public Response createEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root, 
 				@PathParam("extension") String ext, PatientEntryRequest entry) throws IOException {
 		Study study = this.getStudy(id);
-		if ((!study.supportsManualSICs() || entry.sic.isEmpty()) && entry.opt == Participation.OptIn) {
-			entry.sic = study.generateSIC();
-		}
 		PatientEntry pat = study.getPatientByID(ref, root, ext);
 		if (pat != null) {
 			log.log(Level.WARNING, "Cannot create entry, PatientEntry already exists.");
-			return Response.status(Status.CONFLICT).build();
+			return Response.status(Status.CONFLICT).location(buildEntryLocation(pat)).build();
 		}
-		study.addPatient(ref, root, ext, entry.opt, entry.sic, entry.comment, security.getUserPrincipal().getName());
-		return Response.created(URI.create(id+"/"+ref+"/"+URLEncoder.encode(root, StandardCharsets.UTF_8.name())+"/"+URLEncoder.encode(ext, StandardCharsets.UTF_8.name()))).build();
+		if ((!study.supportsManualSICs() || entry.sic.isEmpty()) && entry.opt == Participation.OptIn) {
+			entry.sic = study.generateSIC();
+		}
+		pat = study.addPatient(ref, root, ext, entry.opt, entry.sic, entry.comment, security.getUserPrincipal().getName());
+		return Response.created(buildEntryLocation(pat)).build();
+	}
+	private static URI buildEntryLocation(PatientEntry entry) throws UnsupportedEncodingException {
+		return URI.create(entry.getStudy().getId()+"/"+entry.getReference()+"/"+URLEncoder.encode(entry.getIdRoot(), StandardCharsets.UTF_8.name())+"/"+URLEncoder.encode(entry.getIdExt(), StandardCharsets.UTF_8.name()));
 	}
 	
 	/**
