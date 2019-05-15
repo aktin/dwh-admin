@@ -2,6 +2,7 @@ import { Routes } from "@angular/router";
 import { TestDummyComponent } from "@app/default/test-dummy/";
 import { ErrorComponent } from "@app/default/error/";
 import { HomeComponent } from "@app/default";
+import { ErrorResolverService } from "@app/default/error-resolver.service";
 // https://medium.com/@shairez/angular-routing-a-better-pattern-for-large-scale-apps-f2890c952a18
 
 export const APP_ROUTES_OBJ = {
@@ -24,5 +25,8 @@ export const APP_LAST_ROUTES: Routes = [
     /*Error 404*/
     path: "**",
     component: ErrorComponent,
+    resolve: {
+      plugins: ErrorResolverService,
+    },
   },
 ];

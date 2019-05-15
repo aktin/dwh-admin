@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { Routes } from "@angular/router";
 import _ from "lodash";
 import { ROUTE_REDUCE } from "@app/routing/names";
+import { Observable } from "rxjs";
 
 declare const SystemJS: any;
 
@@ -15,6 +16,7 @@ export interface PluginConfig {
   providedIn: "root",
 })
 export class LoadPluginsService {
+  private loading = true;
   constructor(
     private _http: HttpClient,
     private _compiler: Compiler,
@@ -42,12 +44,36 @@ export class LoadPluginsService {
     }
   }
 
+  get pluginLoading() {
+    return this.loading;
+  }
+
+  awaitLoad(): Promise<boolean> {
+    if (this.loading === false) {
+      return Promise.resolve(true);
+    }
+    return new Promise<boolean>(resolve => {
+      this.timeoutTillFalse(200, resolve);
+    });
+  }
+
+  timeoutTillFalse(time: number, callback) {
+    if (this.loading) {
+      return setTimeout(() => {
+        this.timeoutTillFalse(time, callback);
+      }, time);
+    }
+    callback();
+  }
+
   async loadConfigFile(pathComponent: any) {
     let data = await this._http.get(this.configUrl).toPromise();
     this.plugins = data["plugins"];
     await this.asyncForEach(this.plugins, async plug => {
       await this.loadPlugin(plug, pathComponent);
     });
+    console.log("file loaded");
+    this.loading = false;
   }
 
   async loadPlugin(plug: PluginConfig, pathComponent: any) {
@@ -134,6 +160,8 @@ export class LoadPluginsService {
     }
 
     this.routes.push(route);
+
+    console.log(routeNameObj.name, "plug loaded");
   }
 }
 
