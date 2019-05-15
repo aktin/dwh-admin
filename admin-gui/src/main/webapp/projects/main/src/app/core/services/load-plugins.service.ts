@@ -16,7 +16,6 @@ export interface PluginConfig {
   providedIn: "root",
 })
 export class LoadPluginsService {
-  private loading = true;
   constructor(
     private _http: HttpClient,
     private _compiler: Compiler,
@@ -30,6 +29,7 @@ export class LoadPluginsService {
   routeNames = {};
   pluginStates = {};
   pluginInitialStates = {};
+  loading = true;
 
   async asyncForEach(array, callback) {
     // console.log(array);
@@ -49,7 +49,9 @@ export class LoadPluginsService {
   }
 
   awaitLoad(): Promise<boolean> {
+    // console.log("are the plugins loading?");
     if (this.loading === false) {
+      // console.log("are the plugins loading done");
       return Promise.resolve(true);
     }
     return new Promise<boolean>(resolve => {
@@ -63,6 +65,7 @@ export class LoadPluginsService {
         this.timeoutTillFalse(time, callback);
       }, time);
     }
+    // console.log("plugins loaded!");
     callback();
   }
 
@@ -72,7 +75,7 @@ export class LoadPluginsService {
     await this.asyncForEach(this.plugins, async plug => {
       await this.loadPlugin(plug, pathComponent);
     });
-    console.log("file loaded");
+    console.log("all plugins loaded");
     this.loading = false;
   }
 
@@ -102,7 +105,7 @@ export class LoadPluginsService {
 
     let provider = _.clone(componentProvider[0]);
 
-    console.log(componentProvider[0]);
+    // console.log(componentProvider[0]);
     let metadata = _.remove(provider, item => {
       return item.name.includes("METADATA");
     })[0];
@@ -161,7 +164,7 @@ export class LoadPluginsService {
 
     this.routes.push(route);
 
-    console.log(routeNameObj.name, "plug loaded");
+    console.log("- ", routeNameObj.name, "plugin loaded");
   }
 }
 

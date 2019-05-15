@@ -5,18 +5,13 @@ export function ROUTE_REDUCE(
   routes,
   routeNames = {},
   breads: string[] = [],
-  url: string = ""
+  url: string = "",
 ): Routes {
   return reduceRoute(routes, routeNames, breads, url);
 }
 
-function reduceRoute(
-  routes,
-  routeNames = {},
-  breads: string[] = [],
-  url: string = ""
-): Routes {
-  console.log(routes);
+function reduceRoute(routes, routeNames = {}, breads: string[] = [], url: string = ""): Routes {
+  // console.log(routes);
   if (Array.isArray(routes)) return routes;
   return _.reduce(
     routes,
@@ -38,11 +33,11 @@ function reduceRoute(
           route.childrenObj,
           routeName.children,
           route.data["breadcrumbs"],
-          route.data["fullPath"]
+          route.data["fullPath"],
         );
       array.push(route);
       return array;
     },
-    []
+    [],
   );
 }
