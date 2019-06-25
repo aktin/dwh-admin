@@ -25,6 +25,10 @@
     color: black !important;
 }
 
+.formatMsg {
+    white-space: pre-line
+}
+
 .on-top#popup-message-overlay {
     z-index: 120;
 }

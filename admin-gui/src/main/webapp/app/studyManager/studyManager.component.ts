@@ -192,10 +192,14 @@ export class StudyManagerComponent {
                             error => {
                                 // entry already exists
                                 if (error.split('-')[0].trim() === '409') {
+                                    let pat = JSON.parse(error.split('Conflict')[1].trim());
                                     this.popUpMessage.onTop = true;
-                                    this.popUpMessage.setData(true, 'Fehler beim Erstellen',
-                                    'Der Eintrag konnte nicht erstellt werden, weil für die ausgewählte Studie ' +
-                                    'bereits ein Eintrag mit dieser ' + this.popUpNew.extLabel + ' existiert.');
+                                    let msg = 'Der Eintrag konnte nicht erstellt werden, weil für die ausgewählte Studie ' +
+                                    'bereits ein Eintrag mit dieser ' + this.popUpNew.extLabel + ' existiert.';
+                                    if (pat.sic) {
+                                        msg += '\n\nSIC des bereits bestehenden Eintrags: ' + pat.sic + '';
+                                    }
+                                    this.popUpMessage.setData(true, 'Fehler beim Erstellen', msg);
                                     this.setEntries(this.filterActive).subscribe();
                                 }
                         });

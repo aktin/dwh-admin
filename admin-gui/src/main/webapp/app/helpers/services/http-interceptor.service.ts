@@ -88,7 +88,12 @@ export class HttpInterceptorService {
                 this._cleanUp.cleanUpStorage('Sitzung abgelaufen. Bitte erneut anmelden');
                 this._cleanUp.redirect2Home();
             }
-            const body = error.text() || '';
+            let body;
+            try {
+                body = error.json()
+            } catch {
+                body = error.text() || '';
+            }
             const err = /*body.error ||*/ JSON.stringify(body);
             errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
         } else {
