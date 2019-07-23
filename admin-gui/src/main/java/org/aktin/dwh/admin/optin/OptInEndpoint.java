@@ -135,7 +135,7 @@ public class OptInEndpoint {
 		PatientEntry pat = study.getPatientByID(ref, root, ext);
 		if (pat != null) {
 			log.log(Level.WARNING, "Cannot create entry, PatientEntry already exists.");
-			return Response.status(Status.CONFLICT).location(buildEntryLocation(pat)).build();
+			return Response.status(Status.CONFLICT).entity(pat).build();
 		}
 		if ((!study.supportsManualSICs() || entry.sic.isEmpty()) && entry.opt == Participation.OptIn) {
 			entry.sic = study.generateSIC();
