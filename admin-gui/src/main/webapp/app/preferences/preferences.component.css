@@ -5,3 +5,7 @@
 .tiny.text {
     font-size: tiny;
 }
+
+.break-word {
+	word-wrap:break-word;
+}
