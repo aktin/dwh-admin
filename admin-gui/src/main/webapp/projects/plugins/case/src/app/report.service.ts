@@ -7,7 +7,7 @@ import { ReportStatus, Report } from "./models";
 @Injectable({
   providedIn: "root",
 })
-export class ReportService {
+export class Report1Service {
   private baseURL = "";
   private _locale = "de-DE";
   constructor(private _url: UrlService) {
@@ -16,7 +16,7 @@ export class ReportService {
 
   updateReports(): Observable<Report[]> {
     console.log("hier in service");
-    return this._url.get<Report[]>("report/archive").pipe(
+    return this._url.get<Report[]>(this._url.getUrl("report/archive")).pipe(
       map(reports => {
         return reports.map(
           (report, index): Report => {

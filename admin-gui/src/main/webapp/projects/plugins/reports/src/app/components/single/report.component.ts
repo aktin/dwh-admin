@@ -5,7 +5,7 @@ import { ActivatedRoute } from "@angular/router";
 import { UrlService, State } from "@aktin/utils";
 import { Report } from "../../models";
 import { ReportUpdate, selectReport } from "../../store";
-import { ReportService } from "../../report.service";
+import { ReportService } from "../../services/report.service";
 
 @Component({
   selector: "admin-gui-report",

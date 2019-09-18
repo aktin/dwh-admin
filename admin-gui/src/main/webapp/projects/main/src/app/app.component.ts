@@ -1,8 +1,10 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Title } from "@angular/platform-browser";
+import { select, Store } from "@ngrx/store";
 
 import { LoadPluginsService, LoadExternalComponent } from "@app/core";
+import { State } from "@aktin/utils";
 import _ from "lodash";
 import { AppRouterModule } from "@app/routing/app-router.module";
 
@@ -22,6 +24,7 @@ export class AppComponent implements OnInit {
     private _router: AppRouterModule,
     private _route: ActivatedRoute,
     private _plugins: LoadPluginsService,
+    private _store: Store<State>,
   ) {}
 
   ngOnInit(): void {
@@ -53,5 +56,9 @@ export class AppComponent implements OnInit {
 
   get routings() {
     return this.routes;
+  }
+
+  login() {
+    console.log("login?");
   }
 }

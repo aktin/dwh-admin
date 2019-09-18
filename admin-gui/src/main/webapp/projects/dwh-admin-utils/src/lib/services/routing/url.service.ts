@@ -9,6 +9,8 @@ export class UrlService {
   private _routeNames: any = undefined;
   private _url_start = "http://134.106.36.86:8087/aktin/admin/rest/";
 
+  private _endUrls = {};
+
   constructor(@Optional() @Inject("ROUTE_NAMES") routeNames: any, private _http: HttpClient) {
     if (routeNames) {
       this._routeNames = routeNames;
@@ -17,12 +19,32 @@ export class UrlService {
     }
   }
 
-  get<T>(url_end: string) {
-    return this._http.get<T>(this.getUrl(url_end));
+  get<T>(url: string) {
+    return this._http.get<T>(url);
   }
 
   getUrl(url_end: string) {
     return this._url_start + url_end;
+  }
+
+  parse(url: string, args?: any, iEndUrls?: any): string {
+    let endUrl = url;
+    if (iEndUrls) {
+      endUrl = iEndUrls[url] || url;
+    }
+    if (endUrl === url) {
+      endUrl = this._endUrls[url] || url;
+    }
+    let keys = endUrl.match(/@\w*@/g);
+    if (keys && keys.length >= 0) {
+      endUrl = _.reduce(
+        keys,
+        (memo: string, item: string) => memo.replace(item, args[/\w+/.exec(item)[0]]),
+        endUrl,
+      );
+    }
+
+    return this._url_start + endUrl;
   }
 
   updateRouteNames(routeNames: any) {

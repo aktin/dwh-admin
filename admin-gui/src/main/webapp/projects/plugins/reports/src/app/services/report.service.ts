@@ -2,11 +2,12 @@ import { Inject, Injectable, LOCALE_ID } from "@angular/core";
 import { formatDate } from "@angular/common";
 import { Observable, EMPTY } from "rxjs";
 import { catchError, map } from "rxjs/operators";
-import { Report, ReportStatus } from "./models";
+import { Report, ReportStatus } from "../models";
+import { ReportUrlService } from "./report-url.service";
 // @ts-ignore
-import { UrlService, I18nService, DownloadService } from "@aktin/utils";
+import { I18nService, DownloadService } from "@aktin/utils";
 // @ts-ignore
-import i18DeData from "./i18n/de.json";
+import i18DeData from "../i18n/de.json";
 
 @Injectable({
   providedIn: "root",
@@ -16,11 +17,11 @@ export class ReportService {
 
   constructor(
     @Inject(LOCALE_ID) private _locale: string,
-    private _url: UrlService,
+    private _url: ReportUrlService,
     private _i18n: I18nService,
     private _downloader: DownloadService,
   ) {
-    this.baseURL = this._url.getUrl("report/archive"); // this._url.link(["REPORT"]);
+    this.baseURL = this._url.parse("reportsList"); // this._url.link(["REPORT"]);
     if (!this._i18n.hasKey("report")) {
       this._i18n.addI18NData("de", "report", i18DeData);
     }
@@ -35,7 +36,7 @@ export class ReportService {
   }
 
   updateReports(): Observable<Report[]> {
-    return this._url.get<Report[]>("report/archive").pipe(
+    return this._url.get<Report[]>("reportsList").pipe(
       map((reports: Report[]) => {
         return reports.map(
           (report, index): Report => {

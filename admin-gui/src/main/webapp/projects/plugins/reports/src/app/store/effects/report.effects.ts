@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Actions, Effect, ofType } from "@ngrx/effects";
-import { ReportService } from "../../report.service";
+import { ReportService } from "../../services";
 import { ReportActionTypes, ReportUpdateSuccess, ReportActions } from "../actions/report.actions";
 import { map, mergeMap, concatMap } from "rxjs/operators";
 import { of } from "rxjs";

@@ -9,6 +9,9 @@ import { PATH, PLUGIN_NAME, ROUTE_NAME } from "./meta";
 import { REPORTS_ROUTES_NAMES, REPORTS_ROUTES_OBJ } from "./reports.routes";
 import { ReportComponent, ReportsListComponent, ReportViewComponent } from "./components";
 import { RouterModule } from "@angular/router";
+import { LoadPluginsService } from "../../../../main/src/app/core/services";
+import { ReportUrlService } from "./services/report-url.service";
+import { ReportService } from "./services/report.service";
 
 const REPORTSCOMPONENTS = [ReportsListComponent, ReportViewComponent, ReportComponent];
 

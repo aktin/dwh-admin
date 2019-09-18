@@ -4,7 +4,7 @@ import { select, Store } from "@ngrx/store";
 import { Observable } from "rxjs";
 import { Report } from "../../models";
 import { getReportsAsArray, ReportUpdate } from "../../store";
-import { ReportService } from "../../report.service";
+import { ReportService } from "../../services/report.service";
 /**
  *
  */

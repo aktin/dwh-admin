@@ -5594,6 +5594,31 @@
     	"view.timeSpanTill": "bis"
     };
 
+    var ReportUrlService = /** @class */ (function () {
+        function ReportUrlService(_url) {
+            this._url = _url;
+            this.reportUrls = {
+                reportsList: "report/archive",
+                newMonthlyReport: "report/monthly/email",
+                reportTemplates: "report/template",
+                newReport: "report/template/@templateId@",
+            };
+        }
+        ReportUrlService.prototype.parse = function (url, args) {
+            return this._url.parse(url, args, this.reportUrls);
+        };
+        ReportUrlService.prototype.get = function (url, args) {
+            return this._url.get(this.parse(url, args));
+        };
+        ReportUrlService = __decorate([
+            core.Injectable({
+                providedIn: "root",
+            }),
+            __metadata("design:paramtypes", [utils.UrlService])
+        ], ReportUrlService);
+        return ReportUrlService;
+    }());
+
     var ReportService = /** @class */ (function () {
         function ReportService(_locale, _url, _i18n, _downloader) {
             this._locale = _locale;
@@ -5601,7 +5626,7 @@
             this._i18n = _i18n;
             this._downloader = _downloader;
             this.baseURL = "";
-            this.baseURL = this._url.getUrl("report/archive"); // this._url.link(["REPORT"]);
+            this.baseURL = this._url.parse("reportsList"); // this._url.link(["REPORT"]);
             if (!this._i18n.hasKey("report")) {
                 this._i18n.addI18NData("de", "report", i18DeData);
             }
@@ -5614,7 +5639,7 @@
         };
         ReportService.prototype.updateReports = function () {
             var _this = this;
-            return this._url.get("report/archive").pipe(map(function (reports) {
+            return this._url.get("reportsList").pipe(map(function (reports) {
                 return reports.map(function (report, index) {
                     var betterReport = _this._parseReport(report);
                     return betterReport;
@@ -5660,7 +5685,7 @@
                 providedIn: "root",
             }),
             __param(0, core.Inject(core.LOCALE_ID)),
-            __metadata("design:paramtypes", [String, utils.UrlService,
+            __metadata("design:paramtypes", [String, ReportUrlService,
                 utils.I18nService,
                 utils.DownloadService])
         ], ReportService);

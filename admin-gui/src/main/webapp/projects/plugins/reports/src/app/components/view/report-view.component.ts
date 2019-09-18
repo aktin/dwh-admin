@@ -2,7 +2,7 @@ import { Component, Input } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { UrlService } from "@aktin/utils";
 import { Report, ReportStatus } from "../../models";
-import { ReportService } from "../../report.service";
+import { ReportService } from "../../services/report.service";
 
 @Component({
   selector: "report-view",

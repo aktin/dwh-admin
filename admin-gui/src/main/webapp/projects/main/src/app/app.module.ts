@@ -25,6 +25,7 @@ export function createCompiler(fn: CompilerFactory): Compiler {
 
 import { getLocaleId, registerLocaleData } from "@angular/common";
 import localeDe from "@angular/common/locales/de";
+import { AuthModule } from "@app/auth/auth.module";
 registerLocaleData(localeDe, "de");
 
 const APPCOMPONENTS = [AppComponent, HomeComponent, TestDummyComponent, ErrorComponent];
@@ -49,6 +50,7 @@ const APPCOMPONENTS = [AppComponent, HomeComponent, TestDummyComponent, ErrorCom
         })
       : [],
     StoreRouterConnectingModule.forRoot(),
+    AuthModule,
   ],
   exports: [],
   providers: [

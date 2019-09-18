@@ -5566,17 +5566,17 @@
         ReportStatus[ReportStatus["Waiting"] = 2] = "Waiting";
     })(ReportStatus || (ReportStatus = {}));
 
-    var ReportService = /** @class */ (function () {
-        function ReportService(_url) {
+    var Report1Service = /** @class */ (function () {
+        function Report1Service(_url) {
             this._url = _url;
             this.baseURL = "";
             this._locale = "de-DE";
             this.baseURL = this._url.link(["REPORT"]);
         }
-        ReportService.prototype.updateReports = function () {
+        Report1Service.prototype.updateReports = function () {
             var _this = this;
             console.log("hier in service");
-            return this._url.get("report/archive").pipe(map(function (reports) {
+            return this._url.get(this._url.getUrl("report/archive")).pipe(map(function (reports) {
                 return reports.map(function (report, index) {
                     return _this._parseReport(report);
                 });
@@ -5585,7 +5585,7 @@
                 return rxjs.EMPTY;
             }));
         };
-        ReportService.prototype._parseReport = function (report) {
+        Report1Service.prototype._parseReport = function (report) {
             report.timespan = [this._parseDate(report.start), this._parseDate(report.end)];
             report.generationDate = this._parseDate(report.data);
             report.state = ReportStatus[report.status];
@@ -5593,20 +5593,20 @@
             report.url = this.getLink(report, this.baseURL);
             return report;
         };
-        ReportService.prototype._parseDate = function (date) {
+        Report1Service.prototype._parseDate = function (date) {
             if (date) {
                 return new Date(date);
             }
             return null;
         };
-        ReportService.prototype.getLink = function (report, base) {
+        Report1Service.prototype.getLink = function (report, base) {
             var url = null;
             if (report.state === ReportStatus.Completed) {
                 url = base + "/" + report.id;
             }
             return url;
         };
-        ReportService.prototype.genName = function (report) {
+        Report1Service.prototype.genName = function (report) {
             var name = "";
             if (report.template === "org.aktin.report.aktin.AktinMonthly") {
                 name += "AKTIN-Monatsbericht";
@@ -5621,13 +5621,13 @@
                     report.timespan[0].getFullYear();
             return name;
         };
-        ReportService = __decorate([
+        Report1Service = __decorate([
             core.Injectable({
                 providedIn: "root",
             }),
             __metadata("design:paramtypes", [utils.UrlService])
-        ], ReportService);
-        return ReportService;
+        ], Report1Service);
+        return Report1Service;
     }());
 
     var ReportEffects = /** @class */ (function () {
@@ -5643,7 +5643,7 @@
         ], ReportEffects.prototype, "updateReports$", void 0);
         ReportEffects = __decorate([
             core.Injectable(),
-            __metadata("design:paramtypes", [effects.Actions, ReportService])
+            __metadata("design:paramtypes", [effects.Actions, Report1Service])
         ], ReportEffects);
         return ReportEffects;
     }());

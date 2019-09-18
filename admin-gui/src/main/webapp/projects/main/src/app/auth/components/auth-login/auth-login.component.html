@@ -1,0 +1,40 @@
+<div *ngIf="hasUser">
+  <i class="large user circle outline icon"></i>
+  {{ username }} &nbsp;
+  <button class="ui submit button" type="submit" (click)="userLogout()">Logout</button>
+</div>
+<div *ngIf="!menu && !hasUser" class="w-full max-w-xs">
+  <form class="login-form bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" #loginForm="ngForm">
+    <div class="form-group mb-4">
+      <label class="login-form-label" for="username">
+        Username
+      </label>
+      <input
+        class="login-form-control"
+        id="username"
+        type="text"
+        [(ngModel)]="username"
+        name="username"
+      />
+    </div>
+    <div class="form-group mb-6">
+      <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+        Password
+      </label>
+      <input
+        class="login-form-control password-input"
+        id="password"
+        type="password"
+        placeholder="input your password here"
+        [(ngModel)]="password"
+        name="password"
+      />
+      <p class="text-red-500 text-xs italic">Please choose a password.</p>
+    </div>
+    <div class="login-form-buttons">
+      <button class="login-form-button login-form-submit-button" type="submit" (click)="login()" [disabled]="!loginForm.form.valid">
+        Sign In
+      </button>
+    </div>
+  </form>
+</div>
