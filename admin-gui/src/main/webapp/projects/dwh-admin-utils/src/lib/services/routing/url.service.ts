@@ -1,13 +1,14 @@
 import { Inject, Injectable, Optional } from "@angular/core";
 import _ from "lodash";
-import { HttpClient } from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 
 @Injectable({
   providedIn: "root",
 })
 export class UrlService {
   private _routeNames: any = undefined;
-  private _url_start = "http://134.106.36.86:8087/aktin/admin/rest/";
+  private token: string;
+  private _url_start = "aktin/admin/rest/";
 
   private _endUrls = {};
 
@@ -19,8 +20,40 @@ export class UrlService {
     }
   }
 
+  setToken (token) {
+    this.token = token;
+  }
+
+  generateHeaderOptions (key?: string, value?: string, options?: any): any {
+    if (options == null) {
+      options = {};
+    }
+    if (options.headers == null) {
+      options.headers = new HttpHeaders();
+    }
+    if (key) {
+      options.headers.append(key, value);
+    }
+    return options;
+  }
+
+  private getRequestOptionArgs(options?: any): any {
+    options = this.generateHeaderOptions(null, null, options);
+    if (this.token) {
+      options.headers.set('Authorization', 'Bearer ' + this.token);
+    }
+    // options.headers.append('Cache-Control', 'no-cache, no-store, must-revalidate');
+    // options.headers.append('Pragma', 'no-cache');
+    // options.headers.append('Expires', '0');
+    return options;
+  }
+
   get<T>(url: string) {
     return this._http.get<T>(url);
+  }
+
+  post<T> (url: string, body: any, options ?: any) {
+    return this._http.post<T> (url, body, options);
   }
 
   getUrl(url_end: string) {
