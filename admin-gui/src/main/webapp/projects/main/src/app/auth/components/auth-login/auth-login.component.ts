@@ -1,10 +1,10 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { select, Store } from "@ngrx/store";
-import { UrlService, State } from "@aktin/utils";
-import { Observable } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
+import { select, Store } from "@ngrx/store";
+import { Observable } from "rxjs";
+import { UrlService, State } from "@aktin/utils";
 import { User } from "../../models/user";
-import { AuthenticationService } from "@app/auth/authentication.service";
+import { AuthService } from "../../services";
 import { of } from "rxjs/internal/observable/of";
 
 @Component({
@@ -15,12 +15,12 @@ import { of } from "rxjs/internal/observable/of";
 export class AuthLoginComponent implements OnInit {
   @Input() menu: boolean = false;
   @Input() username: string;
-  password: string;
+  @Input() password: string = "";
   user$: Observable<User>;
   constructor(
     private _route: ActivatedRoute,
     private _url: UrlService,
-    private _auth: AuthenticationService,
+    private _auth: AuthService,
     private _store: Store<State>,
   ) {}
 
@@ -39,6 +39,8 @@ export class AuthLoginComponent implements OnInit {
 
   login() {
     console.log("logging in ", this.username, " ", this.password);
-    this._auth.userLogin(this.username, this.password);
+    this._auth.userLogin(this.username, this.password).subscribe((res) => {
+      console.log("something with res: ", res)
+    });
   }
 }

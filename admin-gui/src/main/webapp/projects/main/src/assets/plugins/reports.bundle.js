@@ -91,13 +91,6 @@
         }
         return ReportUpdate;
     }());
-    var ReportUpdateSuccess = /** @class */ (function () {
-        function ReportUpdateSuccess(payload) {
-            this.payload = payload;
-            this.type = ReportActionTypes.ReportsUpdated;
-        }
-        return ReportUpdateSuccess;
-    }());
 
     function reportsReducer(state, action) {
         if (state === void 0) { state = initialState$1; }
@@ -5580,6 +5573,32 @@
         ReportStatus[ReportStatus["Waiting"] = 2] = "Waiting";
     })(ReportStatus || (ReportStatus = {}));
 
+    var ReportUrlService = /** @class */ (function (_super) {
+        __extends(ReportUrlService, _super);
+        function ReportUrlService() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.reportUrls = {
+                reportsList: "report/archive",
+                newMonthlyReport: "report/monthly/email",
+                reportTemplates: "report/template",
+                newReport: "report/template/@templateId@",
+            };
+            return _this;
+        }
+        ReportUrlService.prototype.parse = function (url, args) {
+            return _super.prototype.parse.call(this, url, args, this.reportUrls);
+        };
+        ReportUrlService.prototype.get = function (url, args) {
+            return _super.prototype.get.call(this, this.parse(url, args));
+        };
+        ReportUrlService = __decorate([
+            core.Injectable({
+                providedIn: "root",
+            })
+        ], ReportUrlService);
+        return ReportUrlService;
+    }(utils.UrlService));
+
     var i18DeData = {
     	"bread.list": "Berichtsübersicht",
     	"actions.download": "Diesen Bericht herunterladen",
@@ -5593,31 +5612,6 @@
     	"view.timeSpan": "Zeitraum:",
     	"view.timeSpanTill": "bis"
     };
-
-    var ReportUrlService = /** @class */ (function () {
-        function ReportUrlService(_url) {
-            this._url = _url;
-            this.reportUrls = {
-                reportsList: "report/archive",
-                newMonthlyReport: "report/monthly/email",
-                reportTemplates: "report/template",
-                newReport: "report/template/@templateId@",
-            };
-        }
-        ReportUrlService.prototype.parse = function (url, args) {
-            return this._url.parse(url, args, this.reportUrls);
-        };
-        ReportUrlService.prototype.get = function (url, args) {
-            return this._url.get(this.parse(url, args));
-        };
-        ReportUrlService = __decorate([
-            core.Injectable({
-                providedIn: "root",
-            }),
-            __metadata("design:paramtypes", [utils.UrlService])
-        ], ReportUrlService);
-        return ReportUrlService;
-    }());
 
     var ReportService = /** @class */ (function () {
         function ReportService(_locale, _url, _i18n, _downloader) {
@@ -5639,22 +5633,33 @@
         };
         ReportService.prototype.updateReports = function () {
             var _this = this;
-            return this._url.get("reportsList").pipe(map(function (reports) {
-                return reports.map(function (report, index) {
-                    var betterReport = _this._parseReport(report);
+            console.log("hier in report service");
+            var reportPipe = this._url.get("reportsList").pipe(map(function (reports) {
+                return reports.map(function (reports, index) {
+                    var betterReport = _this._parseReport(reports);
+                    // console.log("b, ", index, betterReport );
                     return betterReport;
                 });
             }), catchError(function (error) {
                 console.log("ERROR", error);
-                return rxjs.EMPTY;
+                return rxjs.of([]);
             }));
+            //
+            reportPipe.subscribe(function (reports) {
+                // NOP but DONOT remove!! For some reason the reports needs to be called once to prevent it throw an error!
+                // reports.forEach((report) => {report.status; console.log(222)});
+                console.log(reports);
+            });
+            return reportPipe;
         };
         ReportService.prototype._parseReport = function (report) {
-            report.timespan = [this._parseDate(report.start), this._parseDate(report.end)];
-            report.generationDate = this._parseDate(report.data);
-            report.state = ReportStatus[report.status];
-            report.name = this.genName(report);
-            report.url = this.getLink(report, this.baseURL);
+            if (report) {
+                report.timespan = [this._parseDate(report.start), this._parseDate(report.end)];
+                report.generationDate = this._parseDate(report.data);
+                report.state = ReportStatus[report.status];
+                report.name = this.genName(report);
+                report.url = this.getLink(report, this.baseURL);
+            }
             return report;
         };
         ReportService.prototype._parseDate = function (date) {
@@ -5692,12 +5697,1143 @@
         return ReportService;
     }());
 
+    var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+    function unwrapExports (x) {
+    	return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default') ? x.default : x;
+    }
+
+    function createCommonjsModule(fn, module) {
+    	return module = { exports: {} }, fn(module, module.exports), module.exports;
+    }
+
+    var isFunction_1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    function isFunction(x) {
+        return typeof x === 'function';
+    }
+    exports.isFunction = isFunction;
+
+    });
+
+    unwrapExports(isFunction_1);
+    var isFunction_2 = isFunction_1.isFunction;
+
+    var config$1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var _enable_super_gross_mode_that_will_cause_bad_things = false;
+    exports.config = {
+        Promise: undefined,
+        set useDeprecatedSynchronousErrorHandling(value) {
+            if (value) {
+                var error = new Error();
+                console.warn('DEPRECATED! RxJS was set to use deprecated synchronous error handling behavior by code at: \n' + error.stack);
+            }
+            else if (_enable_super_gross_mode_that_will_cause_bad_things) {
+                console.log('RxJS: Back to a better error behavior. Thank you. <3');
+            }
+            _enable_super_gross_mode_that_will_cause_bad_things = value;
+        },
+        get useDeprecatedSynchronousErrorHandling() {
+            return _enable_super_gross_mode_that_will_cause_bad_things;
+        },
+    };
+
+    });
+
+    unwrapExports(config$1);
+    var config_1 = config$1.config;
+
+    var hostReportError_1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    function hostReportError(err) {
+        setTimeout(function () { throw err; });
+    }
+    exports.hostReportError = hostReportError;
+
+    });
+
+    unwrapExports(hostReportError_1);
+    var hostReportError_2 = hostReportError_1.hostReportError;
+
+    var Observer = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+
+    exports.empty = {
+        closed: true,
+        next: function (value) { },
+        error: function (err) {
+            if (config$1.config.useDeprecatedSynchronousErrorHandling) {
+                throw err;
+            }
+            else {
+                hostReportError_1.hostReportError(err);
+            }
+        },
+        complete: function () { }
+    };
+
+    });
+
+    unwrapExports(Observer);
+    var Observer_1 = Observer.empty;
+
+    var isArray$1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.isArray = Array.isArray || (function (x) { return x && typeof x.length === 'number'; });
+
+    });
+
+    unwrapExports(isArray$1);
+    var isArray_1 = isArray$1.isArray;
+
+    var isObject_1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    function isObject(x) {
+        return x != null && typeof x === 'object';
+    }
+    exports.isObject = isObject;
+
+    });
+
+    unwrapExports(isObject_1);
+    var isObject_2 = isObject_1.isObject;
+
+    var errorObject$1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.errorObject = { e: {} };
+
+    });
+
+    unwrapExports(errorObject$1);
+    var errorObject_1 = errorObject$1.errorObject;
+
+    var tryCatch_1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+    var tryCatchTarget;
+    function tryCatcher() {
+        try {
+            return tryCatchTarget.apply(this, arguments);
+        }
+        catch (e) {
+            errorObject$1.errorObject.e = e;
+            return errorObject$1.errorObject;
+        }
+    }
+    function tryCatch(fn) {
+        tryCatchTarget = fn;
+        return tryCatcher;
+    }
+    exports.tryCatch = tryCatch;
+
+    });
+
+    unwrapExports(tryCatch_1);
+    var tryCatch_2 = tryCatch_1.tryCatch;
+
+    var UnsubscriptionError$1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    function UnsubscriptionErrorImpl(errors) {
+        Error.call(this);
+        this.message = errors ?
+            errors.length + " errors occurred during unsubscription:\n" + errors.map(function (err, i) { return i + 1 + ") " + err.toString(); }).join('\n  ') : '';
+        this.name = 'UnsubscriptionError';
+        this.errors = errors;
+        return this;
+    }
+    UnsubscriptionErrorImpl.prototype = Object.create(Error.prototype);
+    exports.UnsubscriptionError = UnsubscriptionErrorImpl;
+
+    });
+
+    unwrapExports(UnsubscriptionError$1);
+    var UnsubscriptionError_1 = UnsubscriptionError$1.UnsubscriptionError;
+
+    var Subscription_1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+
+
+
+    var Subscription = (function () {
+        function Subscription(unsubscribe) {
+            this.closed = false;
+            this._parent = null;
+            this._parents = null;
+            this._subscriptions = null;
+            if (unsubscribe) {
+                this._unsubscribe = unsubscribe;
+            }
+        }
+        Subscription.prototype.unsubscribe = function () {
+            var hasErrors = false;
+            var errors;
+            if (this.closed) {
+                return;
+            }
+            var _a = this, _parent = _a._parent, _parents = _a._parents, _unsubscribe = _a._unsubscribe, _subscriptions = _a._subscriptions;
+            this.closed = true;
+            this._parent = null;
+            this._parents = null;
+            this._subscriptions = null;
+            var index = -1;
+            var len = _parents ? _parents.length : 0;
+            while (_parent) {
+                _parent.remove(this);
+                _parent = ++index < len && _parents[index] || null;
+            }
+            if (isFunction_1.isFunction(_unsubscribe)) {
+                var trial = tryCatch_1.tryCatch(_unsubscribe).call(this);
+                if (trial === errorObject$1.errorObject) {
+                    hasErrors = true;
+                    errors = errors || (errorObject$1.errorObject.e instanceof UnsubscriptionError$1.UnsubscriptionError ?
+                        flattenUnsubscriptionErrors(errorObject$1.errorObject.e.errors) : [errorObject$1.errorObject.e]);
+                }
+            }
+            if (isArray$1.isArray(_subscriptions)) {
+                index = -1;
+                len = _subscriptions.length;
+                while (++index < len) {
+                    var sub = _subscriptions[index];
+                    if (isObject_1.isObject(sub)) {
+                        var trial = tryCatch_1.tryCatch(sub.unsubscribe).call(sub);
+                        if (trial === errorObject$1.errorObject) {
+                            hasErrors = true;
+                            errors = errors || [];
+                            var err = errorObject$1.errorObject.e;
+                            if (err instanceof UnsubscriptionError$1.UnsubscriptionError) {
+                                errors = errors.concat(flattenUnsubscriptionErrors(err.errors));
+                            }
+                            else {
+                                errors.push(err);
+                            }
+                        }
+                    }
+                }
+            }
+            if (hasErrors) {
+                throw new UnsubscriptionError$1.UnsubscriptionError(errors);
+            }
+        };
+        Subscription.prototype.add = function (teardown) {
+            if (!teardown || (teardown === Subscription.EMPTY)) {
+                return Subscription.EMPTY;
+            }
+            if (teardown === this) {
+                return this;
+            }
+            var subscription = teardown;
+            switch (typeof teardown) {
+                case 'function':
+                    subscription = new Subscription(teardown);
+                case 'object':
+                    if (subscription.closed || typeof subscription.unsubscribe !== 'function') {
+                        return subscription;
+                    }
+                    else if (this.closed) {
+                        subscription.unsubscribe();
+                        return subscription;
+                    }
+                    else if (typeof subscription._addParent !== 'function') {
+                        var tmp = subscription;
+                        subscription = new Subscription();
+                        subscription._subscriptions = [tmp];
+                    }
+                    break;
+                default:
+                    throw new Error('unrecognized teardown ' + teardown + ' added to Subscription.');
+            }
+            var subscriptions = this._subscriptions || (this._subscriptions = []);
+            subscriptions.push(subscription);
+            subscription._addParent(this);
+            return subscription;
+        };
+        Subscription.prototype.remove = function (subscription) {
+            var subscriptions = this._subscriptions;
+            if (subscriptions) {
+                var subscriptionIndex = subscriptions.indexOf(subscription);
+                if (subscriptionIndex !== -1) {
+                    subscriptions.splice(subscriptionIndex, 1);
+                }
+            }
+        };
+        Subscription.prototype._addParent = function (parent) {
+            var _a = this, _parent = _a._parent, _parents = _a._parents;
+            if (!_parent || _parent === parent) {
+                this._parent = parent;
+            }
+            else if (!_parents) {
+                this._parents = [parent];
+            }
+            else if (_parents.indexOf(parent) === -1) {
+                _parents.push(parent);
+            }
+        };
+        Subscription.EMPTY = (function (empty) {
+            empty.closed = true;
+            return empty;
+        }(new Subscription()));
+        return Subscription;
+    }());
+    exports.Subscription = Subscription;
+    function flattenUnsubscriptionErrors(errors) {
+        return errors.reduce(function (errs, err) { return errs.concat((err instanceof UnsubscriptionError$1.UnsubscriptionError) ? err.errors : err); }, []);
+    }
+
+    });
+
+    unwrapExports(Subscription_1);
+    var Subscription_2 = Subscription_1.Subscription;
+
+    var rxSubscriber$1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.rxSubscriber = typeof Symbol === 'function'
+        ? Symbol('rxSubscriber')
+        : '@@rxSubscriber_' + Math.random();
+    exports.$$rxSubscriber = exports.rxSubscriber;
+
+    });
+
+    unwrapExports(rxSubscriber$1);
+    var rxSubscriber_1 = rxSubscriber$1.rxSubscriber;
+    var rxSubscriber_2 = rxSubscriber$1.$$rxSubscriber;
+
+    var Subscriber_1 = createCommonjsModule(function (module, exports) {
+    var __extends = (commonjsGlobal && commonjsGlobal.__extends) || (function () {
+        var extendStatics = function (d, b) {
+            extendStatics = Object.setPrototypeOf ||
+                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            return extendStatics(d, b);
+        };
+        return function (d, b) {
+            extendStatics(d, b);
+            function __() { this.constructor = d; }
+            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+        };
+    })();
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+
+
+
+    var Subscriber = (function (_super) {
+        __extends(Subscriber, _super);
+        function Subscriber(destinationOrNext, error, complete) {
+            var _this = _super.call(this) || this;
+            _this.syncErrorValue = null;
+            _this.syncErrorThrown = false;
+            _this.syncErrorThrowable = false;
+            _this.isStopped = false;
+            _this._parentSubscription = null;
+            switch (arguments.length) {
+                case 0:
+                    _this.destination = Observer.empty;
+                    break;
+                case 1:
+                    if (!destinationOrNext) {
+                        _this.destination = Observer.empty;
+                        break;
+                    }
+                    if (typeof destinationOrNext === 'object') {
+                        if (destinationOrNext instanceof Subscriber) {
+                            _this.syncErrorThrowable = destinationOrNext.syncErrorThrowable;
+                            _this.destination = destinationOrNext;
+                            destinationOrNext.add(_this);
+                        }
+                        else {
+                            _this.syncErrorThrowable = true;
+                            _this.destination = new SafeSubscriber(_this, destinationOrNext);
+                        }
+                        break;
+                    }
+                default:
+                    _this.syncErrorThrowable = true;
+                    _this.destination = new SafeSubscriber(_this, destinationOrNext, error, complete);
+                    break;
+            }
+            return _this;
+        }
+        Subscriber.prototype[rxSubscriber$1.rxSubscriber] = function () { return this; };
+        Subscriber.create = function (next, error, complete) {
+            var subscriber = new Subscriber(next, error, complete);
+            subscriber.syncErrorThrowable = false;
+            return subscriber;
+        };
+        Subscriber.prototype.next = function (value) {
+            if (!this.isStopped) {
+                this._next(value);
+            }
+        };
+        Subscriber.prototype.error = function (err) {
+            if (!this.isStopped) {
+                this.isStopped = true;
+                this._error(err);
+            }
+        };
+        Subscriber.prototype.complete = function () {
+            if (!this.isStopped) {
+                this.isStopped = true;
+                this._complete();
+            }
+        };
+        Subscriber.prototype.unsubscribe = function () {
+            if (this.closed) {
+                return;
+            }
+            this.isStopped = true;
+            _super.prototype.unsubscribe.call(this);
+        };
+        Subscriber.prototype._next = function (value) {
+            this.destination.next(value);
+        };
+        Subscriber.prototype._error = function (err) {
+            this.destination.error(err);
+            this.unsubscribe();
+        };
+        Subscriber.prototype._complete = function () {
+            this.destination.complete();
+            this.unsubscribe();
+        };
+        Subscriber.prototype._unsubscribeAndRecycle = function () {
+            var _a = this, _parent = _a._parent, _parents = _a._parents;
+            this._parent = null;
+            this._parents = null;
+            this.unsubscribe();
+            this.closed = false;
+            this.isStopped = false;
+            this._parent = _parent;
+            this._parents = _parents;
+            this._parentSubscription = null;
+            return this;
+        };
+        return Subscriber;
+    }(Subscription_1.Subscription));
+    exports.Subscriber = Subscriber;
+    var SafeSubscriber = (function (_super) {
+        __extends(SafeSubscriber, _super);
+        function SafeSubscriber(_parentSubscriber, observerOrNext, error, complete) {
+            var _this = _super.call(this) || this;
+            _this._parentSubscriber = _parentSubscriber;
+            var next;
+            var context = _this;
+            if (isFunction_1.isFunction(observerOrNext)) {
+                next = observerOrNext;
+            }
+            else if (observerOrNext) {
+                next = observerOrNext.next;
+                error = observerOrNext.error;
+                complete = observerOrNext.complete;
+                if (observerOrNext !== Observer.empty) {
+                    context = Object.create(observerOrNext);
+                    if (isFunction_1.isFunction(context.unsubscribe)) {
+                        _this.add(context.unsubscribe.bind(context));
+                    }
+                    context.unsubscribe = _this.unsubscribe.bind(_this);
+                }
+            }
+            _this._context = context;
+            _this._next = next;
+            _this._error = error;
+            _this._complete = complete;
+            return _this;
+        }
+        SafeSubscriber.prototype.next = function (value) {
+            if (!this.isStopped && this._next) {
+                var _parentSubscriber = this._parentSubscriber;
+                if (!config$1.config.useDeprecatedSynchronousErrorHandling || !_parentSubscriber.syncErrorThrowable) {
+                    this.__tryOrUnsub(this._next, value);
+                }
+                else if (this.__tryOrSetError(_parentSubscriber, this._next, value)) {
+                    this.unsubscribe();
+                }
+            }
+        };
+        SafeSubscriber.prototype.error = function (err) {
+            if (!this.isStopped) {
+                var _parentSubscriber = this._parentSubscriber;
+                var useDeprecatedSynchronousErrorHandling = config$1.config.useDeprecatedSynchronousErrorHandling;
+                if (this._error) {
+                    if (!useDeprecatedSynchronousErrorHandling || !_parentSubscriber.syncErrorThrowable) {
+                        this.__tryOrUnsub(this._error, err);
+                        this.unsubscribe();
+                    }
+                    else {
+                        this.__tryOrSetError(_parentSubscriber, this._error, err);
+                        this.unsubscribe();
+                    }
+                }
+                else if (!_parentSubscriber.syncErrorThrowable) {
+                    this.unsubscribe();
+                    if (useDeprecatedSynchronousErrorHandling) {
+                        throw err;
+                    }
+                    hostReportError_1.hostReportError(err);
+                }
+                else {
+                    if (useDeprecatedSynchronousErrorHandling) {
+                        _parentSubscriber.syncErrorValue = err;
+                        _parentSubscriber.syncErrorThrown = true;
+                    }
+                    else {
+                        hostReportError_1.hostReportError(err);
+                    }
+                    this.unsubscribe();
+                }
+            }
+        };
+        SafeSubscriber.prototype.complete = function () {
+            var _this = this;
+            if (!this.isStopped) {
+                var _parentSubscriber = this._parentSubscriber;
+                if (this._complete) {
+                    var wrappedComplete = function () { return _this._complete.call(_this._context); };
+                    if (!config$1.config.useDeprecatedSynchronousErrorHandling || !_parentSubscriber.syncErrorThrowable) {
+                        this.__tryOrUnsub(wrappedComplete);
+                        this.unsubscribe();
+                    }
+                    else {
+                        this.__tryOrSetError(_parentSubscriber, wrappedComplete);
+                        this.unsubscribe();
+                    }
+                }
+                else {
+                    this.unsubscribe();
+                }
+            }
+        };
+        SafeSubscriber.prototype.__tryOrUnsub = function (fn, value) {
+            try {
+                fn.call(this._context, value);
+            }
+            catch (err) {
+                this.unsubscribe();
+                if (config$1.config.useDeprecatedSynchronousErrorHandling) {
+                    throw err;
+                }
+                else {
+                    hostReportError_1.hostReportError(err);
+                }
+            }
+        };
+        SafeSubscriber.prototype.__tryOrSetError = function (parent, fn, value) {
+            if (!config$1.config.useDeprecatedSynchronousErrorHandling) {
+                throw new Error('bad call');
+            }
+            try {
+                fn.call(this._context, value);
+            }
+            catch (err) {
+                if (config$1.config.useDeprecatedSynchronousErrorHandling) {
+                    parent.syncErrorValue = err;
+                    parent.syncErrorThrown = true;
+                    return true;
+                }
+                else {
+                    hostReportError_1.hostReportError(err);
+                    return true;
+                }
+            }
+            return false;
+        };
+        SafeSubscriber.prototype._unsubscribe = function () {
+            var _parentSubscriber = this._parentSubscriber;
+            this._context = null;
+            this._parentSubscriber = null;
+            _parentSubscriber.unsubscribe();
+        };
+        return SafeSubscriber;
+    }(Subscriber));
+    exports.SafeSubscriber = SafeSubscriber;
+
+    });
+
+    unwrapExports(Subscriber_1);
+    var Subscriber_2 = Subscriber_1.Subscriber;
+    var Subscriber_3 = Subscriber_1.SafeSubscriber;
+
+    var OuterSubscriber_1 = createCommonjsModule(function (module, exports) {
+    var __extends = (commonjsGlobal && commonjsGlobal.__extends) || (function () {
+        var extendStatics = function (d, b) {
+            extendStatics = Object.setPrototypeOf ||
+                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            return extendStatics(d, b);
+        };
+        return function (d, b) {
+            extendStatics(d, b);
+            function __() { this.constructor = d; }
+            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+        };
+    })();
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+    var OuterSubscriber = (function (_super) {
+        __extends(OuterSubscriber, _super);
+        function OuterSubscriber() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        OuterSubscriber.prototype.notifyNext = function (outerValue, innerValue, outerIndex, innerIndex, innerSub) {
+            this.destination.next(innerValue);
+        };
+        OuterSubscriber.prototype.notifyError = function (error, innerSub) {
+            this.destination.error(error);
+        };
+        OuterSubscriber.prototype.notifyComplete = function (innerSub) {
+            this.destination.complete();
+        };
+        return OuterSubscriber;
+    }(Subscriber_1.Subscriber));
+    exports.OuterSubscriber = OuterSubscriber;
+
+    });
+
+    unwrapExports(OuterSubscriber_1);
+    var OuterSubscriber_2 = OuterSubscriber_1.OuterSubscriber;
+
+    var InnerSubscriber_1 = createCommonjsModule(function (module, exports) {
+    var __extends = (commonjsGlobal && commonjsGlobal.__extends) || (function () {
+        var extendStatics = function (d, b) {
+            extendStatics = Object.setPrototypeOf ||
+                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            return extendStatics(d, b);
+        };
+        return function (d, b) {
+            extendStatics(d, b);
+            function __() { this.constructor = d; }
+            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+        };
+    })();
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+    var InnerSubscriber = (function (_super) {
+        __extends(InnerSubscriber, _super);
+        function InnerSubscriber(parent, outerValue, outerIndex) {
+            var _this = _super.call(this) || this;
+            _this.parent = parent;
+            _this.outerValue = outerValue;
+            _this.outerIndex = outerIndex;
+            _this.index = 0;
+            return _this;
+        }
+        InnerSubscriber.prototype._next = function (value) {
+            this.parent.notifyNext(this.outerValue, value, this.outerIndex, this.index++, this);
+        };
+        InnerSubscriber.prototype._error = function (error) {
+            this.parent.notifyError(error, this);
+            this.unsubscribe();
+        };
+        InnerSubscriber.prototype._complete = function () {
+            this.parent.notifyComplete(this);
+            this.unsubscribe();
+        };
+        return InnerSubscriber;
+    }(Subscriber_1.Subscriber));
+    exports.InnerSubscriber = InnerSubscriber;
+
+    });
+
+    unwrapExports(InnerSubscriber_1);
+    var InnerSubscriber_2 = InnerSubscriber_1.InnerSubscriber;
+
+    var canReportError_1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+    function canReportError(observer) {
+        while (observer) {
+            var _a = observer, closed_1 = _a.closed, destination = _a.destination, isStopped = _a.isStopped;
+            if (closed_1 || isStopped) {
+                return false;
+            }
+            else if (destination && destination instanceof Subscriber_1.Subscriber) {
+                observer = destination;
+            }
+            else {
+                observer = null;
+            }
+        }
+        return true;
+    }
+    exports.canReportError = canReportError;
+
+    });
+
+    unwrapExports(canReportError_1);
+    var canReportError_2 = canReportError_1.canReportError;
+
+    var toSubscriber_1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+    function toSubscriber(nextOrObserver, error, complete) {
+        if (nextOrObserver) {
+            if (nextOrObserver instanceof Subscriber_1.Subscriber) {
+                return nextOrObserver;
+            }
+            if (nextOrObserver[rxSubscriber$1.rxSubscriber]) {
+                return nextOrObserver[rxSubscriber$1.rxSubscriber]();
+            }
+        }
+        if (!nextOrObserver && !error && !complete) {
+            return new Subscriber_1.Subscriber(Observer.empty);
+        }
+        return new Subscriber_1.Subscriber(nextOrObserver, error, complete);
+    }
+    exports.toSubscriber = toSubscriber;
+
+    });
+
+    unwrapExports(toSubscriber_1);
+    var toSubscriber_2 = toSubscriber_1.toSubscriber;
+
+    var observable$1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.observable = typeof Symbol === 'function' && Symbol.observable || '@@observable';
+
+    });
+
+    unwrapExports(observable$1);
+    var observable_1 = observable$1.observable;
+
+    var noop_1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    function noop() { }
+    exports.noop = noop;
+
+    });
+
+    unwrapExports(noop_1);
+    var noop_2 = noop_1.noop;
+
+    var pipe_1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+    function pipe() {
+        var fns = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            fns[_i] = arguments[_i];
+        }
+        return pipeFromArray(fns);
+    }
+    exports.pipe = pipe;
+    function pipeFromArray(fns) {
+        if (!fns) {
+            return noop_1.noop;
+        }
+        if (fns.length === 1) {
+            return fns[0];
+        }
+        return function piped(input) {
+            return fns.reduce(function (prev, fn) { return fn(prev); }, input);
+        };
+    }
+    exports.pipeFromArray = pipeFromArray;
+
+    });
+
+    unwrapExports(pipe_1);
+    var pipe_2 = pipe_1.pipe;
+    var pipe_3 = pipe_1.pipeFromArray;
+
+    var Observable_1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+
+
+    var Observable = (function () {
+        function Observable(subscribe) {
+            this._isScalar = false;
+            if (subscribe) {
+                this._subscribe = subscribe;
+            }
+        }
+        Observable.prototype.lift = function (operator) {
+            var observable = new Observable();
+            observable.source = this;
+            observable.operator = operator;
+            return observable;
+        };
+        Observable.prototype.subscribe = function (observerOrNext, error, complete) {
+            var operator = this.operator;
+            var sink = toSubscriber_1.toSubscriber(observerOrNext, error, complete);
+            if (operator) {
+                operator.call(sink, this.source);
+            }
+            else {
+                sink.add(this.source || (config$1.config.useDeprecatedSynchronousErrorHandling && !sink.syncErrorThrowable) ?
+                    this._subscribe(sink) :
+                    this._trySubscribe(sink));
+            }
+            if (config$1.config.useDeprecatedSynchronousErrorHandling) {
+                if (sink.syncErrorThrowable) {
+                    sink.syncErrorThrowable = false;
+                    if (sink.syncErrorThrown) {
+                        throw sink.syncErrorValue;
+                    }
+                }
+            }
+            return sink;
+        };
+        Observable.prototype._trySubscribe = function (sink) {
+            try {
+                return this._subscribe(sink);
+            }
+            catch (err) {
+                if (config$1.config.useDeprecatedSynchronousErrorHandling) {
+                    sink.syncErrorThrown = true;
+                    sink.syncErrorValue = err;
+                }
+                if (canReportError_1.canReportError(sink)) {
+                    sink.error(err);
+                }
+                else {
+                    console.warn(err);
+                }
+            }
+        };
+        Observable.prototype.forEach = function (next, promiseCtor) {
+            var _this = this;
+            promiseCtor = getPromiseCtor(promiseCtor);
+            return new promiseCtor(function (resolve, reject) {
+                var subscription;
+                subscription = _this.subscribe(function (value) {
+                    try {
+                        next(value);
+                    }
+                    catch (err) {
+                        reject(err);
+                        if (subscription) {
+                            subscription.unsubscribe();
+                        }
+                    }
+                }, reject, resolve);
+            });
+        };
+        Observable.prototype._subscribe = function (subscriber) {
+            var source = this.source;
+            return source && source.subscribe(subscriber);
+        };
+        Observable.prototype[observable$1.observable] = function () {
+            return this;
+        };
+        Observable.prototype.pipe = function () {
+            var operations = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                operations[_i] = arguments[_i];
+            }
+            if (operations.length === 0) {
+                return this;
+            }
+            return pipe_1.pipeFromArray(operations)(this);
+        };
+        Observable.prototype.toPromise = function (promiseCtor) {
+            var _this = this;
+            promiseCtor = getPromiseCtor(promiseCtor);
+            return new promiseCtor(function (resolve, reject) {
+                var value;
+                _this.subscribe(function (x) { return value = x; }, function (err) { return reject(err); }, function () { return resolve(value); });
+            });
+        };
+        Observable.create = function (subscribe) {
+            return new Observable(subscribe);
+        };
+        return Observable;
+    }());
+    exports.Observable = Observable;
+    function getPromiseCtor(promiseCtor) {
+        if (!promiseCtor) {
+            promiseCtor = config$1.config.Promise || Promise;
+        }
+        if (!promiseCtor) {
+            throw new Error('no Promise impl found');
+        }
+        return promiseCtor;
+    }
+
+    });
+
+    unwrapExports(Observable_1);
+    var Observable_2 = Observable_1.Observable;
+
+    var subscribeToArray$1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.subscribeToArray = function (array) { return function (subscriber) {
+        for (var i = 0, len = array.length; i < len && !subscriber.closed; i++) {
+            subscriber.next(array[i]);
+        }
+        if (!subscriber.closed) {
+            subscriber.complete();
+        }
+    }; };
+
+    });
+
+    unwrapExports(subscribeToArray$1);
+    var subscribeToArray_1 = subscribeToArray$1.subscribeToArray;
+
+    var subscribeToPromise$1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+    exports.subscribeToPromise = function (promise) { return function (subscriber) {
+        promise.then(function (value) {
+            if (!subscriber.closed) {
+                subscriber.next(value);
+                subscriber.complete();
+            }
+        }, function (err) { return subscriber.error(err); })
+            .then(null, hostReportError_1.hostReportError);
+        return subscriber;
+    }; };
+
+    });
+
+    unwrapExports(subscribeToPromise$1);
+    var subscribeToPromise_1 = subscribeToPromise$1.subscribeToPromise;
+
+    var iterator$1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    function getSymbolIterator() {
+        if (typeof Symbol !== 'function' || !Symbol.iterator) {
+            return '@@iterator';
+        }
+        return Symbol.iterator;
+    }
+    exports.getSymbolIterator = getSymbolIterator;
+    exports.iterator = getSymbolIterator();
+    exports.$$iterator = exports.iterator;
+
+    });
+
+    unwrapExports(iterator$1);
+    var iterator_1 = iterator$1.getSymbolIterator;
+    var iterator_2 = iterator$1.iterator;
+    var iterator_3 = iterator$1.$$iterator;
+
+    var subscribeToIterable$1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+    exports.subscribeToIterable = function (iterable) { return function (subscriber) {
+        var iterator = iterable[iterator$1.iterator]();
+        do {
+            var item = iterator.next();
+            if (item.done) {
+                subscriber.complete();
+                break;
+            }
+            subscriber.next(item.value);
+            if (subscriber.closed) {
+                break;
+            }
+        } while (true);
+        if (typeof iterator.return === 'function') {
+            subscriber.add(function () {
+                if (iterator.return) {
+                    iterator.return();
+                }
+            });
+        }
+        return subscriber;
+    }; };
+
+    });
+
+    unwrapExports(subscribeToIterable$1);
+    var subscribeToIterable_1 = subscribeToIterable$1.subscribeToIterable;
+
+    var subscribeToObservable$1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+    exports.subscribeToObservable = function (obj) { return function (subscriber) {
+        var obs = obj[observable$1.observable]();
+        if (typeof obs.subscribe !== 'function') {
+            throw new TypeError('Provided object does not correctly implement Symbol.observable');
+        }
+        else {
+            return obs.subscribe(subscriber);
+        }
+    }; };
+
+    });
+
+    unwrapExports(subscribeToObservable$1);
+    var subscribeToObservable_1 = subscribeToObservable$1.subscribeToObservable;
+
+    var isArrayLike$1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.isArrayLike = (function (x) { return x && typeof x.length === 'number' && typeof x !== 'function'; });
+
+    });
+
+    unwrapExports(isArrayLike$1);
+    var isArrayLike_1 = isArrayLike$1.isArrayLike;
+
+    var isPromise_1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+    function isPromise(value) {
+        return value && typeof value.subscribe !== 'function' && typeof value.then === 'function';
+    }
+    exports.isPromise = isPromise;
+
+    });
+
+    unwrapExports(isPromise_1);
+    var isPromise_2 = isPromise_1.isPromise;
+
+    var subscribeTo$1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+
+
+
+
+
+
+
+    exports.subscribeTo = function (result) {
+        if (result instanceof Observable_1.Observable) {
+            return function (subscriber) {
+                if (result._isScalar) {
+                    subscriber.next(result.value);
+                    subscriber.complete();
+                    return undefined;
+                }
+                else {
+                    return result.subscribe(subscriber);
+                }
+            };
+        }
+        else if (result && typeof result[observable$1.observable] === 'function') {
+            return subscribeToObservable$1.subscribeToObservable(result);
+        }
+        else if (isArrayLike$1.isArrayLike(result)) {
+            return subscribeToArray$1.subscribeToArray(result);
+        }
+        else if (isPromise_1.isPromise(result)) {
+            return subscribeToPromise$1.subscribeToPromise(result);
+        }
+        else if (result && typeof result[iterator$1.iterator] === 'function') {
+            return subscribeToIterable$1.subscribeToIterable(result);
+        }
+        else {
+            var value = isObject_1.isObject(result) ? 'an invalid object' : "'" + result + "'";
+            var msg = "You provided " + value + " where a stream was expected."
+                + ' You can provide an Observable, Promise, Array, or Iterable.';
+            throw new TypeError(msg);
+        }
+    };
+
+    });
+
+    unwrapExports(subscribeTo$1);
+    var subscribeTo_1 = subscribeTo$1.subscribeTo;
+
+    var subscribeToResult_1 = createCommonjsModule(function (module, exports) {
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+
+    function subscribeToResult(outerSubscriber, result, outerValue, outerIndex, destination) {
+        if (destination === void 0) { destination = new InnerSubscriber_1.InnerSubscriber(outerSubscriber, outerValue, outerIndex); }
+        if (destination.closed) {
+            return;
+        }
+        return subscribeTo$1.subscribeTo(result)(destination);
+    }
+    exports.subscribeToResult = subscribeToResult;
+
+    });
+
+    unwrapExports(subscribeToResult_1);
+    var subscribeToResult_2 = subscribeToResult_1.subscribeToResult;
+
+    var catchError_1 = createCommonjsModule(function (module, exports) {
+    var __extends = (commonjsGlobal && commonjsGlobal.__extends) || (function () {
+        var extendStatics = function (d, b) {
+            extendStatics = Object.setPrototypeOf ||
+                ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+                function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            return extendStatics(d, b);
+        };
+        return function (d, b) {
+            extendStatics(d, b);
+            function __() { this.constructor = d; }
+            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+        };
+    })();
+    Object.defineProperty(exports, "__esModule", { value: true });
+
+
+
+    function catchError(selector) {
+        return function catchErrorOperatorFunction(source) {
+            var operator = new CatchOperator(selector);
+            var caught = source.lift(operator);
+            return (operator.caught = caught);
+        };
+    }
+    exports.catchError = catchError;
+    var CatchOperator = (function () {
+        function CatchOperator(selector) {
+            this.selector = selector;
+        }
+        CatchOperator.prototype.call = function (subscriber, source) {
+            return source.subscribe(new CatchSubscriber(subscriber, this.selector, this.caught));
+        };
+        return CatchOperator;
+    }());
+    var CatchSubscriber = (function (_super) {
+        __extends(CatchSubscriber, _super);
+        function CatchSubscriber(destination, selector, caught) {
+            var _this = _super.call(this, destination) || this;
+            _this.selector = selector;
+            _this.caught = caught;
+            return _this;
+        }
+        CatchSubscriber.prototype.error = function (err) {
+            if (!this.isStopped) {
+                var result = void 0;
+                try {
+                    result = this.selector(err, this.caught);
+                }
+                catch (err2) {
+                    _super.prototype.error.call(this, err2);
+                    return;
+                }
+                this._unsubscribeAndRecycle();
+                var innerSubscriber = new InnerSubscriber_1.InnerSubscriber(this, undefined, undefined);
+                this.add(innerSubscriber);
+                subscribeToResult_1.subscribeToResult(this, result, undefined, undefined, innerSubscriber);
+            }
+        };
+        return CatchSubscriber;
+    }(OuterSubscriber_1.OuterSubscriber));
+
+    });
+
+    unwrapExports(catchError_1);
+    var catchError_2 = catchError_1.catchError;
+
     var ReportEffects = /** @class */ (function () {
         function ReportEffects(actions$, _report) {
             var _this = this;
             this.actions$ = actions$;
             this._report = _report;
-            this.updateReports$ = this.actions$.pipe(effects.ofType(ReportActionTypes.ReportsUpdate), concatMap(function () { return _this._report.updateReports(); }), concatMap(function (reports) { return rxjs.of(new ReportUpdateSuccess({ reports: reports })); }));
+            this.updateReports$ = this.actions$.pipe(effects.ofType(ReportActionTypes.ReportsUpdate), 
+            // concatMap(() => this._report.updateReports()),
+            // concatMap(reports => of(new ReportUpdateSuccess({ reports: reports }))),
+            concatMap(function () { return _this._report.updateReports()
+                .pipe(map(function (reports) { return ({ type: ReportActionTypes.ReportsUpdated, payload: { reports: reports } }); }), catchError_2(function () { return rxjs.EMPTY; })); }));
         }
         __decorate([
             effects.Effect(),
@@ -5764,7 +6900,7 @@
             core.Component({
                 selector: "admin-gui-report",
                 template: "<breadcrumb\n  *ngIf=\"(report$ | async)\"\n  [path]=\"[\n    [_url.link(['REPORT']), s.parse('bread.list')],\n    [\n      _url.link(['REPORT', 'SINGLE'], { id: (report$ | async).id }),\n      (report$ | async).id + ': ' + (report$ | async).name\n    ]\n  ]\"\n></breadcrumb>\n\n<div class=\"report\">\n  <div *ngIf=\"loading\">loading!</div>\n  <div *ngIf=\"error\">error!</div>\n  <report-view *ngIf=\"!loading && !error\" [data]=\"report$ | async\" [listView]=\"false\"></report-view>\n</div>\n",
-                styles: ["html {\n  line-height: 1.15; \n  -webkit-text-size-adjust: 100%; \n}\n\nmain {\n  display: block;\n}\n\na {\n  background-color: transparent;\n}\n\nstrong {\n  font-weight: bolder;\n}\n\nbutton,\ninput,\nselect {\n  font-family: inherit; \n  font-size: 100%; \n  line-height: 1.15; \n  margin: 0; \n}\n\nbutton,\ninput {\n  \n  overflow: visible;\n}\n\nbutton,\nselect {\n  \n  text-transform: none;\n}\n\nbutton,\n[type=\"button\"],\n[type=\"reset\"],\n[type=\"submit\"] {\n  -webkit-appearance: button;\n}\n\nbutton::-moz-focus-inner,\n[type=\"button\"]::-moz-focus-inner,\n[type=\"reset\"]::-moz-focus-inner,\n[type=\"submit\"]::-moz-focus-inner {\n  border-style: none;\n  padding: 0;\n}\n\nbutton:-moz-focusring,\n[type=\"button\"]:-moz-focusring,\n[type=\"reset\"]:-moz-focusring,\n[type=\"submit\"]:-moz-focusring {\n  outline: 1px dotted ButtonText;\n}\n\nlegend {\n  box-sizing: border-box; \n  color: inherit; \n  display: table; \n  max-width: 100%; \n  padding: 0; \n  white-space: normal; \n}\n\n[type=\"checkbox\"],\n[type=\"radio\"] {\n  box-sizing: border-box; \n  padding: 0; \n}\n\n[type=\"number\"]::-webkit-inner-spin-button,\n[type=\"number\"]::-webkit-outer-spin-button {\n  height: auto;\n}\n\n[type=\"search\"] {\n  -webkit-appearance: textfield; \n  outline-offset: -2px; \n}\n\n[type=\"search\"]::-webkit-search-decoration {\n  -webkit-appearance: none;\n}\n\n::-webkit-file-upload-button {\n  -webkit-appearance: button; \n  font: inherit; \n}\n\ntemplate {\n  display: none;\n}\n\n[hidden] {\n  display: none;\n}\n\nhtml {\n  box-sizing: border-box; \n  font-family: sans-serif; \n}\n\n*,\n*::before,\n*::after {\n  box-sizing: inherit;\n}\n\nbutton {\n  background: transparent;\n  padding: 0;\n}\n\nbutton:focus {\n  outline: 1px dotted;\n  outline: 5px auto -webkit-focus-ring-color;\n}\n\n*,\n*::before,\n*::after {\n  border-width: 0;\n  border-style: solid;\n  border-color: #dae1e7;\n}\n\ninput::-webkit-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::-moz-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput:-ms-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::-ms-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\nbutton,\n[role=\"button\"] {\n  cursor: pointer;\n}\n\n.container {\n  width: 100%;\n}\n\n@media (min-width: 576px) {\n  .container {\n    max-width: 576px;\n  }\n}\n\n@media (min-width: 768px) {\n  .container {\n    max-width: 768px;\n  }\n}\n\n@media (min-width: 992px) {\n  .container {\n    max-width: 992px;\n  }\n}\n\n@media (min-width: 1200px) {\n  .container {\n    max-width: 1200px;\n  }\n}\n\n.inline-block {\n  display: inline-block;\n}\n\n.flex {\n  display: flex;\n}\n\n.flex-row {\n  flex-direction: row;\n}\n\n.items-baseline {\n  align-items: baseline;\n}\n\n.justify-between {\n  justify-content: space-between;\n}\n\n.font-medium {\n  font-weight: 500;\n}\n\n.my-5 {\n  margin-top: 1.25rem;\n  margin-bottom: 1.25rem;\n}\n\n.mx-auto {\n  margin-left: auto;\n  margin-right: auto;\n}\n\n.mt-1 {\n  margin-top: .25rem;\n}\n\n.ml-2 {\n  margin-left: .5rem;\n}\n\n.p-3 {\n  padding: .75rem;\n}\n\n.text-grey-dark {\n  color: #8795a1;\n}\n\n.text-sm {\n  font-size: .875rem;\n}\n\n.text-xl {\n  font-size: 1.25rem;\n}\n\n.w-auto {\n  width: auto;\n}\n\n.w-1/5 {\n  width: 20%;\n}\n\n.btn-icon {\n  cursor: pointer;\n  border-radius: 9999px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 2rem;\n  height: 2rem;\n  background-color: #dae1e7;\n}\n\n.btn-icon:hover {\n  background-color: #b8c2cc;\n}\n\n.btn-icon.btn-green {\n  background-color: #51d88a;\n  color: #fff;\n}\n\n.btn-icon.btn-green:hover {\n  background-color: #38c172;\n}\n\n.btn-icon.btn-border-green {\n  border-width: 2px;\n  background-color: transparent;\n  border-color: #51d88a;\n  color: #51d88a;\n}\n\n.btn-icon.btn-border-green:hover {\n  border-color: #38c172;\n  color: #38c172;\n  background-color: #e3fcec;\n}"],
+                styles: ["html {\n  line-height: 1.15; \n  -webkit-text-size-adjust: 100%; \n}\n\nmain {\n  display: block;\n}\n\na {\n  background-color: transparent;\n}\n\nb,\nstrong {\n  font-weight: bolder;\n}\n\nbutton,\ninput,\nselect {\n  font-family: inherit; \n  font-size: 100%; \n  line-height: 1.15; \n  margin: 0; \n}\n\nbutton,\ninput {\n  \n  overflow: visible;\n}\n\nbutton,\nselect {\n  \n  text-transform: none;\n}\n\nbutton,\n[type=\"button\"],\n[type=\"reset\"],\n[type=\"submit\"] {\n  -webkit-appearance: button;\n}\n\nbutton::-moz-focus-inner,\n[type=\"button\"]::-moz-focus-inner,\n[type=\"reset\"]::-moz-focus-inner,\n[type=\"submit\"]::-moz-focus-inner {\n  border-style: none;\n  padding: 0;\n}\n\nbutton:-moz-focusring,\n[type=\"button\"]:-moz-focusring,\n[type=\"reset\"]:-moz-focusring,\n[type=\"submit\"]:-moz-focusring {\n  outline: 1px dotted ButtonText;\n}\n\nlegend {\n  box-sizing: border-box; \n  color: inherit; \n  display: table; \n  max-width: 100%; \n  padding: 0; \n  white-space: normal; \n}\n\n[type=\"checkbox\"],\n[type=\"radio\"] {\n  box-sizing: border-box; \n  padding: 0; \n}\n\n[type=\"number\"]::-webkit-inner-spin-button,\n[type=\"number\"]::-webkit-outer-spin-button {\n  height: auto;\n}\n\n[type=\"search\"] {\n  -webkit-appearance: textfield; \n  outline-offset: -2px; \n}\n\n[type=\"search\"]::-webkit-search-decoration {\n  -webkit-appearance: none;\n}\n\n::-webkit-file-upload-button {\n  -webkit-appearance: button; \n  font: inherit; \n}\n\ntemplate {\n  display: none;\n}\n\n[hidden] {\n  display: none;\n}\n\nhtml {\n  box-sizing: border-box; \n  font-family: sans-serif; \n}\n\n*,\n*::before,\n*::after {\n  box-sizing: inherit;\n}\n\nbutton {\n  background: transparent;\n  padding: 0;\n}\n\nbutton:focus {\n  outline: 1px dotted;\n  outline: 5px auto -webkit-focus-ring-color;\n}\n\n*,\n*::before,\n*::after {\n  border-width: 0;\n  border-style: solid;\n  border-color: #dae1e7;\n}\n\ninput::-webkit-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::-moz-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput:-ms-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::-ms-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\nbutton,\n[role=\"button\"] {\n  cursor: pointer;\n}\n\n.container {\n  width: 100%;\n}\n\n@media (min-width: 576px) {\n  .container {\n    max-width: 576px;\n  }\n}\n\n@media (min-width: 768px) {\n  .container {\n    max-width: 768px;\n  }\n}\n\n@media (min-width: 992px) {\n  .container {\n    max-width: 992px;\n  }\n}\n\n@media (min-width: 1200px) {\n  .container {\n    max-width: 1200px;\n  }\n}\n\n.inline-block {\n  display: inline-block;\n}\n\n.flex {\n  display: flex;\n}\n\n.flex-row {\n  flex-direction: row;\n}\n\n.items-baseline {\n  align-items: baseline;\n}\n\n.justify-between {\n  justify-content: space-between;\n}\n\n.font-medium {\n  font-weight: 500;\n}\n\n.my-5 {\n  margin-top: 1.25rem;\n  margin-bottom: 1.25rem;\n}\n\n.mx-auto {\n  margin-left: auto;\n  margin-right: auto;\n}\n\n.mt-1 {\n  margin-top: .25rem;\n}\n\n.ml-2 {\n  margin-left: .5rem;\n}\n\n.p-3 {\n  padding: .75rem;\n}\n\n.text-grey-dark {\n  color: #8795a1;\n}\n\n.text-sm {\n  font-size: .875rem;\n}\n\n.text-xl {\n  font-size: 1.25rem;\n}\n\n.w-auto {\n  width: auto;\n}\n\n.w-1/5 {\n  width: 20%;\n}\n\n.btn-icon {\n  cursor: pointer;\n  border-radius: 9999px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 2rem;\n  height: 2rem;\n  background-color: #dae1e7;\n}\n\n.btn-icon:hover {\n  background-color: #b8c2cc;\n}\n\n.btn-icon.btn-green {\n  background-color: #51d88a;\n  color: #fff;\n}\n\n.btn-icon.btn-green:hover {\n  background-color: #38c172;\n}\n\n.btn-icon.btn-border-green {\n  border-width: 2px;\n  background-color: transparent;\n  border-color: #51d88a;\n  color: #51d88a;\n}\n\n.btn-icon.btn-border-green:hover {\n  border-color: #38c172;\n  color: #38c172;\n  background-color: #e3fcec;\n}"],
             }),
             __metadata("design:paramtypes", [router.ActivatedRoute,
                 utils.UrlService,
@@ -5788,7 +6924,7 @@
             core.Component({
                 selector: "admin-gui-reports-list",
                 template: "<breadcrumb [path]=\"[[_url.link(['REPORT']), s.parse('bread.list')]]\"></breadcrumb>\n\n<div class=\"reports-list\">\n  <report-view\n    *ngFor=\"let report of (reports$ | async | orderBy: ['-id']) as reports; index as i\"\n    [data]=\"report\"\n  ></report-view>\n</div>\n",
-                styles: ["html {\n  line-height: 1.15; \n  -webkit-text-size-adjust: 100%; \n}\n\nmain {\n  display: block;\n}\n\na {\n  background-color: transparent;\n}\n\nstrong {\n  font-weight: bolder;\n}\n\nbutton,\ninput,\nselect {\n  font-family: inherit; \n  font-size: 100%; \n  line-height: 1.15; \n  margin: 0; \n}\n\nbutton,\ninput {\n  \n  overflow: visible;\n}\n\nbutton,\nselect {\n  \n  text-transform: none;\n}\n\nbutton,\n[type=\"button\"],\n[type=\"reset\"],\n[type=\"submit\"] {\n  -webkit-appearance: button;\n}\n\nbutton::-moz-focus-inner,\n[type=\"button\"]::-moz-focus-inner,\n[type=\"reset\"]::-moz-focus-inner,\n[type=\"submit\"]::-moz-focus-inner {\n  border-style: none;\n  padding: 0;\n}\n\nbutton:-moz-focusring,\n[type=\"button\"]:-moz-focusring,\n[type=\"reset\"]:-moz-focusring,\n[type=\"submit\"]:-moz-focusring {\n  outline: 1px dotted ButtonText;\n}\n\nlegend {\n  box-sizing: border-box; \n  color: inherit; \n  display: table; \n  max-width: 100%; \n  padding: 0; \n  white-space: normal; \n}\n\n[type=\"checkbox\"],\n[type=\"radio\"] {\n  box-sizing: border-box; \n  padding: 0; \n}\n\n[type=\"number\"]::-webkit-inner-spin-button,\n[type=\"number\"]::-webkit-outer-spin-button {\n  height: auto;\n}\n\n[type=\"search\"] {\n  -webkit-appearance: textfield; \n  outline-offset: -2px; \n}\n\n[type=\"search\"]::-webkit-search-decoration {\n  -webkit-appearance: none;\n}\n\n::-webkit-file-upload-button {\n  -webkit-appearance: button; \n  font: inherit; \n}\n\ntemplate {\n  display: none;\n}\n\n[hidden] {\n  display: none;\n}\n\nhtml {\n  box-sizing: border-box; \n  font-family: sans-serif; \n}\n\n*,\n*::before,\n*::after {\n  box-sizing: inherit;\n}\n\nbutton {\n  background: transparent;\n  padding: 0;\n}\n\nbutton:focus {\n  outline: 1px dotted;\n  outline: 5px auto -webkit-focus-ring-color;\n}\n\n*,\n*::before,\n*::after {\n  border-width: 0;\n  border-style: solid;\n  border-color: #dae1e7;\n}\n\ninput::-webkit-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::-moz-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput:-ms-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::-ms-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\nbutton,\n[role=\"button\"] {\n  cursor: pointer;\n}\n\n.container {\n  width: 100%;\n}\n\n@media (min-width: 576px) {\n  .container {\n    max-width: 576px;\n  }\n}\n\n@media (min-width: 768px) {\n  .container {\n    max-width: 768px;\n  }\n}\n\n@media (min-width: 992px) {\n  .container {\n    max-width: 992px;\n  }\n}\n\n@media (min-width: 1200px) {\n  .container {\n    max-width: 1200px;\n  }\n}\n\n.inline-block {\n  display: inline-block;\n}\n\n.flex {\n  display: flex;\n}\n\n.flex-row {\n  flex-direction: row;\n}\n\n.items-baseline {\n  align-items: baseline;\n}\n\n.justify-between {\n  justify-content: space-between;\n}\n\n.font-medium {\n  font-weight: 500;\n}\n\n.my-5 {\n  margin-top: 1.25rem;\n  margin-bottom: 1.25rem;\n}\n\n.mx-auto {\n  margin-left: auto;\n  margin-right: auto;\n}\n\n.mt-1 {\n  margin-top: .25rem;\n}\n\n.ml-2 {\n  margin-left: .5rem;\n}\n\n.p-3 {\n  padding: .75rem;\n}\n\n.text-grey-dark {\n  color: #8795a1;\n}\n\n.text-sm {\n  font-size: .875rem;\n}\n\n.text-xl {\n  font-size: 1.25rem;\n}\n\n.w-auto {\n  width: auto;\n}\n\n.w-1/5 {\n  width: 20%;\n}\n\n.btn-icon {\n  cursor: pointer;\n  border-radius: 9999px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 2rem;\n  height: 2rem;\n  background-color: #dae1e7;\n}\n\n.btn-icon:hover {\n  background-color: #b8c2cc;\n}\n\n.btn-icon.btn-green {\n  background-color: #51d88a;\n  color: #fff;\n}\n\n.btn-icon.btn-green:hover {\n  background-color: #38c172;\n}\n\n.btn-icon.btn-border-green {\n  border-width: 2px;\n  background-color: transparent;\n  border-color: #51d88a;\n  color: #51d88a;\n}\n\n.btn-icon.btn-border-green:hover {\n  border-color: #38c172;\n  color: #38c172;\n  background-color: #e3fcec;\n}"],
+                styles: ["html {\n  line-height: 1.15; \n  -webkit-text-size-adjust: 100%; \n}\n\nmain {\n  display: block;\n}\n\na {\n  background-color: transparent;\n}\n\nb,\nstrong {\n  font-weight: bolder;\n}\n\nbutton,\ninput,\nselect {\n  font-family: inherit; \n  font-size: 100%; \n  line-height: 1.15; \n  margin: 0; \n}\n\nbutton,\ninput {\n  \n  overflow: visible;\n}\n\nbutton,\nselect {\n  \n  text-transform: none;\n}\n\nbutton,\n[type=\"button\"],\n[type=\"reset\"],\n[type=\"submit\"] {\n  -webkit-appearance: button;\n}\n\nbutton::-moz-focus-inner,\n[type=\"button\"]::-moz-focus-inner,\n[type=\"reset\"]::-moz-focus-inner,\n[type=\"submit\"]::-moz-focus-inner {\n  border-style: none;\n  padding: 0;\n}\n\nbutton:-moz-focusring,\n[type=\"button\"]:-moz-focusring,\n[type=\"reset\"]:-moz-focusring,\n[type=\"submit\"]:-moz-focusring {\n  outline: 1px dotted ButtonText;\n}\n\nlegend {\n  box-sizing: border-box; \n  color: inherit; \n  display: table; \n  max-width: 100%; \n  padding: 0; \n  white-space: normal; \n}\n\n[type=\"checkbox\"],\n[type=\"radio\"] {\n  box-sizing: border-box; \n  padding: 0; \n}\n\n[type=\"number\"]::-webkit-inner-spin-button,\n[type=\"number\"]::-webkit-outer-spin-button {\n  height: auto;\n}\n\n[type=\"search\"] {\n  -webkit-appearance: textfield; \n  outline-offset: -2px; \n}\n\n[type=\"search\"]::-webkit-search-decoration {\n  -webkit-appearance: none;\n}\n\n::-webkit-file-upload-button {\n  -webkit-appearance: button; \n  font: inherit; \n}\n\ntemplate {\n  display: none;\n}\n\n[hidden] {\n  display: none;\n}\n\nhtml {\n  box-sizing: border-box; \n  font-family: sans-serif; \n}\n\n*,\n*::before,\n*::after {\n  box-sizing: inherit;\n}\n\nbutton {\n  background: transparent;\n  padding: 0;\n}\n\nbutton:focus {\n  outline: 1px dotted;\n  outline: 5px auto -webkit-focus-ring-color;\n}\n\n*,\n*::before,\n*::after {\n  border-width: 0;\n  border-style: solid;\n  border-color: #dae1e7;\n}\n\ninput::-webkit-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::-moz-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput:-ms-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::-ms-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\nbutton,\n[role=\"button\"] {\n  cursor: pointer;\n}\n\n.container {\n  width: 100%;\n}\n\n@media (min-width: 576px) {\n  .container {\n    max-width: 576px;\n  }\n}\n\n@media (min-width: 768px) {\n  .container {\n    max-width: 768px;\n  }\n}\n\n@media (min-width: 992px) {\n  .container {\n    max-width: 992px;\n  }\n}\n\n@media (min-width: 1200px) {\n  .container {\n    max-width: 1200px;\n  }\n}\n\n.inline-block {\n  display: inline-block;\n}\n\n.flex {\n  display: flex;\n}\n\n.flex-row {\n  flex-direction: row;\n}\n\n.items-baseline {\n  align-items: baseline;\n}\n\n.justify-between {\n  justify-content: space-between;\n}\n\n.font-medium {\n  font-weight: 500;\n}\n\n.my-5 {\n  margin-top: 1.25rem;\n  margin-bottom: 1.25rem;\n}\n\n.mx-auto {\n  margin-left: auto;\n  margin-right: auto;\n}\n\n.mt-1 {\n  margin-top: .25rem;\n}\n\n.ml-2 {\n  margin-left: .5rem;\n}\n\n.p-3 {\n  padding: .75rem;\n}\n\n.text-grey-dark {\n  color: #8795a1;\n}\n\n.text-sm {\n  font-size: .875rem;\n}\n\n.text-xl {\n  font-size: 1.25rem;\n}\n\n.w-auto {\n  width: auto;\n}\n\n.w-1/5 {\n  width: 20%;\n}\n\n.btn-icon {\n  cursor: pointer;\n  border-radius: 9999px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 2rem;\n  height: 2rem;\n  background-color: #dae1e7;\n}\n\n.btn-icon:hover {\n  background-color: #b8c2cc;\n}\n\n.btn-icon.btn-green {\n  background-color: #51d88a;\n  color: #fff;\n}\n\n.btn-icon.btn-green:hover {\n  background-color: #38c172;\n}\n\n.btn-icon.btn-border-green {\n  border-width: 2px;\n  background-color: transparent;\n  border-color: #51d88a;\n  color: #51d88a;\n}\n\n.btn-icon.btn-border-green:hover {\n  border-color: #38c172;\n  color: #38c172;\n  background-color: #e3fcec;\n}"],
             }),
             __metadata("design:paramtypes", [utils.UrlService, store.Store, ReportService])
         ], ReportsListComponent);
@@ -5849,7 +6985,7 @@
             core.Component({
                 selector: "report-view",
                 template: "<div class=\"divider\"></div>\n\n<div\n  class=\"report-single-view container my-5 mx-auto p-3\"\n  id=\"report-list-{{ report.id }}\"\n  [ngClass]=\"{ 'text-grey-dark': !success }\"\n>\n  <div class=\"flex justify-between\">\n    <div class=\"w-auto inline-block font-medium items-baseline\" [ngClass]=\"{ 'text-xl': success }\">\n      <a [routerLink]=\"_url.link(['REPORT', 'SINGLE'], { id: report.id })\">\n        {{ report.id }}: {{ report.name }}\n      </a>\n    </div>\n    <div class=\"flex report-view-actions\">\n      <a\n        *ngIf=\"success\"\n        [title]=\"s.parse('actions.download')\"\n        class=\"btn-icon btn-green\"\n        (click)=\"download()\"\n      >\n        <i class=\"fas fa-cloud-download-alt fa-xs\"></i>\n      </a>\n      <a\n        *ngIf=\"listView\"\n        [title]=\"s.parse('actions.detail')\"\n        class=\"btn-icon ml-2\"\n        [routerLink]=\"_url.link(['REPORT', 'SINGLE'], { id: report.id })\"\n      >\n        <i class=\"far fa-eye fa-xs\"></i>\n      </a>\n      <a\n        *ngIf=\"!listView\"\n        [title]=\"s.parse('actions.list')\"\n        [routerLink]=\"_url.link(['REPORT'])\"\n        class=\"btn-icon btn-border-green ml-2\"\n      >\n        <i class=\"fas fa-angle-double-left fa-xs\"></i>\n      </a>\n    </div>\n  </div>\n  <div class=\"flex flex-row mt-1 text-sm\" *ngIf=\"!success\" [ngClass]=\"{ 'text-failed': !success }\">\n    <div class=\"w-1/5\">{{ s.parse(\"view.status\") }}</div>\n    <div class=\"font-medium\">\n      {{ s.parse(\"view.status\" + report.status) }}\n    </div>\n  </div>\n  <div class=\"flex flex-row mt-1 text-sm\" *ngIf=\"success\">\n    <div class=\"w-1/5\">{{ s.parse(\"view.creationDate\") }}</div>\n    <div class=\"\">{{ report.generationDate | date: \"longDate\" }}</div>\n  </div>\n  <div class=\"flex flex-row mt-1 text-sm\">\n    <div class=\"w-1/5\">{{ s.parse(\"view.timeSpan\") }}</div>\n    <div class=\"\">\n      {{ report.timespan[0] | date: \"shortDate\" }} {{ s.parse(\"view.timeSpanTill\") }}\n      {{ endDate | date: \"shortDate\" }}\n    </div>\n  </div>\n</div>\n<div class=\"row\" *ngIf=\"!listView && report && success\">\n  <iframe [src]=\"url | safe\" style=\"width: 100%; height: 700px;\"></iframe>\n</div>\n",
-                styles: ["html {\n  line-height: 1.15; \n  -webkit-text-size-adjust: 100%; \n}\n\nmain {\n  display: block;\n}\n\na {\n  background-color: transparent;\n}\n\nstrong {\n  font-weight: bolder;\n}\n\nbutton,\ninput,\nselect {\n  font-family: inherit; \n  font-size: 100%; \n  line-height: 1.15; \n  margin: 0; \n}\n\nbutton,\ninput {\n  \n  overflow: visible;\n}\n\nbutton,\nselect {\n  \n  text-transform: none;\n}\n\nbutton,\n[type=\"button\"],\n[type=\"reset\"],\n[type=\"submit\"] {\n  -webkit-appearance: button;\n}\n\nbutton::-moz-focus-inner,\n[type=\"button\"]::-moz-focus-inner,\n[type=\"reset\"]::-moz-focus-inner,\n[type=\"submit\"]::-moz-focus-inner {\n  border-style: none;\n  padding: 0;\n}\n\nbutton:-moz-focusring,\n[type=\"button\"]:-moz-focusring,\n[type=\"reset\"]:-moz-focusring,\n[type=\"submit\"]:-moz-focusring {\n  outline: 1px dotted ButtonText;\n}\n\nlegend {\n  box-sizing: border-box; \n  color: inherit; \n  display: table; \n  max-width: 100%; \n  padding: 0; \n  white-space: normal; \n}\n\n[type=\"checkbox\"],\n[type=\"radio\"] {\n  box-sizing: border-box; \n  padding: 0; \n}\n\n[type=\"number\"]::-webkit-inner-spin-button,\n[type=\"number\"]::-webkit-outer-spin-button {\n  height: auto;\n}\n\n[type=\"search\"] {\n  -webkit-appearance: textfield; \n  outline-offset: -2px; \n}\n\n[type=\"search\"]::-webkit-search-decoration {\n  -webkit-appearance: none;\n}\n\n::-webkit-file-upload-button {\n  -webkit-appearance: button; \n  font: inherit; \n}\n\ntemplate {\n  display: none;\n}\n\n[hidden] {\n  display: none;\n}\n\nhtml {\n  box-sizing: border-box; \n  font-family: sans-serif; \n}\n\n*,\n*::before,\n*::after {\n  box-sizing: inherit;\n}\n\nbutton {\n  background: transparent;\n  padding: 0;\n}\n\nbutton:focus {\n  outline: 1px dotted;\n  outline: 5px auto -webkit-focus-ring-color;\n}\n\n*,\n*::before,\n*::after {\n  border-width: 0;\n  border-style: solid;\n  border-color: #dae1e7;\n}\n\ninput::-webkit-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::-moz-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput:-ms-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::-ms-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\nbutton,\n[role=\"button\"] {\n  cursor: pointer;\n}\n\n.container {\n  width: 100%;\n}\n\n@media (min-width: 576px) {\n  .container {\n    max-width: 576px;\n  }\n}\n\n@media (min-width: 768px) {\n  .container {\n    max-width: 768px;\n  }\n}\n\n@media (min-width: 992px) {\n  .container {\n    max-width: 992px;\n  }\n}\n\n@media (min-width: 1200px) {\n  .container {\n    max-width: 1200px;\n  }\n}\n\n.inline-block {\n  display: inline-block;\n}\n\n.flex {\n  display: flex;\n}\n\n.flex-row {\n  flex-direction: row;\n}\n\n.items-baseline {\n  align-items: baseline;\n}\n\n.justify-between {\n  justify-content: space-between;\n}\n\n.font-medium {\n  font-weight: 500;\n}\n\n.my-5 {\n  margin-top: 1.25rem;\n  margin-bottom: 1.25rem;\n}\n\n.mx-auto {\n  margin-left: auto;\n  margin-right: auto;\n}\n\n.mt-1 {\n  margin-top: .25rem;\n}\n\n.ml-2 {\n  margin-left: .5rem;\n}\n\n.p-3 {\n  padding: .75rem;\n}\n\n.text-grey-dark {\n  color: #8795a1;\n}\n\n.text-sm {\n  font-size: .875rem;\n}\n\n.text-xl {\n  font-size: 1.25rem;\n}\n\n.w-auto {\n  width: auto;\n}\n\n.w-1/5 {\n  width: 20%;\n}\n\n.btn-icon {\n  cursor: pointer;\n  border-radius: 9999px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 2rem;\n  height: 2rem;\n  background-color: #dae1e7;\n}\n\n.btn-icon:hover {\n  background-color: #b8c2cc;\n}\n\n.btn-icon.btn-green {\n  background-color: #51d88a;\n  color: #fff;\n}\n\n.btn-icon.btn-green:hover {\n  background-color: #38c172;\n}\n\n.btn-icon.btn-border-green {\n  border-width: 2px;\n  background-color: transparent;\n  border-color: #51d88a;\n  color: #51d88a;\n}\n\n.btn-icon.btn-border-green:hover {\n  border-color: #38c172;\n  color: #38c172;\n  background-color: #e3fcec;\n}"],
+                styles: ["html {\n  line-height: 1.15; \n  -webkit-text-size-adjust: 100%; \n}\n\nmain {\n  display: block;\n}\n\na {\n  background-color: transparent;\n}\n\nb,\nstrong {\n  font-weight: bolder;\n}\n\nbutton,\ninput,\nselect {\n  font-family: inherit; \n  font-size: 100%; \n  line-height: 1.15; \n  margin: 0; \n}\n\nbutton,\ninput {\n  \n  overflow: visible;\n}\n\nbutton,\nselect {\n  \n  text-transform: none;\n}\n\nbutton,\n[type=\"button\"],\n[type=\"reset\"],\n[type=\"submit\"] {\n  -webkit-appearance: button;\n}\n\nbutton::-moz-focus-inner,\n[type=\"button\"]::-moz-focus-inner,\n[type=\"reset\"]::-moz-focus-inner,\n[type=\"submit\"]::-moz-focus-inner {\n  border-style: none;\n  padding: 0;\n}\n\nbutton:-moz-focusring,\n[type=\"button\"]:-moz-focusring,\n[type=\"reset\"]:-moz-focusring,\n[type=\"submit\"]:-moz-focusring {\n  outline: 1px dotted ButtonText;\n}\n\nlegend {\n  box-sizing: border-box; \n  color: inherit; \n  display: table; \n  max-width: 100%; \n  padding: 0; \n  white-space: normal; \n}\n\n[type=\"checkbox\"],\n[type=\"radio\"] {\n  box-sizing: border-box; \n  padding: 0; \n}\n\n[type=\"number\"]::-webkit-inner-spin-button,\n[type=\"number\"]::-webkit-outer-spin-button {\n  height: auto;\n}\n\n[type=\"search\"] {\n  -webkit-appearance: textfield; \n  outline-offset: -2px; \n}\n\n[type=\"search\"]::-webkit-search-decoration {\n  -webkit-appearance: none;\n}\n\n::-webkit-file-upload-button {\n  -webkit-appearance: button; \n  font: inherit; \n}\n\ntemplate {\n  display: none;\n}\n\n[hidden] {\n  display: none;\n}\n\nhtml {\n  box-sizing: border-box; \n  font-family: sans-serif; \n}\n\n*,\n*::before,\n*::after {\n  box-sizing: inherit;\n}\n\nbutton {\n  background: transparent;\n  padding: 0;\n}\n\nbutton:focus {\n  outline: 1px dotted;\n  outline: 5px auto -webkit-focus-ring-color;\n}\n\n*,\n*::before,\n*::after {\n  border-width: 0;\n  border-style: solid;\n  border-color: #dae1e7;\n}\n\ninput::-webkit-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::-moz-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput:-ms-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::-ms-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\nbutton,\n[role=\"button\"] {\n  cursor: pointer;\n}\n\n.container {\n  width: 100%;\n}\n\n@media (min-width: 576px) {\n  .container {\n    max-width: 576px;\n  }\n}\n\n@media (min-width: 768px) {\n  .container {\n    max-width: 768px;\n  }\n}\n\n@media (min-width: 992px) {\n  .container {\n    max-width: 992px;\n  }\n}\n\n@media (min-width: 1200px) {\n  .container {\n    max-width: 1200px;\n  }\n}\n\n.inline-block {\n  display: inline-block;\n}\n\n.flex {\n  display: flex;\n}\n\n.flex-row {\n  flex-direction: row;\n}\n\n.items-baseline {\n  align-items: baseline;\n}\n\n.justify-between {\n  justify-content: space-between;\n}\n\n.font-medium {\n  font-weight: 500;\n}\n\n.my-5 {\n  margin-top: 1.25rem;\n  margin-bottom: 1.25rem;\n}\n\n.mx-auto {\n  margin-left: auto;\n  margin-right: auto;\n}\n\n.mt-1 {\n  margin-top: .25rem;\n}\n\n.ml-2 {\n  margin-left: .5rem;\n}\n\n.p-3 {\n  padding: .75rem;\n}\n\n.text-grey-dark {\n  color: #8795a1;\n}\n\n.text-sm {\n  font-size: .875rem;\n}\n\n.text-xl {\n  font-size: 1.25rem;\n}\n\n.w-auto {\n  width: auto;\n}\n\n.w-1/5 {\n  width: 20%;\n}\n\n.btn-icon {\n  cursor: pointer;\n  border-radius: 9999px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 2rem;\n  height: 2rem;\n  background-color: #dae1e7;\n}\n\n.btn-icon:hover {\n  background-color: #b8c2cc;\n}\n\n.btn-icon.btn-green {\n  background-color: #51d88a;\n  color: #fff;\n}\n\n.btn-icon.btn-green:hover {\n  background-color: #38c172;\n}\n\n.btn-icon.btn-border-green {\n  border-width: 2px;\n  background-color: transparent;\n  border-color: #51d88a;\n  color: #51d88a;\n}\n\n.btn-icon.btn-border-green:hover {\n  border-color: #38c172;\n  color: #38c172;\n  background-color: #e3fcec;\n}"],
             }),
             __metadata("design:paramtypes", [router.ActivatedRoute, utils.UrlService, ReportService])
         ], ReportViewComponent);

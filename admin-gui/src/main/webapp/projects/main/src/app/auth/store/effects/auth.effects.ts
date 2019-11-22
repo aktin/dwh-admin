@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Actions, Effect, ofType } from "@ngrx/effects";
-import { AuthActions, AuthActionTypes } from "../actions/auth.actions";
-import { AuthenticationService } from "../../authentication.service";
 import { concatMap, mergeMap } from "rxjs/operators";
+import { AuthActions, AuthActionTypes } from "../actions/auth.actions";
+import { AuthService } from "../../services";
 
 @Injectable()
 export class AuthEffects {
@@ -14,5 +14,5 @@ export class AuthEffects {
       return this._auth.userLogin("i2b2", "demouser");
     }),
   );
-  constructor(private actions$: Actions<AuthActions>, private _auth: AuthenticationService) {}
+  constructor(private actions$: Actions<AuthActions>, private _auth: AuthService) {}
 }

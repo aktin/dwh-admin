@@ -1,18 +1,20 @@
 import { Injectable } from "@angular/core";
-import { Permission } from "@app/auth/permission";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
-import { UrlService } from "@aktin/utils";
 import { map } from "rxjs/operators";
-import { User } from "@app/auth/models/user";
 import { Observable } from "rxjs";
 import {catchError} from "rxjs/internal/operators/catchError";
 import {of} from "rxjs/internal/observable/of";
 import {tap} from "rxjs/internal/operators/tap";
 
+import { UrlService } from "@aktin/utils";
+
+import { User } from "../models/user";
+import { Permission } from "../permission";
+
 @Injectable({
   providedIn: "root",
 })
-export class AuthenticationService {
+export class AuthService {
   constructor(private _http: HttpClient, private _urls: UrlService) {}
 
   redirect2Home(url?: string): void {
@@ -46,6 +48,7 @@ export class AuthenticationService {
                 if (res) {
                   user = new User(username, res.toString());
                   console.log("login some one in ", res);
+                  this._urls.setToken(res);
                   // this._store.setValue('user.auth.time', String(Date.now()));
                   // this._store.setValue('user.name', user.username);
                   // this._store.setValue('user.token', user.token);

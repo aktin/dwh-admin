@@ -60,39 +60,39 @@
     });
     var selectIds$1 = (_a$1 = adapter$1.getSelectors(), _a$1.selectIds), selectEntities$1 = _a$1.selectEntities, selectAll$1 = _a$1.selectAll, selectTotal$1 = _a$1.selectTotal;
 
-    var ReportActionTypes;
-    (function (ReportActionTypes) {
-        ReportActionTypes["ReportsList"] = "[Report List Page] list all Reports";
-        ReportActionTypes["ReportsUpdate"] = "[Report Service] Load Reports from Server";
-        ReportActionTypes["ReportsUpdated"] = "[Report API] Update Reports Success";
-        ReportActionTypes["ReportCreate"] = "[Report List Page] Create New Report";
-        ReportActionTypes["ReportCreated"] = "[Report API] Create Report Success";
-        ReportActionTypes["TemplateList"] = "[New Report Page] Load All Report Templates";
-        ReportActionTypes["TemplateUpdate"] = "[Report Service] Load Report Templates from Server";
-        ReportActionTypes["TemplateUpdated"] = "[Report API] Update Report Templates Success";
-    })(ReportActionTypes || (ReportActionTypes = {}));
-    var ReportUpdate = /** @class */ (function () {
-        function ReportUpdate() {
-            this.type = ReportActionTypes.ReportsUpdate;
+    var CaseActionTypes;
+    (function (CaseActionTypes) {
+        CaseActionTypes["CasesList"] = "[Case List Page] list all Cases";
+        CaseActionTypes["CasesUpdate"] = "[Case Service] Load Cases from Server";
+        CaseActionTypes["CasesUpdated"] = "[Case API] Update Cases Success";
+        CaseActionTypes["CaseCreate"] = "[Case List Page] Create New Case";
+        CaseActionTypes["CaseCreated"] = "[Case API] Create Case Success";
+        CaseActionTypes["CaseTemplateList"] = "[New Case Page] Load All Case Templates";
+        CaseActionTypes["CaseTemplateUpdate"] = "[Case Service] Load Case Templates from Server";
+        CaseActionTypes["CaseTemplateUpdated"] = "[Case API] Update Case Templates Success";
+    })(CaseActionTypes || (CaseActionTypes = {}));
+    var CasesUpdate = /** @class */ (function () {
+        function CasesUpdate() {
+            this.type = CaseActionTypes.CasesUpdate;
         }
-        return ReportUpdate;
+        return CasesUpdate;
     }());
-    var ReportUpdateSuccess = /** @class */ (function () {
-        function ReportUpdateSuccess(payload) {
+    var CaseUpdateSuccess = /** @class */ (function () {
+        function CaseUpdateSuccess(payload) {
             this.payload = payload;
-            this.type = ReportActionTypes.ReportsUpdated;
+            this.type = CaseActionTypes.CasesUpdated;
         }
-        return ReportUpdateSuccess;
+        return CaseUpdateSuccess;
     }());
 
-    function reportsReducer(state, action) {
+    function caseReducer(state, action) {
         if (state === void 0) { state = initialState; }
         switch (action.type) {
-            case ReportActionTypes.ReportsUpdated: {
-                return adapter.addAll(action.payload.reports, state);
+            case CaseActionTypes.CasesUpdated: {
+                return adapter.addAll(action.payload.cases, state);
             }
-            case ReportActionTypes.ReportsList: {
-                return adapter.addAll(action.payload.reports, state);
+            case CaseActionTypes.CasesList: {
+                return adapter.addAll(action.payload.cases, state);
             }
             default: {
                 return state;
@@ -100,14 +100,14 @@
         }
     }
 
-    function reportTemplatesReducer(state, action) {
+    function caseTemplatesReducer(state, action) {
         if (state === void 0) { state = initialState$1; }
         switch (action.type) {
-            case ReportActionTypes.TemplateUpdated: {
-                return adapter$1.addAll(action.payload.reportTemplates, state);
+            case CaseActionTypes.CaseTemplateUpdated: {
+                return adapter$1.addAll(action.payload.caseTemplates, state);
             }
-            case ReportActionTypes.TemplateList: {
-                return adapter$1.addAll(action.payload.reportTemplates, state);
+            case CaseActionTypes.CaseTemplateList: {
+                return adapter$1.addAll(action.payload.caseTemplates, state);
             }
             default: {
                 return state;
@@ -115,9 +115,9 @@
         }
     }
 
-    var reportReducers = {
-        reports: reportsReducer,
-        reportTemplates: reportTemplatesReducer,
+    var caseReducers = {
+        cases: caseReducer,
+        caseTemplates: caseTemplatesReducer,
     };
 
     /** PURE_IMPORTS_START  PURE_IMPORTS_END */
@@ -5559,23 +5559,23 @@
 
     /** PURE_IMPORTS_START  PURE_IMPORTS_END */
 
-    var ReportStatus;
-    (function (ReportStatus) {
-        ReportStatus[ReportStatus["Completed"] = 0] = "Completed";
-        ReportStatus[ReportStatus["InsufficientData"] = 1] = "InsufficientData";
-        ReportStatus[ReportStatus["Waiting"] = 2] = "Waiting";
-    })(ReportStatus || (ReportStatus = {}));
+    var CaseStatus;
+    (function (CaseStatus) {
+        CaseStatus[CaseStatus["Completed"] = 0] = "Completed";
+        CaseStatus[CaseStatus["InsufficientData"] = 1] = "InsufficientData";
+        CaseStatus[CaseStatus["Waiting"] = 2] = "Waiting";
+    })(CaseStatus || (CaseStatus = {}));
 
-    var Report1Service = /** @class */ (function () {
-        function Report1Service(_url) {
+    var CaseService = /** @class */ (function () {
+        function CaseService(_url) {
             this._url = _url;
             this.baseURL = "";
             this._locale = "de-DE";
             this.baseURL = this._url.link(["REPORT"]);
         }
-        Report1Service.prototype.updateReports = function () {
+        CaseService.prototype.updateCases = function () {
             var _this = this;
-            console.log("hier in service");
+            console.log("hier in case service");
             return this._url.get(this._url.getUrl("report/archive")).pipe(map(function (reports) {
                 return reports.map(function (report, index) {
                     return _this._parseReport(report);
@@ -5585,28 +5585,28 @@
                 return rxjs.EMPTY;
             }));
         };
-        Report1Service.prototype._parseReport = function (report) {
+        CaseService.prototype._parseReport = function (report) {
             report.timespan = [this._parseDate(report.start), this._parseDate(report.end)];
             report.generationDate = this._parseDate(report.data);
-            report.state = ReportStatus[report.status];
+            report.state = CaseStatus[report.status];
             report.name = this.genName(report);
             report.url = this.getLink(report, this.baseURL);
             return report;
         };
-        Report1Service.prototype._parseDate = function (date) {
+        CaseService.prototype._parseDate = function (date) {
             if (date) {
                 return new Date(date);
             }
             return null;
         };
-        Report1Service.prototype.getLink = function (report, base) {
+        CaseService.prototype.getLink = function (report, base) {
             var url = null;
-            if (report.state === ReportStatus.Completed) {
+            if (report.state === CaseStatus.Completed) {
                 url = base + "/" + report.id;
             }
             return url;
         };
-        Report1Service.prototype.genName = function (report) {
+        CaseService.prototype.genName = function (report) {
             var name = "";
             if (report.template === "org.aktin.report.aktin.AktinMonthly") {
                 name += "AKTIN-Monatsbericht";
@@ -5621,43 +5621,43 @@
                     report.timespan[0].getFullYear();
             return name;
         };
-        Report1Service = __decorate([
+        CaseService = __decorate([
             core.Injectable({
                 providedIn: "root",
             }),
             __metadata("design:paramtypes", [utils.UrlService])
-        ], Report1Service);
-        return Report1Service;
+        ], CaseService);
+        return CaseService;
     }());
 
-    var ReportEffects = /** @class */ (function () {
-        function ReportEffects(actions$, _report) {
+    var CaseEffects = /** @class */ (function () {
+        function CaseEffects(actions$, _report) {
             var _this = this;
             this.actions$ = actions$;
             this._report = _report;
-            this.updateReports$ = this.actions$.pipe(effects.ofType(ReportActionTypes.ReportsUpdate), concatMap(function () { return _this._report.updateReports(); }), concatMap(function (reports) { return rxjs.of(new ReportUpdateSuccess({ reports: reports })); }));
+            this.updateReports$ = this.actions$.pipe(effects.ofType(CaseActionTypes.CasesUpdate), concatMap(function () { return _this._report.updateCases(); }), concatMap(function (cases) { return rxjs.of(new CaseUpdateSuccess({ cases: cases })); }));
         }
         __decorate([
             effects.Effect(),
             __metadata("design:type", Object)
-        ], ReportEffects.prototype, "updateReports$", void 0);
-        ReportEffects = __decorate([
+        ], CaseEffects.prototype, "updateReports$", void 0);
+        CaseEffects = __decorate([
             core.Injectable(),
-            __metadata("design:paramtypes", [effects.Actions, Report1Service])
-        ], ReportEffects);
-        return ReportEffects;
+            __metadata("design:paramtypes", [effects.Actions, CaseService])
+        ], CaseEffects);
+        return CaseEffects;
     }());
 
-    // Appstate -> ReportState
-    var selectReportState = store.createFeatureSelector("reports");
-    // ReportState -> ReportEntity
-    var getReportsEntity = store.createSelector(selectReportState, function (state) { return state.reports; });
-    var getReportsAsArray = store.createSelector(getReportsEntity, selectAll);
-    var getReportsCount = store.createSelector(getReportsEntity, selectTotal);
-    var getSelectedReportId = function (state) { return state.selectedId; };
-    var selectCurrentReportId = store.createSelector(getReportsEntity, getSelectedReportId);
-    // ReportState -> ReporttemplateEntity
-    var getReportTemplatesEntity = store.createSelector(selectReportState, function (state) { return state.reportTemplates; });
+    // Appstate -> CaseState
+    var selectCaseState = store.createFeatureSelector("cases");
+    // CaseState -> CaseEntity
+    var getCasesEntity = store.createSelector(selectCaseState, function (state) { return state.cases; });
+    var getCasesAsArray = store.createSelector(getCasesEntity, selectAll);
+    var getCasesCount = store.createSelector(getCasesEntity, selectTotal);
+    var getSelectedCaseId = function (state) { return state.selectedId; };
+    var selectCurrentCaseId = store.createSelector(getCasesEntity, getSelectedCaseId);
+    // CaseState -> CasetemplateEntity
+    var getCaseTemplatesEntity = store.createSelector(selectCaseState, function (state) { return state.caseTemplates; });
 
     var CaseComponent = /** @class */ (function () {
         function CaseComponent(_url, _store) {
@@ -5669,8 +5669,8 @@
         }
         CaseComponent.prototype.ngOnInit = function () {
             console.log("init list");
-            this._store.dispatch(new ReportUpdate());
-            this.reports$ = this._store.pipe(store.select(getReportsAsArray));
+            this._store.dispatch(new CasesUpdate());
+            this.reports$ = this._store.pipe(store.select(getCasesAsArray));
         };
         CaseComponent.prototype.getUrls = function () {
             var routes = [];
@@ -5724,8 +5724,8 @@
             core.NgModule({
                 imports: [
                     common.CommonModule,
-                    store.StoreModule.forFeature("reports", reportReducers),
-                    effects.EffectsModule.forFeature([ReportEffects]),
+                    store.StoreModule.forFeature("cases", caseReducers),
+                    effects.EffectsModule.forFeature([CaseEffects]),
                 ],
                 declarations: [CaseComponent],
                 entryComponents: [CaseComponent],
