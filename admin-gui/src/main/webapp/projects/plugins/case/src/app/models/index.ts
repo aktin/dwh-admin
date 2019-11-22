@@ -1,3 +1,3 @@
-export * from "./report-status.enum";
-export * from "./report.interface";
-export * from "./report-template.interface";
+export * from "./case-status.enum";
+export * from "./case.interface";
+export * from "./case-template.interface";

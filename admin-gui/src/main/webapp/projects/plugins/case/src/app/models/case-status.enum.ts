@@ -1,4 +1,4 @@
-export enum ReportStatus {
+export enum CaseStatus {
   "Completed",
   "InsufficientData",
   "Waiting",

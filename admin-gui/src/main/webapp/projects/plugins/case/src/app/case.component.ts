@@ -1,9 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { UrlService, State } from "@aktin/utils";
 import { select, Store } from "@ngrx/store";
-import { getReportsAsArray, ReportUpdate } from "./store";
+import { getCasesAsArray, CasesUpdate } from "./store";
 import { Observable } from "rxjs";
-import { Report } from "./models";
+import { Case } from "./models";
 
 @Component({
   selector: "case-component",
@@ -12,7 +12,7 @@ import { Report } from "./models";
 })
 export class CaseComponent implements OnInit {
   state = { link: "" };
-  reports$: Observable<Report[]>;
+  reports$: Observable<Case[]>;
   constructor(private _url: UrlService, private _store: Store<State>) {
     console.log(this._url.link(["HOME"]));
     this.state.link = this.getUrls("REPORT", "SINGLE");
@@ -20,8 +20,8 @@ export class CaseComponent implements OnInit {
 
   ngOnInit() {
     console.log("init list");
-    this._store.dispatch(new ReportUpdate());
-    this.reports$ = this._store.pipe(select(getReportsAsArray));
+    this._store.dispatch(new CasesUpdate());
+    this.reports$ = this._store.pipe(select(getCasesAsArray));
   }
   getUrls(...routes) {
     if (!this._url) return routes.join("/");

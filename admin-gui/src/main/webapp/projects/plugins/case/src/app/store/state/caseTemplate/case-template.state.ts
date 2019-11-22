@@ -1,12 +1,12 @@
 import { EntityState, EntityAdapter, createEntityAdapter } from "@ngrx/entity";
-import { Report } from "../../../models";
+import { CaseTemplate } from "../../../models";
 
-export interface State extends EntityState<Report> {
+export interface State extends EntityState<CaseTemplate> {
   // additional entities state properties
   selectedId: string | number | null;
 }
 
-export const adapter: EntityAdapter<Report> = createEntityAdapter<Report>();
+export const adapter: EntityAdapter<CaseTemplate> = createEntityAdapter<CaseTemplate>();
 
 export const initialState: State = adapter.getInitialState({
   // additional entity state properties

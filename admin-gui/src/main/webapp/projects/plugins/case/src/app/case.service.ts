@@ -2,24 +2,24 @@ import { Injectable } from "@angular/core";
 import { EMPTY, Observable } from "rxjs";
 import { catchError, map } from "rxjs/operators";
 import { UrlService } from "@aktin/utils";
-import { ReportStatus, Report } from "./models";
+import { CaseStatus, Case } from "./models";
 
 @Injectable({
   providedIn: "root",
 })
-export class Report1Service {
+export class CaseService {
   private baseURL = "";
   private _locale = "de-DE";
   constructor(private _url: UrlService) {
     this.baseURL = this._url.link(["REPORT"]);
   }
 
-  updateReports(): Observable<Report[]> {
-    console.log("hier in service");
-    return this._url.get<Report[]>(this._url.getUrl("report/archive")).pipe(
+  updateCases(): Observable<Case[]> {
+    console.log("hier in case service");
+    return this._url.get<Case[]>(this._url.getUrl("report/archive")).pipe(
       map(reports => {
         return reports.map(
-          (report, index): Report => {
+          (report, index): Case => {
             return this._parseReport(report);
           },
         );
@@ -31,11 +31,11 @@ export class Report1Service {
     );
   }
 
-  private _parseReport(report: Report) {
+  private _parseReport(report: Case) {
     report.timespan = [this._parseDate(report.start), this._parseDate(report.end)];
     report.generationDate = this._parseDate(report.data);
 
-    report.state = ReportStatus[report.status];
+    report.state = CaseStatus[report.status];
     report.name = this.genName(report);
     report.url = this.getLink(report, this.baseURL);
     return report;
@@ -46,14 +46,14 @@ export class Report1Service {
     }
     return null;
   }
-  private getLink(report: Report, base: string): string {
+  private getLink(report: Case, base: string): string {
     let url = null;
-    if (report.state === ReportStatus.Completed) {
+    if (report.state === CaseStatus.Completed) {
       url = base + "/" + report.id;
     }
     return url;
   }
-  private genName(report: Report): string {
+  private genName(report: Case): string {
     let name = "";
     if (report.template === "org.aktin.report.aktin.AktinMonthly") {
       name += "AKTIN-Monatsbericht";

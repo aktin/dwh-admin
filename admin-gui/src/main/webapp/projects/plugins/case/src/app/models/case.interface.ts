@@ -1,6 +1,6 @@
-import { ReportStatus } from "./report-status.enum";
+import { CaseStatus } from "./case-status.enum";
 
-export interface Report {
+export interface Case {
   id: number;
   created: Date;
   generationDate: Date; // if not null: report generation date
@@ -11,7 +11,7 @@ export interface Report {
   template: string;
   type: string;
   status: string;
-  state: ReportStatus;
+  state: CaseStatus;
   url?: string;
   name?: string;
 }
