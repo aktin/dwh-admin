@@ -12,7 +12,7 @@ import { ActivatedRoute } from "@angular/router";
   template: "hallo external<br> <div #content></div>"
 })
 export class LoadExternalComponent implements AfterViewInit {
-  @ViewChild("content", { read: ViewContainerRef }) content: ViewContainerRef;
+  @ViewChild("content", { read: ViewContainerRef, static: true }) content: ViewContainerRef;
   constructor(private _route: ActivatedRoute, private _injector: Injector) {}
 
   ngAfterViewInit(): void {

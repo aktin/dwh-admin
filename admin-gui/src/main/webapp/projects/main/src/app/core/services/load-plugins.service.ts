@@ -1,11 +1,23 @@
-import { Compiler, Injectable, Injector } from "@angular/core";
+import { Compiler, Injectable, Injector, NgModuleFactory } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Routes } from "@angular/router";
 import _ from "lodash";
 import { ROUTE_REDUCE } from "@app/routing/names";
 import { Observable } from "rxjs";
 
-declare const SystemJS: any;
+// declare const SystemJS: any;
+import * as angularCore from "@angular/core";
+import * as angularCommon from "@angular/common";
+import * as angularRouter from "@angular/router";
+import * as angularForms from "@angular/forms";
+import * as ngrxStore from "@ngrx/store";
+import * as ngrxEffects from "@ngrx/effects";
+import * as ngrxEntity from "@ngrx/entity";
+import * as ngrxRouterStore from "@ngrx/router-store";
+import * as aktinUtils from "@aktin/utils";
+import * as rxjs from "rxjs";
+import * as lodash from "lodash";
+import * as fileSaver from "file-saver";
 
 export interface PluginConfig {
   url: string;
@@ -80,14 +92,39 @@ export class LoadPluginsService {
   }
 
   async loadPlugin(plug: PluginConfig, pathComponent: any) {
-    // import external module bundle
-    const module = await SystemJS.import(plug.url);
 
     if (!plug.moduleName) plug.moduleName = "MainModule";
 
-    // compile module
-    const moduleFactory = await this._compiler.compileModuleAsync<any>(module[plug.moduleName]);
+    // import external module bundle
+    let response: Response = await fetch(plug.url);
+    let source =  await response.text();
+    const exports = {};
+    const modules = {
+      '@angular/core': angularCore,
+      '@angular/common': angularCommon,
+      '@angular/router': angularRouter,
+      '@angular/forms': angularForms,
+      '@ngrx/store': ngrxStore,
+      '@ngrx/effects': ngrxEffects,
+      '@ngrx/entity': ngrxEntity,
+      '@ngrx/router-store': ngrxRouterStore,
+      '@aktin/utils': aktinUtils,
+      'rxjs': rxjs,
+      'lodash': lodash,
+      'fileSaver': fileSaver,
+    };
 
+    const require: any = (module) => modules[module];
+    eval(source);
+
+    console.log(exports, source);
+
+    // compile module
+    const moduleFactory = await this._compiler.compileModuleAsync<any>(exports[plug.moduleName]);
+
+    // const moduleFactory: NgModuleFactory<any> = exports[plug.moduleName];
+
+    //*/
     const moduleRef = await moduleFactory.create(this._injector);
     // const componentProvider = moduleRef.injector.get("plugins");
     const componentProvider = moduleRef.injector.get<PluginDeclaration>(
@@ -165,7 +202,9 @@ export class LoadPluginsService {
     this.routes.push(route);
 
     console.log("- ", routeNameObj.name, "plugin loaded");
+  //*/
   }
+
 }
 
 interface PluginDeclaration {
