@@ -5,7 +5,8 @@ import { UrlService } from "@aktin/utils";
 @Injectable({
   providedIn: "root",
 })
-export class ReportUrlService extends UrlService {
+export class ReportUrlService {
+  constructor(private _url: UrlService) {}
 
   reportUrls = {
     reportsList: "report/archive",
@@ -15,10 +16,10 @@ export class ReportUrlService extends UrlService {
   };
 
   parse(url: string, args?: any): string {
-    return super.parse(url, args, this.reportUrls);
+    return this._url.parse(url, args, this.reportUrls);
   }
 
   get<T>(url: string, args?: any) {
-    return super.get<T>(this.parse(url, args));
+    return this._url.get<T>(this.parse(url, args));
   }
 }
