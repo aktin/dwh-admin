@@ -7,7 +7,6 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 })
 export class UrlService {
   private _routeNames: any = undefined;
-  private token: string;
   private _url_start = "aktin/admin/rest/";
 
   private _endUrls = {};
@@ -18,10 +17,6 @@ export class UrlService {
     } else {
       this._routeNames = undefined;
     }
-  }
-
-  setToken (token) {
-    this.token = token;
   }
 
   generateHeaderOptions (key?: string, value?: string, options?: any): any {
@@ -39,21 +34,21 @@ export class UrlService {
 
   private getRequestOptionArgs(options?: any): any {
     options = this.generateHeaderOptions(null, null, options);
-    if (this.token) {
-      options.headers.set('Authorization', 'Bearer ' + this.token);
-    }
-    // options.headers.append('Cache-Control', 'no-cache, no-store, must-revalidate');
-    // options.headers.append('Pragma', 'no-cache');
-    // options.headers.append('Expires', '0');
     return options;
   }
 
-  get<T>(url: string) {
-    return this._http.get<T>(url);
+  get<T>(url: string, options?: any) {
+    let opts = this.getRequestOptionArgs(options);
+    if (!opts.params) {
+      opts.params = {};
+    }
+    opts.params['time'] = Math.floor( (+new Date()) / 1000);
+
+    return this._http.get<T>(url, opts);
   }
 
   post<T> (url: string, body: any, options ?: any) {
-    return this._http.post<T> (url, body, options);
+    return this._http.post<T> (url, body, this.getRequestOptionArgs(options));
   }
 
   getUrl(url_end: string) {

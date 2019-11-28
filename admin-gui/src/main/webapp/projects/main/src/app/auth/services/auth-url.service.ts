@@ -5,7 +5,9 @@ import { UrlService } from "@aktin/utils";
 @Injectable({
   providedIn: 'root'
 })
-export class AuthUrlService extends UrlService {
+export class AuthUrlService {
+
+  constructor(private _url: UrlService) {}
 
   authUrls = {
     login: "auth/login",
@@ -13,14 +15,15 @@ export class AuthUrlService extends UrlService {
   };
 
   parse(url: string, args?: any): string {
-    return super.parse(url, args, this.authUrls);
+    console.log(this._url.parse(url));
+    return this._url.parse(url, args, this.authUrls);
   }
-
-  get<T>(url: string, args?: any) {
-    return super.get<T>(this.parse(url, args));
+  get<T>(url: string, options?: any , args?: any ) {
+    return this._url.get<T>(this.parse(url, args), options);
   }
 
   post<T> (url: string, body: any, options ?: any, args? : any) {
-    return super.post<T> (this.parse(url, args), body, options);
+    return this._url.post<T> (this.parse(url, args), body, options);
   }
+
 }

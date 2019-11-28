@@ -10,12 +10,19 @@ import { UrlService } from "@aktin/utils";
 
 import { User } from "../models/user";
 import { Permission } from "../permission";
+import { AuthUrlService } from "@app/auth/services/auth-url.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class AuthService {
-  constructor(private _http: HttpClient, private _urls: UrlService) {}
+  constructor(private _http: HttpClient, private _url: AuthUrlService) {}
+
+  private token: string;
+
+  public getToken () : string {
+    return this.token;
+  }
 
   redirect2Home(url?: string): void {
     // do some thing
@@ -38,17 +45,18 @@ export class AuthService {
   }
 
   userLogin(username: string, password: string): Observable<User> {
-    return this._http
-      .post<User>(this._urls.parse("auth/login"), { username: username, password: password }, {responseType:  'text' as 'json'})
+    return this._url
+      .post<String>("login", { username: username, password: password }, {responseType:  'text' as 'json'})
         .pipe(
             tap ((res) => {console.log("123123 ", res)}),
               map(res => {
                 console.log("in res 1,", res);
                 let user: User;
                 if (res) {
-                  user = new User(username, res.toString());
-                  console.log("login some one in ", res);
-                  this._urls.setToken(res);
+                  this.token = res.toString();
+                  user = new User(username, this.token);
+                  console.log("login some one in ", this.token);
+
                   // this._store.setValue('user.auth.time', String(Date.now()));
                   // this._store.setValue('user.name', user.username);
                   // this._store.setValue('user.token', user.token);
@@ -67,9 +75,9 @@ export class AuthService {
    * Get permissions from server depending on user role and writes them to the sessionStorage.
    */
   setPermissions() {
-    return this._http.get(this._urls.parse("auth/permissions")).pipe(
+    return this._url.get("permissions").pipe(
       map(res => {
-        console.log(res);
+        console.log( res);
         //sessionStorage.setItem("permissions", res);
       }),
     );

@@ -1,7 +1,8 @@
 {
-  "/aktin/*": {
-    "target": "http://134.106.36.86:8087/aktin/",
+  "/aktin": {
+    "target": "http://134.106.36.86:8087/",
     "secure": false,
-    "logLevel": "debug"
+    "logLevel": "debug",
+    "changeOrigin": true
   }
 }
