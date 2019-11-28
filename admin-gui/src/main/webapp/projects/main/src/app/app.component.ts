@@ -1,9 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Title } from "@angular/platform-browser";
-import { select, Store } from "@ngrx/store";
+import { Store } from "@ngrx/store";
 
-import { LoadPluginsService, LoadExternalComponent } from "@app/core";
+import { LoadPluginsService } from "@app/core";
 import { State } from "@aktin/utils";
 import _ from "lodash";
 import { AppRouterModule } from "@app/routing/app-router.module";
