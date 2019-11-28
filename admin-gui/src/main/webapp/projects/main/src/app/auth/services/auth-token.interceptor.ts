@@ -9,12 +9,13 @@ export class AuthTokenInterceptor implements HttpInterceptor{
   constructor(public _auth: AuthService) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
-    request = request.clone({
-      setHeaders: {
-        Authorization: `Bearer ${this._auth.getToken()}`
-      }
-    });
+    const token = this._auth.getToken();
+    if (token)
+      request = request.clone({
+        setHeaders: {
+          Authorization: `Bearer ${this._auth.getToken()}`
+        }
+      });
     return next.handle(request);
   }
 }
