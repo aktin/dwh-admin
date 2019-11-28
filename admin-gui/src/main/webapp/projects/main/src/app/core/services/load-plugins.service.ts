@@ -1,9 +1,8 @@
-import { Compiler, Injectable, Injector, NgModuleFactory } from "@angular/core";
+import { Compiler, Injectable, Injector } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Routes } from "@angular/router";
 import _ from "lodash";
 import { ROUTE_REDUCE } from "@app/routing/names";
-import { Observable } from "rxjs";
 
 // declare const SystemJS: any;
 import * as angularCore from "@angular/core";
@@ -117,10 +116,10 @@ export class LoadPluginsService {
     const require: any = (module) => modules[module];
     eval(source);
 
-    console.log(exports, source);
-
     // compile module
-    const moduleFactory = await this._compiler.compileModuleAsync<any>(exports[plug.moduleName]);
+    // const moduleFactory = await this._compiler.compileModuleAsync<any>(exports[plug.moduleName]);
+    const moduleFacs = await  this._compiler.compileModuleAndAllComponentsAsync(exports[plug.moduleName]);
+    const moduleFactory = moduleFacs.ngModuleFactory;
 
     // const moduleFactory: NgModuleFactory<any> = exports[plug.moduleName];
 
@@ -142,23 +141,33 @@ export class LoadPluginsService {
 
     let provider = _.clone(componentProvider[0]);
 
-    // console.log(componentProvider[0]);
+    let componentFacs = {};
+    _.each(moduleFacs.componentFactories,
+      (fac) => {
+        let name = fac.componentType.name;
+        componentFacs[name] = fac;
+    });
+
+    // filter meta data
     let metadata = _.remove(provider, item => {
       return item.name.includes("METADATA");
     })[0];
     if (!metadata) metadata = {};
 
-    let routeName = metadata["routeName"] || plug.moduleName.toUpperCase();
+    let pluginModuleName = metadata["pluginName"] || plug.moduleName;
 
+    // load store from metadata
+    if (metadata["store"]) {
+      this.pluginStates[pluginModuleName] = metadata["store"]["state"];
+      this.pluginInitialStates[pluginModuleName] = metadata["store"]["initial"];
+    }
+
+    // load routes from metadata
+    let routeName = metadata["routeName"] || plug.moduleName.toUpperCase();
     let routeNameObj = {
       path: metadata["path"] || plug.moduleName,
-      name: metadata["pluginName"] || plug.moduleName,
+      name: pluginModuleName,
     };
-
-    if (metadata["store"]) {
-      this.pluginStates[routeNameObj.name] = metadata["store"]["state"];
-      this.pluginInitialStates[routeNameObj.name] = metadata["store"]["initial"];
-    }
 
     if (metadata["routesNames"]) {
       routeNameObj["children"] = metadata["routesNames"];
@@ -173,11 +182,12 @@ export class LoadPluginsService {
       },
     };
 
+    // components builder
     if (!metadata["routes"]) {
       // no routes, just load the component of the first item from the plugins array
       route.data["component"] = provider[0].component;
       route["component"] = pathComponent;
-      route.data["factory"] = await moduleRef.componentFactoryResolver.resolveComponentFactory<any>(
+      route.data["factory"] = await moduleRef.componentFactoryResolver.resolveComponentFactory(
         route.data["component"],
       );
     } else {
@@ -193,9 +203,9 @@ export class LoadPluginsService {
       route["childrenObj"] = children;
       await this.asyncForEachObject(children, async item => {
         if (!item.data["component"]) return;
-        item.data["factory"] = await moduleRef.componentFactoryResolver.resolveComponentFactory<
-          any
-        >(item.data["component"]);
+        item.data["factory"] = await moduleRef.componentFactoryResolver.resolveComponentFactory<item.data["component"].name>(item.data["component"]);
+        // item.data["factory"] = componentFacs[item.data["component"].name];
+        item.data["module"] = moduleRef;
       });
     }
 
