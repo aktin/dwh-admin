@@ -1,4 +1,4 @@
-import { Compiler, Component, Injectable, Injector } from "@angular/core";
+import { Compiler, Injectable, Injector, NgModuleFactory, NgModuleRef } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Routes } from "@angular/router";
 import _ from "lodash";
@@ -82,22 +82,60 @@ export class LoadPluginsService {
         callback();
     }
     
-    async loadConfigFile(pathComponent: any) {
+    async loadConfigFile() {
         let data = await this._http.get(this.configUrl).toPromise();
         this.plugins = data["plugins"];
         await this.asyncForEach(
             this.plugins,
             async plug => {
-                await this.loadPlugin(plug, pathComponent);
+                await this.loadPlugin(plug);
             }
         );
         console.log("all plugins loaded");
         this.loading = false;
     }
     
-    async loadPlugin(plug: PluginConfig, pathComponent: any) {
-        if (!plug.moduleName) plug.moduleName = "MainModule";
-        
+    /**
+     * Fetches the given url and interprets it as a module plugin, returns the ModuleRef of the fetched plugin
+     * @param url
+     * @param name
+     */
+    async fetchPlugin (url : string, name: string) {
+    
+        // import external module bundle
+        let response: Response = await fetch(url);
+        let source = await response.text();
+        const exports = {};
+        const modules = {
+            "@angular/core": angularCore,
+            "@angular/common": angularCommon,
+            "@angular/router": angularRouter,
+            "@angular/forms": angularForms,
+            "@ngrx/store": ngrxStore,
+            "@ngrx/effects": ngrxEffects,
+            "@ngrx/entity": ngrxEntity,
+            "@ngrx/router-store": ngrxRouterStore,
+            "@aktin/utils": aktinUtils,
+            rxjs: rxjs,
+            lodash: lodash,
+            fileSaver: fileSaver,
+        };
+    
+        const require: any = module => modules[module];
+        eval(source);
+    
+        // compile module
+        // const moduleFactory = await this._compiler.compileModuleAsync<any>(exports[plug.moduleName]);
+        const moduleFactoryWithComponents = await this._compiler.compileModuleAndAllComponentsAsync(exports[name]);
+    
+        return await moduleFactoryWithComponents.ngModuleFactory.create(this._injector);
+    }
+    
+    async loadPlugin(plug: PluginConfig) {
+        if (!plug.moduleName)
+            plug.moduleName = "MainModule";
+        /*
+        // moved to own function
         // import external module bundle
         let response: Response = await fetch(plug.url);
         let source = await response.text();
@@ -122,36 +160,24 @@ export class LoadPluginsService {
     
         // compile module
         // const moduleFactory = await this._compiler.compileModuleAsync<any>(exports[plug.moduleName]);
-        const moduleFacs = await this._compiler.compileModuleAndAllComponentsAsync(exports[plug.moduleName]);
-        const moduleFactory = moduleFacs.ngModuleFactory;
-    
-        // const moduleFactory: NgModuleFactory<any> = exports[plug.moduleName];
+        const moduleFactoryWithComponents = await this._compiler.compileModuleAndAllComponentsAsync(exports[plug.moduleName]);
         
-        //*/
-        const moduleRef = await moduleFactory.create(this._injector);
-        // const componentProvider = moduleRef.injector.get("plugins");
+        const moduleRef = await moduleFactoryWithComponents.ngModuleFactory.create(this._injector);
+        */
+        
+        const moduleRef = await this.fetchPlugin(plug.url, plug.moduleName);
+        
         const componentProvider = moduleRef.injector.get<PluginDeclaration>(
             // @ts-ignore
-            "plugins",
+            'plugins',
             "No Injector Found - error",
         );
         
         this.modules[plug.moduleName] = moduleRef;
-    
-        // const componentFactory = await moduleRef.componentFactoryResolver.resolveComponentFactory<any>(componentProvider[0][0].component);
-        // this.componentFactory[plug.moduleName] = componentFactory;
-        // const component = await componentFactory.create(this._injector);
-        // this.components[plug.moduleName] = component;
-    
+        
         let provider = _.clone(componentProvider[0]);
         
-        let componentFacs = {};
-        _.each(moduleFacs.componentFactories, fac => {
-            let name = fac.componentType.name;
-            componentFacs[name] = fac;
-        });
-        
-        // filter meta data
+        // analyse the meta data
         let metadata = _.remove(provider, item => {
            return item.name.includes("METADATA");
         })[0];
@@ -159,65 +185,65 @@ export class LoadPluginsService {
             metadata = {};
         
         let pluginModuleName = metadata["pluginName"] || plug.moduleName;
-        
+    
         // load store from metadata
         if (metadata["store"]) {
             this.pluginStates[pluginModuleName] = metadata["store"]["state"];
             this.pluginInitialStates[pluginModuleName] = metadata["store"]["initial"];
         }
+
+        // load routes from metadata
+        let routeName = metadata["routeName"] || plug.moduleName.toUpperCase();
+        let routeNameObj = {
+            path: metadata["path"] || plug.moduleName,
+            name: pluginModuleName,
+        };
     
-    // load routes from metadata
-    let routeName = metadata["routeName"] || plug.moduleName.toUpperCase();
-    let routeNameObj = {
-        path: metadata["path"] || plug.moduleName,
-        name: pluginModuleName,
-    };
+        if (metadata["routesNames"]) {
+            routeNameObj["children"] = metadata["routesNames"];
+        }
+        this.routeNames[routeName] = routeNameObj;
     
-    if (metadata["routesNames"]) {
-        routeNameObj["children"] = metadata["routesNames"];
-    }
-    this.routeNames[routeName] = routeNameObj;
+        let route = {
+            path: routeNameObj.path,
+            data: {
+                name: routeNameObj.name,
+                plugin: plug.moduleName,
+            },
+        };
     
-    let route = {
-        path: routeNameObj.path,
-        data: {
-            name: routeNameObj.name,
-            plugin: plug.moduleName,
-      },
-    };
-    console.log(routeNameObj)
-    
-    // components builder
-    if (!metadata["routes"]) { // ERROR: Remove those!
-        // no routes, just load the component of the first item from the plugins array
-        route.data["component"] = await provider[0].component;
-        route["component"] = pathComponent;
-        route.data["factory"] = await moduleRef.componentFactoryResolver.resolveComponentFactory <Component>( route.data["component"]);
-        route.data["module"] = moduleRef;
-    } else {
-        let children = metadata["routes"];
-        
-        route["children"] = ROUTE_REDUCE(children, metadata["routesNames"], [routeName], route.path);
-        route["childrenObj"] = children;
-        await this.asyncForEachObject(children, async item => {
-            if (!item.data["component"])
-                return;
-    
-            if (!item.data) item.data = {};
-            item.data["component"] = item.component;
-            item["component"] = pathComponent;
+        // components builder
+        if (!metadata["routes"]) {
+            // no routes, just load the component of the first item from the plugins array
+            route.data["component"] = await provider[0].component;
+            route["component"] = await provider[0].component; //pathComponent;
+            /*/
+            // Doesn't need the pathComponent anymore
+            route.data["factory"] = await moduleRef.componentFactoryResolver.resolveComponentFactory <Component>( route.data["component"]);
+            route.data["module"] = moduleRef;
+            //*/
+        } else {
+            let children = metadata["routes"];
             
-            item.data["factory"] =
-                await moduleRef.componentFactoryResolver.resolveComponentFactory <item.data["component"].name> (item.data["component"]);
-            // item.data["factory"] = componentFacs[item.data["component"].name];
-            item.data["module"] = moduleRef;
-        });
-    }
-    console.log(route)
-    this.routes.push(route);
-    
-    console.log("- ", routeNameObj.name, "plugin loaded");
-    //*/
+            route["children"] = ROUTE_REDUCE(children, metadata["routesNames"], [routeName], route.path);
+            route["childrenObj"] = children;
+            await this.asyncForEachObject(children, async item => {
+                if (!item.data["component"])
+                    return;
+        
+                if (!item.data) item.data = {};
+                item.data["component"] = item.component;
+                /*/
+                // Doesn't need the pathComponent anymore
+                item["component"] = pathComponent;
+                item.data["factory"] = await moduleRef.componentFactoryResolver.resolveComponentFactory <item.data["component"].name> (item.data["component"]);
+                item.data["module"] = moduleRef;
+                //*/
+            });
+        }
+        this.routes.push(route);
+        
+        console.log("- ", routeNameObj.name, "plugin loaded");
     }
 }
 

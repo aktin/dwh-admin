@@ -31,13 +31,11 @@ export class AppComponent implements OnInit {
     let title = "AKTIN - Adminverwaltung";
     this._titleService.setTitle(title);
 
-    this._plugins.loadConfigFile(LoadExternalComponent).then(() => {
+    // load the external components
+    this._plugins.loadConfigFile().then(() => {
       // get plugin routes
       let curRoutes = this._router.addRoutes2Router(this._plugins.routes, this._plugins.routeNames);
-
       this.setRoutes(curRoutes);
-
-      // get plugin states - dont need it?
     });
   }
 
