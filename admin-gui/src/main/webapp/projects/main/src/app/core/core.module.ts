@@ -1,6 +1,5 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { HttpClientModule } from "@angular/common/http";
 
 import { LoadExternalComponent } from "./load-external/load-external.component";
 import { LoadPluginsService } from "./services";
@@ -9,9 +8,9 @@ import { ExternalDirective } from './load-external/external.directive';
 
 @NgModule({
   declarations: [LoadExternalComponent, ExternalDirective],
-  imports: [CommonModule, RouterModule, HttpClientModule],
+  imports: [CommonModule, RouterModule],
   entryComponents: [LoadExternalComponent],
-  exports: [LoadExternalComponent, HttpClientModule],
+  exports: [LoadExternalComponent],
 })
 export class CoreModule {
   static forRoot() {
