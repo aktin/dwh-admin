@@ -1,12 +1,10 @@
 import { Injectable } from "@angular/core";
-import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import { map } from "rxjs/operators";
 import { Observable } from "rxjs";
 import {catchError} from "rxjs/internal/operators/catchError";
 import {of} from "rxjs/internal/observable/of";
 import {tap} from "rxjs/internal/operators/tap";
-
-import { UrlService } from "@aktin/utils";
 
 import { User } from "../models/user";
 import { Permission } from "../permission";
@@ -48,23 +46,22 @@ export class AuthService {
     return this._url
       .post<String>("login", { username: username, password: password }, {responseType:  'text' as 'json'})
         .pipe(
-            tap ((res) => {console.log("123123 ", res)}),
-              map(res => {
-                console.log("in res 1,", res);
-                let user: User;
-                if (res) {
-                  this.token = res.toString();
-                  user = new User(username, this.token);
-                  console.log("login some one in ", this.token);
+            // tap ((res) => {console.log(res)}),
+            map(res => {
+              let user: User;
+              if (res) {
+                this.token = res.toString();
+                user = new User(username, this.token);
+                console.log("login some one in ", this.token, user);
 
-                  // this._store.setValue('user.auth.time', String(Date.now()));
-                  // this._store.setValue('user.name', user.username);
-                  // this._store.setValue('user.token', user.token);
-                  // this.adminCheck().subscribe();
-                  this.setPermissions().subscribe();
-                  return user;
-                }
-              }),
+                // this._store.setValue('user.auth.time', String(Date.now()));
+                // this._store.setValue('user.name', user.username);
+                // this._store.setValue('user.token', user.token);
+                // this.adminCheck().subscribe();
+                this.setPermissions().subscribe();
+                return user;
+              }
+            }),
             catchError(this.handleError<User>('auth', null))
         )
       // .pipe(

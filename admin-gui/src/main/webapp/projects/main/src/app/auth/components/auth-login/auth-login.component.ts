@@ -5,7 +5,7 @@ import { Observable } from "rxjs";
 import { UrlService, State } from "@aktin/utils";
 import { User } from "../../models/user";
 import { AuthService } from "../../services";
-import { of } from "rxjs/internal/observable/of";
+import { UserLogin } from "@app/auth/store/actions/auth.actions";
 
 @Component({
   selector: "auth-login",
@@ -25,8 +25,6 @@ export class AuthLoginComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // this.u = new User(this.username);
-    // this.user$ = of(this.u);
   }
 
   get hasUser() {
@@ -38,9 +36,11 @@ export class AuthLoginComponent implements OnInit {
   }
 
   login() {
+  
     console.log("logging in ", this.username, " ", this.password);
-    this._auth.userLogin(this.username, this.password).subscribe((res) => {
-      console.log("something with res: ", res)
-    });
+    this._store.dispatch(new UserLogin({username: this.username, password: this.password}))
+    // this._auth.userLogin(this.username, this.password).subscribe((res) => {
+    //   console.log("something with res: ", res)
+    // });
   }
 }
