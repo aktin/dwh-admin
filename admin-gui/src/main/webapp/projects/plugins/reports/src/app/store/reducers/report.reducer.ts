@@ -6,7 +6,7 @@ export function reportsReducer(
   action: ReportActions,
 ): ReportEntity.State {
   switch (action.type) {
-    case ReportActionTypes.ReportsUpdated: {
+    case ReportActionTypes.ReportUpdateSuccess: {
       return ReportEntity.adapter.addAll(action.payload.reports, state);
     }
 

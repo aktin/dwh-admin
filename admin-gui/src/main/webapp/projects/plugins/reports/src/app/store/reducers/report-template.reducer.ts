@@ -6,7 +6,7 @@ export function reportTemplatesReducer(
   action: ReportActions,
 ): ReportTemplateEntity.State {
   switch (action.type) {
-    case ReportActionTypes.TemplateUpdated: {
+    case ReportActionTypes.ReportTemplatesUpdateSuccess: {
       return ReportTemplateEntity.adapter.addAll(action.payload.reportTemplates, state);
     }
 

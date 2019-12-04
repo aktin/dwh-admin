@@ -4,12 +4,12 @@ import { Report, ReportTemplate } from "../../models";
 export enum ReportActionTypes {
   ReportsList = "[Report List Page] list all Reports",
   ReportsUpdate = "[Report Service] Load Reports from Server",
-  ReportsUpdated = "[Report API] Update Reports Success",
+  ReportUpdateSuccess = "[Report API] Update Reports Success",
   ReportCreate = "[Report List Page] Create New Report",
-  ReportCreated = "[Report API] Create Report Success", // reload all reports from server
+  ReportNewSuccess = "[Report API] Create Report Success", // reload all reports from server
   TemplateList = "[New Report Page] Load All Report Templates",
   TemplateUpdate = "[Report Service] Load Report Templates from Server",
-  TemplateUpdated = "[Report API] Update Report Templates Success",
+  ReportTemplatesUpdateSuccess = "[Report API] Update Report Templates Success",
 }
 
 export class ReportsLoadAll implements Action {
@@ -23,7 +23,7 @@ export class ReportUpdate implements Action {
 }
 
 export class ReportUpdateSuccess implements Action {
-  readonly type = ReportActionTypes.ReportsUpdated;
+  readonly type = ReportActionTypes.ReportUpdateSuccess;
 
   constructor(public payload: { reports: Report[] }) {}
 }
@@ -32,7 +32,7 @@ export class ReportNew implements Action {
 }
 
 export class ReportNewSuccess implements Action {
-  readonly type = ReportActionTypes.ReportCreated;
+  readonly type = ReportActionTypes.ReportNewSuccess;
 
   constructor(public payload: { reports: Report[] }) {}
 }
@@ -44,7 +44,7 @@ export class ReportTemplatesLoadAll implements Action {
 }
 
 export class ReportTemplatesUpdateSuccess implements Action {
-  readonly type = ReportActionTypes.TemplateUpdated;
+  readonly type = ReportActionTypes.ReportTemplatesUpdateSuccess;
 
   constructor(public payload: { reportTemplates: ReportTemplate[] }) {}
 }

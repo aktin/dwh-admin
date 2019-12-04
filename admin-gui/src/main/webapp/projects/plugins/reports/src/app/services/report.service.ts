@@ -39,6 +39,7 @@ export class ReportService {
     console.log("hier in report service");
 
     let reportPipe = this._url.get<Report[]>("reportsList").pipe(
+        // @ts-ignore
       map((reports: Report[]) => {
         return  reports.map(
           (reports, index): Report => {
