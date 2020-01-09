@@ -1,24 +1,15 @@
 import { Injectable } from "@angular/core";
-import {HttpClient} from "@angular/common/http";
-import { map } from "rxjs/operators";
-import { Observable, of, throwError } from "rxjs";
-import {catchError} from "rxjs/internal/operators/catchError";
-
-import { User } from "../models/user";
-import { Permission } from "../permission";
-import { AuthUrlService } from "@app/auth/services/auth-url.service";
+import { HttpClient } from "@angular/common/http";
+import { Observable, throwError } from "rxjs";
+import { map, catchError} from "rxjs/operators";
+import { User, Permission } from "../models/";
+import { AuthUrlService } from "../services/auth-url.service";
 
 @Injectable({
     providedIn: "root",
 })
 export class AuthService {
     constructor(private _http: HttpClient, private _url: AuthUrlService) {}
-    
-    private token: string;
-    
-    public getToken () : string {
-        return this.token;
-    }
     
     redirect2Home(url?: string): void {
         // do some thing

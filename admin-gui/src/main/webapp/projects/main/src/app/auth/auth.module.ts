@@ -6,8 +6,7 @@ import {StoreModule} from "@ngrx/store";
 import {EffectsModule} from "@ngrx/effects";
 
 import { AuthLoginComponent } from "./components/auth-login/auth-login.component";
-import {authReducer, authReducers} from "./store/reducers/auth.reducer";
-import {AuthEffects} from "./store/effects/auth.effects";
+import { authReducers, AuthEffects } from "./store/";
 import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
 import { AuthTokenInterceptor } from "./services/auth-token.interceptor";
 

@@ -3,10 +3,10 @@ import { Actions, Effect, ofType } from "@ngrx/effects";
 import { select, Store } from "@ngrx/store";
 import { EMPTY, interval, of } from "rxjs";
 import { catchError, exhaustMap, map, mapTo, switchMap, tap, withLatestFrom } from "rxjs/operators";
-import { AuthActions, AuthActionTypes } from "../actions/auth.actions";
-import { AuthState } from "../state";
-import { getToken } from "../selectors/auth.selectors";
 import { AuthService } from "../../services";
+import { AuthState } from "../state";
+import { AuthActions, AuthActionTypes } from "../actions/auth.actions";
+import { getToken } from "../selectors/auth.selectors";
 
 @Injectable()
 export class AuthEffects {
@@ -62,6 +62,9 @@ export class AuthEffects {
             ([action, token]) => {
                 if (token) {
                     return this._auth.authCheck().pipe(
+                        tap ((res) => {
+                            console.log(action, token, res)
+                        }),
                         map(() => ({ type: AuthActionTypes.AuthCheckSuccess })),
                         catchError((error) => of({ type: AuthActionTypes.AuthCheckFailure, payload: { error: error } }))
                     )
@@ -85,13 +88,10 @@ export class AuthEffects {
         }),
         exhaustMap (
             ( ) => {
-                
                 return EMPTY;
             }
         )
     );
-    
-    
     
     @Effect()
     logout$ = this.actions$.pipe(

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-// @ts-ignore
 import { UrlService } from "@aktin/utils";
 
 @Injectable({

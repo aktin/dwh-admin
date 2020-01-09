@@ -1,7 +1,6 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
-
 import { AuthState } from "../state";
-import {User} from "../../models/user";
+import {User} from "../../models";
 
 export const selectAuthenticationState = createFeatureSelector<AuthState>("authentication");
 
@@ -11,7 +10,14 @@ export const getCurrentUser = createSelector(
         if  (state.currentUser)
             return state.currentUser;
         return null;
-        },
+    },
+);
+export const checkAuthentication = createSelector(
+    selectAuthenticationState,
+    (state: AuthState) => {
+        return !!state.currentUser;
+        
+    },
 );
 export const getToken = createSelector(
     getCurrentUser,
