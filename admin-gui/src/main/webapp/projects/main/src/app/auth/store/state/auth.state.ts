@@ -2,11 +2,13 @@ import { Permission } from "../../permission";
 import { User } from "../../models/user";
 
 export interface AuthState {
-  permissions: Permission[];
-  currentUser: User | null;
+    permissions: Permission[];
+    currentUser: User | null;
+    timer : Date;
 }
 
 export const authState: AuthState = {
-  permissions: [],
-  currentUser: null,
+    permissions: [],
+    currentUser: null,
+    timer: null,
 };

@@ -3,14 +3,21 @@ import { AuthActions, AuthActionTypes } from "../actions/auth.actions";
 import { ActionReducer } from "@ngrx/store";
 
 export function authReducer (state = authState, action: AuthActions): AuthState {
-  switch (action.type) {
-    case AuthActionTypes.UserLoginSuccess : {
-      return { ...state, currentUser: action.payload.currentUser }
+    switch (action.type) {
+        case AuthActionTypes.UserLoginSuccess : {
+            return { ...state, currentUser: action.payload.currentUser };
+        }
+        case AuthActionTypes.PermissionsUpdated : {
+            return { ...state, permissions: action.payload.permissions };
+        }
+        case AuthActionTypes.UserLogout : // removing data directly on logout, not by success!
+        case AuthActionTypes.AuthCheckFailure : {
+            console.log(action.type, "removing permissions and currentUser");
+            return { ...state, permissions: [], currentUser: null};
+        }
+        default:
+            return state;
     }
-    
-    default:
-      return state;
-  }
 }
 
 export const authReducers: ActionReducer<AuthState> = authReducer;
