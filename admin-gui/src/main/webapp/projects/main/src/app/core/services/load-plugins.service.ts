@@ -134,36 +134,6 @@ export class LoadPluginsService {
     async loadPlugin(plug: PluginConfig) {
         if (!plug.moduleName)
             plug.moduleName = "MainModule";
-        /*
-        // moved to own function
-        // import external module bundle
-        let response: Response = await fetch(plug.url);
-        let source = await response.text();
-        const exports = {};
-        const modules = {
-            "@angular/core": angularCore,
-            "@angular/common": angularCommon,
-            "@angular/router": angularRouter,
-            "@angular/forms": angularForms,
-            "@ngrx/store": ngrxStore,
-            "@ngrx/effects": ngrxEffects,
-            "@ngrx/entity": ngrxEntity,
-            "@ngrx/router-store": ngrxRouterStore,
-            "@aktin/utils": aktinUtils,
-            rxjs: rxjs,
-            lodash: lodash,
-            fileSaver: fileSaver,
-        };
-        
-        const require: any = module => modules[module];
-        eval(source);
-    
-        // compile module
-        // const moduleFactory = await this._compiler.compileModuleAsync<any>(exports[plug.moduleName]);
-        const moduleFactoryWithComponents = await this._compiler.compileModuleAndAllComponentsAsync(exports[plug.moduleName]);
-        
-        const moduleRef = await moduleFactoryWithComponents.ngModuleFactory.create(this._injector);
-        */
         
         const moduleRef = await this.fetchPlugin(plug.url, plug.moduleName);
         
