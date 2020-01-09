@@ -4,3 +4,5 @@ export * from "./effects/auth.effects";
 export * from "./reducers/auth.reducer";
 export * from "./state/";
 
+export * from "./reducers/auth.metareducer";
+

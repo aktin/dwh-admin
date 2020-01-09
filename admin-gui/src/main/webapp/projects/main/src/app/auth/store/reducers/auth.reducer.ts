@@ -12,6 +12,7 @@ export function authReducer (state = authState, action: AuthActions): AuthState 
         }
         case AuthActionTypes.UserLogout : // removing data directly on logout, not by success!
         case AuthActionTypes.AuthCheckFailure : {
+            
             console.log(action.type, "removing permissions and currentUser");
             return { ...state, permissions: [], currentUser: null};
         }

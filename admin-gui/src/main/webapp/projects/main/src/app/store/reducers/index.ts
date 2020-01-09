@@ -1,8 +1,10 @@
 import { ActionReducerMap, MetaReducer } from "@ngrx/store";
+import { LocalStorageService, State, storageMetaReducer } from "@aktin/utils";
 import { environment } from "@env/environment";
-import { State } from "@aktin/utils";
-import { debug } from "./debug-log.metareducers";
+import { debug } from "@app/store/reducers/debug-log.metareducers";
+import { getMetaReducers, localStorageKey } from "@app/store/reducers/metareducers";
+import { saveKeys } from "@app/auth/store";
 
 export const reducers: ActionReducerMap<State> = {};
 
-export const metaReducers: MetaReducer<State>[] = !environment.production ? [debug] : [];
+export * from "./metareducers";

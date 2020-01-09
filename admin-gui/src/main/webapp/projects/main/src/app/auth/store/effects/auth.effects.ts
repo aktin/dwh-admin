@@ -79,19 +79,19 @@ export class AuthEffects {
      */
     @Effect()
     intervalAuthCheck$ = interval(60000).pipe(mapTo(({type: AuthActionTypes.AuthCheck})));
-    
-    @Effect({dispatch:false})
-    authCheckFail = this.actions$.pipe(
-        ofType(AuthActionTypes.AuthCheckFailure),
-        tap ( (action) => {
-            console.log("Authentication Check Fail!", action.payload.error);
-        }),
-        exhaustMap (
-            ( ) => {
-                return EMPTY;
-            }
-        )
-    );
+
+    // @Effect({dispatch:false})
+    // authCheckFail = this.actions$.pipe(
+    //     ofType(AuthActionTypes.AuthCheckFailure),
+    //     tap ( (action) => {
+    //         console.log("Authentication Check Fail!", action.payload.error);
+    //     }),
+    //     exhaustMap (
+    //         ( ) => {
+    //             return EMPTY;
+    //         }
+    //     )
+    // );
     
     @Effect()
     logout$ = this.actions$.pipe(
