@@ -12,7 +12,7 @@ export const localStorageKey = '__app_storage__';
 export function getMetaReducers(saveKeys: string[], localStorageKey: string, storageService: LocalStorageService): MetaReducer<State>[] {
     let metaReducers = [storageMetaReducer(saveKeys, localStorageKey, storageService)];
     if (!environment.production) {
-        metaReducers.push(debug);
+        // metaReducers.push(debug);
     }
     return metaReducers;
 }

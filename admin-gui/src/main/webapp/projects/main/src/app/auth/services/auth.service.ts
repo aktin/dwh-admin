@@ -4,6 +4,7 @@ import { Observable, throwError } from "rxjs";
 import { map, catchError} from "rxjs/operators";
 import { User, Permission } from "../models/";
 import { AuthUrlService } from "../services/auth-url.service";
+import { checkAuthentication, getToken } from "@app/auth/store";
 
 @Injectable({
     providedIn: "root",

@@ -9,8 +9,10 @@ export function storageMetaReducer<S, A extends Action = Action>(saveKeys: strin
             // get to the nextState.
             const nextState = reducer(state, action);
             // init the application state.
-            if (onInit) {
-                onInit           = false;
+            // if (onInit) {
+            //     onInit           = false;
+            if (!storageService.synced) {
+                storageService.sync();
                 const savedState = storageService.getSavedState(localStorageKey);
                 return merge(nextState, savedState);
             }

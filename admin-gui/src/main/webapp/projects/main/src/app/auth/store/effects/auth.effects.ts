@@ -6,7 +6,7 @@ import { catchError, exhaustMap, map, mapTo, switchMap, tap, withLatestFrom } fr
 import { AuthService } from "../../services";
 import { AuthState } from "../state";
 import { AuthActions, AuthActionTypes } from "../actions/auth.actions";
-import { getToken } from "../selectors/auth.selectors";
+import { checkAuthentication, getToken } from "../selectors/auth.selectors";
 
 @Injectable()
 export class AuthEffects {
@@ -57,7 +57,14 @@ export class AuthEffects {
     @Effect()
     authCheck$ = this.actions$.pipe(
         ofType(AuthActionTypes.AuthCheck, AuthActionTypes.UserLoginSuccess),
+    
+        tap( () => {
+            console.log('release');
+            getToken.release();
+            checkAuthentication.release();
+        }),
         withLatestFrom(this._store.pipe(select(getToken))),
+        withLatestFrom(this._store.pipe(select(checkAuthentication))),
         exhaustMap(
             ([action, token]) => {
                 if (token) {
@@ -78,7 +85,9 @@ export class AuthEffects {
      * Periodically check the authentication
      */
     @Effect()
-    intervalAuthCheck$ = interval(60000).pipe(mapTo(({type: AuthActionTypes.AuthCheck})));
+    intervalAuthCheck$ = interval(10000).pipe(
+        mapTo(({type: AuthActionTypes.AuthCheck}))
+    );
 
     // @Effect({dispatch:false})
     // authCheckFail = this.actions$.pipe(
@@ -97,7 +106,7 @@ export class AuthEffects {
     logout$ = this.actions$.pipe(
         ofType(AuthActionTypes.UserLogout),
         exhaustMap(
-            ( ) => this._auth.getPermissions()
+            ( ) => this._auth.userLogout(),
         )
     );
     
