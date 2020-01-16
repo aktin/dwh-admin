@@ -34,6 +34,6 @@
     "typescript": "^3.7.2"
   },
   "optionalDependencies": {
-    "node-sass": "^4.11.0"
+    "node-sass": "^4.13.0"
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Actions, Effect, ofType } from "@ngrx/effects";
 import { ReportService } from "../../services";
-import { ReportActionTypes, ReportUpdateSuccess, ReportActions } from "../actions/report.actions";
+import { ReportActionTypes, ReportActions } from "../actions/report.actions";
 import { map, mergeMap, concatMap } from "rxjs/operators";
 import {EMPTY, of} from "rxjs";
 import {catchError} from "rxjs/internal/operators/catchError";
@@ -16,7 +16,7 @@ export class ReportEffects {
     concatMap(() => this._report.updateReports()
       .pipe(
         map(
-          reports => ({type: ReportActionTypes.ReportsUpdated, payload: {reports: reports}})
+          reports => ({type: ReportActionTypes.ReportUpdateSuccess, payload: {reports: reports}})
         ),
         catchError(() => EMPTY)
       ),

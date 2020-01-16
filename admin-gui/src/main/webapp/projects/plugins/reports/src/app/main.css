@@ -3,21 +3,14 @@ html {
   -webkit-text-size-adjust: 100%; 
 }
 
-main {
-  display: block;
-}
-
 a {
   background-color: transparent;
 }
 
-b,
-strong {
+b {
   font-weight: bolder;
 }
 
-button,
-input,
 select {
   font-family: inherit; 
   font-size: 100%; 
@@ -25,26 +18,17 @@ select {
   margin: 0; 
 }
 
-button,
-input {
-  
-  overflow: visible;
-}
-
-button,
 select {
   
   text-transform: none;
 }
 
-button,
 [type="button"],
 [type="reset"],
 [type="submit"] {
   -webkit-appearance: button;
 }
 
-button::-moz-focus-inner,
 [type="button"]::-moz-focus-inner,
 [type="reset"]::-moz-focus-inner,
 [type="submit"]::-moz-focus-inner {
@@ -52,20 +36,10 @@ button::-moz-focus-inner,
   padding: 0;
 }
 
-button:-moz-focusring,
 [type="button"]:-moz-focusring,
 [type="reset"]:-moz-focusring,
 [type="submit"]:-moz-focusring {
   outline: 1px dotted ButtonText;
-}
-
-legend {
-  box-sizing: border-box; 
-  color: inherit; 
-  display: table; 
-  max-width: 100%; 
-  padding: 0; 
-  white-space: normal; 
 }
 
 [type="checkbox"],
@@ -112,16 +86,6 @@ html {
   box-sizing: inherit;
 }
 
-button {
-  background: transparent;
-  padding: 0;
-}
-
-button:focus {
-  outline: 1px dotted;
-  outline: 5px auto -webkit-focus-ring-color;
-}
-
 *,
 *::before,
 *::after {
@@ -130,32 +94,6 @@ button:focus {
   border-color: #dae1e7;
 }
 
-input::-webkit-input-placeholder {
-  color: inherit;
-  opacity: .5;
-}
-
-input::-moz-placeholder {
-  color: inherit;
-  opacity: .5;
-}
-
-input:-ms-input-placeholder {
-  color: inherit;
-  opacity: .5;
-}
-
-input::-ms-input-placeholder {
-  color: inherit;
-  opacity: .5;
-}
-
-input::placeholder {
-  color: inherit;
-  opacity: .5;
-}
-
-button,
 [role="button"] {
   cursor: pointer;
 }
