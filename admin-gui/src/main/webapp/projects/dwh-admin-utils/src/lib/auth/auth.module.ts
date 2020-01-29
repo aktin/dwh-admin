@@ -6,7 +6,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
 import {StoreModule} from "@ngrx/store";
 import {EffectsModule} from "@ngrx/effects";
 
-import { LocalStorageService } from "@aktin/utils";
+import { LocalStorageService } from "../services";
 
 import { AuthLoginComponent } from "./components/auth-login/auth-login.component";
 import { authReducers, AuthEffects, getAuthConfig, localStorageKey, saveKeys  } from "./store/";
@@ -24,7 +24,7 @@ const AUTHCOMPONENTS = [AuthLoginComponent];
         FormsModule,
         StoreModule.forFeature("authentication", authReducers, AUTH_CONFIG_TOKEN),
         EffectsModule.forFeature([AuthEffects]),],
-    exports: [AuthLoginComponent],
+    exports: AUTHCOMPONENTS,
     providers : [
         {provide: AUTH_LOCAL_STORAGE_KEY, useValue: localStorageKey},
         {provide: AUTH_STORAGE_KEYS, useValue: saveKeys},

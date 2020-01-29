@@ -1,4 +1,5 @@
-import { LocalStorageService, storageMetaReducer } from "@aktin/utils";
+import { LocalStorageService } from "../../../services";
+import { storageMetaReducer } from "../../../state";
 
 export function getAuthConfig(saveKeys: string[], localStorageKey: string, storageService: LocalStorageService) {
     return {metaReducers: [storageMetaReducer(saveKeys, localStorageKey, storageService)]};
