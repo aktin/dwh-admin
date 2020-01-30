@@ -27,8 +27,10 @@ export class UserAuthGuard implements CanActivate {
   isAuthorized(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     let data = route.data;
     if (data && data["permissions"]) {
+      console.log("checking permission");
       let hasPermission = this._authService.userLocalCheckPermissions(data["permissions"]);
       if (!hasPermission) {
+        console.log("no auth");
         this._authService.redirect2Home(state.url);
         return false;
       }

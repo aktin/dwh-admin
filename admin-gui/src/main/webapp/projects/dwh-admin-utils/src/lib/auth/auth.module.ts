@@ -12,6 +12,7 @@ import { AuthLoginComponent } from "./components/auth-login/auth-login.component
 import { authReducers, AuthEffects, getAuthConfig, localStorageKey, saveKeys  } from "./store/";
 import { AuthTokenInterceptor } from "./services/auth-token.interceptor";
 import { AUTH_CONFIG_TOKEN, AUTH_LOCAL_STORAGE_KEY, AUTH_STORAGE_KEYS } from "./auth.tokens";
+import { UserAuthGuard } from "./user-auth.guard";
 
 const AUTHCOMPONENTS = [AuthLoginComponent];
 
@@ -38,7 +39,11 @@ const AUTHCOMPONENTS = [AuthLoginComponent];
             useClass: AuthTokenInterceptor,
             multi   : true,
         },
+        UserAuthGuard,
     ]
     
 })
 export class AuthModule {}
+
+export * from "./user-auth.guard";
+export * from "./models";
