@@ -75,6 +75,7 @@ export class AuthService {
      * Check permissions by comparing the given values with the values in the sessionStorage.
      */
     userLocalCheckPermissions(checkPermissions: Permission[]): boolean {
+        console.log("in auth service permission checking", checkPermissions);
         if (!checkPermissions || checkPermissions.length === 0) {
             return true;
         }

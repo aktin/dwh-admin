@@ -2,11 +2,12 @@ import { Injectable } from "@angular/core";
 import { Actions, Effect, ofType } from "@ngrx/effects";
 import { select, Store } from "@ngrx/store";
 import { EMPTY, interval, of } from "rxjs";
-import { catchError, exhaustMap, map, mapTo, switchMap, tap, withLatestFrom } from "rxjs/operators";
+import { catchError, exhaustMap, map, mapTo, publish, refCount, switchMap, tap, withLatestFrom } from "rxjs/operators";
 import { AuthService } from "../../services";
 import { AuthState } from "../state";
 import { AuthActions, AuthActionTypes } from "../actions/auth.actions";
 import { checkAuthentication, getToken } from "../selectors/auth.selectors";
+import { Subscription } from "rxjs/internal/Subscription";
 
 @Injectable()
 export class AuthEffects {
@@ -72,7 +73,14 @@ export class AuthEffects {
                         tap ((res) => {
                             console.log(action, token, res)
                         }),
-                        map(() => ({ type: AuthActionTypes.AuthCheckSuccess })),
+                        map(() => {
+                            console.log("sub ", this.authCheckSubscribe);
+                            if (this.authCheckSubscribe == null) {
+                                this.authCheckSubscribe = this.intervalAuthCheck$.subscribe();
+                                console.log("sub 1", this.authCheckSubscribe);
+                            }
+                            return ({ type: AuthActionTypes.AuthCheckSuccess });
+                        }),
                         catchError((error) => of({ type: AuthActionTypes.AuthCheckFailure, payload: { error: error } }))
                     )
                 }
@@ -81,14 +89,34 @@ export class AuthEffects {
         )
     );
     
+    
+    @Effect({dispatch:false})
+    authCheckFailure$ = this.actions$.pipe(
+        ofType(AuthActionTypes.AuthCheckFailure),
+        tap ( (action) => {
+            console.log("Authentication check Failure. Cutting Interval", action.payload.error);
+            if (this.authCheckSubscribe) {
+                this.authCheckSubscribe.unsubscribe();
+                this.authCheckSubscribe = null;
+            }
+        })
+    );
     /**
      * Periodically check the authentication
      */
-    @Effect()
+    // @Effect()
     intervalAuthCheck$ = interval(10000).pipe(
-        mapTo(({type: AuthActionTypes.AuthCheck}))
+        publish(),
+        refCount(),
+        mapTo(() => {
+            console.log("tick");
+            return ({type: AuthActionTypes.AuthCheck});
+        })
     );
+    authCheckSubscribe : Subscription = null;
 
+    
+    
     // @Effect({dispatch:false})
     // authCheckFail = this.actions$.pipe(
     //     ofType(AuthActionTypes.AuthCheckFailure),
