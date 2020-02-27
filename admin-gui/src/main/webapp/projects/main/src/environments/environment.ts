@@ -5,7 +5,6 @@
 export const environment = {
   production: false,
   serverUrls: [
-    "http://134.106.36.86:8087/aktin/admin/rest/",
     "/aktin/admin/rest/"
   ]
 };

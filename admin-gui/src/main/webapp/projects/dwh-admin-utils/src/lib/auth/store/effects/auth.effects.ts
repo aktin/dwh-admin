@@ -74,11 +74,7 @@ export class AuthEffects {
                             console.log(action, token, res)
                         }),
                         map(() => {
-                            console.log("sub ", this.authCheckSubscribe);
-                            if (this.authCheckSubscribe == null) {
-                                this.authCheckSubscribe = this.intervalAuthCheck$.subscribe();
-                                console.log("sub 1", this.authCheckSubscribe);
-                            }
+                            this.acSubscribe();
                             return ({ type: AuthActionTypes.AuthCheckSuccess });
                         }),
                         catchError((error) => of({ type: AuthActionTypes.AuthCheckFailure, payload: { error: error } }))
@@ -93,12 +89,8 @@ export class AuthEffects {
     @Effect({dispatch:false})
     authCheckFailure$ = this.actions$.pipe(
         ofType(AuthActionTypes.AuthCheckFailure),
-        tap ( (action) => {
-            console.log("Authentication check Failure. Cutting Interval", action.payload.error);
-            if (this.authCheckSubscribe) {
-                this.authCheckSubscribe.unsubscribe();
-                this.authCheckSubscribe = null;
-            }
+        tap ( () => {
+            this.acUnsubscribe();
         })
     );
     /**
@@ -109,32 +101,35 @@ export class AuthEffects {
         publish(),
         refCount(),
         mapTo(() => {
-            console.log("tick");
+            // console.log("tick");
             return ({type: AuthActionTypes.AuthCheck});
         })
     );
     authCheckSubscribe : Subscription = null;
-
+    acSubscribe () {
+        // console.log("sub ", this.authCheckSubscribe);
+        if (this.authCheckSubscribe == null) {
+            this.authCheckSubscribe = this.intervalAuthCheck$.subscribe( (func) => {
+                // console.log("in sub");
+                (func)();
+            });
+            // console.log("sub 1", this.authCheckSubscribe);
+        }
+    };
+    acUnsubscribe () {
+        if (this.authCheckSubscribe) {
+            this.authCheckSubscribe.unsubscribe();
+            this.authCheckSubscribe = null;
+        }
+    }
     
-    
-    // @Effect({dispatch:false})
-    // authCheckFail = this.actions$.pipe(
-    //     ofType(AuthActionTypes.AuthCheckFailure),
-    //     tap ( (action) => {
-    //         console.log("Authentication Check Fail!", action.payload.error);
-    //     }),
-    //     exhaustMap (
-    //         ( ) => {
-    //             return EMPTY;
-    //         }
-    //     )
-    // );
     
     @Effect()
     logout$ = this.actions$.pipe(
         ofType(AuthActionTypes.UserLogout),
+        tap (() => this.acUnsubscribe()),
         exhaustMap(
-            ( ) => this._auth.userLogout(),
+            ( ) => this._auth.userLogout()
         )
     );
     
