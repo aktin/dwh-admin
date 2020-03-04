@@ -30,4 +30,7 @@ export class AuthUrlService {
         return this._url.post<T> (this.parse(url, args), body, options);
     }
     
+    generateHeaderOptions (key?: string, value?: string, options?: any): any {
+        return this._url.generateHeaderOptions(key, value, options);
+    }
 }

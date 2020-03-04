@@ -11,11 +11,7 @@ import { AuthUrlService } from "../services/auth-url.service";
 export class AuthService {
     constructor(private _http: HttpClient, private _url: AuthUrlService) {}
     
-    redirect2Home(url?: string): void {
-        // do some thing
-        console.log("home");
-        return;
-    }
+    private _token : string = "";
     
     private handleError<T> (operation = 'operation', result?: T) {
         return (error: any): Observable<T> => {
@@ -36,9 +32,9 @@ export class AuthService {
                 map(res => {
                     let user: User;
                     if (res) {
-                        let token = res.toString();
-                        user = new User(username, token);
-                        console.log("login some one in ", token, user);
+                        this._token = res.toString();
+                        user = new User(username, this._token);
+                        console.log("login some one in ", this._token, user);
                         return user;
                     }
                 }),
@@ -52,12 +48,12 @@ export class AuthService {
      * Get permissions from server depending on user role and writes them to the sessionStorage.
      */
     getPermissions() {
-        return this._url.get("permissions");/*.pipe(
+        return this._url.get("permissions").pipe(
             map(res => {
-                //sessionStorage.setItem("permissions", res);
+                sessionStorage.setItem("permissions", JSON.stringify(res));
                 return res;
             }),
-        );*/
+        );
     }
     
     /**
@@ -67,34 +63,43 @@ export class AuthService {
         return this._url.get("authCheck");
     }
     
-    //
-    /**
-     * IMPROVE: better way than using sessionStorage?
-     * add delayed check with server?
-     *
-     * Check permissions by comparing the given values with the values in the sessionStorage.
-     */
-    userLocalCheckPermissions(checkPermissions: Permission[]): boolean {
-        console.log("in auth service permission checking", checkPermissions);
-        if (!checkPermissions || checkPermissions.length === 0) {
-            return true;
-        }
-        if (sessionStorage.getItem("permissions") === null) {
-            return false;
-        }
-        let perm: Permission[] = [];
-        JSON.parse(sessionStorage.getItem("permissions")).forEach(function(p: String) {
-            perm.push(Permission[p as keyof typeof Permission]);
-        });
-        for (let i = 0; i < checkPermissions.length; i++) {
-            if (perm.indexOf(checkPermissions[i]) !== -1) {
-                return true;
-            }
-        }
-        return false;
-    }
+    
     
     userLogout () {
-        return this._url.get("logout");
+        sessionStorage.clear();
+        return this._url.post("logout", this._token, this._url.generateHeaderOptions('Content-Type', 'text/plain'));
     }
+}
+
+
+/**
+ * IMPROVE: better way than using sessionStorage?
+ * add delayed check with server?
+ *
+ * Check permissions by comparing the given values with the values in the sessionStorage.
+ */
+export function userLocalCheckPermissions(checkPermissions: Permission[]): boolean {
+    // console.log("in auth service permission checking", checkPermissions, sessionStorage.getItem("permissions"));
+    if (!checkPermissions || checkPermissions.length === 0) {
+        return true;
+    }
+    if (sessionStorage.getItem("permissions") === null) {
+        return false;
+    }
+    let perm: Permission[] = [];
+    JSON.parse(sessionStorage.getItem("permissions")).forEach(function(p: String) {
+        perm.push(Permission[p as keyof typeof Permission]);
+    });
+    for (let i = 0; i < checkPermissions.length; i++) {
+        if (perm.indexOf(checkPermissions[i]) !== -1) {
+            return true;
+        }
+    }
+    return false;
+}
+
+export function redirect2Home(url?: string): void {
+    // do some thing
+    console.log("home");
+    return;
 }

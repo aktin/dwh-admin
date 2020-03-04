@@ -85,18 +85,47 @@ export class AuthEffects {
         )
     );
     
+    @Effect()
+    logout$ = this.actions$.pipe(
+        ofType(AuthActionTypes.UserLogout),
+        exhaustMap(
+            ( ) => this._auth.userLogout().pipe(
+                map(
+                    (res) => {
+                        console.log(res);
+                        return ({type: AuthActionTypes.UserLogoutSuccess});
+                    }
+                ),
+                catchError(
+                    (error) => {
+                        console.log(error);
+                        return of (({type: AuthActionTypes.UserLogoutSuccess}));
+                    }
+                )
+            )
+        )
+    );
     
     @Effect({dispatch:false})
     authCheckFailure$ = this.actions$.pipe(
-        ofType(AuthActionTypes.AuthCheckFailure),
+        ofType(AuthActionTypes.AuthCheckFailure, AuthActionTypes.UserLogoutSuccess),
         tap ( () => {
             this.acUnsubscribe();
         })
     );
     /**
+     *
+     * @param actions$
+     * @param _auth
+     * @param _store
+     */
+    constructor(private actions$: Actions<AuthActions>, private _auth: AuthService, private _store: Store<AuthState>) {}
+    
+    
+    /**
      * Periodically check the authentication
      */
-    // @Effect()
+        // @Effect()
     intervalAuthCheck$ = interval(10000).pipe(
         publish(),
         refCount(),
@@ -123,21 +152,4 @@ export class AuthEffects {
         }
     }
     
-    
-    @Effect()
-    logout$ = this.actions$.pipe(
-        ofType(AuthActionTypes.UserLogout),
-        tap (() => this.acUnsubscribe()),
-        exhaustMap(
-            ( ) => this._auth.userLogout()
-        )
-    );
-    
-    /**
-     *
-     * @param actions$
-     * @param _auth
-     * @param _store
-     */
-    constructor(private actions$: Actions<AuthActions>, private _auth: AuthService, private _store: Store<AuthState>) {}
 }

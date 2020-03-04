@@ -2,13 +2,13 @@ import { Injectable } from "@angular/core";
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from "@angular/router";
 import { Observable } from "rxjs";
 
-import { AuthService } from "./services";
+import { redirect2Home, userLocalCheckPermissions } from "./services";
 
 @Injectable({
   providedIn: "root",
 })
 export class UserAuthGuard implements CanActivate {
-  constructor(private _authService: AuthService) {}
+  constructor() {}
 
   canActivate(
     next: ActivatedRouteSnapshot,
@@ -26,12 +26,12 @@ export class UserAuthGuard implements CanActivate {
 
   isAuthorized(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     let data = route.data;
-    console.log("checking permission");
+    console.log("checking permission", data);
     if (data && data["permissions"]) {
-      let hasPermission = this._authService.userLocalCheckPermissions(data["permissions"]);
+      let hasPermission = userLocalCheckPermissions(data["permissions"]);
       if (!hasPermission) {
         console.log("no auth");
-        this._authService.redirect2Home(state.url);
+        redirect2Home(state.url);
         return false;
       }
     }

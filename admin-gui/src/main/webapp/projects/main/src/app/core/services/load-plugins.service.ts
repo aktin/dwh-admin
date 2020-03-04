@@ -174,17 +174,18 @@ export class LoadPluginsService {
         }
         this.routeNames[routeName] = routeNameObj;
     
-        let route = {
-            path: routeNameObj.path,
-            data: {
-                name: routeNameObj.name,
-                plugin: plug.moduleName,
-            },
-        };
+        let route;
     
         // components builder
         if (!metadata["routes"]) {
             // no routes, just load the component of the first item from the plugins array
+            route = {
+                path: routeNameObj.path,
+                data: {
+                    name: routeNameObj.name,
+                    plugin: plug.moduleName,
+                },
+            };
             route.data["component"] = await provider[0].component;
             route["component"] = await provider[0].component; //pathComponent;
             /*/
@@ -194,6 +195,21 @@ export class LoadPluginsService {
             //*/
         } else {
             let children = metadata["routes"];
+            let main= {};
+            if (children["main"]) {
+                main = children["main"];
+            }
+    
+            route = {
+                ...main,
+                path: routeNameObj.path,
+                data: {
+                    ...main["data"],
+                    name: routeNameObj.name,
+                    plugin: plug.moduleName,
+                }
+            };
+            delete children["main"];
             
             route["children"] = ROUTE_REDUCE(children, metadata["routesNames"], [routeName], route.path);
             route["childrenObj"] = children;

@@ -9,11 +9,12 @@ import { PATH, PLUGIN_NAME, ROUTE_NAME } from "./meta";
 import { REPORTS_ROUTES_NAMES, REPORTS_ROUTES_OBJ } from "./reports.routes";
 import { ReportComponent, ReportsListComponent, ReportViewComponent } from "./components";
 import { RouterModule } from "@angular/router";
+import { ReportNewComponent } from './components/new/report-new.component';
 
 const REPORTSCOMPONENTS = [ReportsListComponent, ReportViewComponent, ReportComponent];
 
 @NgModule({
-  declarations: [REPORTSCOMPONENTS],
+  declarations: [REPORTSCOMPONENTS, ReportNewComponent],
   entryComponents: REPORTSCOMPONENTS,
   imports: [
     CommonModule,
