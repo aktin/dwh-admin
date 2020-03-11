@@ -7,14 +7,13 @@ import { ReportEffects, STATE } from "./store";
 import { reportReducers } from "./store/reducers";
 import { PATH, PLUGIN_NAME, ROUTE_NAME } from "./meta";
 import { REPORTS_ROUTES_NAMES, REPORTS_ROUTES_OBJ } from "./reports.routes";
-import { ReportComponent, ReportsListComponent, ReportViewComponent } from "./components";
+import { ReportComponent, ReportsListComponent, ReportViewComponent, ReportNewComponent } from "./components";
 import { RouterModule } from "@angular/router";
-import { ReportNewComponent } from './components/new/report-new.component';
 
-const REPORTSCOMPONENTS = [ReportsListComponent, ReportViewComponent, ReportComponent];
+const REPORTSCOMPONENTS = [ReportsListComponent, ReportViewComponent, ReportComponent, ReportNewComponent];
 
 @NgModule({
-  declarations: [REPORTSCOMPONENTS, ReportNewComponent],
+  declarations: REPORTSCOMPONENTS,
   entryComponents: REPORTSCOMPONENTS,
   imports: [
     CommonModule,

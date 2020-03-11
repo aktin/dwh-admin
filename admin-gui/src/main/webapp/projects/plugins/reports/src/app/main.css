@@ -112,6 +112,10 @@ html {
   box-sizing: inherit;
 }
 
+p {
+  margin: 0;
+}
+
 button {
   background: transparent;
   padding: 0;

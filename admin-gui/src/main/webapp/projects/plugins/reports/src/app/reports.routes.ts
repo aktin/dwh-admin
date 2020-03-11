@@ -1,12 +1,11 @@
-import { ReportComponent } from "./components";
-import { ReportsListComponent } from "./components";
+import { ReportsListComponent, ReportComponent, ReportNewComponent } from "./components";
 import { UserAuthGuard, Permission } from "@aktin/utils";
 
 export const REPORTS_ROUTES_NAMES = {
     HOME: { path: "" },
-    /*SINGLE: {
-      path: "single",
-    },*/
+    NEW: {
+        path: "new",
+    },
     SINGLE: {
         path: ":id",
     },
@@ -40,6 +39,9 @@ export const REPORTS_ROUTES_OBJ = {
     },
     HOME: {
         component: ReportsListComponent,
+    },
+    NEW: {
+        component: ReportNewComponent,
     },
     SINGLE: {
         component: ReportComponent,
