@@ -1,5 +1,6 @@
 {
   "bread.list": "Berichtsübersicht",
+  "bread.new": "Neuen Bericht erstellen",
   "actions.download": "Diesen Bericht herunterladen",
   "actions.detail": "Detailansicht des Berichts",
   "actions.list": "Zurück zum Berichtsübersicht",
@@ -9,5 +10,6 @@
   "view.statusWaiting": "wird erstellt",
   "view.creationDate": "Erstelldatum:",
   "view.timeSpan": "Zeitraum:",
-  "view.timeSpanTill": "bis"
+  "view.timeSpanTill": "bis",
+  "new.reportType": "Berichtsart",
 }
