@@ -14,10 +14,10 @@
 .menu-button {
   @apply inline-block cursor-pointer py-6 px-4;
   &:hover {
-    @apply bg-grey-lighter;
+    @apply bg-gray-200;
   }
   &.active {
-    @apply bg-grey-light;
+    @apply bg-gray-300;
   }
 }
 
@@ -35,14 +35,14 @@
 }
 
 .breadcrumb-divider {
-  @apply inline-block mx-3 text-grey-dark;
+  @apply inline-block mx-3 text-gray-600;
 }
 
 .login-form-label {
-  @apply block text-grey-darker text-sm font-bold mb-2;
+  @apply block text-gray-800 text-sm font-bold mb-2;
 }
 .login-form-control {
-  @apply shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight;
+  @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-800 leading-tight;
   &:focus {
     @apply outline-none shadow-outline;
   }
@@ -54,11 +54,11 @@
   @apply flex items-center justify-between;
 }
 .login-form-submit-button {
-  @apply bg-blue text-white font-bold py-2 px-4 rounded;
+  @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
   &:focus {
     @apply outline-none shadow-outline;
   }
   &:hover {
-    @apply bg-blue-dark;
+    @apply bg-blue-600;
   }
 }

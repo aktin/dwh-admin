@@ -1,6 +1,6 @@
 module.exports = {
   // Tailwind Paths
-  configJS: './tailwind.js',
+  configJS: './tailwind.config.js',
   sourceCSS: './projects/main/src/assets/css/tailwind.scss',
   outputCSS: './projects/main/src/assets/css/main.css',
   // Sass
@@ -13,4 +13,4 @@ module.exports = {
   whitelist: [],
   whitelistPatterns: [],
   whitelistPatternsChildren: []
-}
+};

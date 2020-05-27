@@ -6,12 +6,13 @@
 export * from "./lib/dwh-admin-utils.module";
 
 /* The Authentication Module */
-export * from "./lib/auth/auth.module";
+export * from "./lib/auth";
 
-export * from "./lib/auth/services/auth.service";
+/* Pipes */
+export * from "./lib/pipes";
 
 /* State Store */
 export * from "./lib/state";
 
 /* Components */
-// export * from "./lib/components";
+export * from "./lib/components";

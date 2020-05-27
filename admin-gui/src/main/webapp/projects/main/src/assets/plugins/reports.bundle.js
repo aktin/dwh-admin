@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/common'), require('@aktin/utils'), require('@ngrx/store'), require('@ngrx/effects'), require('@ngrx/entity'), require('rxjs'), require('@angular/router'), require('mydatepicker')) :
-    typeof define === 'function' && define.amd ? define(['exports', '@angular/core', '@angular/common', '@aktin/utils', '@ngrx/store', '@ngrx/effects', '@ngrx/entity', 'rxjs', '@angular/router', 'mydatepicker'], factory) :
-    (global = global || self, factory(global.case = {}, global.core, global.common, global.utils, global.store, global.effects, global.entity, global.rxjs, global.router, global.mydatepicker));
-}(this, function (exports, core, common, utils, store, effects, entity, rxjs, router, mydatepicker) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/common'), require('@aktin/utils'), require('@ngrx/store'), require('@ngrx/effects'), require('@ngrx/entity'), require('rxjs'), require('@angular/router')) :
+    typeof define === 'function' && define.amd ? define(['exports', '@angular/core', '@angular/common', '@aktin/utils', '@ngrx/store', '@ngrx/effects', '@ngrx/entity', 'rxjs', '@angular/router'], factory) :
+    (global = global || self, factory(global.case = {}, global.core, global.common, global.utils, global.store, global.effects, global.entity, global.rxjs, global.router));
+}(this, function (exports, core, common, utils, store, effects, entity, rxjs, router) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -736,12 +736,14 @@
     }
 
     /** PURE_IMPORTS_START  PURE_IMPORTS_END */
-    function noop() { }
+    function identity(x) {
+        return x;
+    }
 
-    /** PURE_IMPORTS_START _noop PURE_IMPORTS_END */
+    /** PURE_IMPORTS_START _identity PURE_IMPORTS_END */
     function pipeFromArray(fns) {
-        if (!fns) {
-            return noop;
+        if (fns.length === 0) {
+            return identity;
         }
         if (fns.length === 1) {
             return fns[0];
@@ -862,17 +864,17 @@
     }
 
     /** PURE_IMPORTS_START _InnerSubscriber,_subscribeTo,_Observable PURE_IMPORTS_END */
-    function subscribeToResult(outerSubscriber, result, outerValue, outerIndex, destination) {
-        if (destination === void 0) {
-            destination = new InnerSubscriber(outerSubscriber, outerValue, outerIndex);
+    function subscribeToResult(outerSubscriber, result, outerValue, outerIndex, innerSubscriber) {
+        if (innerSubscriber === void 0) {
+            innerSubscriber = new InnerSubscriber(outerSubscriber, outerValue, outerIndex);
         }
-        if (destination.closed) {
+        if (innerSubscriber.closed) {
             return undefined;
         }
         if (result instanceof Observable) {
-            return result.subscribe(destination);
+            return result.subscribe(innerSubscriber);
         }
-        return subscribeTo(result)(destination);
+        return subscribeTo(result)(innerSubscriber);
     }
 
     /** PURE_IMPORTS_START tslib,_OuterSubscriber,_util_subscribeToResult PURE_IMPORTS_END */
@@ -1511,7 +1513,10 @@
                 this._unsubscribeAndRecycle();
                 var innerSubscriber = new InnerSubscriber(this, undefined, undefined);
                 this.add(innerSubscriber);
-                subscribeToResult(this, result, undefined, undefined, innerSubscriber);
+                var innerSubscription = subscribeToResult(this, result, undefined, undefined, innerSubscriber);
+                if (innerSubscription !== innerSubscriber) {
+                    this.add(innerSubscription);
+                }
             }
         };
         return CatchSubscriber;
@@ -1856,10 +1861,13 @@
             this._innerSub(result, value, index);
         };
         MergeMapSubscriber.prototype._innerSub = function (ish, value, index) {
-            var innerSubscriber = new InnerSubscriber(this, undefined, undefined);
+            var innerSubscriber = new InnerSubscriber(this, value, index);
             var destination = this.destination;
             destination.add(innerSubscriber);
-            subscribeToResult(this, ish, value, index, innerSubscriber);
+            var innerSubscription = subscribeToResult(this, ish, undefined, undefined, innerSubscriber);
+            if (innerSubscription !== innerSubscriber) {
+                destination.add(innerSubscription);
+            }
         };
         MergeMapSubscriber.prototype._complete = function () {
             this.hasCompleted = true;
@@ -1884,8 +1892,6 @@
         };
         return MergeMapSubscriber;
     }(OuterSubscriber));
-
-    /** PURE_IMPORTS_START  PURE_IMPORTS_END */
 
     /** PURE_IMPORTS_START _mergeMap,_util_identity PURE_IMPORTS_END */
 
@@ -2647,10 +2653,13 @@
             this._innerSub(result, value, index);
         };
         ExhaustMapSubscriber.prototype._innerSub = function (result, value, index) {
-            var innerSubscriber = new InnerSubscriber(this, undefined, undefined);
+            var innerSubscriber = new InnerSubscriber(this, value, index);
             var destination = this.destination;
             destination.add(innerSubscriber);
-            subscribeToResult(this, result, value, index, innerSubscriber);
+            var innerSubscription = subscribeToResult(this, result, undefined, undefined, innerSubscriber);
+            if (innerSubscription !== innerSubscriber) {
+                destination.add(innerSubscription);
+            }
         };
         ExhaustMapSubscriber.prototype._complete = function () {
             this.hasCompleted = true;
@@ -3354,10 +3363,13 @@
             }
         };
         MergeScanSubscriber.prototype._innerSub = function (ish, value, index) {
-            var innerSubscriber = new InnerSubscriber(this, undefined, undefined);
+            var innerSubscriber = new InnerSubscriber(this, value, index);
             var destination = this.destination;
             destination.add(innerSubscriber);
-            subscribeToResult(this, ish, value, index, innerSubscriber);
+            var innerSubscription = subscribeToResult(this, ish, undefined, undefined, innerSubscriber);
+            if (innerSubscription !== innerSubscriber) {
+                destination.add(innerSubscription);
+            }
         };
         MergeScanSubscriber.prototype._complete = function () {
             this.hasCompleted = true;
@@ -3643,7 +3655,10 @@
                 var innerSubscriber = new InnerSubscriber(this, undefined, undefined);
                 var destination = this.destination;
                 destination.add(innerSubscriber);
-                subscribeToResult(this, next, undefined, undefined, innerSubscriber);
+                var innerSubscription = subscribeToResult(this, next, undefined, undefined, innerSubscriber);
+                if (innerSubscription !== innerSubscriber) {
+                    destination.add(innerSubscription);
+                }
             }
             else {
                 this.destination.complete();
@@ -4412,7 +4427,11 @@
             var innerSubscriber = new InnerSubscriber(_this, undefined, undefined);
             _this.add(innerSubscriber);
             _this.innerSubscription = innerSubscriber;
-            subscribeToResult(_this, notifier, undefined, undefined, innerSubscriber);
+            var innerSubscription = subscribeToResult(_this, notifier, undefined, undefined, innerSubscriber);
+            if (innerSubscription !== innerSubscriber) {
+                _this.add(innerSubscription);
+                _this.innerSubscription = innerSubscription;
+            }
             return _this;
         }
         SkipUntilSubscriber.prototype._next = function (value) {
@@ -4466,22 +4485,24 @@
 
     /** PURE_IMPORTS_START  PURE_IMPORTS_END */
     var nextHandle = 1;
-    var tasksByHandle = {};
-    function runIfPresent(handle) {
-        var cb = tasksByHandle[handle];
-        if (cb) {
-            cb();
+    var RESOLVED = /*@__PURE__*/ (function () { return /*@__PURE__*/ Promise.resolve(); })();
+    var activeHandles = {};
+    function findAndClearHandle(handle) {
+        if (handle in activeHandles) {
+            delete activeHandles[handle];
+            return true;
         }
+        return false;
     }
     var Immediate = {
         setImmediate: function (cb) {
             var handle = nextHandle++;
-            tasksByHandle[handle] = cb;
-            Promise.resolve().then(function () { return runIfPresent(handle); });
+            activeHandles[handle] = true;
+            RESOLVED.then(function () { return findAndClearHandle(handle) && cb(); });
             return handle;
         },
         clearImmediate: function (handle) {
-            delete tasksByHandle[handle];
+            findAndClearHandle(handle);
         },
     };
 
@@ -4627,10 +4648,13 @@
             if (innerSubscription) {
                 innerSubscription.unsubscribe();
             }
-            var innerSubscriber = new InnerSubscriber(this, undefined, undefined);
+            var innerSubscriber = new InnerSubscriber(this, value, index);
             var destination = this.destination;
             destination.add(innerSubscriber);
-            this.innerSubscription = subscribeToResult(this, result, value, index, innerSubscriber);
+            this.innerSubscription = subscribeToResult(this, result, undefined, undefined, innerSubscriber);
+            if (this.innerSubscription !== innerSubscriber) {
+                destination.add(this.innerSubscription);
+            }
         };
         SwitchMapSubscriber.prototype._complete = function () {
             var innerSubscription = this.innerSubscription;
@@ -4713,6 +4737,9 @@
         };
         return TakeWhileSubscriber;
     }(Subscriber));
+
+    /** PURE_IMPORTS_START  PURE_IMPORTS_END */
+    function noop() { }
 
     /** PURE_IMPORTS_START tslib,_Subscriber,_util_noop,_util_isFunction PURE_IMPORTS_END */
     var TapSubscriber = /*@__PURE__*/ (function (_super) {
@@ -6594,15 +6621,17 @@
     unwrapExports(toSubscriber_1);
     var toSubscriber_2 = toSubscriber_1.toSubscriber;
 
-    var noop_1 = createCommonjsModule(function (module, exports) {
+    var identity_1 = createCommonjsModule(function (module, exports) {
     Object.defineProperty(exports, "__esModule", { value: true });
-    function noop() { }
-    exports.noop = noop;
+    function identity(x) {
+        return x;
+    }
+    exports.identity = identity;
 
     });
 
-    unwrapExports(noop_1);
-    var noop_2 = noop_1.noop;
+    unwrapExports(identity_1);
+    var identity_2 = identity_1.identity;
 
     var pipe_1 = createCommonjsModule(function (module, exports) {
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -6616,8 +6645,8 @@
     }
     exports.pipe = pipe;
     function pipeFromArray(fns) {
-        if (!fns) {
-            return noop_1.noop;
+        if (fns.length === 0) {
+            return identity_1.identity;
         }
         if (fns.length === 1) {
             return fns[0];
@@ -6761,15 +6790,15 @@
 
 
 
-    function subscribeToResult(outerSubscriber, result, outerValue, outerIndex, destination) {
-        if (destination === void 0) { destination = new InnerSubscriber_1.InnerSubscriber(outerSubscriber, outerValue, outerIndex); }
-        if (destination.closed) {
+    function subscribeToResult(outerSubscriber, result, outerValue, outerIndex, innerSubscriber) {
+        if (innerSubscriber === void 0) { innerSubscriber = new InnerSubscriber_1.InnerSubscriber(outerSubscriber, outerValue, outerIndex); }
+        if (innerSubscriber.closed) {
             return undefined;
         }
         if (result instanceof Observable_1.Observable) {
-            return result.subscribe(destination);
+            return result.subscribe(innerSubscriber);
         }
-        return subscribeTo$1.subscribeTo(result)(destination);
+        return subscribeTo$1.subscribeTo(result)(innerSubscriber);
     }
     exports.subscribeToResult = subscribeToResult;
 
@@ -6834,7 +6863,10 @@
                 this._unsubscribeAndRecycle();
                 var innerSubscriber = new InnerSubscriber_1.InnerSubscriber(this, undefined, undefined);
                 this.add(innerSubscriber);
-                subscribeToResult_1.subscribeToResult(this, result, undefined, undefined, innerSubscriber);
+                var innerSubscription = subscribeToResult_1.subscribeToResult(this, result, undefined, undefined, innerSubscriber);
+                if (innerSubscription !== innerSubscriber) {
+                    this.add(innerSubscription);
+                }
             }
         };
         return CatchSubscriber;
@@ -6971,14 +7003,14 @@
             get: function () {
                 return this.data;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ReportViewComponent.prototype, "success", {
             get: function () {
                 return this.data && this.data.state === ReportStatus.Completed;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ReportViewComponent.prototype, "endDate", {
@@ -6987,14 +7019,14 @@
                 next.setDate(this.data.timespan[1].getDate() - 1);
                 return next;
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         Object.defineProperty(ReportViewComponent.prototype, "url", {
             get: function () {
                 return this.s.getUrl(this.data);
             },
-            enumerable: true,
+            enumerable: false,
             configurable: true
         });
         ReportViewComponent.prototype.download = function () {
@@ -7064,7 +7096,7 @@
         ReportNewComponent = __decorate([
             core.Component({
                 selector: 'admin-gui-report-new',
-                template: "<breadcrumb [path]=\"[\n        [_url.link(['REPORT']), s.parse('bread.list')],\n        [_url.link(['REPORT', 'NEW']), s.parse('bread.new')]\n    ]\"></breadcrumb>\n\n<div class=\"new-report-form\">\n    <form #newReportForm=\"ngForm\"\n          (ngSubmit)=\"generateReport()\">\n\n        <div class=\"form-group template-select-field mb-4\">\n            <label class=\"form-label\">{{s.parse('new.reportType')}}</label>\n            <select name=\"reportTemplate\" id=\"reportTemplate\"\n                    class=\"form-control form-select\"\n                    title=\"{{s.parse('new.reportType')}}\"\n                    [(ngModel)]=\"template\"\n                    #reportTemplate=\"ngModel\">\n                <!--<option value=\"\" disabled=\"disabled\">bitte Ausw\u00E4hlen</option>-->\n                <option *ngFor=\"let tem of  (reportTemplates$ | async) \" [value]=\"tem.id\" [selected]=\"template==tem.id\" >{{tem.description}}</option>\n            </select>\n        </div>\n\n        <div class=\"form-group two-fields\">\n            <div>\n                <label>Startdatum</label>\n                <div class=\"form-control ui input\">\n                    <my-date-picker style=\"width: 100%\" name=\"fromDateMDP\" [options]=\"fromDPOptions\" [(ngModel)]=\"fromDateModel\" (dateChanged)=\"onFromDateChanged($event)\" required></my-date-picker>\n                </div>\n            </div>\n        </div>\n        <!--\n                <div class=\"two fields\">\n                    <div class=\"form-group\">\n                        <label>Startdatum</label>\n                        <div class=\"form-control ui input\">\n                            <my-date-picker style=\"width: 100%\" name=\"fromDateMDP\" [options]=\"fromDPOptions\" [(ngModel)]=\"fromDateModel\" (dateChanged)=\"onFromDateChanged($event)\" required></my-date-picker>\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label>Enddatum</label>\n                        <div class=\"form-control ui input\">\n                            <my-date-picker style=\"width: 100%\" name=\"toDateMDP\" [options]=\"toDPOptions\" [(ngModel)]=\"toDateModel\" (dateChanged)=\"onToDateChanged($event)\" required></my-date-picker>\n                        </div>\n                    </div>\n                </div>-->\n\n        <button class=\"button\" type=\"submit\">\n            Erzeugen\n        </button>\n\n    </form>\n</div>\n",
+                template: "<breadcrumb [path]=\"[\n        [_url.link(['REPORT']), s.parse('bread.list')],\n        [_url.link(['REPORT', 'NEW']), s.parse('bread.new')]\n    ]\"></breadcrumb>\n\n<div class=\"new-report-form\">\n    <form #newReportForm=\"ngForm\"\n          (ngSubmit)=\"generateReport()\">\n\n        <div class=\"form-group template-select-field mb-4\">\n            <label class=\"form-label\">{{s.parse('new.reportType')}}</label>\n            <select name=\"reportTemplate\" id=\"reportTemplate\"\n                    class=\"form-control form-select\"\n                    title=\"{{s.parse('new.reportType')}}\"\n                    [(ngModel)]=\"template\"\n                    #reportTemplate=\"ngModel\">\n                <!--<option value=\"\" disabled=\"disabled\">bitte Ausw\u00E4hlen</option>-->\n                <option *ngFor=\"let tem of  (reportTemplates$ | async) \" [value]=\"tem.id\" [selected]=\"template==tem.id\" >{{tem.description}}</option>\n            </select>\n        </div>\n\n  <!--      <div class=\"form-group two-fields\">\n            <div>\n                <label>Startdatum</label>\n                <div class=\"form-control ui input\">\n                    <my-date-picker style=\"width: 100%\" name=\"fromDateMDP\" [options]=\"fromDPOptions\" [(ngModel)]=\"fromDateModel\" (dateChanged)=\"onFromDateChanged($event)\" required></my-date-picker>\n                </div>\n            </div>\n        </div>-->\n        <!--\n                <div class=\"two fields\">\n                    <div class=\"form-group\">\n                        <label>Startdatum</label>\n                        <div class=\"form-control ui input\">\n                            <my-date-picker style=\"width: 100%\" name=\"fromDateMDP\" [options]=\"fromDPOptions\" [(ngModel)]=\"fromDateModel\" (dateChanged)=\"onFromDateChanged($event)\" required></my-date-picker>\n                        </div>\n                    </div>\n                    <div class=\"form-group\">\n                        <label>Enddatum</label>\n                        <div class=\"form-control ui input\">\n                            <my-date-picker style=\"width: 100%\" name=\"toDateMDP\" [options]=\"toDPOptions\" [(ngModel)]=\"toDateModel\" (dateChanged)=\"onToDateChanged($event)\" required></my-date-picker>\n                        </div>\n                    </div>\n                </div>-->\n\n        <button class=\"button\" type=\"submit\">\n            Erzeugen\n        </button>\n\n    </form>\n</div>\n",
                 styles: ["html {\n  line-height: 1.15; \n  -webkit-text-size-adjust: 100%; \n}\n\na {\n  background-color: transparent;\n}\n\nb {\n  font-weight: bolder;\n}\n\nbutton,\ninput,\nselect {\n  font-family: inherit; \n  font-size: 100%; \n  line-height: 1.15; \n  margin: 0; \n}\n\nbutton,\ninput {\n  \n  overflow: visible;\n}\n\nbutton,\nselect {\n  \n  text-transform: none;\n}\n\nbutton,\n[type=\"button\"],\n[type=\"reset\"],\n[type=\"submit\"] {\n  -webkit-appearance: button;\n}\n\nbutton::-moz-focus-inner,\n[type=\"button\"]::-moz-focus-inner,\n[type=\"reset\"]::-moz-focus-inner,\n[type=\"submit\"]::-moz-focus-inner {\n  border-style: none;\n  padding: 0;\n}\n\nbutton:-moz-focusring,\n[type=\"button\"]:-moz-focusring,\n[type=\"reset\"]:-moz-focusring,\n[type=\"submit\"]:-moz-focusring {\n  outline: 1px dotted ButtonText;\n}\n\n[type=\"checkbox\"],\n[type=\"radio\"] {\n  box-sizing: border-box; \n  padding: 0; \n}\n\n[type=\"number\"]::-webkit-inner-spin-button,\n[type=\"number\"]::-webkit-outer-spin-button {\n  height: auto;\n}\n\n[type=\"search\"] {\n  -webkit-appearance: textfield; \n  outline-offset: -2px; \n}\n\n[type=\"search\"]::-webkit-search-decoration {\n  -webkit-appearance: none;\n}\n\n::-webkit-file-upload-button {\n  -webkit-appearance: button; \n  font: inherit; \n}\n\ntemplate {\n  display: none;\n}\n\n[hidden] {\n  display: none;\n}\n\nhtml {\n  box-sizing: border-box; \n  font-family: sans-serif; \n}\n\n*,\n*::before,\n*::after {\n  box-sizing: inherit;\n}\n\nbutton {\n  background: transparent;\n  padding: 0;\n}\n\nbutton:focus {\n  outline: 1px dotted;\n  outline: 5px auto -webkit-focus-ring-color;\n}\n\n*,\n*::before,\n*::after {\n  border-width: 0;\n  border-style: solid;\n  border-color: #dae1e7;\n}\n\ninput::-webkit-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::-moz-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput:-ms-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::-ms-input-placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\ninput::placeholder {\n  color: inherit;\n  opacity: .5;\n}\n\nbutton,\n[role=\"button\"] {\n  cursor: pointer;\n}\n\n.container {\n  width: 100%;\n}\n\n@media (min-width: 576px) {\n  .container {\n    max-width: 576px;\n  }\n}\n\n@media (min-width: 768px) {\n  .container {\n    max-width: 768px;\n  }\n}\n\n@media (min-width: 992px) {\n  .container {\n    max-width: 992px;\n  }\n}\n\n@media (min-width: 1200px) {\n  .container {\n    max-width: 1200px;\n  }\n}\n\n.inline-block {\n  display: inline-block;\n}\n\n.flex {\n  display: flex;\n}\n\n.flex-row {\n  flex-direction: row;\n}\n\n.items-baseline {\n  align-items: baseline;\n}\n\n.justify-between {\n  justify-content: space-between;\n}\n\n.font-medium {\n  font-weight: 500;\n}\n\n.my-5 {\n  margin-top: 1.25rem;\n  margin-bottom: 1.25rem;\n}\n\n.mx-auto {\n  margin-left: auto;\n  margin-right: auto;\n}\n\n.mt-1 {\n  margin-top: .25rem;\n}\n\n.ml-2 {\n  margin-left: .5rem;\n}\n\n.mb-4 {\n  margin-bottom: 1rem;\n}\n\n.p-3 {\n  padding: .75rem;\n}\n\n.text-grey-dark {\n  color: #8795a1;\n}\n\n.text-sm {\n  font-size: .875rem;\n}\n\n.text-xl {\n  font-size: 1.25rem;\n}\n\n.w-auto {\n  width: auto;\n}\n\n.w-1/5 {\n  width: 20%;\n}\n\n.btn-icon {\n  cursor: pointer;\n  border-radius: 9999px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 2rem;\n  height: 2rem;\n  background-color: #dae1e7;\n}\n\n.btn-icon:hover {\n  background-color: #b8c2cc;\n}\n\n.btn-icon.btn-green {\n  background-color: #51d88a;\n  color: #fff;\n}\n\n.btn-icon.btn-green:hover {\n  background-color: #38c172;\n}\n\n.btn-icon.btn-border-green {\n  border-width: 2px;\n  background-color: transparent;\n  border-color: #51d88a;\n  color: #51d88a;\n}\n\n.btn-icon.btn-border-green:hover {\n  border-color: #38c172;\n  color: #38c172;\n  background-color: #e3fcec;\n}\n\n.new-report-form {\n  border-width: 1px;\n  border-color: #606f7b;\n  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .12), 0 2px 4px 0 rgba(0, 0, 0, .08);\n  border-radius: .25rem;\n  padding: 1.25rem;\n}\n\n.new-report-form .template-select-field label {\n  display: block;\n  color: #606f7b;\n  font-size: .875rem;\n  font-weight: 700;\n  margin-bottom: .5rem;\n}\n\n.new-report-form .template-select-field select {\n  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .1);\n  -webkit-appearance: none;\n     -moz-appearance: none;\n          appearance: none;\n  border-width: 1px;\n  border-radius: .25rem;\n  width: 100%;\n  padding-top: .5rem;\n  padding-bottom: .5rem;\n  padding-left: .75rem;\n  padding-right: .75rem;\n  color: #606f7b;\n  line-height: 1.25;\n}\n\n.new-report-form .template-select-field select:focus {\n  outline: 0;\n  box-shadow: 0 0 0 3px rgba(52, 144, 220, .5);\n}"],
             }),
             __metadata("design:paramtypes", [router.ActivatedRoute,
@@ -7222,2299 +7254,6 @@
             ar = ar.concat(__read$1(arguments[i]));
         return ar;
     }
-
-    /**
-     * @license Angular v8.2.14
-     * (c) 2010-2019 Google LLC. https://angular.io/
-     * License: MIT
-     */
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    var _DOM = null;
-    function getDOM() {
-        return _DOM;
-    }
-    function setRootDomAdapter(adapter) {
-        if (!_DOM) {
-            _DOM = adapter;
-        }
-    }
-    /* tslint:disable:requireParameterType */
-    /**
-     * Provides DOM operations in an environment-agnostic way.
-     *
-     * @security Tread carefully! Interacting with the DOM directly is dangerous and
-     * can introduce XSS risks.
-     */
-    var DomAdapter = /** @class */ (function () {
-        function DomAdapter() {
-            this.resourceLoaderType = null;
-        }
-        Object.defineProperty(DomAdapter.prototype, "attrToPropMap", {
-            /**
-             * Maps attribute names to their corresponding property names for cases
-             * where attribute name doesn't match property name.
-             */
-            get: function () { return this._attrToPropMap; },
-            set: function (value) { this._attrToPropMap = value; },
-            enumerable: true,
-            configurable: true
-        });
-        return DomAdapter;
-    }());
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    /**
-     * Provides DOM operations in any browser environment.
-     *
-     * @security Tread carefully! Interacting with the DOM directly is dangerous and
-     * can introduce XSS risks.
-     */
-    var GenericBrowserDomAdapter = /** @class */ (function (_super) {
-        __extends$1(GenericBrowserDomAdapter, _super);
-        function GenericBrowserDomAdapter() {
-            var _this = _super.call(this) || this;
-            _this._animationPrefix = null;
-            _this._transitionEnd = null;
-            try {
-                var element_1 = _this.createElement('div', document);
-                if (_this.getStyle(element_1, 'animationName') != null) {
-                    _this._animationPrefix = '';
-                }
-                else {
-                    var domPrefixes = ['Webkit', 'Moz', 'O', 'ms'];
-                    for (var i = 0; i < domPrefixes.length; i++) {
-                        if (_this.getStyle(element_1, domPrefixes[i] + 'AnimationName') != null) {
-                            _this._animationPrefix = '-' + domPrefixes[i].toLowerCase() + '-';
-                            break;
-                        }
-                    }
-                }
-                var transEndEventNames_1 = {
-                    WebkitTransition: 'webkitTransitionEnd',
-                    MozTransition: 'transitionend',
-                    OTransition: 'oTransitionEnd otransitionend',
-                    transition: 'transitionend'
-                };
-                Object.keys(transEndEventNames_1).forEach(function (key) {
-                    if (_this.getStyle(element_1, key) != null) {
-                        _this._transitionEnd = transEndEventNames_1[key];
-                    }
-                });
-            }
-            catch (_a) {
-                _this._animationPrefix = null;
-                _this._transitionEnd = null;
-            }
-            return _this;
-        }
-        GenericBrowserDomAdapter.prototype.getDistributedNodes = function (el) { return el.getDistributedNodes(); };
-        GenericBrowserDomAdapter.prototype.resolveAndSetHref = function (el, baseUrl, href) {
-            el.href = href == null ? baseUrl : baseUrl + '/../' + href;
-        };
-        GenericBrowserDomAdapter.prototype.supportsDOMEvents = function () { return true; };
-        GenericBrowserDomAdapter.prototype.supportsNativeShadowDOM = function () {
-            return typeof document.body.createShadowRoot === 'function';
-        };
-        GenericBrowserDomAdapter.prototype.getAnimationPrefix = function () { return this._animationPrefix ? this._animationPrefix : ''; };
-        GenericBrowserDomAdapter.prototype.getTransitionEnd = function () { return this._transitionEnd ? this._transitionEnd : ''; };
-        GenericBrowserDomAdapter.prototype.supportsAnimation = function () {
-            return this._animationPrefix != null && this._transitionEnd != null;
-        };
-        return GenericBrowserDomAdapter;
-    }(DomAdapter));
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    var _attrToPropMap = {
-        'class': 'className',
-        'innerHtml': 'innerHTML',
-        'readonly': 'readOnly',
-        'tabindex': 'tabIndex',
-    };
-    var DOM_KEY_LOCATION_NUMPAD = 3;
-    // Map to convert some key or keyIdentifier values to what will be returned by getEventKey
-    var _keyMap = {
-        // The following values are here for cross-browser compatibility and to match the W3C standard
-        // cf http://www.w3.org/TR/DOM-Level-3-Events-key/
-        '\b': 'Backspace',
-        '\t': 'Tab',
-        '\x7F': 'Delete',
-        '\x1B': 'Escape',
-        'Del': 'Delete',
-        'Esc': 'Escape',
-        'Left': 'ArrowLeft',
-        'Right': 'ArrowRight',
-        'Up': 'ArrowUp',
-        'Down': 'ArrowDown',
-        'Menu': 'ContextMenu',
-        'Scroll': 'ScrollLock',
-        'Win': 'OS'
-    };
-    // There is a bug in Chrome for numeric keypad keys:
-    // https://code.google.com/p/chromium/issues/detail?id=155654
-    // 1, 2, 3 ... are reported as A, B, C ...
-    var _chromeNumKeyPadMap = {
-        'A': '1',
-        'B': '2',
-        'C': '3',
-        'D': '4',
-        'E': '5',
-        'F': '6',
-        'G': '7',
-        'H': '8',
-        'I': '9',
-        'J': '*',
-        'K': '+',
-        'M': '-',
-        'N': '.',
-        'O': '/',
-        '\x60': '0',
-        '\x90': 'NumLock'
-    };
-    var ɵ0 = function () {
-        if (core.ɵglobal['Node']) {
-            return core.ɵglobal['Node'].prototype.contains || function (node) {
-                return !!(this.compareDocumentPosition(node) & 16);
-            };
-        }
-        return undefined;
-    };
-    var nodeContains = (ɵ0)();
-    /**
-     * A `DomAdapter` powered by full browser DOM APIs.
-     *
-     * @security Tread carefully! Interacting with the DOM directly is dangerous and
-     * can introduce XSS risks.
-     */
-    /* tslint:disable:requireParameterType no-console */
-    var BrowserDomAdapter = /** @class */ (function (_super) {
-        __extends$1(BrowserDomAdapter, _super);
-        function BrowserDomAdapter() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        BrowserDomAdapter.prototype.parse = function (templateHtml) { throw new Error('parse not implemented'); };
-        BrowserDomAdapter.makeCurrent = function () { setRootDomAdapter(new BrowserDomAdapter()); };
-        BrowserDomAdapter.prototype.hasProperty = function (element, name) { return name in element; };
-        BrowserDomAdapter.prototype.setProperty = function (el, name, value) { el[name] = value; };
-        BrowserDomAdapter.prototype.getProperty = function (el, name) { return el[name]; };
-        BrowserDomAdapter.prototype.invoke = function (el, methodName, args) {
-            var _a;
-            (_a = el)[methodName].apply(_a, __spread$1(args));
-        };
-        // TODO(tbosch): move this into a separate environment class once we have it
-        BrowserDomAdapter.prototype.logError = function (error) {
-            if (window.console) {
-                if (console.error) {
-                    console.error(error);
-                }
-                else {
-                    console.log(error);
-                }
-            }
-        };
-        BrowserDomAdapter.prototype.log = function (error) {
-            if (window.console) {
-                window.console.log && window.console.log(error);
-            }
-        };
-        BrowserDomAdapter.prototype.logGroup = function (error) {
-            if (window.console) {
-                window.console.group && window.console.group(error);
-            }
-        };
-        BrowserDomAdapter.prototype.logGroupEnd = function () {
-            if (window.console) {
-                window.console.groupEnd && window.console.groupEnd();
-            }
-        };
-        Object.defineProperty(BrowserDomAdapter.prototype, "attrToPropMap", {
-            get: function () { return _attrToPropMap; },
-            enumerable: true,
-            configurable: true
-        });
-        BrowserDomAdapter.prototype.contains = function (nodeA, nodeB) { return nodeContains.call(nodeA, nodeB); };
-        BrowserDomAdapter.prototype.querySelector = function (el, selector) { return el.querySelector(selector); };
-        BrowserDomAdapter.prototype.querySelectorAll = function (el, selector) { return el.querySelectorAll(selector); };
-        BrowserDomAdapter.prototype.on = function (el, evt, listener) { el.addEventListener(evt, listener, false); };
-        BrowserDomAdapter.prototype.onAndCancel = function (el, evt, listener) {
-            el.addEventListener(evt, listener, false);
-            // Needed to follow Dart's subscription semantic, until fix of
-            // https://code.google.com/p/dart/issues/detail?id=17406
-            return function () { el.removeEventListener(evt, listener, false); };
-        };
-        BrowserDomAdapter.prototype.dispatchEvent = function (el, evt) { el.dispatchEvent(evt); };
-        BrowserDomAdapter.prototype.createMouseEvent = function (eventType) {
-            var evt = this.getDefaultDocument().createEvent('MouseEvent');
-            evt.initEvent(eventType, true, true);
-            return evt;
-        };
-        BrowserDomAdapter.prototype.createEvent = function (eventType) {
-            var evt = this.getDefaultDocument().createEvent('Event');
-            evt.initEvent(eventType, true, true);
-            return evt;
-        };
-        BrowserDomAdapter.prototype.preventDefault = function (evt) {
-            evt.preventDefault();
-            evt.returnValue = false;
-        };
-        BrowserDomAdapter.prototype.isPrevented = function (evt) {
-            return evt.defaultPrevented || evt.returnValue != null && !evt.returnValue;
-        };
-        BrowserDomAdapter.prototype.getInnerHTML = function (el) { return el.innerHTML; };
-        BrowserDomAdapter.prototype.getTemplateContent = function (el) {
-            return 'content' in el && this.isTemplateElement(el) ? el.content : null;
-        };
-        BrowserDomAdapter.prototype.getOuterHTML = function (el) { return el.outerHTML; };
-        BrowserDomAdapter.prototype.nodeName = function (node) { return node.nodeName; };
-        BrowserDomAdapter.prototype.nodeValue = function (node) { return node.nodeValue; };
-        BrowserDomAdapter.prototype.type = function (node) { return node.type; };
-        BrowserDomAdapter.prototype.content = function (node) {
-            if (this.hasProperty(node, 'content')) {
-                return node.content;
-            }
-            else {
-                return node;
-            }
-        };
-        BrowserDomAdapter.prototype.firstChild = function (el) { return el.firstChild; };
-        BrowserDomAdapter.prototype.nextSibling = function (el) { return el.nextSibling; };
-        BrowserDomAdapter.prototype.parentElement = function (el) { return el.parentNode; };
-        BrowserDomAdapter.prototype.childNodes = function (el) { return el.childNodes; };
-        BrowserDomAdapter.prototype.childNodesAsList = function (el) {
-            var childNodes = el.childNodes;
-            var res = new Array(childNodes.length);
-            for (var i = 0; i < childNodes.length; i++) {
-                res[i] = childNodes[i];
-            }
-            return res;
-        };
-        BrowserDomAdapter.prototype.clearNodes = function (el) {
-            while (el.firstChild) {
-                el.removeChild(el.firstChild);
-            }
-        };
-        BrowserDomAdapter.prototype.appendChild = function (el, node) { el.appendChild(node); };
-        BrowserDomAdapter.prototype.removeChild = function (el, node) { el.removeChild(node); };
-        BrowserDomAdapter.prototype.replaceChild = function (el, newChild, oldChild) { el.replaceChild(newChild, oldChild); };
-        BrowserDomAdapter.prototype.remove = function (node) {
-            if (node.parentNode) {
-                node.parentNode.removeChild(node);
-            }
-            return node;
-        };
-        BrowserDomAdapter.prototype.insertBefore = function (parent, ref, node) { parent.insertBefore(node, ref); };
-        BrowserDomAdapter.prototype.insertAllBefore = function (parent, ref, nodes) {
-            nodes.forEach(function (n) { return parent.insertBefore(n, ref); });
-        };
-        BrowserDomAdapter.prototype.insertAfter = function (parent, ref, node) { parent.insertBefore(node, ref.nextSibling); };
-        BrowserDomAdapter.prototype.setInnerHTML = function (el, value) { el.innerHTML = value; };
-        BrowserDomAdapter.prototype.getText = function (el) { return el.textContent; };
-        BrowserDomAdapter.prototype.setText = function (el, value) { el.textContent = value; };
-        BrowserDomAdapter.prototype.getValue = function (el) { return el.value; };
-        BrowserDomAdapter.prototype.setValue = function (el, value) { el.value = value; };
-        BrowserDomAdapter.prototype.getChecked = function (el) { return el.checked; };
-        BrowserDomAdapter.prototype.setChecked = function (el, value) { el.checked = value; };
-        BrowserDomAdapter.prototype.createComment = function (text) { return this.getDefaultDocument().createComment(text); };
-        BrowserDomAdapter.prototype.createTemplate = function (html) {
-            var t = this.getDefaultDocument().createElement('template');
-            t.innerHTML = html;
-            return t;
-        };
-        BrowserDomAdapter.prototype.createElement = function (tagName, doc) {
-            doc = doc || this.getDefaultDocument();
-            return doc.createElement(tagName);
-        };
-        BrowserDomAdapter.prototype.createElementNS = function (ns, tagName, doc) {
-            doc = doc || this.getDefaultDocument();
-            return doc.createElementNS(ns, tagName);
-        };
-        BrowserDomAdapter.prototype.createTextNode = function (text, doc) {
-            doc = doc || this.getDefaultDocument();
-            return doc.createTextNode(text);
-        };
-        BrowserDomAdapter.prototype.createScriptTag = function (attrName, attrValue, doc) {
-            doc = doc || this.getDefaultDocument();
-            var el = doc.createElement('SCRIPT');
-            el.setAttribute(attrName, attrValue);
-            return el;
-        };
-        BrowserDomAdapter.prototype.createStyleElement = function (css, doc) {
-            doc = doc || this.getDefaultDocument();
-            var style = doc.createElement('style');
-            this.appendChild(style, this.createTextNode(css, doc));
-            return style;
-        };
-        BrowserDomAdapter.prototype.createShadowRoot = function (el) { return el.createShadowRoot(); };
-        BrowserDomAdapter.prototype.getShadowRoot = function (el) { return el.shadowRoot; };
-        BrowserDomAdapter.prototype.getHost = function (el) { return el.host; };
-        BrowserDomAdapter.prototype.clone = function (node) { return node.cloneNode(true); };
-        BrowserDomAdapter.prototype.getElementsByClassName = function (element, name) {
-            return element.getElementsByClassName(name);
-        };
-        BrowserDomAdapter.prototype.getElementsByTagName = function (element, name) {
-            return element.getElementsByTagName(name);
-        };
-        BrowserDomAdapter.prototype.classList = function (element) { return Array.prototype.slice.call(element.classList, 0); };
-        BrowserDomAdapter.prototype.addClass = function (element, className) { element.classList.add(className); };
-        BrowserDomAdapter.prototype.removeClass = function (element, className) { element.classList.remove(className); };
-        BrowserDomAdapter.prototype.hasClass = function (element, className) {
-            return element.classList.contains(className);
-        };
-        BrowserDomAdapter.prototype.setStyle = function (element, styleName, styleValue) {
-            element.style[styleName] = styleValue;
-        };
-        BrowserDomAdapter.prototype.removeStyle = function (element, stylename) {
-            // IE requires '' instead of null
-            // see https://github.com/angular/angular/issues/7916
-            element.style[stylename] = '';
-        };
-        BrowserDomAdapter.prototype.getStyle = function (element, stylename) { return element.style[stylename]; };
-        BrowserDomAdapter.prototype.hasStyle = function (element, styleName, styleValue) {
-            var value = this.getStyle(element, styleName) || '';
-            return styleValue ? value == styleValue : value.length > 0;
-        };
-        BrowserDomAdapter.prototype.tagName = function (element) { return element.tagName; };
-        BrowserDomAdapter.prototype.attributeMap = function (element) {
-            var res = new Map();
-            var elAttrs = element.attributes;
-            for (var i = 0; i < elAttrs.length; i++) {
-                var attrib = elAttrs.item(i);
-                res.set(attrib.name, attrib.value);
-            }
-            return res;
-        };
-        BrowserDomAdapter.prototype.hasAttribute = function (element, attribute) {
-            return element.hasAttribute(attribute);
-        };
-        BrowserDomAdapter.prototype.hasAttributeNS = function (element, ns, attribute) {
-            return element.hasAttributeNS(ns, attribute);
-        };
-        BrowserDomAdapter.prototype.getAttribute = function (element, attribute) {
-            return element.getAttribute(attribute);
-        };
-        BrowserDomAdapter.prototype.getAttributeNS = function (element, ns, name) {
-            return element.getAttributeNS(ns, name);
-        };
-        BrowserDomAdapter.prototype.setAttribute = function (element, name, value) { element.setAttribute(name, value); };
-        BrowserDomAdapter.prototype.setAttributeNS = function (element, ns, name, value) {
-            element.setAttributeNS(ns, name, value);
-        };
-        BrowserDomAdapter.prototype.removeAttribute = function (element, attribute) { element.removeAttribute(attribute); };
-        BrowserDomAdapter.prototype.removeAttributeNS = function (element, ns, name) {
-            element.removeAttributeNS(ns, name);
-        };
-        BrowserDomAdapter.prototype.templateAwareRoot = function (el) { return this.isTemplateElement(el) ? this.content(el) : el; };
-        BrowserDomAdapter.prototype.createHtmlDocument = function () {
-            return document.implementation.createHTMLDocument('fakeTitle');
-        };
-        BrowserDomAdapter.prototype.getDefaultDocument = function () { return document; };
-        BrowserDomAdapter.prototype.getBoundingClientRect = function (el) {
-            try {
-                return el.getBoundingClientRect();
-            }
-            catch (_a) {
-                return { top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0 };
-            }
-        };
-        BrowserDomAdapter.prototype.getTitle = function (doc) { return doc.title; };
-        BrowserDomAdapter.prototype.setTitle = function (doc, newTitle) { doc.title = newTitle || ''; };
-        BrowserDomAdapter.prototype.elementMatches = function (n, selector) {
-            if (this.isElementNode(n)) {
-                return n.matches && n.matches(selector) ||
-                    n.msMatchesSelector && n.msMatchesSelector(selector) ||
-                    n.webkitMatchesSelector && n.webkitMatchesSelector(selector);
-            }
-            return false;
-        };
-        BrowserDomAdapter.prototype.isTemplateElement = function (el) {
-            return this.isElementNode(el) && el.nodeName === 'TEMPLATE';
-        };
-        BrowserDomAdapter.prototype.isTextNode = function (node) { return node.nodeType === Node.TEXT_NODE; };
-        BrowserDomAdapter.prototype.isCommentNode = function (node) { return node.nodeType === Node.COMMENT_NODE; };
-        BrowserDomAdapter.prototype.isElementNode = function (node) { return node.nodeType === Node.ELEMENT_NODE; };
-        BrowserDomAdapter.prototype.hasShadowRoot = function (node) {
-            return node.shadowRoot != null && node instanceof HTMLElement;
-        };
-        BrowserDomAdapter.prototype.isShadowRoot = function (node) { return node instanceof DocumentFragment; };
-        BrowserDomAdapter.prototype.importIntoDoc = function (node) { return document.importNode(this.templateAwareRoot(node), true); };
-        BrowserDomAdapter.prototype.adoptNode = function (node) { return document.adoptNode(node); };
-        BrowserDomAdapter.prototype.getHref = function (el) { return el.getAttribute('href'); };
-        BrowserDomAdapter.prototype.getEventKey = function (event) {
-            var key = event.key;
-            if (key == null) {
-                key = event.keyIdentifier;
-                // keyIdentifier is defined in the old draft of DOM Level 3 Events implemented by Chrome and
-                // Safari cf
-                // http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/events.html#Events-KeyboardEvents-Interfaces
-                if (key == null) {
-                    return 'Unidentified';
-                }
-                if (key.startsWith('U+')) {
-                    key = String.fromCharCode(parseInt(key.substring(2), 16));
-                    if (event.location === DOM_KEY_LOCATION_NUMPAD && _chromeNumKeyPadMap.hasOwnProperty(key)) {
-                        // There is a bug in Chrome for numeric keypad keys:
-                        // https://code.google.com/p/chromium/issues/detail?id=155654
-                        // 1, 2, 3 ... are reported as A, B, C ...
-                        key = _chromeNumKeyPadMap[key];
-                    }
-                }
-            }
-            return _keyMap[key] || key;
-        };
-        BrowserDomAdapter.prototype.getGlobalEventTarget = function (doc, target) {
-            if (target === 'window') {
-                return window;
-            }
-            if (target === 'document') {
-                return doc;
-            }
-            if (target === 'body') {
-                return doc.body;
-            }
-            return null;
-        };
-        BrowserDomAdapter.prototype.getHistory = function () { return window.history; };
-        BrowserDomAdapter.prototype.getLocation = function () { return window.location; };
-        BrowserDomAdapter.prototype.getBaseHref = function (doc) {
-            var href = getBaseElementHref();
-            return href == null ? null : relativePath(href);
-        };
-        BrowserDomAdapter.prototype.resetBaseElement = function () { baseElement = null; };
-        BrowserDomAdapter.prototype.getUserAgent = function () { return window.navigator.userAgent; };
-        BrowserDomAdapter.prototype.setData = function (element, name, value) {
-            this.setAttribute(element, 'data-' + name, value);
-        };
-        BrowserDomAdapter.prototype.getData = function (element, name) {
-            return this.getAttribute(element, 'data-' + name);
-        };
-        BrowserDomAdapter.prototype.getComputedStyle = function (element) { return getComputedStyle(element); };
-        // TODO(tbosch): move this into a separate environment class once we have it
-        BrowserDomAdapter.prototype.supportsWebAnimation = function () {
-            return typeof Element.prototype['animate'] === 'function';
-        };
-        BrowserDomAdapter.prototype.performanceNow = function () {
-            // performance.now() is not available in all browsers, see
-            // http://caniuse.com/#search=performance.now
-            return window.performance && window.performance.now ? window.performance.now() :
-                new Date().getTime();
-        };
-        BrowserDomAdapter.prototype.supportsCookies = function () { return true; };
-        BrowserDomAdapter.prototype.getCookie = function (name) { return common.ɵparseCookieValue(document.cookie, name); };
-        BrowserDomAdapter.prototype.setCookie = function (name, value) {
-            // document.cookie is magical, assigning into it assigns/overrides one cookie value, but does
-            // not clear other cookies.
-            document.cookie = encodeURIComponent(name) + '=' + encodeURIComponent(value);
-        };
-        return BrowserDomAdapter;
-    }(GenericBrowserDomAdapter));
-    var baseElement = null;
-    function getBaseElementHref() {
-        if (!baseElement) {
-            baseElement = document.querySelector('base');
-            if (!baseElement) {
-                return null;
-            }
-        }
-        return baseElement.getAttribute('href');
-    }
-    // based on urlUtils.js in AngularJS 1
-    var urlParsingNode;
-    function relativePath(url) {
-        if (!urlParsingNode) {
-            urlParsingNode = document.createElement('a');
-        }
-        urlParsingNode.setAttribute('href', url);
-        return (urlParsingNode.pathname.charAt(0) === '/') ? urlParsingNode.pathname :
-            '/' + urlParsingNode.pathname;
-    }
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    function supportsState() {
-        return !!window.history.pushState;
-    }
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    /**
-     * `PlatformLocation` encapsulates all of the direct calls to platform APIs.
-     * This class should not be used directly by an application developer. Instead, use
-     * {@link Location}.
-     */
-    var BrowserPlatformLocation = /** @class */ (function (_super) {
-        __extends$1(BrowserPlatformLocation, _super);
-        function BrowserPlatformLocation(_doc) {
-            var _this = _super.call(this) || this;
-            _this._doc = _doc;
-            _this._init();
-            return _this;
-        }
-        // This is moved to its own method so that `MockPlatformLocationStrategy` can overwrite it
-        /** @internal */
-        BrowserPlatformLocation.prototype._init = function () {
-            this.location = getDOM().getLocation();
-            this._history = getDOM().getHistory();
-        };
-        BrowserPlatformLocation.prototype.getBaseHrefFromDOM = function () { return getDOM().getBaseHref(this._doc); };
-        BrowserPlatformLocation.prototype.onPopState = function (fn) {
-            getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('popstate', fn, false);
-        };
-        BrowserPlatformLocation.prototype.onHashChange = function (fn) {
-            getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('hashchange', fn, false);
-        };
-        Object.defineProperty(BrowserPlatformLocation.prototype, "href", {
-            get: function () { return this.location.href; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(BrowserPlatformLocation.prototype, "protocol", {
-            get: function () { return this.location.protocol; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(BrowserPlatformLocation.prototype, "hostname", {
-            get: function () { return this.location.hostname; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(BrowserPlatformLocation.prototype, "port", {
-            get: function () { return this.location.port; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(BrowserPlatformLocation.prototype, "pathname", {
-            get: function () { return this.location.pathname; },
-            set: function (newPath) { this.location.pathname = newPath; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(BrowserPlatformLocation.prototype, "search", {
-            get: function () { return this.location.search; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(BrowserPlatformLocation.prototype, "hash", {
-            get: function () { return this.location.hash; },
-            enumerable: true,
-            configurable: true
-        });
-        BrowserPlatformLocation.prototype.pushState = function (state, title, url) {
-            if (supportsState()) {
-                this._history.pushState(state, title, url);
-            }
-            else {
-                this.location.hash = url;
-            }
-        };
-        BrowserPlatformLocation.prototype.replaceState = function (state, title, url) {
-            if (supportsState()) {
-                this._history.replaceState(state, title, url);
-            }
-            else {
-                this.location.hash = url;
-            }
-        };
-        BrowserPlatformLocation.prototype.forward = function () { this._history.forward(); };
-        BrowserPlatformLocation.prototype.back = function () { this._history.back(); };
-        BrowserPlatformLocation.prototype.getState = function () { return this._history.state; };
-        BrowserPlatformLocation = __decorate$1([
-            core.Injectable(),
-            __param$1(0, core.Inject(common.DOCUMENT)),
-            __metadata$1("design:paramtypes", [Object])
-        ], BrowserPlatformLocation);
-        return BrowserPlatformLocation;
-    }(common.PlatformLocation));
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    /**
-     * An id that identifies a particular application being bootstrapped, that should
-     * match across the client/server boundary.
-     */
-    var TRANSITION_ID = new core.InjectionToken('TRANSITION_ID');
-    function appInitializerFactory(transitionId, document, injector) {
-        return function () {
-            // Wait for all application initializers to be completed before removing the styles set by
-            // the server.
-            injector.get(core.ApplicationInitStatus).donePromise.then(function () {
-                var dom = getDOM();
-                var styles = Array.prototype.slice.apply(dom.querySelectorAll(document, "style[ng-transition]"));
-                styles.filter(function (el) { return dom.getAttribute(el, 'ng-transition') === transitionId; })
-                    .forEach(function (el) { return dom.remove(el); });
-            });
-        };
-    }
-    var SERVER_TRANSITION_PROVIDERS = [
-        {
-            provide: core.APP_INITIALIZER,
-            useFactory: appInitializerFactory,
-            deps: [TRANSITION_ID, common.DOCUMENT, core.Injector],
-            multi: true
-        },
-    ];
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    var BrowserGetTestability = /** @class */ (function () {
-        function BrowserGetTestability() {
-        }
-        BrowserGetTestability.init = function () { core.setTestabilityGetter(new BrowserGetTestability()); };
-        BrowserGetTestability.prototype.addToWindow = function (registry) {
-            core.ɵglobal['getAngularTestability'] = function (elem, findInAncestors) {
-                if (findInAncestors === void 0) { findInAncestors = true; }
-                var testability = registry.findTestabilityInTree(elem, findInAncestors);
-                if (testability == null) {
-                    throw new Error('Could not find testability for element.');
-                }
-                return testability;
-            };
-            core.ɵglobal['getAllAngularTestabilities'] = function () { return registry.getAllTestabilities(); };
-            core.ɵglobal['getAllAngularRootElements'] = function () { return registry.getAllRootElements(); };
-            var whenAllStable = function (callback /** TODO #9100 */) {
-                var testabilities = core.ɵglobal['getAllAngularTestabilities']();
-                var count = testabilities.length;
-                var didWork = false;
-                var decrement = function (didWork_ /** TODO #9100 */) {
-                    didWork = didWork || didWork_;
-                    count--;
-                    if (count == 0) {
-                        callback(didWork);
-                    }
-                };
-                testabilities.forEach(function (testability /** TODO #9100 */) {
-                    testability.whenStable(decrement);
-                });
-            };
-            if (!core.ɵglobal['frameworkStabilizers']) {
-                core.ɵglobal['frameworkStabilizers'] = [];
-            }
-            core.ɵglobal['frameworkStabilizers'].push(whenAllStable);
-        };
-        BrowserGetTestability.prototype.findTestabilityInTree = function (registry, elem, findInAncestors) {
-            if (elem == null) {
-                return null;
-            }
-            var t = registry.getTestability(elem);
-            if (t != null) {
-                return t;
-            }
-            else if (!findInAncestors) {
-                return null;
-            }
-            if (getDOM().isShadowRoot(elem)) {
-                return this.findTestabilityInTree(registry, getDOM().getHost(elem), true);
-            }
-            return this.findTestabilityInTree(registry, getDOM().parentElement(elem), true);
-        };
-        return BrowserGetTestability;
-    }());
-    /**
-     * Exports the value under a given `name` in the global property `ng`. For example `ng.probe` if
-     * `name` is `'probe'`.
-     * @param name Name under which it will be exported. Keep in mind this will be a property of the
-     * global `ng` object.
-     * @param value The value to export.
-     */
-    function exportNgVar(name, value) {
-        if (typeof COMPILED === 'undefined' || !COMPILED) {
-            // Note: we can't export `ng` when using closure enhanced optimization as:
-            // - closure declares globals itself for minified names, which sometimes clobber our `ng` global
-            // - we can't declare a closure extern as the namespace `ng` is already used within Google
-            //   for typings for angularJS (via `goog.provide('ng....')`).
-            var ng = core.ɵglobal['ng'] = core.ɵglobal['ng'] || {};
-            ng[name] = value;
-        }
-    }
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    var ɵ0$1 = function () { return ({
-        'ApplicationRef': core.ApplicationRef,
-        'NgZone': core.NgZone,
-    }); };
-    var CORE_TOKENS = (ɵ0$1)();
-    var INSPECT_GLOBAL_NAME = 'probe';
-    var CORE_TOKENS_GLOBAL_NAME = 'coreTokens';
-    /**
-     * Returns a {@link DebugElement} for the given native DOM element, or
-     * null if the given native element does not have an Angular view associated
-     * with it.
-     */
-    function inspectNativeElement(element) {
-        return core.getDebugNode(element);
-    }
-    function _createNgProbe(coreTokens) {
-        exportNgVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
-        exportNgVar(CORE_TOKENS_GLOBAL_NAME, __assign$1({}, CORE_TOKENS, _ngProbeTokensToMap(coreTokens || [])));
-        return function () { return inspectNativeElement; };
-    }
-    function _ngProbeTokensToMap(tokens) {
-        return tokens.reduce(function (prev, t) { return (prev[t.name] = t.token, prev); }, {});
-    }
-    /**
-     * Providers which support debugging Angular applications (e.g. via `ng.probe`).
-     */
-    var ELEMENT_PROBE_PROVIDERS__PRE_R3__ = [
-        {
-            provide: core.APP_INITIALIZER,
-            useFactory: _createNgProbe,
-            deps: [
-                [core.NgProbeToken, new core.Optional()],
-            ],
-            multi: true,
-        },
-    ];
-    var ELEMENT_PROBE_PROVIDERS = ELEMENT_PROBE_PROVIDERS__PRE_R3__;
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    /**
-     * The injection token for the event-manager plug-in service.
-     *
-     * @publicApi
-     */
-    var EVENT_MANAGER_PLUGINS = new core.InjectionToken('EventManagerPlugins');
-    /**
-     * An injectable service that provides event management for Angular
-     * through a browser plug-in.
-     *
-     * @publicApi
-     */
-    var EventManager = /** @class */ (function () {
-        /**
-         * Initializes an instance of the event-manager service.
-         */
-        function EventManager(plugins, _zone) {
-            var _this = this;
-            this._zone = _zone;
-            this._eventNameToPlugin = new Map();
-            plugins.forEach(function (p) { return p.manager = _this; });
-            this._plugins = plugins.slice().reverse();
-        }
-        /**
-         * Registers a handler for a specific element and event.
-         *
-         * @param element The HTML element to receive event notifications.
-         * @param eventName The name of the event to listen for.
-         * @param handler A function to call when the notification occurs. Receives the
-         * event object as an argument.
-         * @returns  A callback function that can be used to remove the handler.
-         */
-        EventManager.prototype.addEventListener = function (element, eventName, handler) {
-            var plugin = this._findPluginFor(eventName);
-            return plugin.addEventListener(element, eventName, handler);
-        };
-        /**
-         * Registers a global handler for an event in a target view.
-         *
-         * @param target A target for global event notifications. One of "window", "document", or "body".
-         * @param eventName The name of the event to listen for.
-         * @param handler A function to call when the notification occurs. Receives the
-         * event object as an argument.
-         * @returns A callback function that can be used to remove the handler.
-         */
-        EventManager.prototype.addGlobalEventListener = function (target, eventName, handler) {
-            var plugin = this._findPluginFor(eventName);
-            return plugin.addGlobalEventListener(target, eventName, handler);
-        };
-        /**
-         * Retrieves the compilation zone in which event listeners are registered.
-         */
-        EventManager.prototype.getZone = function () { return this._zone; };
-        /** @internal */
-        EventManager.prototype._findPluginFor = function (eventName) {
-            var plugin = this._eventNameToPlugin.get(eventName);
-            if (plugin) {
-                return plugin;
-            }
-            var plugins = this._plugins;
-            for (var i = 0; i < plugins.length; i++) {
-                var plugin_1 = plugins[i];
-                if (plugin_1.supports(eventName)) {
-                    this._eventNameToPlugin.set(eventName, plugin_1);
-                    return plugin_1;
-                }
-            }
-            throw new Error("No event manager plugin found for event " + eventName);
-        };
-        EventManager = __decorate$1([
-            core.Injectable(),
-            __param$1(0, core.Inject(EVENT_MANAGER_PLUGINS)),
-            __metadata$1("design:paramtypes", [Array, core.NgZone])
-        ], EventManager);
-        return EventManager;
-    }());
-    var EventManagerPlugin = /** @class */ (function () {
-        function EventManagerPlugin(_doc) {
-            this._doc = _doc;
-        }
-        EventManagerPlugin.prototype.addGlobalEventListener = function (element, eventName, handler) {
-            var target = getDOM().getGlobalEventTarget(this._doc, element);
-            if (!target) {
-                throw new Error("Unsupported event target " + target + " for event " + eventName);
-            }
-            return this.addEventListener(target, eventName, handler);
-        };
-        return EventManagerPlugin;
-    }());
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    var SharedStylesHost = /** @class */ (function () {
-        function SharedStylesHost() {
-            /** @internal */
-            this._stylesSet = new Set();
-        }
-        SharedStylesHost.prototype.addStyles = function (styles) {
-            var _this = this;
-            var additions = new Set();
-            styles.forEach(function (style) {
-                if (!_this._stylesSet.has(style)) {
-                    _this._stylesSet.add(style);
-                    additions.add(style);
-                }
-            });
-            this.onStylesAdded(additions);
-        };
-        SharedStylesHost.prototype.onStylesAdded = function (additions) { };
-        SharedStylesHost.prototype.getAllStyles = function () { return Array.from(this._stylesSet); };
-        SharedStylesHost = __decorate$1([
-            core.Injectable()
-        ], SharedStylesHost);
-        return SharedStylesHost;
-    }());
-    var DomSharedStylesHost = /** @class */ (function (_super) {
-        __extends$1(DomSharedStylesHost, _super);
-        function DomSharedStylesHost(_doc) {
-            var _this = _super.call(this) || this;
-            _this._doc = _doc;
-            _this._hostNodes = new Set();
-            _this._styleNodes = new Set();
-            _this._hostNodes.add(_doc.head);
-            return _this;
-        }
-        DomSharedStylesHost.prototype._addStylesToHost = function (styles, host) {
-            var _this = this;
-            styles.forEach(function (style) {
-                var styleEl = _this._doc.createElement('style');
-                styleEl.textContent = style;
-                _this._styleNodes.add(host.appendChild(styleEl));
-            });
-        };
-        DomSharedStylesHost.prototype.addHost = function (hostNode) {
-            this._addStylesToHost(this._stylesSet, hostNode);
-            this._hostNodes.add(hostNode);
-        };
-        DomSharedStylesHost.prototype.removeHost = function (hostNode) { this._hostNodes.delete(hostNode); };
-        DomSharedStylesHost.prototype.onStylesAdded = function (additions) {
-            var _this = this;
-            this._hostNodes.forEach(function (hostNode) { return _this._addStylesToHost(additions, hostNode); });
-        };
-        DomSharedStylesHost.prototype.ngOnDestroy = function () { this._styleNodes.forEach(function (styleNode) { return getDOM().remove(styleNode); }); };
-        DomSharedStylesHost = __decorate$1([
-            core.Injectable(),
-            __param$1(0, core.Inject(common.DOCUMENT)),
-            __metadata$1("design:paramtypes", [Object])
-        ], DomSharedStylesHost);
-        return DomSharedStylesHost;
-    }(SharedStylesHost));
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    var NAMESPACE_URIS = {
-        'svg': 'http://www.w3.org/2000/svg',
-        'xhtml': 'http://www.w3.org/1999/xhtml',
-        'xlink': 'http://www.w3.org/1999/xlink',
-        'xml': 'http://www.w3.org/XML/1998/namespace',
-        'xmlns': 'http://www.w3.org/2000/xmlns/',
-    };
-    var COMPONENT_REGEX = /%COMP%/g;
-    var COMPONENT_VARIABLE = '%COMP%';
-    var HOST_ATTR = "_nghost-" + COMPONENT_VARIABLE;
-    var CONTENT_ATTR = "_ngcontent-" + COMPONENT_VARIABLE;
-    function shimContentAttribute(componentShortId) {
-        return CONTENT_ATTR.replace(COMPONENT_REGEX, componentShortId);
-    }
-    function shimHostAttribute(componentShortId) {
-        return HOST_ATTR.replace(COMPONENT_REGEX, componentShortId);
-    }
-    function flattenStyles(compId, styles, target) {
-        for (var i = 0; i < styles.length; i++) {
-            var style = styles[i];
-            if (Array.isArray(style)) {
-                flattenStyles(compId, style, target);
-            }
-            else {
-                style = style.replace(COMPONENT_REGEX, compId);
-                target.push(style);
-            }
-        }
-        return target;
-    }
-    function decoratePreventDefault(eventHandler) {
-        return function (event) {
-            var allowDefaultBehavior = eventHandler(event);
-            if (allowDefaultBehavior === false) {
-                // TODO(tbosch): move preventDefault into event plugins...
-                event.preventDefault();
-                event.returnValue = false;
-            }
-        };
-    }
-    var DomRendererFactory2 = /** @class */ (function () {
-        function DomRendererFactory2(eventManager, sharedStylesHost, appId) {
-            this.eventManager = eventManager;
-            this.sharedStylesHost = sharedStylesHost;
-            this.appId = appId;
-            this.rendererByCompId = new Map();
-            this.defaultRenderer = new DefaultDomRenderer2(eventManager);
-        }
-        DomRendererFactory2.prototype.createRenderer = function (element, type) {
-            if (!element || !type) {
-                return this.defaultRenderer;
-            }
-            switch (type.encapsulation) {
-                case core.ViewEncapsulation.Emulated: {
-                    var renderer = this.rendererByCompId.get(type.id);
-                    if (!renderer) {
-                        renderer = new EmulatedEncapsulationDomRenderer2(this.eventManager, this.sharedStylesHost, type, this.appId);
-                        this.rendererByCompId.set(type.id, renderer);
-                    }
-                    renderer.applyToHost(element);
-                    return renderer;
-                }
-                case core.ViewEncapsulation.Native:
-                case core.ViewEncapsulation.ShadowDom:
-                    return new ShadowDomRenderer(this.eventManager, this.sharedStylesHost, element, type);
-                default: {
-                    if (!this.rendererByCompId.has(type.id)) {
-                        var styles = flattenStyles(type.id, type.styles, []);
-                        this.sharedStylesHost.addStyles(styles);
-                        this.rendererByCompId.set(type.id, this.defaultRenderer);
-                    }
-                    return this.defaultRenderer;
-                }
-            }
-        };
-        DomRendererFactory2.prototype.begin = function () { };
-        DomRendererFactory2.prototype.end = function () { };
-        DomRendererFactory2 = __decorate$1([
-            core.Injectable(),
-            __param$1(2, core.Inject(core.APP_ID)),
-            __metadata$1("design:paramtypes", [EventManager, DomSharedStylesHost, String])
-        ], DomRendererFactory2);
-        return DomRendererFactory2;
-    }());
-    var DefaultDomRenderer2 = /** @class */ (function () {
-        function DefaultDomRenderer2(eventManager) {
-            this.eventManager = eventManager;
-            this.data = Object.create(null);
-        }
-        DefaultDomRenderer2.prototype.destroy = function () { };
-        DefaultDomRenderer2.prototype.createElement = function (name, namespace) {
-            if (namespace) {
-                // In cases where Ivy (not ViewEngine) is giving us the actual namespace, the look up by key
-                // will result in undefined, so we just return the namespace here.
-                return document.createElementNS(NAMESPACE_URIS[namespace] || namespace, name);
-            }
-            return document.createElement(name);
-        };
-        DefaultDomRenderer2.prototype.createComment = function (value) { return document.createComment(value); };
-        DefaultDomRenderer2.prototype.createText = function (value) { return document.createTextNode(value); };
-        DefaultDomRenderer2.prototype.appendChild = function (parent, newChild) { parent.appendChild(newChild); };
-        DefaultDomRenderer2.prototype.insertBefore = function (parent, newChild, refChild) {
-            if (parent) {
-                parent.insertBefore(newChild, refChild);
-            }
-        };
-        DefaultDomRenderer2.prototype.removeChild = function (parent, oldChild) {
-            if (parent) {
-                parent.removeChild(oldChild);
-            }
-        };
-        DefaultDomRenderer2.prototype.selectRootElement = function (selectorOrNode, preserveContent) {
-            var el = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :
-                selectorOrNode;
-            if (!el) {
-                throw new Error("The selector \"" + selectorOrNode + "\" did not match any elements");
-            }
-            if (!preserveContent) {
-                el.textContent = '';
-            }
-            return el;
-        };
-        DefaultDomRenderer2.prototype.parentNode = function (node) { return node.parentNode; };
-        DefaultDomRenderer2.prototype.nextSibling = function (node) { return node.nextSibling; };
-        DefaultDomRenderer2.prototype.setAttribute = function (el, name, value, namespace) {
-            if (namespace) {
-                name = namespace + ':' + name;
-                // TODO(benlesh): Ivy may cause issues here because it's passing around
-                // full URIs for namespaces, therefore this lookup will fail.
-                var namespaceUri = NAMESPACE_URIS[namespace];
-                if (namespaceUri) {
-                    el.setAttributeNS(namespaceUri, name, value);
-                }
-                else {
-                    el.setAttribute(name, value);
-                }
-            }
-            else {
-                el.setAttribute(name, value);
-            }
-        };
-        DefaultDomRenderer2.prototype.removeAttribute = function (el, name, namespace) {
-            if (namespace) {
-                // TODO(benlesh): Ivy may cause issues here because it's passing around
-                // full URIs for namespaces, therefore this lookup will fail.
-                var namespaceUri = NAMESPACE_URIS[namespace];
-                if (namespaceUri) {
-                    el.removeAttributeNS(namespaceUri, name);
-                }
-                else {
-                    // TODO(benlesh): Since ivy is passing around full URIs for namespaces
-                    // this could result in properties like `http://www.w3.org/2000/svg:cx="123"`,
-                    // which is wrong.
-                    el.removeAttribute(namespace + ":" + name);
-                }
-            }
-            else {
-                el.removeAttribute(name);
-            }
-        };
-        DefaultDomRenderer2.prototype.addClass = function (el, name) { el.classList.add(name); };
-        DefaultDomRenderer2.prototype.removeClass = function (el, name) { el.classList.remove(name); };
-        DefaultDomRenderer2.prototype.setStyle = function (el, style, value, flags) {
-            if (flags & core.RendererStyleFlags2.DashCase) {
-                el.style.setProperty(style, value, !!(flags & core.RendererStyleFlags2.Important) ? 'important' : '');
-            }
-            else {
-                el.style[style] = value;
-            }
-        };
-        DefaultDomRenderer2.prototype.removeStyle = function (el, style, flags) {
-            if (flags & core.RendererStyleFlags2.DashCase) {
-                el.style.removeProperty(style);
-            }
-            else {
-                // IE requires '' instead of null
-                // see https://github.com/angular/angular/issues/7916
-                el.style[style] = '';
-            }
-        };
-        DefaultDomRenderer2.prototype.setProperty = function (el, name, value) {
-            checkNoSyntheticProp(name, 'property');
-            el[name] = value;
-        };
-        DefaultDomRenderer2.prototype.setValue = function (node, value) { node.nodeValue = value; };
-        DefaultDomRenderer2.prototype.listen = function (target, event, callback) {
-            checkNoSyntheticProp(event, 'listener');
-            if (typeof target === 'string') {
-                return this.eventManager.addGlobalEventListener(target, event, decoratePreventDefault(callback));
-            }
-            return this.eventManager.addEventListener(target, event, decoratePreventDefault(callback));
-        };
-        return DefaultDomRenderer2;
-    }());
-    var ɵ0$2 = function () { return '@'.charCodeAt(0); };
-    var AT_CHARCODE = (ɵ0$2)();
-    function checkNoSyntheticProp(name, nameKind) {
-        if (name.charCodeAt(0) === AT_CHARCODE) {
-            throw new Error("Found the synthetic " + nameKind + " " + name + ". Please include either \"BrowserAnimationsModule\" or \"NoopAnimationsModule\" in your application.");
-        }
-    }
-    var EmulatedEncapsulationDomRenderer2 = /** @class */ (function (_super) {
-        __extends$1(EmulatedEncapsulationDomRenderer2, _super);
-        function EmulatedEncapsulationDomRenderer2(eventManager, sharedStylesHost, component, appId) {
-            var _this = _super.call(this, eventManager) || this;
-            _this.component = component;
-            var styles = flattenStyles(appId + '-' + component.id, component.styles, []);
-            sharedStylesHost.addStyles(styles);
-            _this.contentAttr = shimContentAttribute(appId + '-' + component.id);
-            _this.hostAttr = shimHostAttribute(appId + '-' + component.id);
-            return _this;
-        }
-        EmulatedEncapsulationDomRenderer2.prototype.applyToHost = function (element) { _super.prototype.setAttribute.call(this, element, this.hostAttr, ''); };
-        EmulatedEncapsulationDomRenderer2.prototype.createElement = function (parent, name) {
-            var el = _super.prototype.createElement.call(this, parent, name);
-            _super.prototype.setAttribute.call(this, el, this.contentAttr, '');
-            return el;
-        };
-        return EmulatedEncapsulationDomRenderer2;
-    }(DefaultDomRenderer2));
-    var ShadowDomRenderer = /** @class */ (function (_super) {
-        __extends$1(ShadowDomRenderer, _super);
-        function ShadowDomRenderer(eventManager, sharedStylesHost, hostEl, component) {
-            var _this = _super.call(this, eventManager) || this;
-            _this.sharedStylesHost = sharedStylesHost;
-            _this.hostEl = hostEl;
-            _this.component = component;
-            if (component.encapsulation === core.ViewEncapsulation.ShadowDom) {
-                _this.shadowRoot = hostEl.attachShadow({ mode: 'open' });
-            }
-            else {
-                _this.shadowRoot = hostEl.createShadowRoot();
-            }
-            _this.sharedStylesHost.addHost(_this.shadowRoot);
-            var styles = flattenStyles(component.id, component.styles, []);
-            for (var i = 0; i < styles.length; i++) {
-                var styleEl = document.createElement('style');
-                styleEl.textContent = styles[i];
-                _this.shadowRoot.appendChild(styleEl);
-            }
-            return _this;
-        }
-        ShadowDomRenderer.prototype.nodeOrShadowRoot = function (node) { return node === this.hostEl ? this.shadowRoot : node; };
-        ShadowDomRenderer.prototype.destroy = function () { this.sharedStylesHost.removeHost(this.shadowRoot); };
-        ShadowDomRenderer.prototype.appendChild = function (parent, newChild) {
-            return _super.prototype.appendChild.call(this, this.nodeOrShadowRoot(parent), newChild);
-        };
-        ShadowDomRenderer.prototype.insertBefore = function (parent, newChild, refChild) {
-            return _super.prototype.insertBefore.call(this, this.nodeOrShadowRoot(parent), newChild, refChild);
-        };
-        ShadowDomRenderer.prototype.removeChild = function (parent, oldChild) {
-            return _super.prototype.removeChild.call(this, this.nodeOrShadowRoot(parent), oldChild);
-        };
-        ShadowDomRenderer.prototype.parentNode = function (node) {
-            return this.nodeOrShadowRoot(_super.prototype.parentNode.call(this, this.nodeOrShadowRoot(node)));
-        };
-        return ShadowDomRenderer;
-    }(DefaultDomRenderer2));
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    var ɵ0$3 = function () { return (typeof Zone !== 'undefined') && Zone['__symbol__'] ||
-        function (v) { return '__zone_symbol__' + v; }; };
-    /**
-     * Detect if Zone is present. If it is then use simple zone aware 'addEventListener'
-     * since Angular can do much more
-     * efficient bookkeeping than Zone can, because we have additional information. This speeds up
-     * addEventListener by 3x.
-     */
-    var __symbol__ = (ɵ0$3)();
-    var ADD_EVENT_LISTENER = __symbol__('addEventListener');
-    var REMOVE_EVENT_LISTENER = __symbol__('removeEventListener');
-    var symbolNames = {};
-    var FALSE = 'FALSE';
-    var ANGULAR = 'ANGULAR';
-    var NATIVE_ADD_LISTENER = 'addEventListener';
-    var NATIVE_REMOVE_LISTENER = 'removeEventListener';
-    // use the same symbol string which is used in zone.js
-    var stopSymbol = '__zone_symbol__propagationStopped';
-    var stopMethodSymbol = '__zone_symbol__stopImmediatePropagation';
-    var ɵ1 = function () {
-        var blackListedEvents = (typeof Zone !== 'undefined') && Zone[__symbol__('BLACK_LISTED_EVENTS')];
-        if (blackListedEvents) {
-            var res_1 = {};
-            blackListedEvents.forEach(function (eventName) { res_1[eventName] = eventName; });
-            return res_1;
-        }
-        return undefined;
-    };
-    var blackListedMap = (ɵ1)();
-    var isBlackListedEvent = function (eventName) {
-        if (!blackListedMap) {
-            return false;
-        }
-        return blackListedMap.hasOwnProperty(eventName);
-    };
-    // a global listener to handle all dom event,
-    // so we do not need to create a closure every time
-    var globalListener = function (event) {
-        var symbolName = symbolNames[event.type];
-        if (!symbolName) {
-            return;
-        }
-        var taskDatas = this[symbolName];
-        if (!taskDatas) {
-            return;
-        }
-        var args = [event];
-        if (taskDatas.length === 1) {
-            // if taskDatas only have one element, just invoke it
-            var taskData = taskDatas[0];
-            if (taskData.zone !== Zone.current) {
-                // only use Zone.run when Zone.current not equals to stored zone
-                return taskData.zone.run(taskData.handler, this, args);
-            }
-            else {
-                return taskData.handler.apply(this, args);
-            }
-        }
-        else {
-            // copy tasks as a snapshot to avoid event handlers remove
-            // itself or others
-            var copiedTasks = taskDatas.slice();
-            for (var i = 0; i < copiedTasks.length; i++) {
-                // if other listener call event.stopImmediatePropagation
-                // just break
-                if (event[stopSymbol] === true) {
-                    break;
-                }
-                var taskData = copiedTasks[i];
-                if (taskData.zone !== Zone.current) {
-                    // only use Zone.run when Zone.current not equals to stored zone
-                    taskData.zone.run(taskData.handler, this, args);
-                }
-                else {
-                    taskData.handler.apply(this, args);
-                }
-            }
-        }
-    };
-    var DomEventsPlugin = /** @class */ (function (_super) {
-        __extends$1(DomEventsPlugin, _super);
-        function DomEventsPlugin(doc, ngZone, platformId) {
-            var _this = _super.call(this, doc) || this;
-            _this.ngZone = ngZone;
-            if (!platformId || !common.isPlatformServer(platformId)) {
-                _this.patchEvent();
-            }
-            return _this;
-        }
-        DomEventsPlugin.prototype.patchEvent = function () {
-            if (typeof Event === 'undefined' || !Event || !Event.prototype) {
-                return;
-            }
-            if (Event.prototype[stopMethodSymbol]) {
-                // already patched by zone.js
-                return;
-            }
-            var delegate = Event.prototype[stopMethodSymbol] =
-                Event.prototype.stopImmediatePropagation;
-            Event.prototype.stopImmediatePropagation = function () {
-                if (this) {
-                    this[stopSymbol] = true;
-                }
-                // We should call native delegate in case in some environment part of
-                // the application will not use the patched Event. Also we cast the
-                // "arguments" to any since "stopImmediatePropagation" technically does not
-                // accept any arguments, but we don't know what developers pass through the
-                // function and we want to not break these calls.
-                delegate && delegate.apply(this, arguments);
-            };
-        };
-        // This plugin should come last in the list of plugins, because it accepts all
-        // events.
-        DomEventsPlugin.prototype.supports = function (eventName) { return true; };
-        DomEventsPlugin.prototype.addEventListener = function (element, eventName, handler) {
-            var _this = this;
-            var zoneJsLoaded = element[ADD_EVENT_LISTENER];
-            var callback = handler;
-            // if zonejs is loaded and current zone is not ngZone
-            // we keep Zone.current on target for later restoration.
-            if (zoneJsLoaded && (!core.NgZone.isInAngularZone() || isBlackListedEvent(eventName))) {
-                var symbolName = symbolNames[eventName];
-                if (!symbolName) {
-                    symbolName = symbolNames[eventName] = __symbol__(ANGULAR + eventName + FALSE);
-                }
-                var taskDatas = element[symbolName];
-                var globalListenerRegistered = taskDatas && taskDatas.length > 0;
-                if (!taskDatas) {
-                    taskDatas = element[symbolName] = [];
-                }
-                var zone = isBlackListedEvent(eventName) ? Zone.root : Zone.current;
-                if (taskDatas.length === 0) {
-                    taskDatas.push({ zone: zone, handler: callback });
-                }
-                else {
-                    var callbackRegistered = false;
-                    for (var i = 0; i < taskDatas.length; i++) {
-                        if (taskDatas[i].handler === callback) {
-                            callbackRegistered = true;
-                            break;
-                        }
-                    }
-                    if (!callbackRegistered) {
-                        taskDatas.push({ zone: zone, handler: callback });
-                    }
-                }
-                if (!globalListenerRegistered) {
-                    element[ADD_EVENT_LISTENER](eventName, globalListener, false);
-                }
-            }
-            else {
-                element[NATIVE_ADD_LISTENER](eventName, callback, false);
-            }
-            return function () { return _this.removeEventListener(element, eventName, callback); };
-        };
-        DomEventsPlugin.prototype.removeEventListener = function (target, eventName, callback) {
-            var underlyingRemove = target[REMOVE_EVENT_LISTENER];
-            // zone.js not loaded, use native removeEventListener
-            if (!underlyingRemove) {
-                return target[NATIVE_REMOVE_LISTENER].apply(target, [eventName, callback, false]);
-            }
-            var symbolName = symbolNames[eventName];
-            var taskDatas = symbolName && target[symbolName];
-            if (!taskDatas) {
-                // addEventListener not using patched version
-                // just call native removeEventListener
-                return target[NATIVE_REMOVE_LISTENER].apply(target, [eventName, callback, false]);
-            }
-            // fix issue 20532, should be able to remove
-            // listener which was added inside of ngZone
-            var found = false;
-            for (var i = 0; i < taskDatas.length; i++) {
-                // remove listener from taskDatas if the callback equals
-                if (taskDatas[i].handler === callback) {
-                    found = true;
-                    taskDatas.splice(i, 1);
-                    break;
-                }
-            }
-            if (found) {
-                if (taskDatas.length === 0) {
-                    // all listeners are removed, we can remove the globalListener from target
-                    underlyingRemove.apply(target, [eventName, globalListener, false]);
-                }
-            }
-            else {
-                // not found in taskDatas, the callback may be added inside of ngZone
-                // use native remove listener to remove the callback
-                target[NATIVE_REMOVE_LISTENER].apply(target, [eventName, callback, false]);
-            }
-        };
-        DomEventsPlugin = __decorate$1([
-            core.Injectable(),
-            __param$1(0, core.Inject(common.DOCUMENT)),
-            __param$1(2, core.Optional()), __param$1(2, core.Inject(core.PLATFORM_ID)),
-            __metadata$1("design:paramtypes", [Object, core.NgZone, Object])
-        ], DomEventsPlugin);
-        return DomEventsPlugin;
-    }(EventManagerPlugin));
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    /**
-     * Supported HammerJS recognizer event names.
-     */
-    var EVENT_NAMES = {
-        // pan
-        'pan': true,
-        'panstart': true,
-        'panmove': true,
-        'panend': true,
-        'pancancel': true,
-        'panleft': true,
-        'panright': true,
-        'panup': true,
-        'pandown': true,
-        // pinch
-        'pinch': true,
-        'pinchstart': true,
-        'pinchmove': true,
-        'pinchend': true,
-        'pinchcancel': true,
-        'pinchin': true,
-        'pinchout': true,
-        // press
-        'press': true,
-        'pressup': true,
-        // rotate
-        'rotate': true,
-        'rotatestart': true,
-        'rotatemove': true,
-        'rotateend': true,
-        'rotatecancel': true,
-        // swipe
-        'swipe': true,
-        'swipeleft': true,
-        'swiperight': true,
-        'swipeup': true,
-        'swipedown': true,
-        // tap
-        'tap': true,
-    };
-    /**
-     * DI token for providing [HammerJS](http://hammerjs.github.io/) support to Angular.
-     * @see `HammerGestureConfig`
-     *
-     * @publicApi
-     */
-    var HAMMER_GESTURE_CONFIG = new core.InjectionToken('HammerGestureConfig');
-    /**
-     * Injection token used to provide a {@link HammerLoader} to Angular.
-     *
-     * @publicApi
-     */
-    var HAMMER_LOADER = new core.InjectionToken('HammerLoader');
-    /**
-     * An injectable [HammerJS Manager](http://hammerjs.github.io/api/#hammer.manager)
-     * for gesture recognition. Configures specific event recognition.
-     * @publicApi
-     */
-    var HammerGestureConfig = /** @class */ (function () {
-        function HammerGestureConfig() {
-            /**
-             * A set of supported event names for gestures to be used in Angular.
-             * Angular supports all built-in recognizers, as listed in
-             * [HammerJS documentation](http://hammerjs.github.io/).
-             */
-            this.events = [];
-            /**
-            * Maps gesture event names to a set of configuration options
-            * that specify overrides to the default values for specific properties.
-            *
-            * The key is a supported event name to be configured,
-            * and the options object contains a set of properties, with override values
-            * to be applied to the named recognizer event.
-            * For example, to disable recognition of the rotate event, specify
-            *  `{"rotate": {"enable": false}}`.
-            *
-            * Properties that are not present take the HammerJS default values.
-            * For information about which properties are supported for which events,
-            * and their allowed and default values, see
-            * [HammerJS documentation](http://hammerjs.github.io/).
-            *
-            */
-            this.overrides = {};
-        }
-        /**
-         * Creates a [HammerJS Manager](http://hammerjs.github.io/api/#hammer.manager)
-         * and attaches it to a given HTML element.
-         * @param element The element that will recognize gestures.
-         * @returns A HammerJS event-manager object.
-         */
-        HammerGestureConfig.prototype.buildHammer = function (element) {
-            var mc = new Hammer(element, this.options);
-            mc.get('pinch').set({ enable: true });
-            mc.get('rotate').set({ enable: true });
-            for (var eventName in this.overrides) {
-                mc.get(eventName).set(this.overrides[eventName]);
-            }
-            return mc;
-        };
-        HammerGestureConfig = __decorate$1([
-            core.Injectable()
-        ], HammerGestureConfig);
-        return HammerGestureConfig;
-    }());
-    var HammerGesturesPlugin = /** @class */ (function (_super) {
-        __extends$1(HammerGesturesPlugin, _super);
-        function HammerGesturesPlugin(doc, _config, console, loader) {
-            var _this = _super.call(this, doc) || this;
-            _this._config = _config;
-            _this.console = console;
-            _this.loader = loader;
-            return _this;
-        }
-        HammerGesturesPlugin.prototype.supports = function (eventName) {
-            if (!EVENT_NAMES.hasOwnProperty(eventName.toLowerCase()) && !this.isCustomEvent(eventName)) {
-                return false;
-            }
-            if (!window.Hammer && !this.loader) {
-                this.console.warn("The \"" + eventName + "\" event cannot be bound because Hammer.JS is not " +
-                    "loaded and no custom loader has been specified.");
-                return false;
-            }
-            return true;
-        };
-        HammerGesturesPlugin.prototype.addEventListener = function (element, eventName, handler) {
-            var _this = this;
-            var zone = this.manager.getZone();
-            eventName = eventName.toLowerCase();
-            // If Hammer is not present but a loader is specified, we defer adding the event listener
-            // until Hammer is loaded.
-            if (!window.Hammer && this.loader) {
-                // This `addEventListener` method returns a function to remove the added listener.
-                // Until Hammer is loaded, the returned function needs to *cancel* the registration rather
-                // than remove anything.
-                var cancelRegistration_1 = false;
-                var deregister_1 = function () { cancelRegistration_1 = true; };
-                this.loader()
-                    .then(function () {
-                    // If Hammer isn't actually loaded when the custom loader resolves, give up.
-                    if (!window.Hammer) {
-                        _this.console.warn("The custom HAMMER_LOADER completed, but Hammer.JS is not present.");
-                        deregister_1 = function () { };
-                        return;
-                    }
-                    if (!cancelRegistration_1) {
-                        // Now that Hammer is loaded and the listener is being loaded for real,
-                        // the deregistration function changes from canceling registration to removal.
-                        deregister_1 = _this.addEventListener(element, eventName, handler);
-                    }
-                })
-                    .catch(function () {
-                    _this.console.warn("The \"" + eventName + "\" event cannot be bound because the custom " +
-                        "Hammer.JS loader failed.");
-                    deregister_1 = function () { };
-                });
-                // Return a function that *executes* `deregister` (and not `deregister` itself) so that we
-                // can change the behavior of `deregister` once the listener is added. Using a closure in
-                // this way allows us to avoid any additional data structures to track listener removal.
-                return function () { deregister_1(); };
-            }
-            return zone.runOutsideAngular(function () {
-                // Creating the manager bind events, must be done outside of angular
-                var mc = _this._config.buildHammer(element);
-                var callback = function (eventObj) {
-                    zone.runGuarded(function () { handler(eventObj); });
-                };
-                mc.on(eventName, callback);
-                return function () {
-                    mc.off(eventName, callback);
-                    // destroy mc to prevent memory leak
-                    if (typeof mc.destroy === 'function') {
-                        mc.destroy();
-                    }
-                };
-            });
-        };
-        HammerGesturesPlugin.prototype.isCustomEvent = function (eventName) { return this._config.events.indexOf(eventName) > -1; };
-        HammerGesturesPlugin = __decorate$1([
-            core.Injectable(),
-            __param$1(0, core.Inject(common.DOCUMENT)),
-            __param$1(1, core.Inject(HAMMER_GESTURE_CONFIG)),
-            __param$1(3, core.Optional()), __param$1(3, core.Inject(HAMMER_LOADER)),
-            __metadata$1("design:paramtypes", [Object, HammerGestureConfig, core.ɵConsole, Object])
-        ], HammerGesturesPlugin);
-        return HammerGesturesPlugin;
-    }(EventManagerPlugin));
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    /**
-     * Defines supported modifiers for key events.
-     */
-    var MODIFIER_KEYS = ['alt', 'control', 'meta', 'shift'];
-    var ɵ0$4 = function (event) { return event.altKey; }, ɵ1$1 = function (event) { return event.ctrlKey; }, ɵ2$1 = function (event) { return event.metaKey; }, ɵ3$1 = function (event) { return event.shiftKey; };
-    /**
-     * Retrieves modifiers from key-event objects.
-     */
-    var MODIFIER_KEY_GETTERS = {
-        'alt': ɵ0$4,
-        'control': ɵ1$1,
-        'meta': ɵ2$1,
-        'shift': ɵ3$1
-    };
-    /**
-     * @publicApi
-     * A browser plug-in that provides support for handling of key events in Angular.
-     */
-    var KeyEventsPlugin = /** @class */ (function (_super) {
-        __extends$1(KeyEventsPlugin, _super);
-        /**
-         * Initializes an instance of the browser plug-in.
-         * @param doc The document in which key events will be detected.
-         */
-        function KeyEventsPlugin(doc) {
-            return _super.call(this, doc) || this;
-        }
-        KeyEventsPlugin_1 = KeyEventsPlugin;
-        /**
-          * Reports whether a named key event is supported.
-          * @param eventName The event name to query.
-          * @return True if the named key event is supported.
-         */
-        KeyEventsPlugin.prototype.supports = function (eventName) { return KeyEventsPlugin_1.parseEventName(eventName) != null; };
-        /**
-         * Registers a handler for a specific element and key event.
-         * @param element The HTML element to receive event notifications.
-         * @param eventName The name of the key event to listen for.
-         * @param handler A function to call when the notification occurs. Receives the
-         * event object as an argument.
-         * @returns The key event that was registered.
-        */
-        KeyEventsPlugin.prototype.addEventListener = function (element, eventName, handler) {
-            var parsedEvent = KeyEventsPlugin_1.parseEventName(eventName);
-            var outsideHandler = KeyEventsPlugin_1.eventCallback(parsedEvent['fullKey'], handler, this.manager.getZone());
-            return this.manager.getZone().runOutsideAngular(function () {
-                return getDOM().onAndCancel(element, parsedEvent['domEventName'], outsideHandler);
-            });
-        };
-        KeyEventsPlugin.parseEventName = function (eventName) {
-            var parts = eventName.toLowerCase().split('.');
-            var domEventName = parts.shift();
-            if ((parts.length === 0) || !(domEventName === 'keydown' || domEventName === 'keyup')) {
-                return null;
-            }
-            var key = KeyEventsPlugin_1._normalizeKey(parts.pop());
-            var fullKey = '';
-            MODIFIER_KEYS.forEach(function (modifierName) {
-                var index = parts.indexOf(modifierName);
-                if (index > -1) {
-                    parts.splice(index, 1);
-                    fullKey += modifierName + '.';
-                }
-            });
-            fullKey += key;
-            if (parts.length != 0 || key.length === 0) {
-                // returning null instead of throwing to let another plugin process the event
-                return null;
-            }
-            var result = {};
-            result['domEventName'] = domEventName;
-            result['fullKey'] = fullKey;
-            return result;
-        };
-        KeyEventsPlugin.getEventFullKey = function (event) {
-            var fullKey = '';
-            var key = getDOM().getEventKey(event);
-            key = key.toLowerCase();
-            if (key === ' ') {
-                key = 'space'; // for readability
-            }
-            else if (key === '.') {
-                key = 'dot'; // because '.' is used as a separator in event names
-            }
-            MODIFIER_KEYS.forEach(function (modifierName) {
-                if (modifierName != key) {
-                    var modifierGetter = MODIFIER_KEY_GETTERS[modifierName];
-                    if (modifierGetter(event)) {
-                        fullKey += modifierName + '.';
-                    }
-                }
-            });
-            fullKey += key;
-            return fullKey;
-        };
-        /**
-         * Configures a handler callback for a key event.
-         * @param fullKey The event name that combines all simultaneous keystrokes.
-         * @param handler The function that responds to the key event.
-         * @param zone The zone in which the event occurred.
-         * @returns A callback function.
-         */
-        KeyEventsPlugin.eventCallback = function (fullKey, handler, zone) {
-            return function (event /** TODO #9100 */) {
-                if (KeyEventsPlugin_1.getEventFullKey(event) === fullKey) {
-                    zone.runGuarded(function () { return handler(event); });
-                }
-            };
-        };
-        /** @internal */
-        KeyEventsPlugin._normalizeKey = function (keyName) {
-            // TODO: switch to a Map if the mapping grows too much
-            switch (keyName) {
-                case 'esc':
-                    return 'escape';
-                default:
-                    return keyName;
-            }
-        };
-        var KeyEventsPlugin_1;
-        KeyEventsPlugin = KeyEventsPlugin_1 = __decorate$1([
-            core.Injectable(),
-            __param$1(0, core.Inject(common.DOCUMENT)),
-            __metadata$1("design:paramtypes", [Object])
-        ], KeyEventsPlugin);
-        return KeyEventsPlugin;
-    }(EventManagerPlugin));
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    /**
-     * DomSanitizer helps preventing Cross Site Scripting Security bugs (XSS) by sanitizing
-     * values to be safe to use in the different DOM contexts.
-     *
-     * For example, when binding a URL in an `<a [href]="someValue">` hyperlink, `someValue` will be
-     * sanitized so that an attacker cannot inject e.g. a `javascript:` URL that would execute code on
-     * the website.
-     *
-     * In specific situations, it might be necessary to disable sanitization, for example if the
-     * application genuinely needs to produce a `javascript:` style link with a dynamic value in it.
-     * Users can bypass security by constructing a value with one of the `bypassSecurityTrust...`
-     * methods, and then binding to that value from the template.
-     *
-     * These situations should be very rare, and extraordinary care must be taken to avoid creating a
-     * Cross Site Scripting (XSS) security bug!
-     *
-     * When using `bypassSecurityTrust...`, make sure to call the method as early as possible and as
-     * close as possible to the source of the value, to make it easy to verify no security bug is
-     * created by its use.
-     *
-     * It is not required (and not recommended) to bypass security if the value is safe, e.g. a URL that
-     * does not start with a suspicious protocol, or an HTML snippet that does not contain dangerous
-     * code. The sanitizer leaves safe values intact.
-     *
-     * @security Calling any of the `bypassSecurityTrust...` APIs disables Angular's built-in
-     * sanitization for the value passed in. Carefully check and audit all values and code paths going
-     * into this call. Make sure any user data is appropriately escaped for this security context.
-     * For more detail, see the [Security Guide](http://g.co/ng/security).
-     *
-     * @publicApi
-     */
-    var DomSanitizer = /** @class */ (function () {
-        function DomSanitizer() {
-        }
-        return DomSanitizer;
-    }());
-    var DomSanitizerImpl = /** @class */ (function (_super) {
-        __extends$1(DomSanitizerImpl, _super);
-        function DomSanitizerImpl(_doc) {
-            var _this = _super.call(this) || this;
-            _this._doc = _doc;
-            return _this;
-        }
-        DomSanitizerImpl.prototype.sanitize = function (ctx, value) {
-            if (value == null)
-                return null;
-            switch (ctx) {
-                case core.SecurityContext.NONE:
-                    return value;
-                case core.SecurityContext.HTML:
-                    if (value instanceof SafeHtmlImpl)
-                        return value.changingThisBreaksApplicationSecurity;
-                    this.checkNotSafeValue(value, 'HTML');
-                    return core.ɵ_sanitizeHtml(this._doc, String(value));
-                case core.SecurityContext.STYLE:
-                    if (value instanceof SafeStyleImpl)
-                        return value.changingThisBreaksApplicationSecurity;
-                    this.checkNotSafeValue(value, 'Style');
-                    return core.ɵ_sanitizeStyle(value);
-                case core.SecurityContext.SCRIPT:
-                    if (value instanceof SafeScriptImpl)
-                        return value.changingThisBreaksApplicationSecurity;
-                    this.checkNotSafeValue(value, 'Script');
-                    throw new Error('unsafe value used in a script context');
-                case core.SecurityContext.URL:
-                    if (value instanceof SafeResourceUrlImpl || value instanceof SafeUrlImpl) {
-                        // Allow resource URLs in URL contexts, they are strictly more trusted.
-                        return value.changingThisBreaksApplicationSecurity;
-                    }
-                    this.checkNotSafeValue(value, 'URL');
-                    return core.ɵ_sanitizeUrl(String(value));
-                case core.SecurityContext.RESOURCE_URL:
-                    if (value instanceof SafeResourceUrlImpl) {
-                        return value.changingThisBreaksApplicationSecurity;
-                    }
-                    this.checkNotSafeValue(value, 'ResourceURL');
-                    throw new Error('unsafe value used in a resource URL context (see http://g.co/ng/security#xss)');
-                default:
-                    throw new Error("Unexpected SecurityContext " + ctx + " (see http://g.co/ng/security#xss)");
-            }
-        };
-        DomSanitizerImpl.prototype.checkNotSafeValue = function (value, expectedType) {
-            if (value instanceof SafeValueImpl) {
-                throw new Error("Required a safe " + expectedType + ", got a " + value.getTypeName() + " " +
-                    "(see http://g.co/ng/security#xss)");
-            }
-        };
-        DomSanitizerImpl.prototype.bypassSecurityTrustHtml = function (value) { return new SafeHtmlImpl(value); };
-        DomSanitizerImpl.prototype.bypassSecurityTrustStyle = function (value) { return new SafeStyleImpl(value); };
-        DomSanitizerImpl.prototype.bypassSecurityTrustScript = function (value) { return new SafeScriptImpl(value); };
-        DomSanitizerImpl.prototype.bypassSecurityTrustUrl = function (value) { return new SafeUrlImpl(value); };
-        DomSanitizerImpl.prototype.bypassSecurityTrustResourceUrl = function (value) {
-            return new SafeResourceUrlImpl(value);
-        };
-        DomSanitizerImpl = __decorate$1([
-            core.Injectable(),
-            __param$1(0, core.Inject(common.DOCUMENT)),
-            __metadata$1("design:paramtypes", [Object])
-        ], DomSanitizerImpl);
-        return DomSanitizerImpl;
-    }(DomSanitizer));
-    var SafeValueImpl = /** @class */ (function () {
-        function SafeValueImpl(changingThisBreaksApplicationSecurity) {
-            this.changingThisBreaksApplicationSecurity = changingThisBreaksApplicationSecurity;
-            // empty
-        }
-        SafeValueImpl.prototype.toString = function () {
-            return "SafeValue must use [property]=binding: " + this.changingThisBreaksApplicationSecurity +
-                " (see http://g.co/ng/security#xss)";
-        };
-        return SafeValueImpl;
-    }());
-    var SafeHtmlImpl = /** @class */ (function (_super) {
-        __extends$1(SafeHtmlImpl, _super);
-        function SafeHtmlImpl() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        SafeHtmlImpl.prototype.getTypeName = function () { return 'HTML'; };
-        return SafeHtmlImpl;
-    }(SafeValueImpl));
-    var SafeStyleImpl = /** @class */ (function (_super) {
-        __extends$1(SafeStyleImpl, _super);
-        function SafeStyleImpl() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        SafeStyleImpl.prototype.getTypeName = function () { return 'Style'; };
-        return SafeStyleImpl;
-    }(SafeValueImpl));
-    var SafeScriptImpl = /** @class */ (function (_super) {
-        __extends$1(SafeScriptImpl, _super);
-        function SafeScriptImpl() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        SafeScriptImpl.prototype.getTypeName = function () { return 'Script'; };
-        return SafeScriptImpl;
-    }(SafeValueImpl));
-    var SafeUrlImpl = /** @class */ (function (_super) {
-        __extends$1(SafeUrlImpl, _super);
-        function SafeUrlImpl() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        SafeUrlImpl.prototype.getTypeName = function () { return 'URL'; };
-        return SafeUrlImpl;
-    }(SafeValueImpl));
-    var SafeResourceUrlImpl = /** @class */ (function (_super) {
-        __extends$1(SafeResourceUrlImpl, _super);
-        function SafeResourceUrlImpl() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        SafeResourceUrlImpl.prototype.getTypeName = function () { return 'ResourceURL'; };
-        return SafeResourceUrlImpl;
-    }(SafeValueImpl));
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    var ɵ0$5 = common.ɵPLATFORM_BROWSER_ID;
-    var INTERNAL_BROWSER_PLATFORM_PROVIDERS = [
-        { provide: core.PLATFORM_ID, useValue: ɵ0$5 },
-        { provide: core.PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true },
-        { provide: common.PlatformLocation, useClass: BrowserPlatformLocation, deps: [common.DOCUMENT] },
-        { provide: common.DOCUMENT, useFactory: _document, deps: [] },
-    ];
-    /**
-     * @security Replacing built-in sanitization providers exposes the application to XSS risks.
-     * Attacker-controlled data introduced by an unsanitized provider could expose your
-     * application to XSS risks. For more detail, see the [Security Guide](http://g.co/ng/security).
-     * @publicApi
-     */
-    var BROWSER_SANITIZATION_PROVIDERS = [
-        { provide: core.Sanitizer, useExisting: DomSanitizer },
-        { provide: DomSanitizer, useClass: DomSanitizerImpl, deps: [common.DOCUMENT] },
-    ];
-    /**
-     * @publicApi
-     */
-    var platformBrowser = core.createPlatformFactory(core.platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
-    function initDomAdapter() {
-        BrowserDomAdapter.makeCurrent();
-        BrowserGetTestability.init();
-    }
-    function errorHandler() {
-        return new core.ErrorHandler();
-    }
-    function _document() {
-        return document;
-    }
-    var BROWSER_MODULE_PROVIDERS = [
-        BROWSER_SANITIZATION_PROVIDERS,
-        { provide: core.ɵAPP_ROOT, useValue: true },
-        { provide: core.ErrorHandler, useFactory: errorHandler, deps: [] },
-        {
-            provide: EVENT_MANAGER_PLUGINS,
-            useClass: DomEventsPlugin,
-            multi: true,
-            deps: [common.DOCUMENT, core.NgZone, core.PLATFORM_ID]
-        },
-        { provide: EVENT_MANAGER_PLUGINS, useClass: KeyEventsPlugin, multi: true, deps: [common.DOCUMENT] },
-        {
-            provide: EVENT_MANAGER_PLUGINS,
-            useClass: HammerGesturesPlugin,
-            multi: true,
-            deps: [common.DOCUMENT, HAMMER_GESTURE_CONFIG, core.ɵConsole, [new core.Optional(), HAMMER_LOADER]]
-        },
-        { provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig, deps: [] },
-        {
-            provide: DomRendererFactory2,
-            useClass: DomRendererFactory2,
-            deps: [EventManager, DomSharedStylesHost, core.APP_ID]
-        },
-        { provide: core.RendererFactory2, useExisting: DomRendererFactory2 },
-        { provide: SharedStylesHost, useExisting: DomSharedStylesHost },
-        { provide: DomSharedStylesHost, useClass: DomSharedStylesHost, deps: [common.DOCUMENT] },
-        { provide: core.Testability, useClass: core.Testability, deps: [core.NgZone] },
-        { provide: EventManager, useClass: EventManager, deps: [EVENT_MANAGER_PLUGINS, core.NgZone] },
-        ELEMENT_PROBE_PROVIDERS,
-    ];
-    /**
-     * Exports required infrastructure for all Angular apps.
-     * Included by default in all Angular apps created with the CLI
-     * `new` command.
-     * Re-exports `CommonModule` and `ApplicationModule`, making their
-     * exports and providers available to all apps.
-     *
-     * @publicApi
-     */
-    var BrowserModule = /** @class */ (function () {
-        function BrowserModule(parentModule) {
-            if (parentModule) {
-                throw new Error("BrowserModule has already been loaded. If you need access to common directives such as NgIf and NgFor from a lazy loaded module, import CommonModule instead.");
-            }
-        }
-        BrowserModule_1 = BrowserModule;
-        /**
-         * Configures a browser-based app to transition from a server-rendered app, if
-         * one is present on the page.
-         *
-         * @param params An object containing an identifier for the app to transition.
-         * The ID must match between the client and server versions of the app.
-         * @returns The reconfigured `BrowserModule` to import into the app's root `AppModule`.
-         */
-        BrowserModule.withServerTransition = function (params) {
-            return {
-                ngModule: BrowserModule_1,
-                providers: [
-                    { provide: core.APP_ID, useValue: params.appId },
-                    { provide: TRANSITION_ID, useExisting: core.APP_ID },
-                    SERVER_TRANSITION_PROVIDERS,
-                ],
-            };
-        };
-        var BrowserModule_1;
-        BrowserModule = BrowserModule_1 = __decorate$1([
-            core.NgModule({ providers: BROWSER_MODULE_PROVIDERS, exports: [common.CommonModule, core.ApplicationModule] }),
-            __param$1(0, core.Optional()), __param$1(0, core.SkipSelf()), __param$1(0, core.Inject(BrowserModule_1)),
-            __metadata$1("design:paramtypes", [Object])
-        ], BrowserModule);
-        return BrowserModule;
-    }());
-
-    /**
-     * Factory to create Meta service.
-     */
-    function createMeta() {
-        return new Meta(core.ɵɵinject(common.DOCUMENT));
-    }
-    /**
-     * A service that can be used to get and add meta tags.
-     *
-     * @publicApi
-     */
-    var Meta = /** @class */ (function () {
-        function Meta(_doc) {
-            this._doc = _doc;
-            this._dom = getDOM();
-        }
-        Meta.prototype.addTag = function (tag, forceCreation) {
-            if (forceCreation === void 0) { forceCreation = false; }
-            if (!tag)
-                return null;
-            return this._getOrCreateElement(tag, forceCreation);
-        };
-        Meta.prototype.addTags = function (tags, forceCreation) {
-            var _this = this;
-            if (forceCreation === void 0) { forceCreation = false; }
-            if (!tags)
-                return [];
-            return tags.reduce(function (result, tag) {
-                if (tag) {
-                    result.push(_this._getOrCreateElement(tag, forceCreation));
-                }
-                return result;
-            }, []);
-        };
-        Meta.prototype.getTag = function (attrSelector) {
-            if (!attrSelector)
-                return null;
-            return this._dom.querySelector(this._doc, "meta[" + attrSelector + "]") || null;
-        };
-        Meta.prototype.getTags = function (attrSelector) {
-            if (!attrSelector)
-                return [];
-            var list /*NodeList*/ = this._dom.querySelectorAll(this._doc, "meta[" + attrSelector + "]");
-            return list ? [].slice.call(list) : [];
-        };
-        Meta.prototype.updateTag = function (tag, selector) {
-            if (!tag)
-                return null;
-            selector = selector || this._parseSelector(tag);
-            var meta = this.getTag(selector);
-            if (meta) {
-                return this._setMetaElementAttributes(tag, meta);
-            }
-            return this._getOrCreateElement(tag, true);
-        };
-        Meta.prototype.removeTag = function (attrSelector) { this.removeTagElement(this.getTag(attrSelector)); };
-        Meta.prototype.removeTagElement = function (meta) {
-            if (meta) {
-                this._dom.remove(meta);
-            }
-        };
-        Meta.prototype._getOrCreateElement = function (meta, forceCreation) {
-            if (forceCreation === void 0) { forceCreation = false; }
-            if (!forceCreation) {
-                var selector = this._parseSelector(meta);
-                var elem = this.getTag(selector);
-                // It's allowed to have multiple elements with the same name so it's not enough to
-                // just check that element with the same name already present on the page. We also need to
-                // check if element has tag attributes
-                if (elem && this._containsAttributes(meta, elem))
-                    return elem;
-            }
-            var element = this._dom.createElement('meta');
-            this._setMetaElementAttributes(meta, element);
-            var head = this._dom.getElementsByTagName(this._doc, 'head')[0];
-            this._dom.appendChild(head, element);
-            return element;
-        };
-        Meta.prototype._setMetaElementAttributes = function (tag, el) {
-            var _this = this;
-            Object.keys(tag).forEach(function (prop) { return _this._dom.setAttribute(el, prop, tag[prop]); });
-            return el;
-        };
-        Meta.prototype._parseSelector = function (tag) {
-            var attr = tag.name ? 'name' : 'property';
-            return attr + "=\"" + tag[attr] + "\"";
-        };
-        Meta.prototype._containsAttributes = function (tag, elem) {
-            var _this = this;
-            return Object.keys(tag).every(function (key) { return _this._dom.getAttribute(elem, key) === tag[key]; });
-        };
-        Meta.ngInjectableDef = core.ɵɵdefineInjectable({ factory: createMeta, token: Meta, providedIn: "root" });
-        Meta = __decorate$1([
-            core.Injectable({ providedIn: 'root', useFactory: createMeta, deps: [] }),
-            __param$1(0, core.Inject(common.DOCUMENT)),
-            __metadata$1("design:paramtypes", [Object])
-        ], Meta);
-        return Meta;
-    }());
-
-    /**
-     * Factory to create Title service.
-     */
-    function createTitle() {
-        return new Title(core.ɵɵinject(common.DOCUMENT));
-    }
-    /**
-     * A service that can be used to get and set the title of a current HTML document.
-     *
-     * Since an Angular application can't be bootstrapped on the entire HTML document (`<html>` tag)
-     * it is not possible to bind to the `text` property of the `HTMLTitleElement` elements
-     * (representing the `<title>` tag). Instead, this service can be used to set and get the current
-     * title value.
-     *
-     * @publicApi
-     */
-    var Title = /** @class */ (function () {
-        function Title(_doc) {
-            this._doc = _doc;
-        }
-        /**
-         * Get the title of the current HTML document.
-         */
-        Title.prototype.getTitle = function () { return getDOM().getTitle(this._doc); };
-        /**
-         * Set the title of the current HTML document.
-         * @param newTitle
-         */
-        Title.prototype.setTitle = function (newTitle) { getDOM().setTitle(this._doc, newTitle); };
-        Title.ngInjectableDef = core.ɵɵdefineInjectable({ factory: createTitle, token: Title, providedIn: "root" });
-        Title = __decorate$1([
-            core.Injectable({ providedIn: 'root', useFactory: createTitle, deps: [] }),
-            __param$1(0, core.Inject(common.DOCUMENT)),
-            __metadata$1("design:paramtypes", [Object])
-        ], Title);
-        return Title;
-    }());
-    function unescapeHtml(text) {
-        var unescapedText = {
-            '&a;': '&',
-            '&q;': '"',
-            '&s;': '\'',
-            '&l;': '<',
-            '&g;': '>',
-        };
-        return text.replace(/&[^;]+;/g, function (s) { return unescapedText[s]; });
-    }
-    /**
-     * A key value store that is transferred from the application on the server side to the application
-     * on the client side.
-     *
-     * `TransferState` will be available as an injectable token. To use it import
-     * `ServerTransferStateModule` on the server and `BrowserTransferStateModule` on the client.
-     *
-     * The values in the store are serialized/deserialized using JSON.stringify/JSON.parse. So only
-     * boolean, number, string, null and non-class objects will be serialized and deserialzied in a
-     * non-lossy manner.
-     *
-     * @publicApi
-     */
-    var TransferState = /** @class */ (function () {
-        function TransferState() {
-            this.store = {};
-            this.onSerializeCallbacks = {};
-        }
-        TransferState_1 = TransferState;
-        /** @internal */
-        TransferState.init = function (initState) {
-            var transferState = new TransferState_1();
-            transferState.store = initState;
-            return transferState;
-        };
-        /**
-         * Get the value corresponding to a key. Return `defaultValue` if key is not found.
-         */
-        TransferState.prototype.get = function (key, defaultValue) {
-            return this.store[key] !== undefined ? this.store[key] : defaultValue;
-        };
-        /**
-         * Set the value corresponding to a key.
-         */
-        TransferState.prototype.set = function (key, value) { this.store[key] = value; };
-        /**
-         * Remove a key from the store.
-         */
-        TransferState.prototype.remove = function (key) { delete this.store[key]; };
-        /**
-         * Test whether a key exists in the store.
-         */
-        TransferState.prototype.hasKey = function (key) { return this.store.hasOwnProperty(key); };
-        /**
-         * Register a callback to provide the value for a key when `toJson` is called.
-         */
-        TransferState.prototype.onSerialize = function (key, callback) {
-            this.onSerializeCallbacks[key] = callback;
-        };
-        /**
-         * Serialize the current state of the store to JSON.
-         */
-        TransferState.prototype.toJson = function () {
-            // Call the onSerialize callbacks and put those values into the store.
-            for (var key in this.onSerializeCallbacks) {
-                if (this.onSerializeCallbacks.hasOwnProperty(key)) {
-                    try {
-                        this.store[key] = this.onSerializeCallbacks[key]();
-                    }
-                    catch (e) {
-                        console.warn('Exception in onSerialize callback: ', e);
-                    }
-                }
-            }
-            return JSON.stringify(this.store);
-        };
-        var TransferState_1;
-        TransferState = TransferState_1 = __decorate$1([
-            core.Injectable()
-        ], TransferState);
-        return TransferState;
-    }());
-    function initTransferState(doc, appId) {
-        // Locate the script tag with the JSON data transferred from the server.
-        // The id of the script tag is set to the Angular appId + 'state'.
-        var script = doc.getElementById(appId + '-state');
-        var initialState = {};
-        if (script && script.textContent) {
-            try {
-                initialState = JSON.parse(unescapeHtml(script.textContent));
-            }
-            catch (e) {
-                console.warn('Exception while restoring TransferState for app ' + appId, e);
-            }
-        }
-        return TransferState.init(initialState);
-    }
-    /**
-     * NgModule to install on the client side while using the `TransferState` to transfer state from
-     * server to client.
-     *
-     * @publicApi
-     */
-    var BrowserTransferStateModule = /** @class */ (function () {
-        function BrowserTransferStateModule() {
-        }
-        BrowserTransferStateModule = __decorate$1([
-            core.NgModule({
-                providers: [{ provide: TransferState, useFactory: initTransferState, deps: [common.DOCUMENT, core.APP_ID] }],
-            })
-        ], BrowserTransferStateModule);
-        return BrowserTransferStateModule;
-    }());
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    /**
-     * @publicApi
-     */
-    var VERSION = new core.Version('8.2.14');
 
     /** PURE_IMPORTS_START  PURE_IMPORTS_END */
     function isFunction$2(x) {
@@ -10127,12 +7866,14 @@
     }
 
     /** PURE_IMPORTS_START  PURE_IMPORTS_END */
-    function noop$2() { }
+    function identity$2(x) {
+        return x;
+    }
 
-    /** PURE_IMPORTS_START _noop PURE_IMPORTS_END */
+    /** PURE_IMPORTS_START _identity PURE_IMPORTS_END */
     function pipeFromArray$1(fns) {
-        if (!fns) {
-            return noop$2;
+        if (fns.length === 0) {
+            return identity$2;
         }
         if (fns.length === 1) {
             return fns[0];
@@ -10253,17 +7994,17 @@
     }
 
     /** PURE_IMPORTS_START _InnerSubscriber,_subscribeTo,_Observable PURE_IMPORTS_END */
-    function subscribeToResult$2(outerSubscriber, result, outerValue, outerIndex, destination) {
-        if (destination === void 0) {
-            destination = new InnerSubscriber$2(outerSubscriber, outerValue, outerIndex);
+    function subscribeToResult$2(outerSubscriber, result, outerValue, outerIndex, innerSubscriber) {
+        if (innerSubscriber === void 0) {
+            innerSubscriber = new InnerSubscriber$2(outerSubscriber, outerValue, outerIndex);
         }
-        if (destination.closed) {
+        if (innerSubscriber.closed) {
             return undefined;
         }
         if (result instanceof Observable$2) {
-            return result.subscribe(destination);
+            return result.subscribe(innerSubscriber);
         }
-        return subscribeTo$3(result)(destination);
+        return subscribeTo$3(result)(innerSubscriber);
     }
 
     /** PURE_IMPORTS_START tslib,_OuterSubscriber,_util_subscribeToResult PURE_IMPORTS_END */
@@ -10886,7 +8627,10 @@
                 this._unsubscribeAndRecycle();
                 var innerSubscriber = new InnerSubscriber$2(this, undefined, undefined);
                 this.add(innerSubscriber);
-                subscribeToResult$2(this, result, undefined, undefined, innerSubscriber);
+                var innerSubscription = subscribeToResult$2(this, result, undefined, undefined, innerSubscriber);
+                if (innerSubscription !== innerSubscriber) {
+                    this.add(innerSubscription);
+                }
             }
         };
         return CatchSubscriber;
@@ -11101,10 +8845,13 @@
             this._innerSub(result, value, index);
         };
         MergeMapSubscriber.prototype._innerSub = function (ish, value, index) {
-            var innerSubscriber = new InnerSubscriber$2(this, undefined, undefined);
+            var innerSubscriber = new InnerSubscriber$2(this, value, index);
             var destination = this.destination;
             destination.add(innerSubscriber);
-            subscribeToResult$2(this, ish, value, index, innerSubscriber);
+            var innerSubscription = subscribeToResult$2(this, ish, undefined, undefined, innerSubscriber);
+            if (innerSubscription !== innerSubscriber) {
+                destination.add(innerSubscription);
+            }
         };
         MergeMapSubscriber.prototype._complete = function () {
             this.hasCompleted = true;
@@ -11129,8 +8876,6 @@
         };
         return MergeMapSubscriber;
     }(OuterSubscriber$2));
-
-    /** PURE_IMPORTS_START  PURE_IMPORTS_END */
 
     /** PURE_IMPORTS_START _mergeMap,_util_identity PURE_IMPORTS_END */
 
@@ -11889,10 +9634,13 @@
             this._innerSub(result, value, index);
         };
         ExhaustMapSubscriber.prototype._innerSub = function (result, value, index) {
-            var innerSubscriber = new InnerSubscriber$2(this, undefined, undefined);
+            var innerSubscriber = new InnerSubscriber$2(this, value, index);
             var destination = this.destination;
             destination.add(innerSubscriber);
-            subscribeToResult$2(this, result, value, index, innerSubscriber);
+            var innerSubscription = subscribeToResult$2(this, result, undefined, undefined, innerSubscriber);
+            if (innerSubscription !== innerSubscriber) {
+                destination.add(innerSubscription);
+            }
         };
         ExhaustMapSubscriber.prototype._complete = function () {
             this.hasCompleted = true;
@@ -12596,10 +10344,13 @@
             }
         };
         MergeScanSubscriber.prototype._innerSub = function (ish, value, index) {
-            var innerSubscriber = new InnerSubscriber$2(this, undefined, undefined);
+            var innerSubscriber = new InnerSubscriber$2(this, value, index);
             var destination = this.destination;
             destination.add(innerSubscriber);
-            subscribeToResult$2(this, ish, value, index, innerSubscriber);
+            var innerSubscription = subscribeToResult$2(this, ish, undefined, undefined, innerSubscriber);
+            if (innerSubscription !== innerSubscriber) {
+                destination.add(innerSubscription);
+            }
         };
         MergeScanSubscriber.prototype._complete = function () {
             this.hasCompleted = true;
@@ -12885,7 +10636,10 @@
                 var innerSubscriber = new InnerSubscriber$2(this, undefined, undefined);
                 var destination = this.destination;
                 destination.add(innerSubscriber);
-                subscribeToResult$2(this, next, undefined, undefined, innerSubscriber);
+                var innerSubscription = subscribeToResult$2(this, next, undefined, undefined, innerSubscriber);
+                if (innerSubscription !== innerSubscriber) {
+                    destination.add(innerSubscription);
+                }
             }
             else {
                 this.destination.complete();
@@ -13654,7 +11408,11 @@
             var innerSubscriber = new InnerSubscriber$2(_this, undefined, undefined);
             _this.add(innerSubscriber);
             _this.innerSubscription = innerSubscriber;
-            subscribeToResult$2(_this, notifier, undefined, undefined, innerSubscriber);
+            var innerSubscription = subscribeToResult$2(_this, notifier, undefined, undefined, innerSubscriber);
+            if (innerSubscription !== innerSubscriber) {
+                _this.add(innerSubscription);
+                _this.innerSubscription = innerSubscription;
+            }
             return _this;
         }
         SkipUntilSubscriber.prototype._next = function (value) {
@@ -13708,22 +11466,24 @@
 
     /** PURE_IMPORTS_START  PURE_IMPORTS_END */
     var nextHandle$1 = 1;
-    var tasksByHandle$1 = {};
-    function runIfPresent$1(handle) {
-        var cb = tasksByHandle$1[handle];
-        if (cb) {
-            cb();
+    var RESOLVED$1 = /*@__PURE__*/ (function () { return /*@__PURE__*/ Promise.resolve(); })();
+    var activeHandles$1 = {};
+    function findAndClearHandle$1(handle) {
+        if (handle in activeHandles$1) {
+            delete activeHandles$1[handle];
+            return true;
         }
+        return false;
     }
     var Immediate$1 = {
         setImmediate: function (cb) {
             var handle = nextHandle$1++;
-            tasksByHandle$1[handle] = cb;
-            Promise.resolve().then(function () { return runIfPresent$1(handle); });
+            activeHandles$1[handle] = true;
+            RESOLVED$1.then(function () { return findAndClearHandle$1(handle) && cb(); });
             return handle;
         },
         clearImmediate: function (handle) {
-            delete tasksByHandle$1[handle];
+            findAndClearHandle$1(handle);
         },
     };
 
@@ -13869,10 +11629,13 @@
             if (innerSubscription) {
                 innerSubscription.unsubscribe();
             }
-            var innerSubscriber = new InnerSubscriber$2(this, undefined, undefined);
+            var innerSubscriber = new InnerSubscriber$2(this, value, index);
             var destination = this.destination;
             destination.add(innerSubscriber);
-            this.innerSubscription = subscribeToResult$2(this, result, value, index, innerSubscriber);
+            this.innerSubscription = subscribeToResult$2(this, result, undefined, undefined, innerSubscriber);
+            if (this.innerSubscription !== innerSubscriber) {
+                destination.add(this.innerSubscription);
+            }
         };
         SwitchMapSubscriber.prototype._complete = function () {
             var innerSubscription = this.innerSubscription;
@@ -13956,25 +11719,28 @@
         return TakeWhileSubscriber;
     }(Subscriber$2));
 
+    /** PURE_IMPORTS_START  PURE_IMPORTS_END */
+    function noop$1() { }
+
     /** PURE_IMPORTS_START tslib,_Subscriber,_util_noop,_util_isFunction PURE_IMPORTS_END */
     var TapSubscriber$1 = /*@__PURE__*/ (function (_super) {
         __extends$1(TapSubscriber, _super);
         function TapSubscriber(destination, observerOrNext, error, complete) {
             var _this = _super.call(this, destination) || this;
-            _this._tapNext = noop$2;
-            _this._tapError = noop$2;
-            _this._tapComplete = noop$2;
-            _this._tapError = error || noop$2;
-            _this._tapComplete = complete || noop$2;
+            _this._tapNext = noop$1;
+            _this._tapError = noop$1;
+            _this._tapComplete = noop$1;
+            _this._tapError = error || noop$1;
+            _this._tapComplete = complete || noop$1;
             if (isFunction$2(observerOrNext)) {
                 _this._context = _this;
                 _this._tapNext = observerOrNext;
             }
             else if (observerOrNext) {
                 _this._context = observerOrNext;
-                _this._tapNext = observerOrNext.next || noop$2;
-                _this._tapError = observerOrNext.error || noop$2;
-                _this._tapComplete = observerOrNext.complete || noop$2;
+                _this._tapNext = observerOrNext.next || noop$1;
+                _this._tapError = observerOrNext.error || noop$1;
+                _this._tapComplete = observerOrNext.complete || noop$1;
             }
             return _this;
         }
@@ -14835,8 +12601,8 @@
     /** PURE_IMPORTS_START  PURE_IMPORTS_END */
 
     /**
-     * @license Angular v8.2.14
-     * (c) 2010-2019 Google LLC. https://angular.io/
+     * @license Angular v9.1.9
+     * (c) 2010-2020 Google LLC. https://angular.io/
      * License: MIT
      */
 
@@ -14920,14 +12686,18 @@
          *
          * @param fn The callback function
          */
-        CheckboxControlValueAccessor.prototype.registerOnChange = function (fn) { this.onChange = fn; };
+        CheckboxControlValueAccessor.prototype.registerOnChange = function (fn) {
+            this.onChange = fn;
+        };
         /**
          * @description
          * Registers a function called when the control is touched.
          *
          * @param fn The callback function
          */
-        CheckboxControlValueAccessor.prototype.registerOnTouched = function (fn) { this.onTouched = fn; };
+        CheckboxControlValueAccessor.prototype.registerOnTouched = function (fn) {
+            this.onTouched = fn;
+        };
         /**
          * Sets the "disabled" property on the input element.
          *
@@ -14964,7 +12734,7 @@
      * behave differently between iOS and Android.
      */
     function _isAndroid() {
-        var userAgent = getDOM() ? getDOM().getUserAgent() : '';
+        var userAgent = common.ɵgetDOM() ? common.ɵgetDOM().getUserAgent() : '';
         return /android (\d+)/.test(userAgent.toLowerCase());
     }
     /**
@@ -15035,14 +12805,18 @@
          *
          * @param fn The callback function
          */
-        DefaultValueAccessor.prototype.registerOnChange = function (fn) { this.onChange = fn; };
+        DefaultValueAccessor.prototype.registerOnChange = function (fn) {
+            this.onChange = fn;
+        };
         /**
          * @description
          * Registers a function called when the control is touched.
          *
          * @param fn The callback function
          */
-        DefaultValueAccessor.prototype.registerOnTouched = function (fn) { this.onTouched = fn; };
+        DefaultValueAccessor.prototype.registerOnTouched = function (fn) {
+            this.onTouched = fn;
+        };
         /**
          * Sets the "disabled" property on the input element.
          *
@@ -15058,7 +12832,9 @@
             }
         };
         /** @internal */
-        DefaultValueAccessor.prototype._compositionStart = function () { this._composing = true; };
+        DefaultValueAccessor.prototype._compositionStart = function () {
+            this._composing = true;
+        };
         /** @internal */
         DefaultValueAccessor.prototype._compositionEnd = function (value) {
             this._composing = false;
@@ -15107,7 +12883,9 @@
              * @description
              * Reports the value of the control if it is present, otherwise null.
              */
-            get: function () { return this.control ? this.control.value : null; },
+            get: function () {
+                return this.control ? this.control.value : null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -15118,7 +12896,9 @@
              * validation errors exist with the current value.
              * If the control is not present, null is returned.
              */
-            get: function () { return this.control ? this.control.valid : null; },
+            get: function () {
+                return this.control ? this.control.valid : null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -15128,7 +12908,9 @@
              * Reports whether the control is invalid, meaning that an error exists in the input value.
              * If the control is not present, null is returned.
              */
-            get: function () { return this.control ? this.control.invalid : null; },
+            get: function () {
+                return this.control ? this.control.invalid : null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -15139,7 +12921,9 @@
              * errors are not yet available for the input value. If the control is not present, null is
              * returned.
              */
-            get: function () { return this.control ? this.control.pending : null; },
+            get: function () {
+                return this.control ? this.control.pending : null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -15150,7 +12934,9 @@
              * in the UI and is exempt from validation checks and excluded from aggregate
              * values of ancestor controls. If the control is not present, null is returned.
              */
-            get: function () { return this.control ? this.control.disabled : null; },
+            get: function () {
+                return this.control ? this.control.disabled : null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -15160,7 +12946,9 @@
              * Reports whether the control is enabled, meaning that the control is included in ancestor
              * calculations of validity or value. If the control is not present, null is returned.
              */
-            get: function () { return this.control ? this.control.enabled : null; },
+            get: function () {
+                return this.control ? this.control.enabled : null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -15169,7 +12957,9 @@
              * @description
              * Reports the control's validation errors. If the control is not present, null is returned.
              */
-            get: function () { return this.control ? this.control.errors : null; },
+            get: function () {
+                return this.control ? this.control.errors : null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -15179,7 +12969,9 @@
              * Reports whether the control is pristine, meaning that the user has not yet changed
              * the value in the UI. If the control is not present, null is returned.
              */
-            get: function () { return this.control ? this.control.pristine : null; },
+            get: function () {
+                return this.control ? this.control.pristine : null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -15189,7 +12981,9 @@
              * Reports whether the control is dirty, meaning that the user has changed
              * the value in the UI. If the control is not present, null is returned.
              */
-            get: function () { return this.control ? this.control.dirty : null; },
+            get: function () {
+                return this.control ? this.control.dirty : null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -15199,7 +12993,9 @@
              * Reports whether the control is touched, meaning that the user has triggered
              * a `blur` event on it. If the control is not present, null is returned.
              */
-            get: function () { return this.control ? this.control.touched : null; },
+            get: function () {
+                return this.control ? this.control.touched : null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -15210,7 +13006,9 @@
              * 'VALID', 'INVALID', 'DISABLED', and 'PENDING'.
              * If the control is not present, null is returned.
              */
-            get: function () { return this.control ? this.control.status : null; },
+            get: function () {
+                return this.control ? this.control.status : null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -15220,7 +13018,9 @@
              * Reports whether the control is untouched, meaning that the user has not yet triggered
              * a `blur` event on it. If the control is not present, null is returned.
              */
-            get: function () { return this.control ? this.control.untouched : null; },
+            get: function () {
+                return this.control ? this.control.untouched : null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -15255,7 +13055,9 @@
              * Returns an array that represents the path from the top-level form to this control.
              * Each index is the string name of the control on that level.
              */
-            get: function () { return null; },
+            get: function () {
+                return null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -15358,7 +13160,9 @@
              * @description
              * The top-level form directive for the control.
              */
-            get: function () { return null; },
+            get: function () {
+                return null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -15367,7 +13171,9 @@
              * @description
              * The path to this group.
              */
-            get: function () { return null; },
+            get: function () {
+                return null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -15435,7 +13241,9 @@
              *
              * @throws An exception that this method is not implemented
              */
-            get: function () { return unimplemented(); },
+            get: function () {
+                return unimplemented();
+            },
             enumerable: true,
             configurable: true
         });
@@ -15446,7 +13254,9 @@
              *
              * @throws An exception that this method is not implemented
              */
-            get: function () { return unimplemented(); },
+            get: function () {
+                return unimplemented();
+            },
             enumerable: true,
             configurable: true
         });
@@ -15465,37 +13275,51 @@
             this._cd = cd;
         }
         Object.defineProperty(AbstractControlStatus.prototype, "ngClassUntouched", {
-            get: function () { return this._cd.control ? this._cd.control.untouched : false; },
+            get: function () {
+                return this._cd.control ? this._cd.control.untouched : false;
+            },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(AbstractControlStatus.prototype, "ngClassTouched", {
-            get: function () { return this._cd.control ? this._cd.control.touched : false; },
+            get: function () {
+                return this._cd.control ? this._cd.control.touched : false;
+            },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(AbstractControlStatus.prototype, "ngClassPristine", {
-            get: function () { return this._cd.control ? this._cd.control.pristine : false; },
+            get: function () {
+                return this._cd.control ? this._cd.control.pristine : false;
+            },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(AbstractControlStatus.prototype, "ngClassDirty", {
-            get: function () { return this._cd.control ? this._cd.control.dirty : false; },
+            get: function () {
+                return this._cd.control ? this._cd.control.dirty : false;
+            },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(AbstractControlStatus.prototype, "ngClassValid", {
-            get: function () { return this._cd.control ? this._cd.control.valid : false; },
+            get: function () {
+                return this._cd.control ? this._cd.control.valid : false;
+            },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(AbstractControlStatus.prototype, "ngClassInvalid", {
-            get: function () { return this._cd.control ? this._cd.control.invalid : false; },
+            get: function () {
+                return this._cd.control ? this._cd.control.invalid : false;
+            },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(AbstractControlStatus.prototype, "ngClassPending", {
-            get: function () { return this._cd.control ? this._cd.control.pending : false; },
+            get: function () {
+                return this._cd.control ? this._cd.control.pending : false;
+            },
             enumerable: true,
             configurable: true
         });
@@ -15585,7 +13409,8 @@
     }
     /**
      * @description
-     * An `InjectionToken` for registering additional synchronous validators used with `AbstractControl`s.
+     * An `InjectionToken` for registering additional synchronous validators used with
+     * `AbstractControl`s.
      *
      * @see `NG_ASYNC_VALIDATORS`
      *
@@ -15613,7 +13438,8 @@
     var NG_VALIDATORS = new core.InjectionToken('NgValidators');
     /**
      * @description
-     * An `InjectionToken` for registering additional asynchronous validators used with `AbstractControl`s.
+     * An `InjectionToken` for registering additional asynchronous validators used with
+     * `AbstractControl`s.
      *
      * @see `NG_VALIDATORS`
      *
@@ -15780,11 +13606,13 @@
          * @description
          * Validator that requires the control's value pass an email validation test.
          *
-         * Tests the value using a [regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
+         * Tests the value using a [regular
+         * expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
          * pattern suitable for common usecases. The pattern is based on the definition of a valid email
-         * address in the [WHATWG HTML specification](https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address)
-         * with some enhancements to incorporate more RFC rules (such as rules related to domain names and
-         * the lengths of different parts of the address).
+         * address in the [WHATWG HTML
+         * specification](https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address) with
+         * some enhancements to incorporate more RFC rules (such as rules related to domain names and the
+         * lengths of different parts of the address).
          *
          * The differences from the WHATWG version include:
          * - Disallow `local-part` (the part before the `@` symbol) to begin or end with a period (`.`).
@@ -15820,7 +13648,11 @@
          * @description
          * Validator that requires the length of the control's value to be greater than or equal
          * to the provided minimum length. This validator is also provided by default if you use the
-         * the HTML5 `minlength` attribute.
+         * the HTML5 `minlength` attribute. Note that the `minLength` validator is intended to be used
+         * only for types that have a numeric `length` property, such as strings or arrays. The
+         * `minLength` validator logic is also not invoked for values when their `length` property is 0
+         * (for example in case of an empty string or an empty array), to support optional controls. You
+         * can use the standard `required` validator if empty values should not be considered valid.
          *
          * @usageNotes
          *
@@ -15857,7 +13689,8 @@
          * @description
          * Validator that requires the length of the control's value to be less than or equal
          * to the provided maximum length. This validator is also provided by default if you use the
-         * the HTML5 `maxlength` attribute.
+         * the HTML5 `maxlength` attribute. Note that the `maxLength` validator is intended to be used
+         * only for types that have a numeric `length` property, such as strings or arrays.
          *
          * @usageNotes
          *
@@ -15951,7 +13784,9 @@
          * @see `updateValueAndValidity()`
          *
          */
-        Validators.nullValidator = function (control) { return null; };
+        Validators.nullValidator = function (control) {
+            return null;
+        };
         Validators.compose = function (validators) {
             if (!validators)
                 return null;
@@ -16003,9 +13838,12 @@
         return validators.map(function (v) { return v(control); });
     }
     function _mergeErrors(arrayOfErrors) {
-        var res = arrayOfErrors.reduce(function (res, errors) {
-            return errors != null ? __assign$1({}, res, errors) : res;
-        }, {});
+        var res = {};
+        // Not using Array.reduce here due to a Chrome 80 bug
+        // https://bugs.chromium.org/p/chromium/issues/detail?id=1049982
+        arrayOfErrors.forEach(function (errors) {
+            res = errors != null ? __assign$1(__assign$1({}, res), errors) : res;
+        });
         return Object.keys(res).length === 0 ? null : res;
     }
 
@@ -16102,7 +13940,9 @@
          * @param fn The callback function
          */
         NumberValueAccessor.prototype.registerOnChange = function (fn) {
-            this.onChange = function (value) { fn(value == '' ? null : parseFloat(value)); };
+            this.onChange = function (value) {
+                fn(value == '' ? null : parseFloat(value));
+            };
         };
         /**
          * @description
@@ -16110,7 +13950,9 @@
          *
          * @param fn The callback function
          */
-        NumberValueAccessor.prototype.registerOnTouched = function (fn) { this.onTouched = fn; };
+        NumberValueAccessor.prototype.registerOnTouched = function (fn) {
+            this.onTouched = fn;
+        };
         /**
          * Sets the "disabled" property on the input element.
          *
@@ -16246,7 +14088,9 @@
          * @description
          * Lifecycle method called before the directive's instance is destroyed. For internal use only.
          */
-        RadioControlValueAccessor.prototype.ngOnDestroy = function () { this._registry.remove(this); };
+        RadioControlValueAccessor.prototype.ngOnDestroy = function () {
+            this._registry.remove(this);
+        };
         /**
          * @description
          * Sets the "checked" property value on the radio input element.
@@ -16276,14 +14120,18 @@
          *
          * @param value
          */
-        RadioControlValueAccessor.prototype.fireUncheck = function (value) { this.writeValue(value); };
+        RadioControlValueAccessor.prototype.fireUncheck = function (value) {
+            this.writeValue(value);
+        };
         /**
          * @description
          * Registers a function called when the control is touched.
          *
          * @param fn The callback function
          */
-        RadioControlValueAccessor.prototype.registerOnTouched = function (fn) { this.onTouched = fn; };
+        RadioControlValueAccessor.prototype.registerOnTouched = function (fn) {
+            this.onTouched = fn;
+        };
         /**
          * Sets the "disabled" property on the input element.
          *
@@ -16393,7 +14241,9 @@
          * @param fn The callback function
          */
         RangeValueAccessor.prototype.registerOnChange = function (fn) {
-            this.onChange = function (value) { fn(value == '' ? null : parseFloat(value)); };
+            this.onChange = function (value) {
+                fn(value == '' ? null : parseFloat(value));
+            };
         };
         /**
          * @description
@@ -16401,7 +14251,9 @@
          *
          * @param fn The callback function
          */
-        RangeValueAccessor.prototype.registerOnTouched = function (fn) { this.onTouched = fn; };
+        RangeValueAccessor.prototype.registerOnTouched = function (fn) {
+            this.onTouched = fn;
+        };
         /**
          * Sets the "disabled" property on the range input element.
          *
@@ -16469,8 +14321,8 @@
             console.warn("\n      It looks like you're using the disabled attribute with a reactive form directive. If you set disabled to true\n      when you set up this control in your component class, the disabled attribute will actually be set in the DOM for\n      you. We recommend using this approach to avoid 'changed after checked' errors.\n       \n      Example: \n      form = new FormGroup({\n        first: new FormControl({value: 'Nancy', disabled: true}, Validators.required),\n        last: new FormControl('Drew', Validators.required)\n      });\n    ");
         };
         ReactiveErrors.ngModelWarning = function (directiveName) {
-            console.warn("\n    It looks like you're using ngModel on the same form field as " + directiveName + ". \n    Support for using the ngModel input property and ngModelChange event with \n    reactive form directives has been deprecated in Angular v6 and will be removed \n    in Angular v7.\n    \n    For more information on this, see our API docs here:\n    https://angular.io/api/forms/" + (directiveName === 'formControl' ? 'FormControlDirective'
-                : 'FormControlName') + "#use-with-ngmodel\n    ");
+            console.warn("\n    It looks like you're using ngModel on the same form field as " + directiveName + ". \n    Support for using the ngModel input property and ngModelChange event with \n    reactive form directives has been deprecated in Angular v6 and will be removed \n    in Angular v7.\n    \n    For more information on this, see our API docs here:\n    https://angular.io/api/forms/" + (directiveName === 'formControl' ? 'FormControlDirective' :
+                'FormControlName') + "#use-with-ngmodel\n    ");
         };
         return ReactiveErrors;
     }());
@@ -16623,7 +14475,9 @@
          *
          * @param fn The callback function
          */
-        SelectControlValueAccessor.prototype.registerOnTouched = function (fn) { this.onTouched = fn; };
+        SelectControlValueAccessor.prototype.registerOnTouched = function (fn) {
+            this.onTouched = fn;
+        };
         /**
          * Sets the "disabled" property on the select input element.
          *
@@ -16633,7 +14487,9 @@
             this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
         };
         /** @internal */
-        SelectControlValueAccessor.prototype._registerOption = function () { return (this._idCounter++).toString(); };
+        SelectControlValueAccessor.prototype._registerOption = function () {
+            return (this._idCounter++).toString();
+        };
         /** @internal */
         SelectControlValueAccessor.prototype._getOptionId = function (value) {
             var e_1, _a;
@@ -16780,9 +14636,9 @@
     }
     /**
      * @description
-     * The `ControlValueAccessor` for writing multi-select control values and listening to multi-select control
-     * changes. The value accessor is used by the `FormControlDirective`, `FormControlName`, and `NgModel`
-     * directives.
+     * The `ControlValueAccessor` for writing multi-select control values and listening to multi-select
+     * control changes. The value accessor is used by the `FormControlDirective`, `FormControlName`, and
+     * `NgModel` directives.
      *
      * @see `SelectControlValueAccessor`
      *
@@ -16862,10 +14718,14 @@
             if (Array.isArray(value)) {
                 // convert values to ids
                 var ids_1 = value.map(function (v) { return _this._getOptionId(v); });
-                optionSelectedStateSetter = function (opt, o) { opt._setSelected(ids_1.indexOf(o.toString()) > -1); };
+                optionSelectedStateSetter = function (opt, o) {
+                    opt._setSelected(ids_1.indexOf(o.toString()) > -1);
+                };
             }
             else {
-                optionSelectedStateSetter = function (opt, o) { opt._setSelected(false); };
+                optionSelectedStateSetter = function (opt, o) {
+                    opt._setSelected(false);
+                };
             }
             this._optionMap.forEach(optionSelectedStateSetter);
         };
@@ -16909,7 +14769,9 @@
          *
          * @param fn The callback function
          */
-        SelectMultipleControlValueAccessor.prototype.registerOnTouched = function (fn) { this.onTouched = fn; };
+        SelectMultipleControlValueAccessor.prototype.registerOnTouched = function (fn) {
+            this.onTouched = fn;
+        };
         /**
          * Sets the "disabled" property on the select input element.
          *
@@ -17076,7 +14938,9 @@
         setUpModelChangePipeline(control, dir);
         setUpBlurPipeline(control, dir);
         if (dir.valueAccessor.setDisabledState) {
-            control.registerOnDisabledChange(function (isDisabled) { dir.valueAccessor.setDisabledState(isDisabled); });
+            control.registerOnDisabledChange(function (isDisabled) {
+                dir.valueAccessor.setDisabledState(isDisabled);
+            });
         }
         // re-run validation when validator binding changes, e.g. minlength=3 -> minlength=4
         dir._rawValidators.forEach(function (validator) {
@@ -17284,20 +15148,28 @@
     function _find(control, path, delimiter) {
         if (path == null)
             return null;
-        if (!(path instanceof Array)) {
+        if (!Array.isArray(path)) {
             path = path.split(delimiter);
         }
-        if (path instanceof Array && (path.length === 0))
+        if (Array.isArray(path) && path.length === 0)
             return null;
-        return path.reduce(function (v, name) {
-            if (v instanceof FormGroup) {
-                return v.controls.hasOwnProperty(name) ? v.controls[name] : null;
+        // Not using Array.reduce here due to a Chrome 80 bug
+        // https://bugs.chromium.org/p/chromium/issues/detail?id=1049982
+        var controlToFind = control;
+        path.forEach(function (name) {
+            if (controlToFind instanceof FormGroup) {
+                controlToFind = controlToFind.controls.hasOwnProperty(name) ?
+                    controlToFind.controls[name] :
+                    null;
             }
-            if (v instanceof FormArray) {
-                return v.at(name) || null;
+            else if (controlToFind instanceof FormArray) {
+                controlToFind = controlToFind.at(name) || null;
             }
-            return null;
-        }, control);
+            else {
+                controlToFind = null;
+            }
+        });
+        return controlToFind;
     }
     function coerceToValidator(validatorOrOpts) {
         var validator = (isOptionsObj(validatorOrOpts) ? validatorOrOpts.validators :
@@ -17363,7 +15235,9 @@
             /**
              * The parent control.
              */
-            get: function () { return this._parent; },
+            get: function () {
+                return this._parent;
+            },
             enumerable: true,
             configurable: true
         });
@@ -17376,7 +15250,9 @@
              * @returns True if the control has passed all of its validation tests,
              * false otherwise.
              */
-            get: function () { return this.status === VALID; },
+            get: function () {
+                return this.status === VALID;
+            },
             enumerable: true,
             configurable: true
         });
@@ -17389,7 +15265,9 @@
              * @returns True if this control has failed one or more of its validation checks,
              * false otherwise.
              */
-            get: function () { return this.status === INVALID; },
+            get: function () {
+                return this.status === INVALID;
+            },
             enumerable: true,
             configurable: true
         });
@@ -17402,7 +15280,9 @@
              * @returns True if this control is in the process of conducting a validation check,
              * false otherwise.
              */
-            get: function () { return this.status == PENDING; },
+            get: function () {
+                return this.status == PENDING;
+            },
             enumerable: true,
             configurable: true
         });
@@ -17418,7 +15298,9 @@
              *
              * @returns True if the control is disabled, false otherwise.
              */
-            get: function () { return this.status === DISABLED; },
+            get: function () {
+                return this.status === DISABLED;
+            },
             enumerable: true,
             configurable: true
         });
@@ -17432,7 +15314,9 @@
              * @see {@link AbstractControl.status}
              *
              */
-            get: function () { return this.status !== DISABLED; },
+            get: function () {
+                return this.status !== DISABLED;
+            },
             enumerable: true,
             configurable: true
         });
@@ -17444,7 +15328,9 @@
              * @returns True if the user has changed the value of this control in the UI; compare `pristine`.
              * Programmatic changes to a control's value do not mark it dirty.
              */
-            get: function () { return !this.pristine; },
+            get: function () {
+                return !this.pristine;
+            },
             enumerable: true,
             configurable: true
         });
@@ -17455,7 +15341,9 @@
              * A control is `untouched` if the user has not yet triggered
              * a `blur` event on it.
              */
-            get: function () { return !this.touched; },
+            get: function () {
+                return !this.touched;
+            },
             enumerable: true,
             configurable: true
         });
@@ -17501,7 +15389,9 @@
          * `updateValueAndValidity()` for the new validation to take effect.
          *
          */
-        AbstractControl.prototype.clearValidators = function () { this.validator = null; };
+        AbstractControl.prototype.clearValidators = function () {
+            this.validator = null;
+        };
         /**
          * Empties out the async validator list.
          *
@@ -17509,7 +15399,9 @@
          * `updateValueAndValidity()` for the new validation to take effect.
          *
          */
-        AbstractControl.prototype.clearAsyncValidators = function () { this.asyncValidator = null; };
+        AbstractControl.prototype.clearAsyncValidators = function () {
+            this.asyncValidator = null;
+        };
         /**
          * Marks the control as `touched`. A control is touched by focus and
          * blur events that do not change the value.
@@ -17519,7 +15411,7 @@
          * @see `markAsPristine()`
          *
          * @param opts Configuration options that determine how the control propagates changes
-         * and emits events events after marking is applied.
+         * and emits events after marking is applied.
          * * `onlySelf`: When true, mark only this control. When false or not supplied,
          * marks all direct ancestors. Default is false.
          */
@@ -17557,7 +15449,9 @@
             if (opts === void 0) { opts = {}; }
             this.touched = false;
             this._pendingTouched = false;
-            this._forEachChild(function (control) { control.markAsUntouched({ onlySelf: true }); });
+            this._forEachChild(function (control) {
+                control.markAsUntouched({ onlySelf: true });
+            });
             if (this._parent && !opts.onlySelf) {
                 this._parent._updateTouched(opts);
             }
@@ -17596,13 +15490,15 @@
          * @param opts Configuration options that determine how the control emits events after
          * marking is applied.
          * * `onlySelf`: When true, mark only this control. When false or not supplied,
-         * marks all direct ancestors. Default is false..
+         * marks all direct ancestors. Default is false.
          */
         AbstractControl.prototype.markAsPristine = function (opts) {
             if (opts === void 0) { opts = {}; }
             this.pristine = true;
             this._pendingDirty = false;
-            this._forEachChild(function (control) { control.markAsPristine({ onlySelf: true }); });
+            this._forEachChild(function (control) {
+                control.markAsPristine({ onlySelf: true });
+            });
             if (this._parent && !opts.onlySelf) {
                 this._parent._updatePristine(opts);
             }
@@ -17617,7 +15513,7 @@
          * @param opts Configuration options that determine how the control propagates changes and
          * emits events after marking is applied.
          * * `onlySelf`: When true, mark only this control. When false or not supplied,
-         * marks all direct ancestors. Default is false..
+         * marks all direct ancestors. Default is false.
          * * `emitEvent`: When true or not supplied (the default), the `statusChanges`
          * observable emits an event with the latest status the control is marked pending.
          * When false, no events are emitted.
@@ -17644,7 +15540,7 @@
          * @param opts Configuration options that determine how the control propagates
          * changes and emits events after the control is disabled.
          * * `onlySelf`: When true, mark only this control. When false or not supplied,
-         * marks all direct ancestors. Default is false..
+         * marks all direct ancestors. Default is false.
          * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
          * `valueChanges`
          * observables emit events with the latest status and value when the control is disabled.
@@ -17657,13 +15553,15 @@
             var skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
             this.status = DISABLED;
             this.errors = null;
-            this._forEachChild(function (control) { control.disable(__assign$1({}, opts, { onlySelf: true })); });
+            this._forEachChild(function (control) {
+                control.disable(__assign$1(__assign$1({}, opts), { onlySelf: true }));
+            });
             this._updateValue();
             if (opts.emitEvent !== false) {
                 this.valueChanges.emit(this.value);
                 this.statusChanges.emit(this.status);
             }
-            this._updateAncestors(__assign$1({}, opts, { skipPristineCheck: skipPristineCheck }));
+            this._updateAncestors(__assign$1(__assign$1({}, opts), { skipPristineCheck: skipPristineCheck }));
             this._onDisabledChange.forEach(function (changeFn) { return changeFn(true); });
         };
         /**
@@ -17678,7 +15576,7 @@
          * @param opts Configure options that control how the control propagates changes and
          * emits events when marked as untouched
          * * `onlySelf`: When true, mark only this control. When false or not supplied,
-         * marks all direct ancestors. Default is false..
+         * marks all direct ancestors. Default is false.
          * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
          * `valueChanges`
          * observables emit events with the latest status and value when the control is enabled.
@@ -17690,9 +15588,11 @@
             // parent's dirtiness based on the children.
             var skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
             this.status = VALID;
-            this._forEachChild(function (control) { control.enable(__assign$1({}, opts, { onlySelf: true })); });
+            this._forEachChild(function (control) {
+                control.enable(__assign$1(__assign$1({}, opts), { onlySelf: true }));
+            });
             this.updateValueAndValidity({ onlySelf: true, emitEvent: opts.emitEvent });
-            this._updateAncestors(__assign$1({}, opts, { skipPristineCheck: skipPristineCheck }));
+            this._updateAncestors(__assign$1(__assign$1({}, opts), { skipPristineCheck: skipPristineCheck }));
             this._onDisabledChange.forEach(function (changeFn) { return changeFn(false); });
         };
         AbstractControl.prototype._updateAncestors = function (opts) {
@@ -17707,7 +15607,9 @@
         /**
          * @param parent Sets the parent of the control
          */
-        AbstractControl.prototype.setParent = function (parent) { this._parent = parent; };
+        AbstractControl.prototype.setParent = function (parent) {
+            this._parent = parent;
+        };
         /**
          * Recalculates the value and validation status of the control.
          *
@@ -17716,7 +15618,7 @@
          * @param opts Configuration options determine how the control propagates changes and emits events
          * after updates and validity checks are applied.
          * * `onlySelf`: When true, only update this control. When false or not supplied,
-         * update all direct ancestors. Default is false..
+         * update all direct ancestors. Default is false.
          * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
          * `valueChanges`
          * observables emit events with the latest status and value when the control is updated.
@@ -17774,6 +15676,7 @@
          * Calling `setErrors` also updates the validity of the parent control.
          *
          * @usageNotes
+         *
          * ### Manually set the errors for a control
          *
          * ```
@@ -17812,7 +15715,9 @@
          *
          * * `this.form.get(['person', 'name']);`
          */
-        AbstractControl.prototype.get = function (path) { return _find(this, path, '.'); };
+        AbstractControl.prototype.get = function (path) {
+            return _find(this, path, '.');
+        };
         /**
          * @description
          * Reports error data for the control with the given path.
@@ -17951,7 +15856,9 @@
                 Object.keys(formState).length === 2 && 'value' in formState && 'disabled' in formState;
         };
         /** @internal */
-        AbstractControl.prototype._registerOnCollectionChange = function (fn) { this._onCollectionChange = fn; };
+        AbstractControl.prototype._registerOnCollectionChange = function (fn) {
+            this._onCollectionChange = fn;
+        };
         /** @internal */
         AbstractControl.prototype._setUpdateStrategy = function (opts) {
             if (isOptionsObj(opts) && opts.updateOn != null) {
@@ -17975,7 +15882,7 @@
      * This is one of the three fundamental building blocks of Angular forms, along with
      * `FormGroup` and `FormArray`. It extends the `AbstractControl` class that
      * implements most of the base functionality for accessing the value, validation status,
-     * user interactions and events.
+     * user interactions and events. See [usage examples below](#usage-notes).
      *
      * @see `AbstractControl`
      * @see [Reactive Forms Guide](guide/reactive-forms)
@@ -18069,18 +15976,18 @@
     var FormControl = /** @class */ (function (_super) {
         __extends$1(FormControl, _super);
         /**
-        * Creates a new `FormControl` instance.
-        *
-        * @param formState Initializes the control with an initial value,
-        * or an object that defines the initial value and disabled state.
-        *
-        * @param validatorOrOpts A synchronous validator function, or an array of
-        * such functions, or an `AbstractControlOptions` object that contains validation functions
-        * and a validation trigger.
-        *
-        * @param asyncValidator A single async validator or array of async validator functions
-        *
-        */
+         * Creates a new `FormControl` instance.
+         *
+         * @param formState Initializes the control with an initial value,
+         * or an object that defines the initial value and disabled state.
+         *
+         * @param validatorOrOpts A synchronous validator function, or an array of
+         * such functions, or an `AbstractControlOptions` object that contains validation functions
+         * and a validation trigger.
+         *
+         * @param asyncValidator A single async validator or array of async validator functions
+         *
+         */
         function FormControl(formState, validatorOrOpts, asyncValidator) {
             if (formState === void 0) { formState = null; }
             var _this = _super.call(this, coerceToValidator(validatorOrOpts), coerceToAsyncValidator(asyncValidator, validatorOrOpts)) || this;
@@ -18171,17 +16078,23 @@
         /**
          * @internal
          */
-        FormControl.prototype._anyControls = function (condition) { return false; };
+        FormControl.prototype._anyControls = function (condition) {
+            return false;
+        };
         /**
          * @internal
          */
-        FormControl.prototype._allControlsDisabled = function () { return this.disabled; };
+        FormControl.prototype._allControlsDisabled = function () {
+            return this.disabled;
+        };
         /**
          * Register a listener for change events.
          *
          * @param fn The method that is called when the value changes
          */
-        FormControl.prototype.registerOnChange = function (fn) { this._onChange.push(fn); };
+        FormControl.prototype.registerOnChange = function (fn) {
+            this._onChange.push(fn);
+        };
         /**
          * @internal
          */
@@ -18303,18 +16216,18 @@
     var FormGroup = /** @class */ (function (_super) {
         __extends$1(FormGroup, _super);
         /**
-        * Creates a new `FormGroup` instance.
-        *
-        * @param controls A collection of child controls. The key for each child is the name
-        * under which it is registered.
-        *
-        * @param validatorOrOpts A synchronous validator function, or an array of
-        * such functions, or an `AbstractControlOptions` object that contains validation functions
-        * and a validation trigger.
-        *
-        * @param asyncValidator A single async validator or array of async validator functions
-        *
-        */
+         * Creates a new `FormGroup` instance.
+         *
+         * @param controls A collection of child controls. The key for each child is the name
+         * under which it is registered.
+         *
+         * @param validatorOrOpts A synchronous validator function, or an array of
+         * such functions, or an `AbstractControlOptions` object that contains validation functions
+         * and a validation trigger.
+         *
+         * @param asyncValidator A single async validator or array of async validator functions
+         *
+         */
         function FormGroup(controls, validatorOrOpts, asyncValidator) {
             var _this = _super.call(this, coerceToValidator(validatorOrOpts), coerceToAsyncValidator(asyncValidator, validatorOrOpts)) || this;
             _this.controls = controls;
@@ -18594,7 +16507,9 @@
             });
         };
         /** @internal */
-        FormGroup.prototype._updateValue = function () { this.value = this._reduceValue(); };
+        FormGroup.prototype._updateValue = function () {
+            this.value = this._reduceValue();
+        };
         /** @internal */
         FormGroup.prototype._anyControls = function (condition) {
             var _this = this;
@@ -18617,7 +16532,9 @@
         /** @internal */
         FormGroup.prototype._reduceChildren = function (initValue, fn) {
             var res = initValue;
-            this._forEachChild(function (control, name) { res = fn(res, control, name); });
+            this._forEachChild(function (control, name) {
+                res = fn(res, control, name);
+            });
             return res;
         };
         /** @internal */
@@ -18691,7 +16608,7 @@
      * ], {validators: myValidator, asyncValidators: myAsyncValidator});
      * ```
      *
-      * ### Set the updateOn property for all controls in a form array
+     * ### Set the updateOn property for all controls in a form array
      *
      * The options object is used to set a default value for each child
      * control's `updateOn` property. If you set `updateOn` to `'blur'` at the
@@ -18717,18 +16634,18 @@
     var FormArray = /** @class */ (function (_super) {
         __extends$1(FormArray, _super);
         /**
-        * Creates a new `FormArray` instance.
-        *
-        * @param controls An array of child controls. Each child control is given an index
-        * where it is registered.
-        *
-        * @param validatorOrOpts A synchronous validator function, or an array of
-        * such functions, or an `AbstractControlOptions` object that contains validation functions
-        * and a validation trigger.
-        *
-        * @param asyncValidator A single async validator or array of async validator functions
-        *
-        */
+         * Creates a new `FormArray` instance.
+         *
+         * @param controls An array of child controls. Each child control is given an index
+         * where it is registered.
+         *
+         * @param validatorOrOpts A synchronous validator function, or an array of
+         * such functions, or an `AbstractControlOptions` object that contains validation functions
+         * and a validation trigger.
+         *
+         * @param asyncValidator A single async validator or array of async validator functions
+         *
+         */
         function FormArray(controls, validatorOrOpts, asyncValidator) {
             var _this = _super.call(this, coerceToValidator(validatorOrOpts), coerceToAsyncValidator(asyncValidator, validatorOrOpts)) || this;
             _this.controls = controls;
@@ -18743,7 +16660,9 @@
          *
          * @param index Index in the array to retrieve the control
          */
-        FormArray.prototype.at = function (index) { return this.controls[index]; };
+        FormArray.prototype.at = function (index) {
+            return this.controls[index];
+        };
         /**
          * Insert a new `AbstractControl` at the end of the array.
          *
@@ -18798,7 +16717,9 @@
             /**
              * Length of the control array.
              */
-            get: function () { return this.controls.length; },
+            get: function () {
+                return this.controls.length;
+            },
             enumerable: true,
             configurable: true
         });
@@ -19015,7 +16936,9 @@
         };
         /** @internal */
         FormArray.prototype._forEachChild = function (cb) {
-            this.controls.forEach(function (control, index) { cb(control, index); });
+            this.controls.forEach(function (control, index) {
+                cb(control, index);
+            });
         };
         /** @internal */
         FormArray.prototype._updateValue = function () {
@@ -19078,8 +17001,8 @@
         provide: ControlContainer,
         useExisting: core.forwardRef(function () { return NgForm; })
     };
-    var ɵ0$6 = function () { return Promise.resolve(null); };
-    var resolvedPromise = (ɵ0$6)();
+    var ɵ0 = function () { return Promise.resolve(null); };
+    var resolvedPromise = (ɵ0)();
     /**
      * @description
      * Creates a top-level `FormGroup` instance and binds it to a form
@@ -19110,24 +17033,6 @@
      *
      * @usageNotes
      *
-     * ### Migrating from deprecated ngForm selector
-     *
-     * Support for using `ngForm` element selector has been deprecated in Angular v6 and will be removed
-     * in Angular v9.
-     *
-     * This has been deprecated to keep selectors consistent with other core Angular selectors,
-     * as element selectors are typically written in kebab-case.
-     *
-     * Now deprecated:
-     * ```html
-     * <ngForm #myForm="ngForm">
-     * ```
-     *
-     * After:
-     * ```html
-     * <ng-form #myForm="ngForm">
-     * ```
-     *
      * ### Listening for form submission
      *
      * The following example shows how to capture the form values from the "ngSubmit" event.
@@ -19142,6 +17047,20 @@
      * ```html
      * <form [ngFormOptions]="{updateOn: 'blur'}">
      *    <input name="one" ngModel>  <!-- this ngModel will update on blur -->
+     * </form>
+     * ```
+     *
+     * ### Native DOM validation UI
+     *
+     * In order to prevent the native DOM form validation UI from interfering with Angular's form
+     * validation, Angular automatically adds the `novalidate` attribute on any `<form>` whenever
+     * `FormModule` or `ReactiveFormModule` are imported into the application.
+     * If you want to explicitly enable native DOM validation UI with Angular forms, you can add the
+     * `ngNativeValidate` attribute to the `<form>` element:
+     *
+     * ```html
+     * <form ngNativeValidate>
+     *   ...
      * </form>
      * ```
      *
@@ -19171,13 +17090,17 @@
          * @description
          * Lifecycle method called after the view is initialized. For internal use only.
          */
-        NgForm.prototype.ngAfterViewInit = function () { this._setUpdateStrategy(); };
+        NgForm.prototype.ngAfterViewInit = function () {
+            this._setUpdateStrategy();
+        };
         Object.defineProperty(NgForm.prototype, "formDirective", {
             /**
              * @description
              * The directive instance.
              */
-            get: function () { return this; },
+            get: function () {
+                return this;
+            },
             enumerable: true,
             configurable: true
         });
@@ -19186,7 +17109,9 @@
              * @description
              * The internal `FormGroup` instance.
              */
-            get: function () { return this.form; },
+            get: function () {
+                return this.form;
+            },
             enumerable: true,
             configurable: true
         });
@@ -19196,7 +17121,9 @@
              * Returns an array representing the path to this group. Because this directive
              * always lives at the top level of a form, it is always an empty array.
              */
-            get: function () { return []; },
+            get: function () {
+                return [];
+            },
             enumerable: true,
             configurable: true
         });
@@ -19205,7 +17132,9 @@
              * @description
              * Returns a map of the controls in this group.
              */
-            get: function () { return this.form.controls; },
+            get: function () {
+                return this.form.controls;
+            },
             enumerable: true,
             configurable: true
         });
@@ -19233,7 +17162,9 @@
          *
          * @param dir The `NgModel` directive instance.
          */
-        NgForm.prototype.getControl = function (dir) { return this.form.get(dir.path); };
+        NgForm.prototype.getControl = function (dir) {
+            return this.form.get(dir.path);
+        };
         /**
          * @description
          * Removes the `NgModel` instance from the internal list of directives
@@ -19287,7 +17218,9 @@
          *
          * @param dir The `NgModelGroup` directive instance.
          */
-        NgForm.prototype.getFormGroup = function (dir) { return this.form.get(dir.path); };
+        NgForm.prototype.getFormGroup = function (dir) {
+            return this.form.get(dir.path);
+        };
         /**
          * Sets the new value for the provided `NgControl` directive.
          *
@@ -19307,7 +17240,9 @@
          *
          * @param value The new value
          */
-        NgForm.prototype.setValue = function (value) { this.control.setValue(value); };
+        NgForm.prototype.setValue = function (value) {
+            this.control.setValue(value);
+        };
         /**
          * @description
          * Method called when the "submit" event is triggered on the form.
@@ -19325,7 +17260,9 @@
          * @description
          * Method called when the "reset" event is triggered on the form.
          */
-        NgForm.prototype.onReset = function () { this.resetForm(); };
+        NgForm.prototype.onReset = function () {
+            this.resetForm();
+        };
         /**
          * @description
          * Resets the form to an initial value and resets its submitted status.
@@ -19353,7 +17290,7 @@
         ], NgForm.prototype, "options", void 0);
         NgForm = __decorate$1([
             core.Directive({
-                selector: 'form:not([ngNoForm]):not([formGroup]),ngForm,ng-form,[ngForm]',
+                selector: 'form:not([ngNoForm]):not([formGroup]),ng-form,[ngForm]',
                 providers: [formDirectiveProvider],
                 host: { '(submit)': 'onSubmit($event)', '(reset)': 'onReset()' },
                 outputs: ['ngSubmit'],
@@ -19365,78 +17302,6 @@
         ], NgForm);
         return NgForm;
     }(ControlContainer));
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    var TemplateDrivenErrors = /** @class */ (function () {
-        function TemplateDrivenErrors() {
-        }
-        TemplateDrivenErrors.modelParentException = function () {
-            throw new Error("\n      ngModel cannot be used to register form controls with a parent formGroup directive.  Try using\n      formGroup's partner directive \"formControlName\" instead.  Example:\n\n      " + FormErrorExamples.formControlName + "\n\n      Or, if you'd like to avoid registering this form control, indicate that it's standalone in ngModelOptions:\n\n      Example:\n\n      " + FormErrorExamples.ngModelWithFormGroup);
-        };
-        TemplateDrivenErrors.formGroupNameException = function () {
-            throw new Error("\n      ngModel cannot be used to register form controls with a parent formGroupName or formArrayName directive.\n\n      Option 1: Use formControlName instead of ngModel (reactive strategy):\n\n      " + FormErrorExamples.formGroupName + "\n\n      Option 2:  Update ngModel's parent be ngModelGroup (template-driven strategy):\n\n      " + FormErrorExamples.ngModelGroup);
-        };
-        TemplateDrivenErrors.missingNameException = function () {
-            throw new Error("If ngModel is used within a form tag, either the name attribute must be set or the form\n      control must be defined as 'standalone' in ngModelOptions.\n\n      Example 1: <input [(ngModel)]=\"person.firstName\" name=\"first\">\n      Example 2: <input [(ngModel)]=\"person.firstName\" [ngModelOptions]=\"{standalone: true}\">");
-        };
-        TemplateDrivenErrors.modelGroupParentException = function () {
-            throw new Error("\n      ngModelGroup cannot be used with a parent formGroup directive.\n\n      Option 1: Use formGroupName instead of ngModelGroup (reactive strategy):\n\n      " + FormErrorExamples.formGroupName + "\n\n      Option 2:  Use a regular form tag instead of the formGroup directive (template-driven strategy):\n\n      " + FormErrorExamples.ngModelGroup);
-        };
-        TemplateDrivenErrors.ngFormWarning = function () {
-            console.warn("\n    It looks like you're using 'ngForm'.\n\n    Support for using the 'ngForm' element selector has been deprecated in Angular v6 and will be removed\n    in Angular v9.\n\n    Use 'ng-form' instead.\n\n    Before:\n    <ngForm #myForm=\"ngForm\">\n\n    After:\n    <ng-form #myForm=\"ngForm\">\n    ");
-        };
-        return TemplateDrivenErrors;
-    }());
-
-    /**
-     * @license
-     * Copyright Google Inc. All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-    /**
-     * @description
-     * `InjectionToken` to provide to turn off the warning when using 'ngForm' deprecated selector.
-     */
-    var NG_FORM_SELECTOR_WARNING = new core.InjectionToken('NgFormSelectorWarning');
-    /**
-     * This directive is solely used to display warnings when the deprecated `ngForm` selector is used.
-     *
-     * @deprecated in Angular v6 and will be removed in Angular v9.
-     * @ngModule FormsModule
-     * @publicApi
-     */
-    var NgFormSelectorWarning = /** @class */ (function () {
-        function NgFormSelectorWarning(ngFormWarning) {
-            if (((!ngFormWarning || ngFormWarning === 'once') && !NgFormSelectorWarning_1._ngFormWarning) ||
-                ngFormWarning === 'always') {
-                TemplateDrivenErrors.ngFormWarning();
-                NgFormSelectorWarning_1._ngFormWarning = true;
-            }
-        }
-        NgFormSelectorWarning_1 = NgFormSelectorWarning;
-        var NgFormSelectorWarning_1;
-        /**
-         * Static property used to track whether the deprecation warning for this selector has been sent.
-         * Used to support warning config of "once".
-         *
-         * @internal
-         */
-        NgFormSelectorWarning._ngFormWarning = false;
-        NgFormSelectorWarning = NgFormSelectorWarning_1 = __decorate$1([
-            core.Directive({ selector: 'ngForm' }),
-            __param$1(0, core.Optional()), __param$1(0, core.Inject(NG_FORM_SELECTOR_WARNING)),
-            __metadata$1("design:paramtypes", [Object])
-        ], NgFormSelectorWarning);
-        return NgFormSelectorWarning;
-    }());
 
     /**
      * @license
@@ -19480,7 +17345,9 @@
              * @description
              * The `FormGroup` bound to this directive.
              */
-            get: function () { return this.formDirective.getFormGroup(this); },
+            get: function () {
+                return this.formDirective.getFormGroup(this);
+            },
             enumerable: true,
             configurable: true
         });
@@ -19489,7 +17356,9 @@
              * @description
              * The path to this group from the top-level directive.
              */
-            get: function () { return controlPath(this.name, this._parent); },
+            get: function () {
+                return controlPath(this.name == null ? this.name : this.name.toString(), this._parent);
+            },
             enumerable: true,
             configurable: true
         });
@@ -19498,7 +17367,9 @@
              * @description
              * The top-level directive for this group if present, otherwise null.
              */
-            get: function () { return this._parent ? this._parent.formDirective : null; },
+            get: function () {
+                return this._parent ? this._parent.formDirective : null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -19507,7 +17378,9 @@
              * @description
              * The synchronous validators registered with this group.
              */
-            get: function () { return composeValidators(this._validators); },
+            get: function () {
+                return composeValidators(this._validators);
+            },
             enumerable: true,
             configurable: true
         });
@@ -19526,6 +17399,31 @@
         AbstractFormGroupDirective.prototype._checkParentType = function () { };
         return AbstractFormGroupDirective;
     }(ControlContainer));
+
+    /**
+     * @license
+     * Copyright Google Inc. All Rights Reserved.
+     *
+     * Use of this source code is governed by an MIT-style license that can be
+     * found in the LICENSE file at https://angular.io/license
+     */
+    var TemplateDrivenErrors = /** @class */ (function () {
+        function TemplateDrivenErrors() {
+        }
+        TemplateDrivenErrors.modelParentException = function () {
+            throw new Error("\n      ngModel cannot be used to register form controls with a parent formGroup directive.  Try using\n      formGroup's partner directive \"formControlName\" instead.  Example:\n\n      " + FormErrorExamples.formControlName + "\n\n      Or, if you'd like to avoid registering this form control, indicate that it's standalone in ngModelOptions:\n\n      Example:\n\n      " + FormErrorExamples.ngModelWithFormGroup);
+        };
+        TemplateDrivenErrors.formGroupNameException = function () {
+            throw new Error("\n      ngModel cannot be used to register form controls with a parent formGroupName or formArrayName directive.\n\n      Option 1: Use formControlName instead of ngModel (reactive strategy):\n\n      " + FormErrorExamples.formGroupName + "\n\n      Option 2:  Update ngModel's parent be ngModelGroup (template-driven strategy):\n\n      " + FormErrorExamples.ngModelGroup);
+        };
+        TemplateDrivenErrors.missingNameException = function () {
+            throw new Error("If ngModel is used within a form tag, either the name attribute must be set or the form\n      control must be defined as 'standalone' in ngModelOptions.\n\n      Example 1: <input [(ngModel)]=\"person.firstName\" name=\"first\">\n      Example 2: <input [(ngModel)]=\"person.firstName\" [ngModelOptions]=\"{standalone: true}\">");
+        };
+        TemplateDrivenErrors.modelGroupParentException = function () {
+            throw new Error("\n      ngModelGroup cannot be used with a parent formGroup directive.\n\n      Option 1: Use formGroupName instead of ngModelGroup (reactive strategy):\n\n      " + FormErrorExamples.formGroupName + "\n\n      Option 2:  Use a regular form tag instead of the formGroup directive (template-driven strategy):\n\n      " + FormErrorExamples.ngModelGroup);
+        };
+        return TemplateDrivenErrors;
+    }());
 
     /**
      * @license
@@ -19606,7 +17504,7 @@
         provide: NgControl,
         useExisting: core.forwardRef(function () { return NgModel; })
     };
-    var ɵ0$1$1 = function () { return Promise.resolve(null); };
+    var ɵ0$1 = function () { return Promise.resolve(null); };
     /**
      * `ngModel` forces an additional change detection run when its inputs change:
      * E.g.:
@@ -19624,7 +17522,7 @@
      * - this is just one extra run no matter how many `ngModel` have been changed.
      * - this is a general problem when using `exportAs` for directives!
      */
-    var resolvedPromise$1 = (ɵ0$1$1)();
+    var resolvedPromise$1 = (ɵ0$1)();
     /**
      * @description
      * Creates a `FormControl` instance from a domain model and binds it
@@ -19645,10 +17543,10 @@
      * the domain model in your class.
      *
      * To inspect the properties of the associated `FormControl` (like validity state),
-     * export the directive into a local template variable using `ngModel` as the key (ex: `#myVar="ngModel"`).
-     * You then access the control using the directive's `control` property,
-     * but most properties used (like `valid` and `dirty`) fall through to the control anyway for direct access.
-     * See a full list of properties directly available in `AbstractControlDirective`.
+     * export the directive into a local template variable using `ngModel` as the key (ex:
+     * `#myVar="ngModel"`). You then access the control using the directive's `control` property, but
+     * most properties used (like `valid` and `dirty`) fall through to the control anyway for direct
+     * access. See a full list of properties directly available in `AbstractControlDirective`.
      *
      * @see `RadioControlValueAccessor`
      * @see `SelectControlValueAccessor`
@@ -19694,8 +17592,8 @@
      *
      * ### Setting the ngModel name attribute through options
      *
-     * The following example shows you an alternate way to set the name attribute. The name attribute is used
-     * within a custom form component, and the name `@Input` property serves a different purpose.
+     * The following example shows you an alternate way to set the name attribute. The name attribute is
+     * used within a custom form component, and the name `@Input` property serves a different purpose.
      *
      * ```html
      * <form>
@@ -19751,7 +17649,9 @@
          * Lifecycle method called before the directive's instance is destroyed. For internal
          * use only.
          */
-        NgModel.prototype.ngOnDestroy = function () { this.formDirective && this.formDirective.removeControl(this); };
+        NgModel.prototype.ngOnDestroy = function () {
+            this.formDirective && this.formDirective.removeControl(this);
+        };
         Object.defineProperty(NgModel.prototype, "path", {
             /**
              * @description
@@ -19769,7 +17669,9 @@
              * @description
              * The top-level directive for this control if present, otherwise null.
              */
-            get: function () { return this._parent ? this._parent.formDirective : null; },
+            get: function () {
+                return this._parent ? this._parent.formDirective : null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -19779,7 +17681,9 @@
              * Synchronous validator function composed of all the synchronous validators
              * registered with this directive.
              */
-            get: function () { return composeValidators(this._rawValidators); },
+            get: function () {
+                return composeValidators(this._rawValidators);
+            },
             enumerable: true,
             configurable: true
         });
@@ -19807,8 +17711,7 @@
         };
         NgModel.prototype._setUpControl = function () {
             this._setUpdateStrategy();
-            this._isStandalone() ? this._setUpStandalone() :
-                this.formDirective.addControl(this);
+            this._isStandalone() ? this._setUpStandalone() : this.formDirective.addControl(this);
             this._registered = true;
         };
         NgModel.prototype._setUpdateStrategy = function () {
@@ -19847,7 +17750,9 @@
         };
         NgModel.prototype._updateValue = function (value) {
             var _this = this;
-            resolvedPromise$1.then(function () { _this.control.setValue(value, { emitViewToModelChange: false }); });
+            resolvedPromise$1.then(function () {
+                _this.control.setValue(value, { emitViewToModelChange: false });
+            });
         };
         NgModel.prototype._updateDisabled = function (changes) {
             var _this = this;
@@ -19952,7 +17857,12 @@
     };
     /**
      * @description
-     * * Syncs a standalone `FormControl` instance to a form control element.
+     * Synchronizes a standalone `FormControl` instance to a form control element.
+     *
+     * Note that support for using the `ngModel` input property and `ngModelChange` event with reactive
+     * form directives was deprecated in Angular v6 and is scheduled for removal in
+     * a future version of Angular.
+     * For details, see [Deprecated features](guide/deprecations#ngmodel-with-reactive-forms).
      *
      * @see [Reactive Forms Guide](guide/reactive-forms)
      * @see `FormControl`
@@ -19960,78 +17870,9 @@
      *
      * @usageNotes
      *
-     * ### Registering a single form control
-     *
-     * The following examples shows how to register a standalone control and set its value.
+     * The following example shows how to register a standalone control and set its value.
      *
      * {@example forms/ts/simpleFormControl/simple_form_control_example.ts region='Component'}
-     *
-     * ### Use with ngModel
-     *
-     * Support for using the `ngModel` input property and `ngModelChange` event with reactive
-     * form directives has been deprecated in Angular v6 and will be removed in Angular v7.
-     *
-     * Now deprecated:
-     *
-     * ```html
-     * <input [formControl]="control" [(ngModel)]="value">
-     * ```
-     *
-     * ```ts
-     * this.value = 'some value';
-     * ```
-     *
-     * This has been deprecated for a few reasons. First, developers have found this pattern
-     * confusing. It seems like the actual `ngModel` directive is being used, but in fact it's
-     * an input/output property named `ngModel` on the reactive form directive that simply
-     * approximates (some of) its behavior. Specifically, it allows getting/setting the value
-     * and intercepting value events. However, some of `ngModel`'s other features - like
-     * delaying updates with`ngModelOptions` or exporting the directive - simply don't work,
-     * which has understandably caused some confusion.
-     *
-     * In addition, this pattern mixes template-driven and reactive forms strategies, which
-     * we generally don't recommend because it doesn't take advantage of the full benefits of
-     * either strategy. Setting the value in the template violates the template-agnostic
-     * principles behind reactive forms, whereas adding a `FormControl`/`FormGroup` layer in
-     * the class removes the convenience of defining forms in the template.
-     *
-     * To update your code before v7, you'll want to decide whether to stick with reactive form
-     * directives (and get/set values using reactive forms patterns) or switch over to
-     * template-driven directives.
-     *
-     * After (choice 1 - use reactive forms):
-     *
-     * ```html
-     * <input [formControl]="control">
-     * ```
-     *
-     * ```ts
-     * this.control.setValue('some value');
-     * ```
-     *
-     * After (choice 2 - use template-driven forms):
-     *
-     * ```html
-     * <input [(ngModel)]="value">
-     * ```
-     *
-     * ```ts
-     * this.value = 'some value';
-     * ```
-     *
-     * By default, when you use this pattern, you will see a deprecation warning once in dev
-     * mode. You can choose to silence this warning by providing a config for
-     * `ReactiveFormsModule` at import time:
-     *
-     * ```ts
-     * imports: [
-     *   ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'never'});
-     * ]
-     * ```
-     *
-     * Alternatively, you can choose to surface a separate warning for each instance of this
-     * pattern with a config value of `"always"`. This may help to track down where in the code
-     * the pattern is being used as the code is being updated.
      *
      * @ngModule ReactiveFormsModule
      * @publicApi
@@ -20062,7 +17903,9 @@
              * @description
              * Triggers a warning that this input should not be used with reactive forms.
              */
-            set: function (isDisabled) { ReactiveErrors.disabledAttrWarning(); },
+            set: function (isDisabled) {
+                ReactiveErrors.disabledAttrWarning();
+            },
             enumerable: true,
             configurable: true
         });
@@ -20093,7 +17936,9 @@
              * Returns an array that represents the path from the top-level form to this control.
              * Each index is the string name of the control on that level.
              */
-            get: function () { return []; },
+            get: function () {
+                return [];
+            },
             enumerable: true,
             configurable: true
         });
@@ -20103,7 +17948,9 @@
              * Synchronous validator function composed of all the synchronous validators
              * registered with this directive.
              */
-            get: function () { return composeValidators(this._rawValidators); },
+            get: function () {
+                return composeValidators(this._rawValidators);
+            },
             enumerable: true,
             configurable: true
         });
@@ -20124,7 +17971,9 @@
              * @description
              * The `FormControl` bound to this directive.
              */
-            get: function () { return this.form; },
+            get: function () {
+                return this.form;
+            },
             enumerable: true,
             configurable: true
         });
@@ -20260,7 +18109,9 @@
              * @description
              * Returns this directive's instance.
              */
-            get: function () { return this; },
+            get: function () {
+                return this;
+            },
             enumerable: true,
             configurable: true
         });
@@ -20269,7 +18120,9 @@
              * @description
              * Returns the `FormGroup` bound to this directive.
              */
-            get: function () { return this.form; },
+            get: function () {
+                return this.form;
+            },
             enumerable: true,
             configurable: true
         });
@@ -20279,7 +18132,9 @@
              * Returns an array representing the path to this group. Because this directive
              * always lives at the top level of a form, it always an empty array.
              */
-            get: function () { return []; },
+            get: function () {
+                return [];
+            },
             enumerable: true,
             configurable: true
         });
@@ -20303,14 +18158,18 @@
          *
          * @param dir The `FormControlName` directive instance.
          */
-        FormGroupDirective.prototype.getControl = function (dir) { return this.form.get(dir.path); };
+        FormGroupDirective.prototype.getControl = function (dir) {
+            return this.form.get(dir.path);
+        };
         /**
          * @description
          * Removes the `FormControlName` instance from the internal list of directives
          *
          * @param dir The `FormControlName` directive instance.
          */
-        FormGroupDirective.prototype.removeControl = function (dir) { removeDir(this.directives, dir); };
+        FormGroupDirective.prototype.removeControl = function (dir) {
+            removeDir(this.directives, dir);
+        };
         /**
          * Adds a new `FormGroupName` directive instance to the form.
          *
@@ -20333,7 +18192,9 @@
          *
          * @param dir The `FormGroupName` directive instance.
          */
-        FormGroupDirective.prototype.getFormGroup = function (dir) { return this.form.get(dir.path); };
+        FormGroupDirective.prototype.getFormGroup = function (dir) {
+            return this.form.get(dir.path);
+        };
         /**
          * Adds a new `FormArrayName` directive instance to the form.
          *
@@ -20356,7 +18217,9 @@
          *
          * @param dir The `FormArrayName` directive instance.
          */
-        FormGroupDirective.prototype.getFormArray = function (dir) { return this.form.get(dir.path); };
+        FormGroupDirective.prototype.getFormArray = function (dir) {
+            return this.form.get(dir.path);
+        };
         /**
          * Sets the new value for the provided `FormControlName` directive.
          *
@@ -20384,7 +18247,9 @@
          * @description
          * Method called when the "reset" event is triggered on the form.
          */
-        FormGroupDirective.prototype.onReset = function () { this.resetForm(); };
+        FormGroupDirective.prototype.onReset = function () {
+            this.resetForm();
+        };
         /**
          * @description
          * Resets the form to an initial value and resets its submitted status.
@@ -20525,7 +18390,7 @@
         };
         __decorate$1([
             core.Input('formGroupName'),
-            __metadata$1("design:type", String)
+            __metadata$1("design:type", Object)
         ], FormGroupName.prototype, "name", void 0);
         FormGroupName = __decorate$1([
             core.Directive({ selector: '[formGroupName]', providers: [formGroupNameProvider] }),
@@ -20597,7 +18462,9 @@
              * @description
              * The `FormArray` bound to this directive.
              */
-            get: function () { return this.formDirective.getFormArray(this); },
+            get: function () {
+                return this.formDirective.getFormArray(this);
+            },
             enumerable: true,
             configurable: true
         });
@@ -20618,7 +18485,9 @@
              * Returns an array that represents the path from the top-level form to this control.
              * Each index is the string name of the control on that level.
              */
-            get: function () { return controlPath(this.name, this._parent); },
+            get: function () {
+                return controlPath(this.name == null ? this.name : this.name.toString(), this._parent);
+            },
             enumerable: true,
             configurable: true
         });
@@ -20628,7 +18497,9 @@
              * Synchronous validator function composed of all the synchronous validators registered with this
              * directive.
              */
-            get: function () { return composeValidators(this._validators); },
+            get: function () {
+                return composeValidators(this._validators);
+            },
             enumerable: true,
             configurable: true
         });
@@ -20650,7 +18521,7 @@
         };
         __decorate$1([
             core.Input('formArrayName'),
-            __metadata$1("design:type", String)
+            __metadata$1("design:type", Object)
         ], FormArrayName.prototype, "name", void 0);
         FormArrayName = __decorate$1([
             core.Directive({ selector: '[formArrayName]', providers: [formArrayNameProvider] }),
@@ -20700,76 +18571,13 @@
      * * Radio buttons: `RadioControlValueAccessor`
      * * Selects: `SelectControlValueAccessor`
      *
-     * ### Use with ngModel
+     * ### Use with ngModel is deprecated
      *
      * Support for using the `ngModel` input property and `ngModelChange` event with reactive
-     * form directives has been deprecated in Angular v6 and will be removed in Angular v7.
+     * form directives has been deprecated in Angular v6 and is scheduled for removal in
+     * a future version of Angular.
      *
-     * Now deprecated:
-     *
-     * ```html
-     * <form [formGroup]="form">
-     *   <input formControlName="first" [(ngModel)]="value">
-     * </form>
-     * ```
-     *
-     * ```ts
-     * this.value = 'some value';
-     * ```
-     *
-     * This has been deprecated for a few reasons. First, developers have found this pattern
-     * confusing. It seems like the actual `ngModel` directive is being used, but in fact it's
-     * an input/output property named `ngModel` on the reactive form directive that simply
-     * approximates (some of) its behavior. Specifically, it allows getting/setting the value
-     * and intercepting value events. However, some of `ngModel`'s other features - like
-     * delaying updates with`ngModelOptions` or exporting the directive - simply don't work,
-     * which has understandably caused some confusion.
-     *
-     * In addition, this pattern mixes template-driven and reactive forms strategies, which
-     * we generally don't recommend because it doesn't take advantage of the full benefits of
-     * either strategy. Setting the value in the template violates the template-agnostic
-     * principles behind reactive forms, whereas adding a `FormControl`/`FormGroup` layer in
-     * the class removes the convenience of defining forms in the template.
-     *
-     * To update your code before v7, you'll want to decide whether to stick with reactive form
-     * directives (and get/set values using reactive forms patterns) or switch over to
-     * template-driven directives.
-     *
-     * After (choice 1 - use reactive forms):
-     *
-     * ```html
-     * <form [formGroup]="form">
-     *   <input formControlName="first">
-     * </form>
-     * ```
-     *
-     * ```ts
-     * this.form.get('first').setValue('some value');
-     * ```
-     *
-     * After (choice 2 - use template-driven forms):
-     *
-     * ```html
-     * <input [(ngModel)]="value">
-     * ```
-     *
-     * ```ts
-     * this.value = 'some value';
-     * ```
-     *
-     * By default, when you use this pattern, you will see a deprecation warning once in dev
-     * mode. You can choose to silence this warning by providing a config for
-     * `ReactiveFormsModule` at import time:
-     *
-     * ```ts
-     * imports: [
-     *   ReactiveFormsModule.withConfig({warnOnNgModelWithFormControl: 'never'})
-     * ]
-     * ```
-     *
-     * Alternatively, you can choose to surface a separate warning for each instance of this
-     * pattern with a config value of `"always"`. This may help to track down where in the code
-     * the pattern is being used as the code is being updated.
+     * For details, see [Deprecated features](guide/deprecations#ngmodel-with-reactive-forms).
      *
      * @ngModule ReactiveFormsModule
      * @publicApi
@@ -20802,7 +18610,9 @@
              * @description
              * Triggers a warning that this input should not be used with reactive forms.
              */
-            set: function (isDisabled) { ReactiveErrors.disabledAttrWarning(); },
+            set: function (isDisabled) {
+                ReactiveErrors.disabledAttrWarning();
+            },
             enumerable: true,
             configurable: true
         });
@@ -20846,7 +18656,9 @@
              * Returns an array that represents the path from the top-level form to this control.
              * Each index is the string name of the control on that level.
              */
-            get: function () { return controlPath(this.name, this._parent); },
+            get: function () {
+                return controlPath(this.name == null ? this.name : this.name.toString(), this._parent);
+            },
             enumerable: true,
             configurable: true
         });
@@ -20855,7 +18667,9 @@
              * @description
              * The top-level directive for this group if present, otherwise null.
              */
-            get: function () { return this._parent ? this._parent.formDirective : null; },
+            get: function () {
+                return this._parent ? this._parent.formDirective : null;
+            },
             enumerable: true,
             configurable: true
         });
@@ -20865,7 +18679,9 @@
              * Synchronous validator function composed of all the synchronous validators
              * registered with this directive.
              */
-            get: function () { return composeValidators(this._rawValidators); },
+            get: function () {
+                return composeValidators(this._rawValidators);
+            },
             enumerable: true,
             configurable: true
         });
@@ -20910,7 +18726,7 @@
         FormControlName._ngModelWarningSentOnce = false;
         __decorate$1([
             core.Input('formControlName'),
-            __metadata$1("design:type", String)
+            __metadata$1("design:type", Object)
         ], FormControlName.prototype, "name", void 0);
         __decorate$1([
             core.Input('disabled'),
@@ -20991,7 +18807,9 @@
              * @description
              * Tracks changes to the required attribute bound to this directive.
              */
-            get: function () { return this._required; },
+            get: function () {
+                return this._required;
+            },
             set: function (value) {
                 this._required = value != null && value !== false && "" + value !== 'false';
                 if (this._onChange)
@@ -21014,7 +18832,9 @@
          *
          * @param fn The callback function
          */
-        RequiredValidator.prototype.registerOnValidatorChange = function (fn) { this._onChange = fn; };
+        RequiredValidator.prototype.registerOnValidatorChange = function (fn) {
+            this._onChange = fn;
+        };
         __decorate$1([
             core.Input(),
             __metadata$1("design:type", Object),
@@ -21039,7 +18859,8 @@
      *
      * ### Adding a required checkbox validator using template-driven forms
      *
-     * The following example shows how to add a checkbox required validator to an input attached to an ngModel binding.
+     * The following example shows how to add a checkbox required validator to an input attached to an
+     * ngModel binding.
      *
      * ```
      * <input type="checkbox" name="active" ngModel required>
@@ -21090,7 +18911,8 @@
      *
      * ### Adding an email validator
      *
-     * The following example shows how to add an email validator to an input attached to an ngModel binding.
+     * The following example shows how to add an email validator to an input attached to an ngModel
+     * binding.
      *
      * ```
      * <input type="email" name="email" ngModel email>
@@ -21132,7 +18954,9 @@
          *
          * @param fn The callback function
          */
-        EmailValidator.prototype.registerOnValidatorChange = function (fn) { this._onChange = fn; };
+        EmailValidator.prototype.registerOnValidatorChange = function (fn) {
+            this._onChange = fn;
+        };
         __decorate$1([
             core.Input(),
             __metadata$1("design:type", Object),
@@ -21157,7 +18981,7 @@
     };
     /**
      * A directive that adds minimum length validation to controls marked with the
-     * `minlength` attribute. The directive is provided with the `NG_VALIDATORS` mult-provider list.
+     * `minlength` attribute. The directive is provided with the `NG_VALIDATORS` multi-provider list.
      *
      * @see [Form Validation](guide/form-validation)
      *
@@ -21207,13 +19031,15 @@
          *
          * @param fn The callback function
          */
-        MinLengthValidator.prototype.registerOnValidatorChange = function (fn) { this._onChange = fn; };
+        MinLengthValidator.prototype.registerOnValidatorChange = function (fn) {
+            this._onChange = fn;
+        };
         MinLengthValidator.prototype._createValidator = function () {
-            this._validator = Validators.minLength(parseInt(this.minlength, 10));
+            this._validator = Validators.minLength(typeof this.minlength === 'number' ? this.minlength : parseInt(this.minlength, 10));
         };
         __decorate$1([
             core.Input(),
-            __metadata$1("design:type", String)
+            __metadata$1("design:type", Object)
         ], MinLengthValidator.prototype, "minlength", void 0);
         MinLengthValidator = __decorate$1([
             core.Directive({
@@ -21285,13 +19111,15 @@
          *
          * @param fn The callback function
          */
-        MaxLengthValidator.prototype.registerOnValidatorChange = function (fn) { this._onChange = fn; };
+        MaxLengthValidator.prototype.registerOnValidatorChange = function (fn) {
+            this._onChange = fn;
+        };
         MaxLengthValidator.prototype._createValidator = function () {
-            this._validator = Validators.maxLength(parseInt(this.maxlength, 10));
+            this._validator = Validators.maxLength(typeof this.maxlength === 'number' ? this.maxlength : parseInt(this.maxlength, 10));
         };
         __decorate$1([
             core.Input(),
-            __metadata$1("design:type", String)
+            __metadata$1("design:type", Object)
         ], MaxLengthValidator.prototype, "maxlength", void 0);
         MaxLengthValidator = __decorate$1([
             core.Directive({
@@ -21356,15 +19184,21 @@
          * Method that validates whether the value matches the
          * the pattern requirement.
          */
-        PatternValidator.prototype.validate = function (control) { return this._validator(control); };
+        PatternValidator.prototype.validate = function (control) {
+            return this._validator(control);
+        };
         /**
          * @description
          * Registers a callback function to call when the validator inputs change.
          *
          * @param fn The callback function
          */
-        PatternValidator.prototype.registerOnValidatorChange = function (fn) { this._onChange = fn; };
-        PatternValidator.prototype._createValidator = function () { this._validator = Validators.pattern(this.pattern); };
+        PatternValidator.prototype.registerOnValidatorChange = function (fn) {
+            this._onChange = fn;
+        };
+        PatternValidator.prototype._createValidator = function () {
+            this._validator = Validators.pattern(this.pattern);
+        };
         __decorate$1([
             core.Input(),
             __metadata$1("design:type", Object)
@@ -21406,7 +19240,7 @@
         CheckboxRequiredValidator,
         EmailValidator,
     ];
-    var TEMPLATE_DRIVEN_DIRECTIVES = [NgModel, NgModelGroup, NgForm, NgFormSelectorWarning];
+    var TEMPLATE_DRIVEN_DIRECTIVES = [NgModel, NgModelGroup, NgForm];
     var REACTIVE_DRIVEN_DIRECTIVES = [FormControlDirective, FormGroupDirective, FormControlName, FormGroupName, FormArrayName];
     /**
      * Internal module used for sharing directives between FormsModule and ReactiveFormsModule
@@ -21578,7 +19412,7 @@
     /**
      * @publicApi
      */
-    var VERSION$1 = new core.Version('8.2.14');
+    var VERSION = new core.Version('9.1.9');
 
     /**
      * @license
@@ -21591,30 +19425,15 @@
      * Exports the required providers and directives for template-driven forms,
      * making them available for import by NgModules that import this module.
      *
-     * @see [Forms Guide](/guide/forms)
+     * @see [Forms Overview](/guide/forms-overview)
+     * @see [Template-driven Forms Guide](/guide/forms)
      *
      * @publicApi
      */
     var FormsModule = /** @class */ (function () {
         function FormsModule() {
         }
-        FormsModule_1 = FormsModule;
-        /**
-         * @description
-         * Provides options for configuring the template-driven forms module.
-         *
-         * @param opts An object of configuration options
-         * * `warnOnDeprecatedNgFormSelector` Configures when to emit a warning when the deprecated
-         * `ngForm` selector is used.
-         */
-        FormsModule.withConfig = function (opts) {
-            return {
-                ngModule: FormsModule_1,
-                providers: [{ provide: NG_FORM_SELECTOR_WARNING, useValue: opts.warnOnDeprecatedNgFormSelector }]
-            };
-        };
-        var FormsModule_1;
-        FormsModule = FormsModule_1 = __decorate$1([
+        FormsModule = __decorate$1([
             core.NgModule({
                 declarations: TEMPLATE_DRIVEN_DIRECTIVES,
                 providers: [RadioControlRegistry],
@@ -21626,9 +19445,9 @@
     /**
      * Exports the required infrastructure and directives for reactive forms,
      * making them available for import by NgModules that import this module.
-     * @see [Forms](guide/reactive-forms)
      *
-     * @see [Reactive Forms Guide](/guide/reactive-forms)
+     * @see [Forms Overview](guide/forms-overview)
+     * @see [Reactive Forms Guide](guide/reactive-forms)
      *
      * @publicApi
      */
@@ -21647,10 +19466,9 @@
         ReactiveFormsModule.withConfig = function (opts) {
             return {
                 ngModule: ReactiveFormsModule_1,
-                providers: [{
-                        provide: NG_MODEL_WITH_FORM_CONTROL_WARNING,
-                        useValue: opts.warnOnNgModelWithFormControl
-                    }]
+                providers: [
+                    { provide: NG_MODEL_WITH_FORM_CONTROL_WARNING, useValue: opts.warnOnNgModelWithFormControl }
+                ]
             };
         };
         var ReactiveFormsModule_1;
@@ -21679,7 +19497,6 @@
                     effects.EffectsModule.forFeature([ReportEffects]),
                     router.RouterModule,
                     FormsModule,
-                    mydatepicker.MyDatePickerModule
                 ],
                 providers: [
                     {
