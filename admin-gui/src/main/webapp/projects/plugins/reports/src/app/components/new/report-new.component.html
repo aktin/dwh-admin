@@ -1,37 +1,49 @@
 <breadcrumb [path]="[
-    [_url.link(['REPORT']), s.parse('bread.list')],
-    [
-      _url.link(['REPORT', 'NEW']), s.parse('bread.new')],
-    ]
-"></breadcrumb>
+        [_url.link(['REPORT']), s.parse('bread.list')],
+        [_url.link(['REPORT', 'NEW']), s.parse('bread.new')]
+    ]"></breadcrumb>
 
-<div class="report-new">
-    <form class="new-report-form" #newReportForm="ngForm" (ngSubmit)="generateReport()" [ngClass]="newReportFormClasses">
+<div class="new-report-form">
+    <form #newReportForm="ngForm"
+          (ngSubmit)="generateReport()">
 
-        <div class="field template-select-field mb-4">
-            <label>{{s.parse('new.reportType')}}</label>
-            <select name="template" class="ui fluid dropdown template-select" [(ngModel)]="template" title="Bericht Templates">
+        <div class="form-group template-select-field mb-4">
+            <label class="form-label">{{s.parse('new.reportType')}}</label>
+            <select name="reportTemplate" id="reportTemplate"
+                    class="form-control form-select"
+                    title="{{s.parse('new.reportType')}}"
+                    [(ngModel)]="template"
+                    #reportTemplate="ngModel">
                 <!--<option value="" disabled="disabled">bitte Auswählen</option>-->
-                <option *ngFor="let tem of templates" [value]="tem.id" [selected]="template==tem.id" >{{tem.description}}</option>
+                <option *ngFor="let tem of  (reportTemplates$ | async) " [value]="tem.id" [selected]="template==tem.id" >{{tem.description}}</option>
             </select>
         </div>
 
-        <div class="two fields">
-            <div class="field">
+  <!--      <div class="form-group two-fields">
+            <div>
                 <label>Startdatum</label>
-                <div class="ui input">
+                <div class="form-control ui input">
                     <my-date-picker style="width: 100%" name="fromDateMDP" [options]="fromDPOptions" [(ngModel)]="fromDateModel" (dateChanged)="onFromDateChanged($event)" required></my-date-picker>
                 </div>
             </div>
-            <div class="field">
-                <label>Enddatum</label>
-                <div class="ui input">
-                    <my-date-picker style="width: 100%" name="toDateMDP" [options]="toDPOptions" [(ngModel)]="toDateModel" (dateChanged)="onToDateChanged($event)" required></my-date-picker>
-                </div>
-            </div>
-        </div>
+        </div>-->
+        <!--
+                <div class="two fields">
+                    <div class="form-group">
+                        <label>Startdatum</label>
+                        <div class="form-control ui input">
+                            <my-date-picker style="width: 100%" name="fromDateMDP" [options]="fromDPOptions" [(ngModel)]="fromDateModel" (dateChanged)="onFromDateChanged($event)" required></my-date-picker>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Enddatum</label>
+                        <div class="form-control ui input">
+                            <my-date-picker style="width: 100%" name="toDateMDP" [options]="toDPOptions" [(ngModel)]="toDateModel" (dateChanged)="onToDateChanged($event)" required></my-date-picker>
+                        </div>
+                    </div>
+                </div>-->
 
-        <button class="ui fluid large submit button" type="submit">
+        <button class="button" type="submit">
             Erzeugen
         </button>
 

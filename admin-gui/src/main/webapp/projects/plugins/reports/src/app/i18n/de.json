@@ -12,4 +12,7 @@
   "view.timeSpan": "Zeitraum:",
   "view.timeSpanTill": "bis",
   "new.reportType": "Berichtsart",
+  "datepicker.weekdayLabels": {"su": "So", "mo": "Mo", "tu": "Di", "we": "Mi", "th": "Do", "fr": "Fr", "sa": "Sa"},
+  "datepicker.monthLabels": { "1": "Jan", "2": "Feb", "3": "Mär", "4": "Apr", "5": "Mai", "6": "Jun", "7": "Jul", "8": "Aug", "9": "Sep", "10": "Okt", "11": "Nov", "12": "Dez" },
+  "datepicker.dateFormat": "dd. mmm yyyy"
 }

@@ -20,13 +20,13 @@
 }
 
 .new-report-form {
-  @apply border border-gray-700 shadow-md rounded p-5;
-  .field {
+  @apply border border-grey-darker shadow-md rounded p-5;
+  .template-select-field {
     label {
-      @apply block text-gray-700 text-sm font-bold mb-2;
+      @apply block text-grey-darker text-sm font-bold mb-2;
     }
     select {
-      @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight;
+      @apply shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight;
       &:focus {
         @apply outline-none shadow-outline;
       }

@@ -17,6 +17,7 @@ import * as aktinUtils from "@aktin/utils";
 import * as rxjs from "rxjs";
 import * as lodash from "lodash";
 import * as fileSaver from "file-saver";
+import * as mydatepicker from "mydatepicker";
 
 export interface PluginConfig {
     url: string;
@@ -119,6 +120,7 @@ export class LoadPluginsService {
             rxjs: rxjs,
             lodash: lodash,
             fileSaver: fileSaver,
+            mydatepicker: mydatepicker,
         };
     
         const require: any = module => modules[module];

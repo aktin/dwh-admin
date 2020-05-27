@@ -47,3 +47,7 @@ export const getReportTemplatesEntity = createSelector(
   selectReportState,
   (state: ReportState) => state.reportTemplates,
 );
+export const getReportTemplatesAsArray = createSelector(
+    getReportTemplatesEntity,
+    ReportTemplateEntity.selectAll,
+);

@@ -26,9 +26,8 @@ export function createCompiler(fn: CompilerFactory): Compiler {
 import { getLocaleId, registerLocaleData } from "@angular/common";
 import localeDe from "@angular/common/locales/de";
 // import { AuthModule } from "@app/auth/auth.module";
-import { AuthModule } from "@aktin/utils";
+import { AuthModule, LocalStorageService } from "@aktin/utils";
 import { ROOT_LOCAL_STORAGE_KEY, ROOT_STORAGE_KEYS } from "@app/app.tokens";
-import { LocalStorageService } from "@aktin/utils";
 registerLocaleData(localeDe, "de");
 
 const APPCOMPONENTS = [AppComponent, HomeComponent, TestDummyComponent, ErrorComponent];

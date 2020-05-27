@@ -9,6 +9,8 @@ import { PATH, PLUGIN_NAME, ROUTE_NAME } from "./meta";
 import { REPORTS_ROUTES_NAMES, REPORTS_ROUTES_OBJ } from "./reports.routes";
 import { ReportComponent, ReportsListComponent, ReportViewComponent, ReportNewComponent } from "./components";
 import { RouterModule } from "@angular/router";
+import {FormsModule} from "@angular/forms";
+import {MyDatePickerModule} from "mydatepicker";
 
 const REPORTSCOMPONENTS = [ReportsListComponent, ReportViewComponent, ReportComponent, ReportNewComponent];
 
@@ -21,6 +23,8 @@ const REPORTSCOMPONENTS = [ReportsListComponent, ReportViewComponent, ReportComp
     StoreModule.forFeature("reports", reportReducers),
     EffectsModule.forFeature([ReportEffects]),
     RouterModule,
+    FormsModule,
+    // MyDatePickerModule
   ],
   providers: [
     {

@@ -14,8 +14,6 @@ export default [{
    plugins: [
      angular(),
      resolve({
-        jsnext: true,
-        main: true,
         // pass custom options to the resolve plugin
         customResolveOptions: {
            moduleDirectory: 'node_modules'
@@ -39,5 +37,6 @@ export default [{
      'rxjs',
      'lodash',
      'file-saver',
+     'mydatepicker'
    ]
 }]

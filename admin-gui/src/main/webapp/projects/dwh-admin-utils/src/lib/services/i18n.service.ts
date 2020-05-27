@@ -25,6 +25,10 @@ export class I18nService {
   }
 
   parse(key: string, subkey: string): string {
+    return String(this.getValue(key, subkey));
+  }
+
+  getValue(key: string, subkey: string) : any {
     let longKey = key + "." + subkey;
     if (!this.hasKey(key)) {
       return longKey;

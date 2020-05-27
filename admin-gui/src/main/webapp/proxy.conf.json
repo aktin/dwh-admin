@@ -1,6 +1,7 @@
 {
   "/aktin": {
-    "target": "http://localhost:8087/",
+    "target": "http://192.168.178.21:8087/",
+    "target1": "http://localhost:8087/",
     "target2": "http://134.106.36.86:8087/",
     "secure": false,
     "logLevel": "debug",

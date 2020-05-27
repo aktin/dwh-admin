@@ -32,6 +32,7 @@
     "document-register-element": "^1.14.3",
     "file-saver": "^2.0.2",
     "lodash": "^4.17.15",
+    "mydatepicker": "^2.6.10",
     "ng2-datepicker": "3.1.1",
     "ngx-api-utils": "^1.0.8",
     "ngx-pagination": "4.1.0",
