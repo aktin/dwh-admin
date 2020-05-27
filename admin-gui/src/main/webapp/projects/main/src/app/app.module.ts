@@ -8,7 +8,7 @@ import { StoreDevtoolsModule } from "@ngrx/store-devtools";
 import { getMetaReducers, localStorageKey, reducers, stateKeys } from "@app/store/reducers";
 import { EffectsModule } from "@ngrx/effects";
 import { AppEffects } from "@app/store/effects/app.effects";
-import { StoreRouterConnectingModule } from "@ngrx/router-store";
+import { StoreRouterConnectingModule, DefaultRouterStateSerializer } from "@ngrx/router-store";
 
 import { environment } from "@env/environment";
 
@@ -51,7 +51,7 @@ const APPCOMPONENTS = [AppComponent, HomeComponent, TestDummyComponent, ErrorCom
                 logOnly: environment.production,
             })
             : [],
-        StoreRouterConnectingModule.forRoot(),
+        StoreRouterConnectingModule.forRoot({ serializer: DefaultRouterStateSerializer }),
         AuthModule,
     ],
     exports: [],
