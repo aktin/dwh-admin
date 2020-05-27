@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import {UrlService} from "@aktin/utils";
 
 @Component({
   selector: "admin-gui-home",
@@ -6,7 +7,9 @@ import { Component, OnInit } from "@angular/core";
   styles: [""]
 })
 export class HomeComponent implements OnInit {
-  constructor() {}
+  constructor(private _url: UrlService) {
+    console.log("url test ", this._url.parse("url"));
+  }
 
   ngOnInit() {}
 }

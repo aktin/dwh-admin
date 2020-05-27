@@ -130,7 +130,11 @@ export class LoadPluginsService {
         // const moduleFactory = await this._compiler.compileModuleAsync<any>(exports[plug.moduleName]);
         const moduleFactoryWithComponents = await this._compiler.compileModuleAndAllComponentsAsync(exports[name]);
     
-        return await moduleFactoryWithComponents.ngModuleFactory.create(this._injector);
+        
+        
+        let this_plug = moduleFactoryWithComponents.ngModuleFactory.create(this._injector);
+        
+        return this_plug;
     }
     
     async loadPlugin(plug: PluginConfig) {

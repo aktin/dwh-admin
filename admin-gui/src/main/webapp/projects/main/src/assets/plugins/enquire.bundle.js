@@ -1,22 +1,22 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/common'), require('@aktin/utils')) :
-    typeof define === 'function' && define.amd ? define(['exports', '@angular/core', '@angular/common', '@aktin/utils'], factory) :
-    (global = global || self, factory(global.enquire = {}, global.core, global.common, global.utils));
-}(this, function (exports, core, common, utils) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/common')) :
+    typeof define === 'function' && define.amd ? define(['exports', '@angular/core', '@angular/common'], factory) :
+    (global = global || self, factory(global.enquire = {}, global.core, global.common));
+}(this, (function (exports, core, common) { 'use strict';
 
     /*! *****************************************************************************
-    Copyright (c) Microsoft Corporation. All rights reserved.
-    Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-    this file except in compliance with the License. You may obtain a copy of the
-    License at http://www.apache.org/licenses/LICENSE-2.0
+    Copyright (c) Microsoft Corporation.
 
-    THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-    WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-    MERCHANTABLITY OR NON-INFRINGEMENT.
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
 
-    See the Apache Version 2.0 License for specific language governing permissions
-    and limitations under the License.
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
 
     function __decorate(decorators, target, key, desc) {
@@ -31,28 +31,15 @@
     }
 
     var EnquireComponent = /** @class */ (function () {
-        function EnquireComponent(_url) {
-            this._url = _url;
-            this.state = { link: "" };
-            console.log(this._url.link(["HOME"]));
-            this.state.link = this.getUrls("REPORT", "SINGLE");
+        function EnquireComponent() {
         }
-        EnquireComponent.prototype.getUrls = function () {
-            var routes = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                routes[_i] = arguments[_i];
-            }
-            if (!this._url)
-                return routes.join("/");
-            return "#" + this._url.link(routes);
-        };
         EnquireComponent = __decorate([
             core.Component({
                 selector: "enquire-component",
-                template: "enquire\n<a href=\"{{state.link}}\">link to report single?</a>\n",
+                template: "enquire\n<!--<a href=\"{{state.link}}\">link to report single?</a>-->\n",
                 styles: ["table {\n    font-family: arial, sans-serif;\n    border-collapse: collapse;\n    width: 100%;\n}\n\ntd, th {\n    border: 1px solid #dddddd;\n    text-align: left;\n    padding: 8px;\n}\n\ntr:nth-child(even) {\n    background-color: #dddddd;\n}\n"]
             }),
-            __metadata("design:paramtypes", [utils.UrlService])
+            __metadata("design:paramtypes", [])
         ], EnquireComponent);
         return EnquireComponent;
     }());
@@ -111,4 +98,4 @@
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
