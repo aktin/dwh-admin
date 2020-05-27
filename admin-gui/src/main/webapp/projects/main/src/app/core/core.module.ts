@@ -8,12 +8,12 @@ import { RouterModule } from "@angular/router";
   imports: [CommonModule, RouterModule],
 })
 export class CoreModule {
-  static forRoot() {
+  static forRoot(): ModuleWithProviders<CoreModule> {
     return {
-      ngModule: CoreModule,
-      providers: [LoadPluginsService],
+        ngModule: CoreModule,
+        providers: [LoadPluginsService],
     };
-  }
+}
 }
 
 export { LoadPluginsService } from "./services";

@@ -13,18 +13,18 @@ import { OrderByPipe, SafeUrlPipe } from "./pipes";
 export class DwhAdminUtilsModule {
     constructor() {}
     
-    static forRoot(routeNames: any) {
-        return {
-            ngModule: DwhAdminUtilsModule,
-            providers: [
-                { provide: "ROUTE_NAMES", useValue: routeNames },
-                UrlService,
-                I18nService,
-                DownloadService,
-                LocalStorageService
-            ],
-        };
-    }
+    static forRoot(routeNames: any): ModuleWithProviders<DwhAdminUtilsModule> {
+    return {
+        ngModule: DwhAdminUtilsModule,
+        providers: [
+            { provide: "ROUTE_NAMES", useValue: routeNames },
+            UrlService,
+            I18nService,
+            DownloadService,
+            LocalStorageService
+        ],
+    };
+}
 }
 
 /* Services */

@@ -46,6 +46,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "../../../target/aktin-dwh-admin-gui",
             "index": "projects/main/src/index.html",
             "main": "projects/main/src/main.ts",
@@ -83,6 +84,10 @@
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
                 }
               ]
             }
@@ -152,7 +157,12 @@
             "tsConfig": "projects/dwh-admin-utils/tsconfig.lib.json",
             "project": "projects/dwh-admin-utils/ng-package.json"
           }
-        },
+        ,          "configurations": {
+            "production": {
+              "tsConfig": "projects/dwh-admin-utils/tsconfig.lib.prod.json"
+            }
+          }
+},
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
