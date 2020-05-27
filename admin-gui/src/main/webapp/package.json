@@ -27,7 +27,7 @@
     "@ngrx/effects": "^8.5.2",
     "@ngrx/entity": "^8.5.2",
     "@ngrx/router-store": "^8.5.2",
-    "@ngrx/store": "^8.5.2",
+    "@ngrx/store": "^8.6.0",
     "core-js": "^3.4.2",
     "document-register-element": "^1.14.3",
     "file-saver": "^2.0.2",
