@@ -21,7 +21,7 @@ export class ReportService {
         private _i18n: I18nService,
         private _downloader: DownloadService,
     ) {
-        this.baseURL = this._url.parse("reportsList"); // this._url.link(["REPORT"]);
+        this.baseURL = this._url.parse("reportsList");
         if (!this._i18n.hasKey("report")) {
             this._i18n.addI18NData("de", "report", i18DeData);
         }

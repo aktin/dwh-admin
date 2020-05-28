@@ -13,7 +13,8 @@
     "lodash": "^4.17.15",
     "rollup": "~2.10.9",
     "rxjs": "~6.5.5",
-    "zone.js": "~0.10.3"
+    "zone.js": "~0.10.3",
+    "@aktin/utils": ">=0.0.1"
   },
   "devDependencies": {
     "rollup-plugin-angular": "^0.5.3",

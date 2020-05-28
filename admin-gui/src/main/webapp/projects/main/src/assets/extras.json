@@ -11,9 +11,6 @@
     {
       "url": "assets/plugins/plugin-a.bundle.js",
       "moduleName": "PluginAModule"
-    },
-    {
-      "url": "assets/plugins/enquire.bundle.js"
     }
   ]
 }

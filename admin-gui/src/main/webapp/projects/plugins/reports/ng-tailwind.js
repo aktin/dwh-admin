@@ -1,7 +1,7 @@
 module.exports = {
   // Tailwind Paths
-
-  configJS: './tailwind.js',
+  // using the config in main project.
+  configJS: './tailwind.config.js',
   sourceCSS: './src/tailwind/tailwind.scss',
   outputCSS: './src/app/main.css',
   // Sass

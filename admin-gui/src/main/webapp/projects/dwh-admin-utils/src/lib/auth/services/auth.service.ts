@@ -69,37 +69,38 @@ export class AuthService {
         sessionStorage.clear();
         return this._url.post("logout", this._token, this._url.generateHeaderOptions('Content-Type', 'text/plain'));
     }
-}
-
-
-/**
- * IMPROVE: better way than using sessionStorage?
- * add delayed check with server?
- *
- * Check permissions by comparing the given values with the values in the sessionStorage.
- */
-export function userLocalCheckPermissions(checkPermissions: Permission[]): boolean {
-    // console.log("in auth service permission checking", checkPermissions, sessionStorage.getItem("permissions"));
-    if (!checkPermissions || checkPermissions.length === 0) {
-        return true;
-    }
-    if (sessionStorage.getItem("permissions") === null) {
-        return false;
-    }
-    let perm: Permission[] = [];
-    JSON.parse(sessionStorage.getItem("permissions")).forEach(function(p: String) {
-        perm.push(Permission[p as keyof typeof Permission]);
-    });
-    for (let i = 0; i < checkPermissions.length; i++) {
-        if (perm.indexOf(checkPermissions[i]) !== -1) {
+    
+    
+    /**
+     * IMPROVE: better way than using sessionStorage?
+     * add delayed check with server?
+     *
+     * Check permissions by comparing the given values with the values in the sessionStorage.
+     */
+    static userLocalCheckPermissions(checkPermissions: Permission[]): boolean {
+        // console.log("in auth service permission checking", checkPermissions, sessionStorage.getItem("permissions"));
+        if (!checkPermissions || checkPermissions.length === 0) {
             return true;
         }
+        if (sessionStorage.getItem("permissions") === null) {
+            return false;
+        }
+        let perm: Permission[] = [];
+        JSON.parse(sessionStorage.getItem("permissions")).forEach(function(p: String) {
+            perm.push(Permission[p as keyof typeof Permission]);
+        });
+        for (let i = 0; i < checkPermissions.length; i++) {
+            if (perm.indexOf(checkPermissions[i]) !== -1) {
+                return true;
+            }
+        }
+        return false;
     }
-    return false;
-}
-
-export function redirect2Home(url?: string): void {
-    // do some thing
-    console.log("home");
-    return;
+    
+    static redirect2Home(url?: string): void {
+        // do some thing
+        console.log("home");
+        return;
+    }
+    
 }

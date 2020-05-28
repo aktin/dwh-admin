@@ -2,9 +2,10 @@ import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { EnquireComponent } from "./enquire.component";
 import { PATH, PLUGIN_NAME, ROUTE_NAME, ROUTES, ROUTES_NAMES } from "./meta";
+import {DwhAdminUtilsModule} from "@aktin/utils";
 
 @NgModule({
-  imports: [CommonModule],
+  imports: [CommonModule, DwhAdminUtilsModule],
   declarations: [EnquireComponent],
   entryComponents: [EnquireComponent],
   providers: [

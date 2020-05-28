@@ -8,7 +8,7 @@ import {EffectsModule} from "@ngrx/effects";
 
 import { LocalStorageService } from "../services";
 
-import { AuthLoginComponent } from "./components/auth-login/auth-login.component";
+import { AuthLoginComponent } from "./components";
 import { authReducers, AuthEffects, getAuthConfig, localStorageKey, saveKeys  } from "./store/";
 import { AuthTokenInterceptor } from "./services/auth-token.interceptor";
 import { AUTH_CONFIG_TOKEN, AUTH_LOCAL_STORAGE_KEY, AUTH_STORAGE_KEYS } from "./auth.tokens";
@@ -47,3 +47,4 @@ export class AuthModule {}
 
 export * from "./user-auth.guard";
 export * from "./models";
+export * from "./components";

@@ -4,6 +4,10 @@
   "peerDependencies": {
     "@angular/common": "~9.1.9",
     "@angular/core": "~9.1.9",
-    "file-saver": "^2.0.2"
+    "@ngrx/router-store": "^9.1.2",
+    "@ngrx/store": "^9.1.2",
+    "@ngrx/effects": "^9.1.2",
+    "file-saver": "^2.0.2",
+    "lodash": "^4.17.15"
   }
 }

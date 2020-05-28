@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/common')) :
-    typeof define === 'function' && define.amd ? define(['exports', '@angular/core', '@angular/common'], factory) :
-    (global = global || self, factory(global.enquire = {}, global.core, global.common));
-}(this, (function (exports, core, common) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/common'), require('@aktin/utils')) :
+    typeof define === 'function' && define.amd ? define(['exports', '@angular/core', '@angular/common', '@aktin/utils'], factory) :
+    (global = global || self, factory(global.enquire = {}, global.core, global.common, global.utils));
+}(this, (function (exports, core, common, utils) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -32,12 +32,16 @@
 
     var EnquireComponent = /** @class */ (function () {
         function EnquireComponent() {
+            console.log("enquire utils: ", utils);
         }
         EnquireComponent = __decorate([
             core.Component({
                 selector: "enquire-component",
                 template: "enquire\n<!--<a href=\"{{state.link}}\">link to report single?</a>-->\n",
-                styles: ["table {\n    font-family: arial, sans-serif;\n    border-collapse: collapse;\n    width: 100%;\n}\n\ntd, th {\n    border: 1px solid #dddddd;\n    text-align: left;\n    padding: 8px;\n}\n\ntr:nth-child(even) {\n    background-color: #dddddd;\n}\n"]
+                styles: ["table {\n    font-family: arial, sans-serif;\n    border-collapse: collapse;\n    width: 100%;\n}\n\ntd, th {\n    border: 1px solid #dddddd;\n    text-align: left;\n    padding: 8px;\n}\n\ntr:nth-child(even) {\n    background-color: #dddddd;\n}\n"],
+                providers: [
+                    utils.UrlService
+                ]
             }),
             __metadata("design:paramtypes", [])
         ], EnquireComponent);
@@ -70,7 +74,7 @@
         }
         MainModule = __decorate([
             core.NgModule({
-                imports: [common.CommonModule],
+                imports: [common.CommonModule, utils.DwhAdminUtilsModule],
                 declarations: [EnquireComponent],
                 entryComponents: [EnquireComponent],
                 providers: [

@@ -6,10 +6,11 @@ import _ from "lodash";
 import { DwhAdminUtilsModule, UrlService } from "@aktin/utils";
 import { environment } from "@env/environment.prod";
 
+let routes_in_module = APP_ROUTES_FUSING();
 @NgModule({
   imports: [
     DwhAdminUtilsModule.forRoot(APP_ROUTES_NAMES),
-    RouterModule.forRoot(APP_ROUTES_FUSING(), {
+    RouterModule.forRoot([], {
       enableTracing: !environment.production, // <-- debugging purposes only
       useHash: true,
     }),

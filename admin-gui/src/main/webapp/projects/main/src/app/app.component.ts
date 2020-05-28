@@ -4,7 +4,7 @@ import { Title } from "@angular/platform-browser";
 import { Store } from "@ngrx/store";
 
 import { LoadPluginsService } from "@app/core";
-import { State, userLocalCheckPermissions } from "@aktin/utils";
+import { State, AuthService } from "@aktin/utils";
 import _ from "lodash";
 import { AppRouterModule } from "@app/routing/app-router.module";
 
@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
         private _router: AppRouterModule,
         private _route: ActivatedRoute,
         private _plugins: LoadPluginsService,
-        private _store: Store<State>,
+        private _store: Store<State>
     ) {}
     
     ngOnInit(): void {
@@ -32,11 +32,11 @@ export class AppComponent implements OnInit {
         this._titleService.setTitle(title);
         
         // load the external components
-        this._plugins.loadConfigFile().then(() => {
-            // get plugin routes
-            let curRoutes = this._router.addRoutes2Router(this._plugins.routes, this._plugins.routeNames);
-            this.setRoutes(curRoutes);
-        });
+        // this._plugins.loadConfigFile().then(() => {
+        //     // get plugin routes
+        //     let curRoutes = this._router.addRoutes2Router(this._plugins.routes, this._plugins.routeNames);
+        //     this.setRoutes(curRoutes);
+        // });
     }
     
     setRoutes(routes) {
@@ -54,7 +54,7 @@ export class AppComponent implements OnInit {
     
     get routings() {
         _.each(this.routes, route => {
-            this.visibility[route.data['name']] = userLocalCheckPermissions(route.data['permissions']);
+            this.visibility[route.data['name']] = AuthService.userLocalCheckPermissions(route.data['permissions']);
             // console.log(route.data['name'], route.data, route.data['permissions'], this.visibility[route.data['name']]);
             if (route.hasOwnProperty('children')) {
                 let children = route.children;

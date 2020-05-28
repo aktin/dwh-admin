@@ -22,5 +22,8 @@
       "@env/*": ["projects/main/src/environments/*"]
 //      "aktin-utils": ["dist/aktin/utils", "dist/@aktin/utils", "@aktin/utils"]
     }
+  },
+  "angularCompilerOptions": {
+    "enableIvy": false
   }
 }

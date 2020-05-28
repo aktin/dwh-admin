@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from "@angular/router";
 import { Observable } from "rxjs";
 
-import { redirect2Home, userLocalCheckPermissions } from "./services";
+import {AuthService} from "./services";
 
 @Injectable({
   providedIn: "root",
@@ -28,10 +28,10 @@ export class UserAuthGuard implements CanActivate {
     let data = route.data;
     console.log("checking permission", data);
     if (data && data["permissions"]) {
-      let hasPermission = userLocalCheckPermissions(data["permissions"]);
+      let hasPermission = AuthService.userLocalCheckPermissions(data["permissions"]);
       if (!hasPermission) {
         console.log("no auth");
-        redirect2Home(state.url);
+        AuthService.redirect2Home(state.url);
         return false;
       }
     }

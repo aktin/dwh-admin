@@ -1,32 +1,32 @@
 .btn-icon {
-  @apply cursor-pointer rounded-full flex items-center justify-center w-8 h-8 bg-grey-light;
+  @apply cursor-pointer rounded-full flex items-center justify-center w-8 h-8 bg-gray-300;
   &:hover {
-    @apply bg-grey;
+    @apply bg-gray-500;
   }
 
   &.btn-green {
-    @apply bg-green-light text-white;
+    @apply bg-green-300 text-white;
     &:hover {
-      @apply bg-green;
+      @apply bg-green-500;
     }
   }
 
   &.btn-border-green {
-    @apply border-2 bg-transparent border-green-light text-green-light;
+    @apply border-2 bg-transparent border-green-300 text-green-300;
     &:hover {
-      @apply border-green text-green bg-green-lightest;
+      @apply border-green-500 text-green-500 bg-green-100;
     }
   }
 }
 
 .new-report-form {
-  @apply border border-grey-darker shadow-md rounded p-5;
+  @apply border border-gray-700 shadow-md rounded p-5;
   .template-select-field {
     label {
-      @apply block text-grey-darker text-sm font-bold mb-2;
+      @apply block text-gray-700 text-sm font-bold mb-2;
     }
     select {
-      @apply shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight;
+      @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight;
       &:focus {
         @apply outline-none shadow-outline;
       }

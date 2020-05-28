@@ -10,13 +10,12 @@ import { REPORTS_ROUTES_NAMES, REPORTS_ROUTES_OBJ } from "./reports.routes";
 import { ReportComponent, ReportsListComponent, ReportViewComponent, ReportNewComponent } from "./components";
 import { RouterModule } from "@angular/router";
 import {FormsModule} from "@angular/forms";
-import {MyDatePickerModule} from "mydatepicker";
 
 const REPORTSCOMPONENTS = [ReportsListComponent, ReportViewComponent, ReportComponent, ReportNewComponent];
 
 @NgModule({
   declarations: REPORTSCOMPONENTS,
-  entryComponents: REPORTSCOMPONENTS,
+  // entryComponents: REPORTSCOMPONENTS,
   imports: [
     CommonModule,
     DwhAdminUtilsModule,

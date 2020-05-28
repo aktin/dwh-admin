@@ -5,10 +5,10 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 import { META_REDUCERS, StoreModule, USER_PROVIDED_META_REDUCERS } from "@ngrx/store";
 import { StoreDevtoolsModule } from "@ngrx/store-devtools";
-import { getMetaReducers, localStorageKey, reducers, stateKeys } from "@app/store/reducers";
 import { EffectsModule } from "@ngrx/effects";
-import { AppEffects } from "@app/store/effects/app.effects";
 import { StoreRouterConnectingModule, DefaultRouterStateSerializer } from "@ngrx/router-store";
+import { getMetaReducers, localStorageKey, reducers, stateKeys } from "@app/store/reducers";
+import { AppEffects } from "@app/store/effects/app.effects";
 
 import { environment } from "@env/environment";
 
@@ -16,7 +16,7 @@ import { CoreModule } from "@app/core";
 
 import { AppComponent } from "@app/app.component";
 
-import { AppRouterModule } from "@app/routing/app-router.module";
+import { AppRouterModule } from "@app/routing";
 import { HomeComponent, TestDummyComponent, ErrorComponent } from "@app/default";
 
 export function createCompiler(fn: CompilerFactory): Compiler {
@@ -25,7 +25,6 @@ export function createCompiler(fn: CompilerFactory): Compiler {
 
 import { getLocaleId, registerLocaleData } from "@angular/common";
 import localeDe from "@angular/common/locales/de";
-// import { AuthModule } from "@app/auth/auth.module";
 import { AuthModule, LocalStorageService } from "@aktin/utils";
 import { ROOT_LOCAL_STORAGE_KEY, ROOT_STORAGE_KEYS } from "@app/app.tokens";
 registerLocaleData(localeDe, "de");

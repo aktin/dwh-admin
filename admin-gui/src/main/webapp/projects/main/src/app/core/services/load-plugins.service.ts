@@ -107,6 +107,7 @@ export class LoadPluginsService {
         let response: Response = await fetch(url);
         let source = await response.text();
         const exports = {};
+        console.log("plugin utils", aktinUtils);
         const modules = {
             "@angular/core": angularCore,
             "@angular/common": angularCommon,

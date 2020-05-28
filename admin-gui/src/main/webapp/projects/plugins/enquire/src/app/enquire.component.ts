@@ -1,15 +1,14 @@
 import { Component } from "@angular/core";
-// import { UrlService } from "@aktin/utils";
+import { UrlService } from "@aktin/utils";
 
 @Component({
   selector: "enquire-component",
   templateUrl: "./enquire.component.html",
-  styleUrls: ["./enquire.component.css"]
+  styleUrls: ["./enquire.component.css"],
 })
 export class EnquireComponent {
   // state = { link: "" };
-  constructor(/*private _url: UrlService*/) {
-    // console.log(this._url.link(["HOME"]));
+  constructor() {
     // this.state.link = this.getUrls("REPORT", "SINGLE");
   }
   // getUrls(...routes) {
