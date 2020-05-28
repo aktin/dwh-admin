@@ -16,7 +16,8 @@
     "rollup": "~2.10.9",
     "zone.js": "~0.10.3",
     "file-saver": "^2.0.2",
-    "@aktin/utils": ">=0.0.1"
+    "@aktin/utils": ">=0.0.1",
+    "@aktin/auth": ">=0.0.1"
   },
   "devDependencies": {
     "@ngrx/effects": "^9.1.2",

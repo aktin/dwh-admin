@@ -1,6 +1,6 @@
 import {ActionReducer, Action} from '@ngrx/store';
 import {merge, pick} from 'lodash';
-import {LocalStorageService} from '../services/local-storage.service';
+import {LocalStorageService} from '../services';
 
 export function storageMetaReducer<S, A extends Action = Action>(saveKeys: string[], localStorageKey: string, storageService: LocalStorageService) {
     let onInit = true; // after load/refresh…

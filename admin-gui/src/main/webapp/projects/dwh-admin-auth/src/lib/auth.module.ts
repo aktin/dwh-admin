@@ -6,7 +6,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
 import {StoreModule} from "@ngrx/store";
 import {EffectsModule} from "@ngrx/effects";
 
-import { LocalStorageService } from "../services";
+import { LocalStorageService } from "@aktin/utils";
 
 import { AuthLoginComponent } from "./components";
 import { authReducers, AuthEffects, getAuthConfig, localStorageKey, saveKeys  } from "./store/";
@@ -48,3 +48,5 @@ export class AuthModule {}
 export * from "./user-auth.guard";
 export * from "./models";
 export * from "./components";
+
+export * from './services/auth.service';

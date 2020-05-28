@@ -7,7 +7,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import * as FileSaver from "file-saver";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root"
 })
 export class DownloadService {
   constructor(private _http: HttpClient) {}
@@ -18,7 +18,7 @@ export class DownloadService {
       blob => FileSaver.saveAs(blob, filename),
       error => {
         console.log("Error downloading the file: ", error);
-      },
+      }
     );
   }
 }

@@ -2,11 +2,10 @@ import { Component, Input, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { select, Store } from "@ngrx/store";
 import { Observable } from "rxjs";
-import { UrlService } from "../../../services";
-import { State } from "../../../state";
-import { User } from "../../models";
-import { AuthService } from "../../services";
-import { UserLogin, getCurrentUser, checkAuthentication, UserLogout } from "../../store";
+import { UrlService, State } from "@aktin/utils";
+import { User } from "@auth/models";
+import { AuthService } from "@auth/services";
+import { UserLogin, getCurrentUser, checkAuthentication, UserLogout } from "@auth/store";
 
 @Component({
     selector: "auth-login",

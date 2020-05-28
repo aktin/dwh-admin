@@ -9,6 +9,9 @@
     "build-lib": "ng build dwh-admin-utils",
     "npm-pack-lib": "cd dist/@aktin/utils && npm pack",
     "package-lib": "npm run build-lib && npm run npm-pack-lib",
+    "build-lib-auth": "ng build dwh-admin-auth",
+    "npm-pack-lib-auth": "cd dist/@aktin/auth && npm pack",
+    "package-lib-auth": "npm run build-lib-auth && npm run npm-pack-lib-auth",
     "lint": "ng lint",
     "purge": "ngtw purge"
   },
@@ -39,7 +42,9 @@
     "rxjs": "^6.5.5",
     "systemjs": "6.3.2",
     "tslib": "^1.13.0",
-    "zone.js": "~0.10.3"
+    "zone.js": "~0.10.3",
+    "@aktin/utils": ">=0.0.1",
+    "@aktin/auth": ">=0.0.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.901.7",
@@ -62,8 +67,5 @@
     "ts-node": "~8.10.1",
     "tslint": "~6.1.2",
     "typescript": "~3.8.2"
-  },
-  "optionalDependencies": {
-    "@aktin/utils": "file:dist/@aktin/utils"
   }
 }

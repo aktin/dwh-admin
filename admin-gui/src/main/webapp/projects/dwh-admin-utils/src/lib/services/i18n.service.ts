@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import _ from "lodash";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root"
 })
 export class I18nService {
   private locale = "de";

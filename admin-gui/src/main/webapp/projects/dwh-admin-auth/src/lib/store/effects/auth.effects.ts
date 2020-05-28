@@ -3,7 +3,7 @@ import { Actions, Effect, ofType } from "@ngrx/effects";
 import { select, Store } from "@ngrx/store";
 import { EMPTY, interval, of } from "rxjs";
 import { catchError, exhaustMap, map, mapTo, publish, refCount, switchMap, tap, withLatestFrom } from "rxjs/operators";
-import { AuthService } from "../../services";
+import { AuthService } from "@auth/services";
 import { AuthState } from "../state";
 import { AuthActions, AuthActionTypes } from "../actions/auth.actions";
 import { checkAuthentication, getToken } from "../selectors/auth.selectors";

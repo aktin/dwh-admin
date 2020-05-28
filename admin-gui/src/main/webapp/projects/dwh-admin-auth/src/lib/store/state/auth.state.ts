@@ -1,4 +1,4 @@
-import { User, Permission } from "../../models";
+import { User, Permission } from "@auth/models";
 
 export interface AuthState {
     permissions: Permission[];

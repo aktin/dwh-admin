@@ -11,7 +11,7 @@ import { Pipe, PipeTransform } from "@angular/core";
  */
 @Pipe({
   name: "orderBy",
-  pure: false,
+  pure: false
 })
 export class OrderByPipe implements PipeTransform {
   static _orderByComparator(a: any, b: any): number {

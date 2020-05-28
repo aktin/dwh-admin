@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UrlService } from "../../services";
+import { UrlService } from "@aktin/utils";
 
 @Injectable({
     providedIn: 'root'

@@ -3,7 +3,7 @@ import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/c
 import { Observable } from "rxjs";
 import { first, flatMap } from "rxjs/operators";
 import { Store } from "@ngrx/store";
-import { State } from "../../state";
+import { State } from "@aktin/utils";
 import { getToken } from "../store/";
 
 @Injectable()

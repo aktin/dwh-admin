@@ -3,7 +3,7 @@ import { Component, Input } from "@angular/core";
 @Component({
   selector: "breadcrumb",
   templateUrl: "./breadcrumb.component.html",
-  styles: [],
+  styles: []
 })
 export class BreadcrumbComponent {
   @Input() path: [string, string][] = [];

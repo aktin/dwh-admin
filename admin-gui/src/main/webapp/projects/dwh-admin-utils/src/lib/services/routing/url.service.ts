@@ -3,7 +3,7 @@ import _ from "lodash";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: "root"
 })
 export class UrlService {
   private _routeNames: any = undefined;

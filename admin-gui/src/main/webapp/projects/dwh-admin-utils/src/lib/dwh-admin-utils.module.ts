@@ -4,12 +4,13 @@ import { RouterModule } from "@angular/router";
 import { UrlService, I18nService, DownloadService, LocalStorageService } from "./services";
 import { BreadcrumbComponent } from "./components";
 import { OrderByPipe, SafeUrlPipe } from "./pipes";
-import {AuthModule} from "@lib/auth";
 
 @NgModule({
-    declarations: [BreadcrumbComponent, OrderByPipe, SafeUrlPipe],
-    imports: [CommonModule, RouterModule, AuthModule],
-    exports: [BreadcrumbComponent, OrderByPipe, SafeUrlPipe, AuthModule],
+    declarations: [BreadcrumbComponent,
+            OrderByPipe, SafeUrlPipe
+    ],
+    imports: [CommonModule, RouterModule],
+    exports: [BreadcrumbComponent, OrderByPipe, SafeUrlPipe]
 })
 export class DwhAdminUtilsModule {
     constructor() {}
@@ -23,16 +24,8 @@ export class DwhAdminUtilsModule {
                 I18nService,
                 DownloadService,
                 LocalStorageService
-            ],
+            ]
         };
     }
 }
 
-/* Services */
-export * from "./services";
-
-/* Pipes */
-export * from "./pipes";
-
-/* Components */
-export * from "./components";
