@@ -141,8 +141,8 @@ public class MyBinder extends AbstractBinder{
 
 		// bind summary
 		ImportSummaryImpl summ = new ImportSummaryImpl();
-		summ.addCreated();
-		summ.addRejected(false, "CDA Error");
+		summ.addCreated("testtemplate1");
+		summ.addRejected("testtemplate1", false, "CDA Error");
 		bind(summ).to(ImportSummary.class);
 
 		// logging
