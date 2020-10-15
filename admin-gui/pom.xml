@@ -65,6 +65,26 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- JSON-P RI -->
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.json</artifactId>
+			<version>1.1</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- JSON-B API -->
+		<dependency>
+			<groupId>javax.json.bind</groupId>
+			<artifactId>javax.json.bind-api</artifactId>
+			<version>1.0.0-RC2</version>
+		</dependency>
+		<!-- Yasson (JSON-B RI) -->
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>yasson</artifactId>
+			<version>1.0.0-RC1</version>
+			<scope>runtime</scope>
+		</dependency>
 
 		<!-- test with jetty -->
 		<!-- test dependencies to run a server for testing -->
@@ -123,13 +143,14 @@
 			<version>2.4.0</version>
 			<scope>test</scope>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-jackson</artifactId>
 			<version>2.14</version>
 			<scope>test</scope>
 		</dependency>
-
+		-->
 		<!-- testing -->
 		<dependency>
 			<groupId>org.aktin.dwh</groupId>

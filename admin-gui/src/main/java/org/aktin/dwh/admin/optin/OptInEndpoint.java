@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.bind.JsonbBuilder;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -35,6 +35,7 @@ import org.aktin.dwh.optinout.PatientEntry;
 import org.aktin.dwh.optinout.PatientReference;
 import org.aktin.dwh.optinout.Study;
 import org.aktin.dwh.optinout.StudyManager;
+import org.aktin.dwh.admin.Helper;
 
 /**
  * RESTful HTTP end point for creating, deleting and retrieving patient entries.
@@ -121,7 +122,7 @@ public class OptInEndpoint {
 	 * @param ref: type of the patient reference
 	 * @param root: root number
 	 * @param ext: extension number, can be empty
-	 * @param entry: object that contains further information (participation, sic, comment) about the entry
+	 * @param jsonObj: object that contains further information (participation, sic, comment) about the entry
 	 * @return Response with status 'created' if the entry was successfully created, otherwise Response with status 'conflict' if the entry already exists
 	 * @throws IOException
 	 */
@@ -130,7 +131,11 @@ public class OptInEndpoint {
 	@POST
 	@Consumes({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
 	public Response createEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root, 
-				@PathParam("extension") String ext, PatientEntryRequest entry) throws IOException {
+				@PathParam("extension") String ext, JsonObject jsonObj) throws Exception {
+
+		jsonObj = Helper.enumParser(jsonObj, "opt", Participation.class);
+		PatientEntryRequest entry = JsonbBuilder.create().fromJson(jsonObj.toString(), PatientEntryRequest.class);
+
 		Study study = this.getStudy(id);
 		PatientEntry pat = study.getPatientByID(ref, root, ext);
 		if (pat != null) {

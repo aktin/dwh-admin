@@ -9,6 +9,8 @@ import java.util.logging.Logger;
 
 import javax.activation.DataSource;
 import javax.inject.Inject;
+import javax.json.JsonObject;
+import javax.json.bind.JsonbBuilder;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.Consumes;
@@ -31,8 +33,11 @@ import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.Marker;
 import org.aktin.broker.request.QueryRuleAction;
 import org.aktin.broker.request.RetrievedRequest;
+import org.aktin.dwh.admin.Helper;
 import org.aktin.dwh.admin.auth.Secured;
 import org.aktin.dwh.admin.filter.NoCache;
+import org.aktin.dwh.admin.optin.PatientEntryRequest;
+import org.aktin.dwh.optinout.Participation;
 
 
 /**
@@ -205,14 +210,18 @@ public class RequestEndpoint {
 	/**
 	 * PUT request to change an already existing marker of a request.
 	 * @param id requestId
-	 * @param mark value of enum Mark
+	 * @param jsonObj value of enum Mark
 	 * @throws IOException
 	 */
 	@Secured
 	@PUT
 	@Path("{id}/marker")
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
-	public void updateMarker(@PathParam("id") int id, Marker mark) throws IOException{
+	public void updateMarker(@PathParam("id") int id, JsonObject jsonObj) throws Exception {
+		
+		jsonObj = Helper.enumParser(jsonObj, "mark", Marker.class);
+		Marker mark = JsonbBuilder.create().fromJson(jsonObj.toString(), Marker.class);
+
 		RetrievedRequest req = manager.getRequest(id);
 		if( req == null ){
 			throw new NotFoundException();
