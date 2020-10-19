@@ -18,7 +18,7 @@ export class Entry {
         this.ext = obj['idExt'];
         this.root = obj['idRoot'];
         this.reference = obj['reference'];
-        this.sic = obj['sic'];
+        this.sic = obj['SIC'];
         this.timestamp = obj['timestamp'];
         this.user = obj['user'];
         this.study = obj['study'];
