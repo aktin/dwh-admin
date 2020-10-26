@@ -20,6 +20,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
     status: RequestStatus = null;
     stateFilter: RequestStatus | string = 'auth';
     queryDetails = {};
+    timeoutBool = false;
 
     private _timerSubscription: Subscription;
     private _dataInterval = 5000;
@@ -31,6 +32,11 @@ export class RequestsComponent implements OnInit, OnDestroy {
         this._timerSubscription = timer.subscribe(() => {
             this.updateRequests();
         });
+        setTimeout(() => {
+            console.log('unsubscribe timer due to timeout');
+            this._timerSubscription.unsubscribe();
+            this.timeoutBool=true;
+        }, 15000);
     }
 
     ngOnDestroy(): void {
