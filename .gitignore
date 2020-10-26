@@ -6,3 +6,4 @@
 target/
 dwh-mail/
 .idea
+*.iml
