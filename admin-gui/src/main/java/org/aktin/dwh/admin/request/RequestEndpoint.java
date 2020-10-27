@@ -189,7 +189,7 @@ public class RequestEndpoint {
 	}
 
 	/**
-	 * POST request to set the marker of a request. 
+	 * POST request to set the marker of a request.
 	 * The marker determines if the request is visible in the user interface or if it's marked as deleted.
 	 * @param id requestId
 	 * @param mark value of enum Mark
@@ -218,7 +218,7 @@ public class RequestEndpoint {
 	@Path("{id}/marker")
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
 	public void updateMarker(@PathParam("id") int id, JsonObject jsonObj) throws Exception {
-		
+
 		jsonObj = Helper.enumParser(jsonObj, "mark", Marker.class);
 		Marker mark = JsonbBuilder.create().fromJson(jsonObj.toString(), Marker.class);
 

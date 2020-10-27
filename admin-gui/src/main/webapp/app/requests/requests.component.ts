@@ -24,6 +24,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
 
     private _timerSubscription: Subscription;
     private _dataInterval = 5000;
+    private _dataTimeout = 45000;
 
     constructor(private _requestService: RequestService) {}
 
@@ -36,7 +37,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
             console.log('unsubscribe timer due to timeout');
             this._timerSubscription.unsubscribe();
             this.timeoutBool=true;
-        }, 15000);
+        }, this._dataTimeout);
     }
 
     ngOnDestroy(): void {
