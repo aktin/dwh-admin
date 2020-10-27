@@ -27,7 +27,7 @@ import { predefinedPreferenceCategories, predefinedPreferences, PreferenceCatego
 export class PreferenceService {
     private static _categories: PreferenceCategory[] = [];
     private _dataInterval = 3000;
-    private _fileLocation = '/opt/wildfly-9..0.2-Final/standalone/configuration/aktin.properties';
+    private _fileLocation = '/opt/wildfly/standalone/configuration/aktin.properties';
 
     constructor (
         private _http: HttpInterceptorService,
