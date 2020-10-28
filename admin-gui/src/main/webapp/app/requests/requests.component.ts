@@ -24,7 +24,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
 
     private _timerSubscription: Subscription;
     private _dataInterval = 5000;
-    private _dataTimeout = 45000;
+    private _dataTimeout = 30000;
 
     constructor(private _requestService: RequestService) {}
 
