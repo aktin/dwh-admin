@@ -36,8 +36,6 @@ import org.aktin.broker.request.RetrievedRequest;
 import org.aktin.dwh.admin.Helper;
 import org.aktin.dwh.admin.auth.Secured;
 import org.aktin.dwh.admin.filter.NoCache;
-import org.aktin.dwh.admin.optin.PatientEntryRequest;
-import org.aktin.dwh.optinout.Participation;
 
 
 /**
@@ -60,12 +58,13 @@ public class RequestEndpoint {
 	 */
 	@GET
 	@NoCache
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_XML)
 	public Response getRequests(@Context javax.ws.rs.core.Request request) {
 		// TODO allow ordering via query param
-		List<Request> list = new ArrayList<>();
+		RequestList list = new RequestList();
 		long maxTimestamp = 0L;
 		// TODO optionally filter
+
 		for(Iterator<? extends RetrievedRequest> iterator = manager.requests().iterator(); iterator.hasNext();) {
 			RetrievedRequest req = iterator.next();
 			long reqTimestamp = req.getLastActionTimestamp();
