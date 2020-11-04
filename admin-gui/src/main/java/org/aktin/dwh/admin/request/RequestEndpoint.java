@@ -28,6 +28,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.SecurityContext;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.aktin.broker.request.RequestManager;
 import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.Marker;
@@ -58,10 +60,10 @@ public class RequestEndpoint {
 	 */
 	@GET
 	@NoCache
-	@Produces(MediaType.APPLICATION_XML)
-	public Response getRequests(@Context javax.ws.rs.core.Request request) {
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getRequests(@Context javax.ws.rs.core.Request request) throws JsonProcessingException {
 		// TODO allow ordering via query param
-		RequestList list = new RequestList();
+		List<Request> list = new ArrayList<>();
 		long maxTimestamp = 0L;
 		// TODO optionally filter
 
@@ -73,12 +75,15 @@ public class RequestEndpoint {
 			}
 			list.add(wrap(req));
 		}
+		// convert List with Requests to Json via Jackson
+		String json = new ObjectMapper().writeValueAsString(list);
+
 		EntityTag etag = new EntityTag(Long.toString(maxTimestamp));
 		ResponseBuilder b = request.evaluatePreconditions(etag);
 		if (b != null) {
 			return b.build();
 		}
-		return Response.ok(list)
+		return Response.ok(json)
 					   .tag(etag)
 					   .header("Access-Control-Expose-Headers", "ETag")
 					   .build();
