@@ -74,7 +74,7 @@ public class RequestEndpoint {
 		if (b != null) {
 			return b.build();
 		}
-		return Response.ok(json)
+		return Response.ok(list)
 					   .tag(etag)
 					   .header("Access-Control-Expose-Headers", "ETag")
 					   .build();
@@ -127,10 +127,9 @@ public class RequestEndpoint {
 		if( data == null ){
 			throw new NotFoundException();
 		}
-		ResponseBuilder b = Response.ok(data.getInputStream(), data.getContentType());
-		// attachment name
-		b.header("Content-Disposition", "inline; filename=\""+data.getName()+"\"");
-		return b.build();
+		return Response.ok(data.getInputStream(), data.getContentType())
+				.header("Content-Disposition", "inline; filename=\""+data.getName()+"\"")
+				.build();
 	}
 
 	/**
