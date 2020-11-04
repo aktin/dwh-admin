@@ -9,8 +9,6 @@ import java.util.logging.Logger;
 
 import javax.activation.DataSource;
 import javax.inject.Inject;
-import javax.json.JsonObject;
-import javax.json.bind.JsonbBuilder;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.Consumes;
@@ -28,14 +26,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.SecurityContext;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.aktin.broker.request.RequestManager;
 import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.Marker;
 import org.aktin.broker.request.QueryRuleAction;
 import org.aktin.broker.request.RetrievedRequest;
-import org.aktin.dwh.admin.Helper;
 import org.aktin.dwh.admin.auth.Secured;
 import org.aktin.dwh.admin.filter.NoCache;
 
@@ -61,12 +56,11 @@ public class RequestEndpoint {
 	@GET
 	@NoCache
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getRequests(@Context javax.ws.rs.core.Request request) throws JsonProcessingException {
+	public Response getRequests(@Context javax.ws.rs.core.Request request) {
 		// TODO allow ordering via query param
 		List<Request> list = new ArrayList<>();
 		long maxTimestamp = 0L;
 		// TODO optionally filter
-
 		for(Iterator<? extends RetrievedRequest> iterator = manager.requests().iterator(); iterator.hasNext();) {
 			RetrievedRequest req = iterator.next();
 			long reqTimestamp = req.getLastActionTimestamp();
@@ -75,9 +69,6 @@ public class RequestEndpoint {
 			}
 			list.add(wrap(req));
 		}
-		// convert List with Requests to Json via Jackson
-		String json = new ObjectMapper().writeValueAsString(list);
-
 		EntityTag etag = new EntityTag(Long.toString(maxTimestamp));
 		ResponseBuilder b = request.evaluatePreconditions(etag);
 		if (b != null) {
@@ -214,18 +205,14 @@ public class RequestEndpoint {
 	/**
 	 * PUT request to change an already existing marker of a request.
 	 * @param id requestId
-	 * @param jsonObj value of enum Mark
+	 * @param mark value of enum Mark
 	 * @throws IOException
 	 */
 	@Secured
 	@PUT
 	@Path("{id}/marker")
 	@Consumes({MediaType.APPLICATION_JSON,MediaType.APPLICATION_XML})
-	public void updateMarker(@PathParam("id") int id, JsonObject jsonObj) throws Exception {
-
-		jsonObj = Helper.enumParser(jsonObj, "mark", Marker.class);
-		Marker mark = JsonbBuilder.create().fromJson(jsonObj.toString(), Marker.class);
-
+	public void updateMarker(@PathParam("id") int id, Marker mark) throws IOException{
 		RetrievedRequest req = manager.getRequest(id);
 		if( req == null ){
 			throw new NotFoundException();
