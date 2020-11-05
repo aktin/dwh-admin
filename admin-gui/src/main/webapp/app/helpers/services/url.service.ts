@@ -36,6 +36,7 @@ export class UrlService {
 
         requestList : 'request',
         request : 'request/@requestId@',
+        requestUnmapped : 'request/@requestId@/unmapped',
         requestResult : 'request/@requestId@/result',
         setRequestAutoSubmit: 'request/@requestId@/autoSubmit/@submit@',
         setRequestStatus: 'request/@requestId@/status/@status@',

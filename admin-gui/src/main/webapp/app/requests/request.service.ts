@@ -78,10 +78,15 @@ export class RequestService {
      * @param etag The current etag that will be compared with the one from the response.
      * @returns Observable of an object that includes the request and the new etag
      */
-    getRequest(requestId: number, etag: string): Observable<Object> {
+    getRequest(requestId: number, etag: string, mapping: boolean): Observable<Object> {
         let options = { headers: new Headers({'If-None-Match': etag}),  observe: 'response' };
-        return this._http.get(this._urls.parse('request', {requestId: requestId}), options)
-            .catch(err => { return this._http.handleError(err) })
+        let url = '';
+        if ( mapping === true) {
+            url = 'request';
+        } else {
+            url = 'requestUnmapped';
+        }
+        return this._http.get(this._urls.parse(url, {requestId: requestId}), options).catch(err => { return this._http.handleError(err) })
             .map(resp => {
                 let res = {};
                 res['etag'] = resp.headers.get('ETag');

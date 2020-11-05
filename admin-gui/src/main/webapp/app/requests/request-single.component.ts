@@ -16,6 +16,7 @@ import { LocalRequest, QueryBundle, RequestStatus } from './request';
 })
 export class RequestSingleComponent implements OnInit, OnDestroy {
     request: LocalRequest;
+    requestUnmapped: LocalRequest;
     reqId: number;
     requestEtag = '0';
     queryBundle: QueryBundle;
@@ -38,7 +39,7 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
             .subscribe((params: Params) => {
                 this.reqId = +params['id'];
                 // set request and belonging etag
-                this._requestService.getRequest(this.reqId, this.requestEtag)
+                this._requestService.getRequest(this.reqId, this.requestEtag, true)
                     .subscribe(res => {
                         this.request = res['req'];
                         this.requestEtag = res['etag'];
@@ -55,6 +56,10 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
                                     this.bundleLoaded = true;
                                 });
                         }
+                    });
+                    this._requestService.getRequest(this.reqId, this.requestEtag, false)
+                        .subscribe(unmapped => {
+                            this.requestUnmapped = unmapped['req'];
                     });
             });
         // set timer to update request and query bundle in the given interval in case the etag changed (hence request was modified)
@@ -90,7 +95,7 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
      * Updates the request if the etag changed (hence request was modified).
      */
     updateRequest(): void {
-        this._requestService.getRequest(this.reqId, this.requestEtag)
+        this._requestService.getRequest(this.reqId, this.requestEtag, true)
             .subscribe(res => {
                 console.log('update request');
                 this.request = res['req'];

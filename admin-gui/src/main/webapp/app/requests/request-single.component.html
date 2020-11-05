@@ -6,6 +6,6 @@
             <div class="active section" *ngIf="request">{{request.query.query.title}}</div>
         </div>
     </div>
-    <request-single-view [requestData]="request" [queryBundle]="request.isRecurring() ? queryBundle : null" [queryBundle]="request.isRecurring() ? queryDetails : null"[single]="true" class="row" [popUp]="popUp" *ngIf="request && dataLoaded"></request-single-view>
+    <request-single-view [requestDataUnmapped]="requestUnmapped" [requestData]="request" [queryBundle]="request.isRecurring() ? queryBundle : null" [queryBundle]="request.isRecurring() ? queryDetails : null"[single]="true" class="row" [popUp]="popUp" *ngIf="request && dataLoaded"></request-single-view>
 </div>
 <popup-message></popup-message>

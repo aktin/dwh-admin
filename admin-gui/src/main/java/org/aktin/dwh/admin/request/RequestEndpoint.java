@@ -26,6 +26,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.SecurityContext;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.aktin.broker.request.RequestManager;
 import org.aktin.broker.request.RequestStatus;
 import org.aktin.broker.request.Marker;
@@ -42,6 +43,8 @@ import org.aktin.dwh.admin.filter.NoCache;
 @Path("request")
 public class RequestEndpoint {
 	private static final Logger log = Logger.getLogger(RequestEndpoint.class.getName());
+	private static final ObjectMapper mapper = new ObjectMapper();
+
 	@Inject
 	RequestManager manager;
 	@Context 
@@ -88,11 +91,12 @@ public class RequestEndpoint {
 	 * GET request to receive the request of the given id.
 	 * @param id requestId
 	 * @return response with the request object if the lastActionTimestamp on the client differs from the one on the server, 
-	 * 		   otherwise response with status 304 (Not Modified).
+	 * 		   otherwise response with status 304 (Not Modified).pl
 	 * @throws IOException
 	 */
 	@GET
 	@Path("{id}")
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response getRequest(@PathParam("id") int id, @Context javax.ws.rs.core.Request request) throws IOException{
 		RetrievedRequest req = manager.getRequest(id);
 		if( req == null ){
@@ -103,10 +107,36 @@ public class RequestEndpoint {
 		if (b != null) {
 			return b.build();
 		}
+		return Response.ok(mapper.writeValueAsString(wrap(req)))
+				.tag(etag)
+				.header("Access-Control-Expose-Headers", "ETag")
+				.build();
+	}
+
+	/**
+	 * GET request to receive unmapped request of given id
+	 * @param id
+	 * @param request
+	 * @return
+	 * @throws IOException
+	 */
+	@GET
+	@Path("{id}/unmapped")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getUnmappedRequest(@PathParam("id") int id, @Context javax.ws.rs.core.Request request) throws IOException{
+		RetrievedRequest req = manager.getRequest(id);
+		if( req == null ){
+			throw new NotFoundException();
+		}
+		EntityTag etag = new EntityTag(Long.toString(req.getLastActionTimestamp()));
+		ResponseBuilder b = request.evaluatePreconditions(etag);
+		if (b != null) {
+			return b.build();
+		}
 		return Response.ok(wrap(req))
-					   .tag(etag)
-					   .header("Access-Control-Expose-Headers", "ETag")
-					   .build();
+				.tag(etag)
+				.header("Access-Control-Expose-Headers", "ETag")
+				.build();
 	}
 
 	/**

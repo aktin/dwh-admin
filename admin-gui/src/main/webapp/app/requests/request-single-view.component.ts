@@ -19,6 +19,7 @@ import _ = require('underscore');
 
 export class RequestSingleViewComponent {
     @Input() requestData: LocalRequest;
+    @Input() requestDataUnmapped: LocalRequest;
     @Input() queryBundle: QueryBundle;
     @Input() queryDetails: object;
     @Input() single = false;
@@ -36,6 +37,10 @@ export class RequestSingleViewComponent {
 
     get request (): LocalRequest {
         return this.requestData;
+    }
+
+    get requestUnmapped (): LocalRequest {
+        return this.requestDataUnmapped;
     }
 
     get starred (): boolean {

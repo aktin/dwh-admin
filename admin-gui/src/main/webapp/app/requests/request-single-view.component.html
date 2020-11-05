@@ -91,67 +91,67 @@
             <div class="ui sixteen wide column divider"></div>
         </div>
         <div class="compact row">
-            <div class="ui meta five wide column" *ngIf="request.query.published">
+            <div class="ui meta five wide column" *ngIf="requestUnmapped.query.published">
                 Datum der Beauftragung:
             </div>
-            <div class="ui meta three wide column" *ngIf="request.query.published">
-                {{request.query.published | date: 'mediumDate'}}
+            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.published">
+                {{requestUnmapped.query.published | date: 'mediumDate'}}
             </div>
-            <div class="ui meta five wide column" *ngIf="request.query.reference">
+            <div class="ui meta five wide column" *ngIf="requestUnmapped.query.reference">
                 Referenzdatum der Daten:
             </div>
-            <div class="ui meta three wide column" *ngIf="request.query.reference">
-                {{request.query.reference | date: 'mediumDate'}}
+            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.reference">
+                {{requestUnmapped.query.reference | date: 'mediumDate'}}
             </div>
-            <div class="ui meta five wide column" *ngIf="request.query.scheduled">
+            <div class="ui meta five wide column" *ngIf="requestUnmapped.query.scheduled">
                 Datum der (geplanten) Ausführung:
             </div>
-            <div class="ui meta three wide column" *ngIf="request.query.scheduled">
-                {{request.query.scheduled | date: 'mediumDate'}}
+            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.scheduled">
+                {{requestUnmapped.query.scheduled | date: 'mediumDate'}}
             </div>
-            <div class="ui meta five wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.duration && !request.isRecurring()">
+            <div class="ui meta five wide column" *ngIf="requestUnmapped.query.query.schedule && requestUnmapped.query.query.schedule.duration && !requestUnmapped.isRecurring()">
                 Erhebungszeitraum der Daten:
             </div>
-            <div class="ui meta three wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.duration && !request.isRecurring()">
-                {{request.query.query.schedule.duration | durationData }}
+            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.query.schedule && requestUnmapped.query.query.schedule.duration && !requestUnmapped.isRecurring()">
+                {{requestUnmapped.query.query.schedule.duration | durationData }}
             </div>
-            <div class="ui meta five wide column" *ngIf="request.query.deadline">
+            <div class="ui meta five wide column" *ngIf="requestUnmapped.query.deadline">
                 Deadline:
             </div>
-            <div class="ui meta three wide column" *ngIf="request.query.deadline">
-                {{request.query.deadline | date: 'mediumDate'}}
+            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.deadline">
+                {{requestUnmapped.query.deadline | date: 'mediumDate'}}
             </div>
-            <div class="ui meta five wide column" *ngIf="request.query.closed">
+            <div class="ui meta five wide column" *ngIf="requestUnmapped.query.closed">
                 Beendet am:
             </div>
-            <div class="ui meta three wide column" *ngIf="request.query.closed">
-                {{request.query.closed | date: 'mediumDate'}}
+            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.closed">
+                {{requestUnmapped.query.closed | date: 'mediumDate'}}
             </div>
-            <div class="ui meta five wide column" *ngIf="request.query.canceled">
+            <div class="ui meta five wide column" *ngIf="requestUnmapped.query.canceled">
                 Vom Broker abgebrochen am:
             </div>
-            <div class="ui meta three wide column" *ngIf="request.query.canceled">
-                {{request.query.canceled | date: 'mediumDate'}}
+            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.canceled">
+                {{requestUnmapped.query.canceled | date: 'mediumDate'}}
             </div>
         </div>
-        <div class="row" *ngIf="request.isRecurring()">
+        <div class="row" *ngIf="requestUnmapped.isRecurring()">
             <div class="ui sixteen wide column divider"></div>
         </div>
-        <div class="compact row" *ngIf="request.isRecurring()">
+        <div class="compact row" *ngIf="requestUnmapped.isRecurring()">
             <div class="ui meta sixteen wide column">
                 <b>Serien-Informationen:</b>
             </div>
-            <div class="ui meta five wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.duration">
+            <div class="ui meta five wide column" *ngIf="requestUnmapped.query.query.schedule && requestUnmapped.query.query.schedule.duration">
                 Erhebungszeitraum der Daten:
             </div>
-            <div class="ui meta three wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.duration">
-                {{request.query.query.schedule.duration | durationData }}
+            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.query.schedule && requestUnmapped.query.query.schedule.duration">
+                {{requestUnmapped.query.query.schedule.duration | durationData }}
             </div>
-            <div class="ui meta five wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.interval">
+            <div class="ui meta five wide column" *ngIf="requestUnmapped.query.query.schedule && requestUnmapped.query.query.schedule.interval">
                 Abfrage-Intervall:
             </div>
-            <div class="ui meta three wide column" *ngIf="request.query.query.schedule && request.query.query.schedule.interval">
-                {{request.query.query.schedule.interval | durationQuery }}
+            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.query.schedule && requestUnmapped.query.query.schedule.interval">
+                {{requestUnmapped.query.query.schedule.interval | durationQuery }}
             </div>
         </div>
         <div class="row" *ngIf="queryRule">
