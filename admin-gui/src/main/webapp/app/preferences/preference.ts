@@ -19,7 +19,7 @@ export const predefinedPreferenceCategories: PreferenceCategory[] = [
     {
         value : 'i2b2',
         name : 'I2B2',
-        description : 'i2b2 Einstellungen',
+        description : 'Einstellungen i2b2',
     },
     {
         value : 'local',
@@ -34,7 +34,7 @@ export const predefinedPreferenceCategories: PreferenceCategory[] = [
     {
         value : 'report',
         name : 'Report',
-        description : 'Bericht Ablage',
+        description : 'Berichtablage',
     },
     {
         value : 'cda',
@@ -49,12 +49,12 @@ export const predefinedPreferenceCategories: PreferenceCategory[] = [
     {
         value : 'wildfly',
         name : 'Wildfly',
-        description : 'Wildlfy Konfiguration',
+        description : 'Konfiguration Wildlfy',
     },
     {
         value : 'broker',
         name : 'Broker',
-        description : 'Broker Einstellungen',
+        description : 'Einstellungen Broker',
     },
     {
         value : '',
@@ -64,12 +64,12 @@ export const predefinedPreferenceCategories: PreferenceCategory[] = [
 ];
 
 export const predefinedPreferences = {
-    'local.ou': 'Abteilungsname',
-    'local.o': 'Klinikname',
+    'local.ou': 'Name der Abteilung',
+    'local.o': 'Name des Klinikums',
     'local.c': 'Staat',
     'local.s': 'Bundesland',
     'local.l': 'Ort',
-    'local.cn': 'DWH Instanz Name',
+    'local.cn': 'Name der DWH Instanz',
     'local.tz': 'Zeitzone',
     'local.email': 'Empfänger-E-Mail für Berichte und Meldungen',
 
@@ -82,36 +82,36 @@ export const predefinedPreferences = {
     'cda.encounter.root.preset': 'Root-Nummer bei Verwendung der Episodennummer (Encounter)',
     'cda.billing.root.preset': 'Root-Nummer bei Verwendung der Fallnummer (Billing)',
 
-    'study.id.reference': 'Patientenreferenz, die im Consent-Manager zur Identifizierung von Patienten verwendet wird. Erlaubte Werte: Patient, Encounter, Billing',
+    'study.id.reference': 'Patientenreferenz, die im Consent-Manager zur Identifizierung von Patienten verwendet wird (Patient, Encounter oder Billing)',
     'study.id.patient.label': 'Textfeld-Label im Consent-Manager bei Verwendung der Patientennummer',
     'study.id.encounter.label': 'Textfeld-Label im Consent-Manager bei Verwendung der Episodennummer',
     'study.id.billing.label': 'Textfeld-Label im Consent-Manager bei Verwendung der Fallnummer',
-    'study.id.separator': 'Trennzeichen für Root und Extension. Wird verwendet, wenn keine Root hinterlegt ist.',
+    'study.id.separator': 'Trennzeichen für Root-Nummer und Erweiterung (wird verwendet, wenn keine Root-Nummer hinterlegt ist)',
 
-    'broker.data.path': 'Ablageort der eingegangene Daten vom Broker',
-    'broker.uris': 'Aktin Broker Url',
-    'broker.intervals': 'Heartbeat Interval',
-    'broker.keys': 'Brokerkey zur Indentifizierung',
-
-
-    'db.datasource': 'Aktin Datasource in Wildfly',
+    'broker.data.path': 'Ablageort der eingegangenen Daten vom Broker',
+    'broker.uris': 'AKTIN Broker Url',
+    'broker.intervals': 'Heartbeat Update Interval',
+    'broker.keys': 'Broker-Key zur Identifizierung',
 
 
-    'email.session': 'Aktin Email Konfigurationen',
-    'email.replyto': 'Aktin Berichte Reply to Mail',
+    'db.datasource': 'AKTIN Datasource im Wildfly-Server',
 
 
-    'wildfly.management.url': 'Wildfly Konfigurations URL',
-    'wildfly.management.user': 'Wildfly User',
+    'email.session': 'Konfigurationen der AKTIN Email',
+    'email.replyto': 'Rückantwort für AKTIN Berichte',
+
+
+    'wildfly.management.url': 'URL der Wildfly-Konfiguration',
+    'wildfly.management.user': 'Wildfly Nutzer',
     'wildfly.management.password': 'Wildfly Passwort',
 
 
-    'i2b2.project': 'I2B2 Projekt ID',
-    'i2b2.service.pm': 'I2B2 PMService Lokation',
-    'i2b2.service.domain': 'I2B2 Projekt Domaine',
-    'i2b2.datasource.crc': 'I2B2 Datasource',
-    'i2b2.lastimport': 'Timestamp des letzten Imports',
+    'i2b2.project': 'i2b2 Projekt ID',
+    'i2b2.service.pm': 'i2b2 PM-Service',
+    'i2b2.service.domain': 'i2b2 Projekt Domäne',
+    'i2b2.datasource.crc': 'i2b2 Datasource',
+    'i2b2.lastimport': 'Zeitstempel des letzten Imports',
 
 
-    'rscript.binary': 'R Skript Binary Link',
+    'rscript.binary': 'Link zum R-Script Binary',
 };
