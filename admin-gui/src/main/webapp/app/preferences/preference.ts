@@ -90,7 +90,7 @@ export const predefinedPreferences = {
 
     'broker.data.path': 'Ablageort der eingegangenen Daten vom Broker',
     'broker.uris': 'AKTIN Broker Url',
-    'broker.intervals': 'Heartbeat Update Interval',
+    'broker.intervals': 'Heartbeat Update Interval (ISO 8601)',
     'broker.keys': 'Broker-Key zur Identifizierung',
 
 
