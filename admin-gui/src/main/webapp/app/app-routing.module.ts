@@ -15,6 +15,7 @@ import { UsersComponent, UserSingleComponent, UserNewComponent,
         UserLoginComponent, UserAuthGuard } from './users/index';
 import { ReportsComponent, ReportSingleComponent, ReportNewComponent } from './reports/index';
 import { PreferencesComponent }  from './preferences/index';
+import { P21Component} from './p21/index';
 import { VisitsComponent }  from './visits/index';
 import { RequestsComponent, RequestSingleComponent }     from './requests/index';
 import { StudyManagerComponent } from './studyManager/index';
@@ -117,6 +118,22 @@ const routes: Routes = [// array of routes
                 Permission.WRITE_STUDYMANAGER
             ]
         }
+    },
+    {
+        path: 'p21',
+        canActivate: [UserAuthGuard],
+        component: P21Component,
+        data : {
+            name : 'P21-Import',
+            roles : [
+                // 'Admin',
+                'LOGGEDIN',
+            ],
+            permissions : [
+                //Permission.READ_P21,
+                //Permission.WRITE_P21
+            ]
+        },
     },
     {
         path: 'preferences',

@@ -25,6 +25,7 @@ import { UsersComponent, UserSingleComponent, UserSingleViewComponent, UserNewCo
 import { ReportService, SuccessReportsPipe, ReportSingleViewComponent,
             ReportsComponent, ReportNewComponent, ReportSingleComponent } from './reports/index';
 import { PreferencesComponent, PreferenceService } from './preferences/index';
+import { P21Component, P21Service } from './p21/index';
 import { VisitService, VisitsComponent, VisitSingleViewComponent } from './visits/index';
 import { RequestsComponent, RequestSingleViewComponent, RequestSingleComponent, RequestStatusBarComponent,
             RequestFilterPipe, RequestService } from './requests/index';
@@ -57,6 +58,7 @@ import { RestrictedComponent } from './restricted/restricted.component';
         ReportSingleComponent,
         ReportNewComponent,
         PreferencesComponent,
+        P21Component,
         RequestsComponent,
         RequestSingleViewComponent,
         RequestSingleComponent,
@@ -97,6 +99,7 @@ import { RestrictedComponent } from './restricted/restricted.component';
         VisitService,
         StudyManagerService,
         PreferenceService,
+        P21Service,
         StatusService,
         //{provide: Window, useValue: window },
     ]
