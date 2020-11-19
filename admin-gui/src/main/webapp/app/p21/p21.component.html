@@ -1,10 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<div class="ui breadcrumb">
+    <div class="active section breadcrumb-header">Upload von fallbasierten Daten</div>
+</div>
 
-</body>
-</html>
+<div class="ui list">
+    <div class="ui segment padded">
+
+        <div class="container" dnd (fileDropped)="onFileDropped($event)">
+            <input type="file" accept="application/zip" #fileDropArea id="fileDropArea" multiple (change)="onFileBrowse($event.target.files)" />
+            <i class="upload icon huge"></i>
+            <h3>Zum Hochladen, Datei in das Feld ziehen</h3>
+            <h3>oder</h3>
+            <label class="label-button" for="fileDropArea">Durchsuchen...</label>
+        </div>
+    </div>
+</div>
+
+<div class="list-files">
+    <div class="single-file" *ngFor="let file of files; let i = index">
+        <div class="file-info">
+            <h4 class="file-name">
+                {{ file?.name }}
+            </h4>
+            <p class="file-size">
+                {{ formatBytes(file?.size) }}
+            </p>
+            <div class="file-progress-cont"><div class="file-progress" [style.width]="file?.progress + '%'"></div>
+            </div>
+        </div>
+        <i class="ban icon red large" (click)="deleteFile(i)"></i>
+    </div>
+</div>
+
+
+
+
+
+
+
+
