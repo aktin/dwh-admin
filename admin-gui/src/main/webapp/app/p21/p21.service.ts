@@ -25,10 +25,10 @@ export class P21Service {
         let perm: Permission;
         switch (permission) {
             case 'READ_P21':
-                //perm = Permission.READ_P21;
+                // perm = Permission.READ_P21;
                 break;
             case 'WRITE_P21':
-                //perm = Permission.WRITE_P21;
+                // perm = Permission.WRITE_P21;
                 break;
             default:
                 return false;
