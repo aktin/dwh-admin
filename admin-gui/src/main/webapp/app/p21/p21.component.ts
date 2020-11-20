@@ -4,20 +4,35 @@
 
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { P21Service } from './p21.service';
+import { ListEntry } from './p21.ListEntry';
+
+require('semantic-ui');
 
 @Component({
-    selector: 'app-root',
     templateUrl: './p21.component.html',
     styleUrls: ['./p21.component.css'],
 })
+
 export class P21Component {
 
     @ViewChild('fileDropArea') fileDropEl: ElementRef;
-    files: any[] = [];
+    process_selected = 1;
+    list_processes: any[];
+    list_files_upload: ListEntry[] = [];
 
     constructor(private _p21service: P21Service) {
+
+        // TODO: remove
         _p21service.sayHello();
         console.log('Hello, I am the P21Component');
+
+        // TODO: Get List of all Python scripts
+        this.list_processes = [
+            {id: 1, description: 'Pfad1'},
+            {id: 2, description: 'Pfad2'},
+            {id: 3, description: 'Pfad3'},
+            {id: 4, description: 'Pfad4'}
+        ];
     }
 
     /**
@@ -28,62 +43,66 @@ export class P21Component {
         return this._p21service.checkPermission(permission);
     }
 
-    // handler for dropped files
+    /**
+     * Handler for upload of dropped files
+     */
     onFileDropped($event: any[]) {
-        this.prepareFileList($event);
-    }
-
-    // handler for file browsing
-    onFileBrowse(files: any[]) {
-        this.prepareFileList(files);
+        this.readFiles($event);
     }
 
     /**
-     * Delete file from files list
-     * @param index (File index)
+     * Handler for upload of file browser
      */
-    deleteFile(index: number) {
-        if (this.files[index].progress < 100) {
-            return;
-        }
-        this.files.splice(index, 1);
+    onFileBrowse(files: any[]) {
+        this.readFiles(files);
     }
 
     /**
      * Convert Files list to normal array list
      * @param files (Files List)
      */
-    prepareFileList(files: Array<any>) {
-        for (const item of files) {
-            item.progress = 0;
-            this.files.push(item);
+    readFiles(files: Array<any>) {
+        for (let file of files) {
+
+            this.list_files_upload.push(new ListEntry(file.name, file.size, 0, false));
+
+
         }
         this.fileDropEl.nativeElement.value = '';
-        this.progressBarUpload(0);
     }
 
     /**
-     * Simulate the upload process
+     * Delete entry from list_files_upload list
+     * @param index (File index)
      */
-    progressBarUpload(index: number) {
-        setTimeout(() => {
-            if (index === this.files.length) {
-                return;
-            } else {
-                const progressInterval = setInterval(() => {
-                    if (this.files[index].progress === 100) {
-                        clearInterval(progressInterval);
-                        this.progressBarUpload(index + 1);
-                    } else {
-                        this.files[index].progress += 5;
-                    }
-                }, 200);
-            }
-        }, 1000);
+    spliceFile(index: number) {
+
+        // TODO: REMOVE
+        $('#' + this.list_files_upload[index].id).progress('increment');
+
+
+
+        if (this.list_files_upload[index].upload_progress < 100) {
+            return;
+        }
+        this.list_files_upload.splice(index, 1);
     }
 
     /**
-     * format size of files
+     * Abort current progress
+     * delete entry from list_files_upload list
+     * @param index (File index)
+     */
+    cancelUpload(index: number) {
+        if (this.list_files_upload[index].upload_progress === 100) {
+            return;
+        }
+        // TODO: ABORT
+        this.spliceFile(index);
+    }
+
+    /**
+     * Format size of files
      * @param bytes (file size in bytes)
      * @param decimals (decimals point)
      */

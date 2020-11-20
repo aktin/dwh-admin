@@ -16,14 +16,13 @@ input {
     left: 0;
 }
 
-.label-button {
-    color: white;
-    width: 185px;
-    height: 45px;
-    font-size: 20px;
-    border-radius: 22px;
-    background-color: rgba(33, 186, 69, 1);
-    padding: 8px 16px;
+.dropdown-processing {
+    margin: auto;
+    width: 50%;
+}
+
+.state-button {
+    width: 50%;
 }
 
 h3 {
@@ -39,7 +38,7 @@ h3 {
 
 .single-file {
     display: flex;
-    padding: 0.5rem;
+    padding: 8px 8px 30px 8px;
     justify-content: space-between;
     align-items: center;
     border: dashed 3px rgba(201, 201, 201, 1);
@@ -67,26 +66,5 @@ h3 {
     font-size: 14px;
     font-weight: 1000;
     color: rgba(164, 164, 164, 1);
-    margin: 0;
-    margin-bottom: 0.25rem;
-}
-
-.file-progress-cont {
-    height: 10px;
-    width: 100%;
-    border-radius: 4px;
-    background-color: rgba(208, 208, 208, 1);
-    position: relative;
-}
-
-.file-progress {
-    width: 0;
-    height: 100%;
-    position: absolute;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    border-radius: 4px;
-    background-color: rgba(33, 186, 69, 1);
-    transition: 0.5s all;
+    margin: 0 0 0.25rem 0;
 }

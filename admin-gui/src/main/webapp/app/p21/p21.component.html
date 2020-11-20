@@ -1,40 +1,67 @@
-<div class="ui breadcrumb">
-    <div class="active section breadcrumb-header">Upload von fallbasierten Daten</div>
-</div>
-
-<div class="ui list">
-    <div class="ui segment padded">
-
-        <div class="container" dnd (fileDropped)="onFileDropped($event)">
-            <input type="file" accept="application/zip" #fileDropArea id="fileDropArea" multiple (change)="onFileBrowse($event.target.files)" />
-            <i class="upload icon huge"></i>
-            <h3>Zum Hochladen, Datei in das Feld ziehen</h3>
-            <h3>oder</h3>
-            <label class="label-button" for="fileDropArea">Durchsuchen...</label>
+<div class="ui grid">
+    <div class="row">
+        <div class="ui breadcrumb">
+            <div class="active section breadcrumb-header">Upload von fallbasierten Daten</div>
         </div>
     </div>
-</div>
 
-<div class="list-files">
-    <div class="single-file" *ngFor="let file of files; let i = index">
-        <div class="file-info">
-            <h4 class="file-name">
-                {{ file?.name }}
-            </h4>
-            <p class="file-size">
-                {{ formatBytes(file?.size) }}
-            </p>
-            <div class="file-progress-cont"><div class="file-progress" [style.width]="file?.progress + '%'"></div>
+    <form class="ui form sixteen wide column">
+        <div class="ui row dropdown-processing">
+            <div class="field">
+                <label>Art der Datenverarbeitung</label>
+                <select class="ui fluid dropdown" name="process_selected" [(ngModel)]="process_selected">
+                    <option *ngFor="let process of list_processes" [value]="process.id" [selected]="process_selected==process.id" >
+                        {{process.description}}
+                    </option>
+                </select>
             </div>
         </div>
-        <i class="ban icon red large" (click)="deleteFile(i)"></i>
-    </div>
+
+        <div class="ui segment padded">
+            <div class="container" dnd (fileDropped)="onFileDropped($event)">
+                <input type="file" accept="application/zip,application/x-zip-compressed" #fileDropArea id="fileDropArea" multiple (change)="onFileBrowse($event.target.files)" />
+                <i class="upload icon huge"></i>
+                <h3>Zum Hochladen, Datei in das Feld ziehen</h3>
+                <h3>oder</h3>
+                <div class="positive ui button" for="fileDropArea">Durchsuchen...</div>
+            </div>
+        </div>
+
+        <div class="list-files">
+            <div class="single-file" *ngFor="let file of list_files_upload; let i = index">
+
+                <div class="file-info">
+                    <div>
+                        <h4 class="file-name">
+                            {{ file?.name }}
+                        </h4>
+                        <p class="file-size">
+                            {{ formatBytes(file?.size) }}
+                        </p>
+                    </div>
+
+                    <div class="ui active small progress" id="{{ file.id }}">
+                        <div class="bar"></div>
+                        <div class="label">
+                            <button class="ui basic button state-button">
+                                {{ file?.state }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ui icon buttons">
+                    <button class="ui basic button large">
+                        <i class="exclamation triangle icon yellow"></i>
+                    </button>
+                    <button class="ui basic button large" (click)="cancelUpload(i)">
+                        <i class="ban icon red"></i>
+                    </button>
+                    <button class="ui basic button large" (click)="spliceFile(i)">
+                        <i class="trash icon red"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
-
-
-
-
-
-
-
-
