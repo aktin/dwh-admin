@@ -28,7 +28,7 @@
         </div>
 
         <div class="list-files">
-            <div class="single-file" *ngFor="let file of list_files_upload; let i = index">
+            <div class="single-file" *ngFor="let file of list_files_upload; let i=index">
 
                 <div class="file-info">
                     <div>
@@ -40,7 +40,7 @@
                         </p>
                     </div>
 
-                    <div class="ui active small progress" id="{{ file.id }}">
+                    <div class="ui active small progress" id="{{ file?.id }}">
                         <div class="bar"></div>
                         <div class="label">
                             <button class="ui basic button state-button">
