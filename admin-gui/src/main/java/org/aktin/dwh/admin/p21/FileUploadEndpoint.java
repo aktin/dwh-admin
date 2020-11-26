@@ -56,5 +56,21 @@ public class FileUploadEndpoint {
         }
     }
 
+    @Path("delete")
+    @DELETE
+    @Consumes({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
+    public Response deleteFile(String path) {
+        try{
+            java.nio.file.Path filePath = Paths.get(path);
+            Files.delete(filePath);
+            return Response.status(Response.Status.ACCEPTED).build();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+            return Response.status(Response.Status.CONFLICT).entity("FILE COULD NOT BE DELETED").build();
+        }
+    }
+
+
+
 
 }
