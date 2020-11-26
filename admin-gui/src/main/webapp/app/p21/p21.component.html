@@ -17,49 +17,80 @@
             </div>
         </div>
 
-        <div class="ui segment padded">
-            <div class="container" dnd (fileDropped)="onFileDropped($event)">
-                <input type="file" accept="application/zip,application/x-zip-compressed" #fileDropArea id="fileDropArea" multiple (change)="onFileBrowse($event.target.files)" />
-                <i class="upload icon huge"></i>
-                <h3>Zum Hochladen, Datei in das Feld ziehen</h3>
-                <h3>oder</h3>
-                <div class="positive ui button" for="fileDropArea">Durchsuchen...</div>
+        <div class="ui segment container-border">
+            <div class="container">
+                <div class="ui two row centered grid">
+                    <input type="file" accept="application/zip,application/x-zip-compressed" multiple (change)="onFileBrowse($event.target.files)" />
+                    <div class="row"></div>
+                    <div class="row">
+                        <i class="upload icon green huge"></i>
+                    </div>
+                    <div class="row">
+                        <div class="positive ui button huge">
+                            Durchsuchen...
+                        </div>
+                    </div>
+                    <div class="row"></div>
+                </div>
             </div>
         </div>
 
         <div class="list-files">
             <div class="single-file" *ngFor="let file of list_files_upload; let i=index">
+                <div class="ui grid">
 
-                <div class="file-info">
-                    <div>
-                        <h4 class="file-name">
-                            {{ file?.name }}
-                        </h4>
-                        <p class="file-size">
-                            {{ formatBytes(file?.size) }}
-                        </p>
-                    </div>
-
-                    <div class="ui active small progress" id="{{ file?.id }}">
-                        <div class="bar"></div>
-                        <div class="label">
-                            <button class="ui basic button state-button">
-                                {{ file?.state }}
-                            </button>
+                    <div class="two column row">
+                        <div class="left floated column">
+                            <div class="file-info">
+                                <h4 class="file-name">
+                                    {{ file?.name }}
+                                </h4>
+                                <p class="file-size file-info">
+                                    {{ formatBytes(file?.size) }}
+                                </p>
+                            </div>
+                       </div>
+                        <div class="right floated column">
+                            <div class="ui icon buttons file-buttons">
+                                <button class="ui button" (click)="cancelUpload(i)" [disabled]="true">
+                                    <i class="arrow alternate circle up outline icon green large"></i>
+                                </button>
+                                <button class="ui button" (click)="spliceFile(i)" [disabled]="true">
+                                    <i class="ban icon red large"></i>
+                                </button>
+                                <button class="ui button large" (click)="spliceFile(i)">
+                                    <i class="trash icon red"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="ui icon buttons">
-                    <button class="ui basic button large">
-                        <i class="exclamation triangle icon yellow"></i>
-                    </button>
-                    <button class="ui basic button large" (click)="cancelUpload(i)">
-                        <i class="ban icon red"></i>
-                    </button>
-                    <button class="ui basic button large" (click)="spliceFile(i)">
-                        <i class="trash icon red"></i>
-                    </button>
+                    <div class="row">
+                        <div class="file-row-element">
+                            <div class="ui active progress small " id="{{ file?.id }}">
+                                <div class="bar"></div>
+                                <div class="label">
+                                    <h4>
+                                        {{ file?.state }}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" *ngIf="true">
+                        <div class="ui segment file-row-element element-warning">
+                            <i class="exclamation triangle icon yellow large"></i>
+                            WARNING
+                        </div>
+                    </div>
+
+                    <div class="row" *ngIf="true">
+                        <div class="ui segment file-row-element element-error">
+                            <i class="exclamation triangle icon red large"></i>
+                            ERROR
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
