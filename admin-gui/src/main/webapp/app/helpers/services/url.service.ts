@@ -60,6 +60,9 @@ export class UrlService {
 
         // versions endpoint
         version: 'info/version',
+
+        // p21 file data endpoint
+        upload: 'file/upload'
     };
 
     setServerUrl (serverUrl: string) {
