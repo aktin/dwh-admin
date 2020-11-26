@@ -58,11 +58,13 @@ public class FileUploadEndpoint {
 
     @Path("delete")
     @DELETE
-    @Consumes({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response deleteFile(String path) {
         try{
             java.nio.file.Path filePath = Paths.get(path);
             Files.delete(filePath);
+
+            LOGGER.log(Level.INFO, "Deleted ZIP file at " + path);
             return Response.status(Response.Status.ACCEPTED).build();
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
