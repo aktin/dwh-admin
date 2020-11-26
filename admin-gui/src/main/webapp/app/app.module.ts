@@ -26,7 +26,6 @@ import { ReportService, SuccessReportsPipe, ReportSingleViewComponent,
             ReportsComponent, ReportNewComponent, ReportSingleComponent } from './reports/index';
 import { PreferencesComponent, PreferenceService } from './preferences/index';
 import { P21Component, P21Service } from './p21/index';
-import { DndDirective } from './p21/dnd.directive';
 import { VisitService, VisitsComponent, VisitSingleViewComponent } from './visits/index';
 import { RequestsComponent, RequestSingleViewComponent, RequestSingleComponent, RequestStatusBarComponent,
             RequestFilterPipe, RequestService } from './requests/index';
@@ -60,7 +59,6 @@ import { RestrictedComponent } from './restricted/restricted.component';
         ReportNewComponent,
         PreferencesComponent,
         P21Component,
-        DndDirective,
         RequestsComponent,
         RequestSingleViewComponent,
         RequestSingleComponent,

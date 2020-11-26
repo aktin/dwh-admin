@@ -55,6 +55,11 @@
                                 <button class="ui button" (click)="cancelUpload(i)" [disabled]="true">
                                     <i class="arrow alternate circle up outline icon green large"></i>
                                 </button>
+                                <button class="ui button" (click)="cancelUpload(i)" [disabled]="true">
+                                    <i class="arrow alternate circle up outline icon orange large"></i>
+                                </button>
+
+
                                 <button class="ui button" (click)="spliceFile(i)" [disabled]="true">
                                     <i class="ban icon red large"></i>
                                 </button>
@@ -67,7 +72,7 @@
 
                     <div class="row">
                         <div class="file-row-element">
-                            <div class="ui active progress small " id="{{ file?.id }}">
+                            <div class="ui green progress small" id="{{ file?.id }}">
                                 <div class="bar"></div>
                                 <div class="label">
                                     <h4>
