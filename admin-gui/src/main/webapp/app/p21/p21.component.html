@@ -39,7 +39,7 @@
             <div class="single-file" *ngFor="let file of list_files_upload; let i=index">
                 <div class="ui grid">
 
-                    <div class="two column row">
+                    <div class="three column row">
                         <div class="left floated column">
                             <div class="file-info">
                                 <h4 class="file-name">
@@ -50,21 +50,23 @@
                                 </p>
                             </div>
                        </div>
+
                         <div class="right floated column">
                             <div class="ui icon buttons file-buttons">
-                                <button class="ui button" (click)="cancelUpload(i)" [disabled]="true">
-                                    <i class="arrow alternate circle up outline icon green large"></i>
+                                <button class="ui button" (click)="cancelUpload(i)" [disabled]="false">
+                                    <i class="cloud upload icon green large"></i>
                                 </button>
-                                <button class="ui button" (click)="cancelUpload(i)" [disabled]="true">
-                                    <i class="arrow alternate circle up outline icon orange large"></i>
+                                <button class="ui right labeled icon button" (click)="cancelUpload(i)" [disabled]="false">
+                                    <i class="arrow circle up icon orange large"></i>
+                                    <p class="import-button-label">
+                                        {{ list_processes[process_selected-1].description }}
+                                    </p>
                                 </button>
-
-
-                                <button class="ui button" (click)="spliceFile(i)" [disabled]="true">
+                                <button class="ui button" (click)="spliceFile(i)" [disabled]="false">
                                     <i class="ban icon red large"></i>
                                 </button>
-                                <button class="ui button large" (click)="spliceFile(i)">
-                                    <i class="trash icon red"></i>
+                                <button class="ui button" (click)="spliceFile(i)">
+                                    <i class="trash icon red large"></i>
                                 </button>
                             </div>
                         </div>
@@ -72,8 +74,10 @@
 
                     <div class="row">
                         <div class="file-row-element">
-                            <div class="ui green progress small" id="{{ file?.id }}">
-                                <div class="bar"></div>
+                            <div class="ui green progress" id="{{ file?.id }}" data-percent="74">
+                                <div class="bar">
+                                    <div class="progress"></div>
+                                </div>
                                 <div class="label">
                                     <h4>
                                         {{ file?.state }}
