@@ -65,6 +65,10 @@
 			<scope>provided</scope>
 		</dependency>
 
+
+
+
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
@@ -75,6 +79,15 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>2.11.3</version>
 		</dependency>
+
+
+
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-core</artifactId>
+			<version>1.25</version>
+		</dependency>
+
 
 
 		<!-- test with jetty -->
