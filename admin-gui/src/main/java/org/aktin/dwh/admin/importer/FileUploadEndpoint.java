@@ -4,32 +4,18 @@ import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
 import org.apache.tika.Tika;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
 import java.util.Comparator;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
-import java.util.zip.ZipException;
 
 /**
  * TODO Comments
@@ -78,15 +64,40 @@ public class FileUploadEndpoint {
             properties.setProperty("PATH", newFile.toString());
             properties.setProperty("TYPE", tika.detect(newFile));
 
-
-
             File file_properties = new File(newPath + "/properties");
             try (FileOutputStream fileOut = new FileOutputStream(file_properties)) {
                 properties.store(fileOut, "");
             }
 
-            LOGGER.log(Level.INFO, "Moved uploaded file to " + newFile.toString());
+
+            LOGGER.log(Level.INFO, "Uploaded file to " + newFile.toString());
             return Response.status(Response.Status.CREATED).entity(uuid).build();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
+        }
+    }
+
+    @Path("verify/{uuid}")
+    @POST
+    public Response verificateFile(@PathParam("uuid") String uuid) {
+        try {
+            String path = prefs.get(PreferenceKey.importDataPath) + "/" + uuid + "/properties";
+
+            Properties properties = new Properties();
+            try (FileInputStream input = new FileInputStream(path)) {
+                properties.load(input);
+            }
+            try (FileOutputStream output = new FileOutputStream(path)) {
+                properties.setProperty(String.valueOf(ImportState.VERIFIED), String.valueOf(System.currentTimeMillis()));
+                properties.store(output, "");
+            }
+
+            LOGGER.log(Level.INFO, "Verified file at " + path);
+            return Response.status(Response.Status.OK).entity(uuid).build();
+        } catch (FileNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "File could not be found", e);
+            return Response.status(Response.Status.CONFLICT).entity(e.toString()).build();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
@@ -96,7 +107,7 @@ public class FileUploadEndpoint {
     @Path("delete/{uuid}")
     @DELETE
     public Response deleteFile(@PathParam("uuid") String uuid) {
-        try{
+        try {
             String path = prefs.get(PreferenceKey.importDataPath) + "/" + uuid;
             try (Stream<java.nio.file.Path> walk = Files.walk(Paths.get(path))) {
                     walk.sorted(Comparator.reverseOrder())
@@ -106,9 +117,12 @@ public class FileUploadEndpoint {
 
             LOGGER.log(Level.INFO, "Deleted file at " + path);
             return Response.status(Response.Status.ACCEPTED).build();
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+        } catch (FileNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "File could not be found", e);
             return Response.status(Response.Status.CONFLICT).entity(e.toString()).build();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
         }
     }
 

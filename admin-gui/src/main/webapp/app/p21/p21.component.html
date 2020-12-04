@@ -20,7 +20,7 @@
         <div class="ui segment container-border">
             <div class="container">
                 <div class="ui two row centered grid">
-                    <input type="file" accept="application/zip,application/x-zip-compressed" multiple (change)="onFileBrowse($event.target.files)" />
+                    <input type="file" (change)="onFileBrowse($event.target.files)" />
                     <div class="row"></div>
                     <div class="row">
                         <i class="upload icon green huge"></i>

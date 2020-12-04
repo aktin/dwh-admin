@@ -63,7 +63,8 @@ export class UrlService {
 
         // p21 file data endpoint
         uploadFile: 'file/upload',
-        deleteFile: 'file/delete/@uuid@'
+        deleteFile: 'file/delete/@uuid@',
+        verifyFile: 'file/verify/@uuid@'
     };
 
     setServerUrl (serverUrl: string) {

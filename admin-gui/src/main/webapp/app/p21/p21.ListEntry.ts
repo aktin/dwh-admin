@@ -40,13 +40,18 @@
          this._p21service.uploadFile(this.file, this.id)
          .takeUntil(this.ngUnsubscribe)
          .subscribe(event => {
-             this.state = ImportState.verificating;
+             this.state = ImportState.verifying;
              this.uuid = event._body;
-             console.log(this.uuid);
-
-             this.state = ImportState.verification_successful;
-             console.log('VERIFICATION');
-
+             
+             this._p21service.verifyFile(this.uuid)
+                 .subscribe(event => {
+                     this.state = ImportState.verification_successful;
+                 }, (error: any) => {
+                    this.state = ImportState.verification_failed;
+                    this.is_error = true;
+                    this.error_message = error;
+                 });
+                 
          }, (error: any) => {
              this.state = ImportState.upload_failed;
              this.is_error = true;

@@ -60,12 +60,18 @@ export class P21Service {
             .catch(err => { return this._http.handleError(err); });
     }
 
+    verifyFile(uuid: string) {
+        return this._http.post(this._url.parse('verifyFile', { uuid: uuid }), "")
+            .catch(err => { return this._http.handleError(err); });
+    }
+
+
     // Delete file
     deleteFile(uuid: string) {
         return this._http.delete(this._url.parse('deleteFile', { uuid: uuid }))
         .catch(err => { return this._http.handleError(err); });
     }
-    
+
 }
 
 

@@ -4,7 +4,7 @@ export enum ImportState {
     uploading = 'Wird hochgeladen',
     upload_cancelled = 'Hochladen abgebrochen',
     upload_failed = 'Hochladen fehlgeschlagen',
-    verificating = 'Wird geprüft',
+    verifying = 'Wird geprüft',
     verification_failed = 'Prüfung fehlgeschlagen',
     verification_successful = 'Prüfung abgeschlossen',
     importing = 'Wird importiert',
