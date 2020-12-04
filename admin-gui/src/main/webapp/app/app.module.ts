@@ -32,6 +32,7 @@ import { RequestsComponent, RequestSingleViewComponent, RequestSingleComponent, 
 import { StudyManagerComponent, StudyManagerService, PopUpNewEntryComponent, PopUpDetailComponent } from './studyManager/index';
 import { StatusComponent, StatusService } from './status/index';
 import { RestrictedComponent } from './restricted/restricted.component';
+import { ProgressHttpModule } from 'angular-progress-http';
 
 
 @NgModule({
@@ -43,6 +44,7 @@ import { RestrictedComponent } from './restricted/restricted.component';
         JsonpModule,
         MyDatePickerModule,
         NgxPaginationModule,
+        ProgressHttpModule,
     ],
     declarations: [
         AppComponent,
