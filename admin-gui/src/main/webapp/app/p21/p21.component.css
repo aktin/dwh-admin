@@ -40,12 +40,12 @@ input {
     width: 100%;
     padding: 8px 8px 30px 8px;
     justify-content: space-between;
-    border: 4px dashed rgba(201, 201, 201, 1);
+    border: 2px dashed rgba(201, 201, 201, 1);
     margin-bottom: 12px;
 }
 
 .single-file:hover {
-    border: 4px dashed rgba(33, 186, 69, 1);
+    border: 2px dashed rgba(33, 186, 69, 1);
 }
 
 .file-info {
