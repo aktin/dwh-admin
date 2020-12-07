@@ -87,7 +87,7 @@
                     <button class="ui right labeled icon button" (click)="file.import()" *ngIf="file.hasState(ImportState.verification_successful,ImportState.importing,ImportState.import_cancelled,ImportState.import_failed,ImportState.import_successful)" [disabled]="file.hasState(ImportState.importing,ImportState.import_successful)">
                     <i class="arrow circle up icon green large"></i>
                     <p class="import-button-label">
-                        {{ list_processes[process_selected-1].description }}
+                        {{ process_selected }}
                     </p>
                     </button>
                     <button class="ui button" (click)="file.cancel()" *ngIf="file.hasState(ImportState.in_queue,ImportState.uploading,ImportState.verificating,ImportState.importing)" [disabled]="file.hasState(ImportState.verificating)">
@@ -124,12 +124,15 @@
         <tr>
             <td colspan="6">
                 <div class="row" *ngIf="file.show_warning">
-                    <div class="element-item" *ngFor="let warning of file.messages_warning">
+                    <div class="element-item" *ngFor="let warning of file.messages_warning; let j = index;">
                         <div class="ui segment file-row-element element-warning">
                             <i class="exclamation triangle icon yellow large"></i>
                             <b> {{ warning.timestamp | momentDate: 'DD.MM.YYYY, HH:mm' }} </b>
                             <p style="overflow-x:auto;"> {{ warning.text }} </p>
                         </div>
+                        <button (click)="file.messages_warning.splice(j);">
+                        KLICK ME
+                        </button>
                     </div>
                 </div>
             </td>
@@ -137,12 +140,15 @@
         <tr>
             <td colspan="6" >
                 <div class="row" *ngIf="file.show_error">
-                    <div class="element-item" *ngFor="let error of file.messages_error">
+                    <div class="element-item" *ngFor="let error of file.messages_error; let k = index;">
                         <div class="ui segment file-row-element element-error">
                             <i class="exclamation triangle icon red large"></i>
                             <b> {{ error.timestamp | momentDate: 'DD.MM.YYYY, HH:mm' }} </b>
                             <p style="overflow:auto;"> {{ error.text }} </p>
                         </div>
+                        <button (click)="file.messages_error.splice(k);">
+                        KLICK ME
+                        </button>
                     </div>
                 </div>
             </td>

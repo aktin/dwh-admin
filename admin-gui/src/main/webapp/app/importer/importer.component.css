@@ -8,11 +8,19 @@ input {
     z-index: 2;
 }
 
-.file-name {
+.file-header {
     font-size: 15px;
     font-weight: 1000;
     color: rgba(53, 63, 74, 1);
     margin: 0;
+}
+
+.file-name {
+    display: block;
+    height: auto;
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: normal;
 }
 
 .file-buttons {
@@ -35,11 +43,3 @@ input {
     background-color: rgba(255, 0, 0, 0.2);
 }
 
-p{
-    display: block; /* or inline-block, at least its a block element */
-   
-    height: auto; /* height cannot be defined */
-    word-break: break-all; /*  */
-    word-wrap: break-word; /* if you want to cut the complete word */
-    white-space: normal; /* be sure its not 'nowrap'! ! ! :/ */
-}
