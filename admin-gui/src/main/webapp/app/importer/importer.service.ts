@@ -19,8 +19,8 @@ export class ImporterService {
 
     constructor(
         private _auth: AuthService,
+        private _url: UrlService,
         private _http: HttpInterceptorService,
-        public _url: UrlService,
         private http: ProgressHttp,
     ) {}
 
@@ -64,6 +64,11 @@ export class ImporterService {
 
     deleteFile(uuid: string): Observable<any> {
         return this._http.delete(this._url.parse('deleteFile', { uuid: uuid }))
+        .catch(err => { return this._http.handleError(err); });
+    }
+
+    getImportScripts(): Observable<any> {
+        return this._http.get(this._url.parse('getScripts'))
         .catch(err => { return this._http.handleError(err); });
     }
 }

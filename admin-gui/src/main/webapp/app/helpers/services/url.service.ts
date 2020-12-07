@@ -65,6 +65,8 @@ export class UrlService {
         uploadFile: 'file/upload',
         deleteFile: 'file/delete/@uuid@',
         verifyFile: 'file/verify/@uuid@',
+        getScripts: 'file/import/scripts',
+        importFile: 'file/import/@script@/@uuid@',
     };
 
     setServerUrl (serverUrl: string) {

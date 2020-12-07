@@ -21,7 +21,7 @@ export class ImporterComponent {
     @ViewChild('FileInput') fileInput: any;
 
     process_selected = 1;
-    list_processes: any[];
+    list_processes: any[] = [];
     list_files_upload: ListEntry[] = [];
     response: string;
 
@@ -32,15 +32,19 @@ export class ImporterComponent {
     // TODO onleave this.ngUnsubscribe.complete();
     ImportState: typeof ImportState = ImportState;
 
-    constructor(private _importerService: ImporterService) {
 
-        // TODO: Get List of all Python scripts
-        this.list_processes = [
-            {id: 1, description: 'Pfad1'},
-            {id: 2, description: 'Pfad2'},
-            {id: 3, description: 'Pfad3'},
-            {id: 4, description: 'Pfad4'}
-        ];
+    constructor(private _importerService: ImporterService) {
+        this._importerService.getImportScripts()
+            .subscribe(event => {
+                let json = JSON.parse(event._body);
+                for (let key of Object.keys(json)) {
+                    let desc = json[key]["DESC"] + ' V' + json[key]["VERSION"];
+                    this.list_processes.push({ id: key, description: desc });
+                }
+                this.process_selected = this.list_processes[0].id;
+            }, (error: any) => {
+                console.log(error);
+            });
     }
 
     /**
@@ -75,9 +79,9 @@ export class ImporterComponent {
 
 
     /**
-     * Format size of files
-     * @param bytes (file size in bytes)
-     * @param decimals (decimals point)
+     * Format file size in view
+     * @param bytes: file size in bytes
+     * @param decimals: decimals point (default: 2)
      */
     formatBytes(bytes: number, decimals = 2) {
         if (bytes === 0) { return '0 Bytes'; }
