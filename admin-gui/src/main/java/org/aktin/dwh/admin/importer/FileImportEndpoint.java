@@ -1,5 +1,7 @@
 package org.aktin.dwh.admin.importer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
 import org.apache.tika.Tika;
@@ -24,9 +26,9 @@ import java.util.stream.Stream;
 
 // TODO DO NOT FORGET DWH-API:0.7-SNAPSHOT
 @Path("file")
-public class FileUploadEndpoint {
+public class FileImportEndpoint {
 
-    private static final Logger LOGGER = Logger.getLogger(FileUploadEndpoint.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(FileImportEndpoint.class.getName());
     private static final Tika tika = new Tika();
 
     @Inject
@@ -80,7 +82,7 @@ public class FileUploadEndpoint {
 
     @Path("verify/{uuid}")
     @POST
-    public Response verificateFile(@PathParam("uuid") String uuid) {
+    public Response verifyFile(@PathParam("uuid") String uuid) {
         try {
             String path = prefs.get(PreferenceKey.importDataPath) + "/" + uuid + "/properties";
 
@@ -116,7 +118,7 @@ public class FileUploadEndpoint {
             }
 
             LOGGER.log(Level.INFO, "Deleted file at " + path);
-            return Response.status(Response.Status.ACCEPTED).build();
+            return Response.status(Response.Status.OK).build();
         } catch (FileNotFoundException e) {
             LOGGER.log(Level.SEVERE, "File could not be found", e);
             return Response.status(Response.Status.CONFLICT).entity(e.toString()).build();
@@ -125,6 +127,55 @@ public class FileUploadEndpoint {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
         }
     }
+
+    @Path("import/scripts")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getImportScripts() {
+        try {
+            String path = prefs.get(PreferenceKey.importScriptPath);
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode scripts = mapper.createObjectNode();
+
+            try (Stream<java.nio.file.Path> walk = Files.walk(Paths.get(path))) {
+                    walk.filter(Files::isRegularFile)
+                        .map(java.nio.file.Path::toFile)
+                        .forEach(file -> {
+                            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                                ObjectNode script = mapper.createObjectNode();
+
+                                String line, key, value;
+                                br.readLine();
+                                for (int i = 0; i < 3; i++) {
+                                    try {
+                                        line = br.readLine();
+                                        key = line.substring(line.indexOf('@') + 1, line.indexOf('='));
+                                        value = line.substring(line.indexOf('=') + 1);
+                                    } catch (StringIndexOutOfBoundsException e) {
+                                        break;
+                                    } catch (NullPointerException e) {
+                                        break;
+                                    }
+                                    script.put(key, value);
+                                }
+                                scripts.set(file.getName(), script);
+                            } catch (FileNotFoundException e) {
+                                LOGGER.log(Level.SEVERE, "File could not be found", e);
+                            } catch (IOException e) {
+                                LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+                            }
+                        });
+                }
+
+                return Response.status(Response.Status.OK).entity(scripts).build();
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
+            }
+    }
+}
+
+
 
     /*
     MOVE TO VERIFICATION
@@ -137,4 +188,3 @@ public class FileUploadEndpoint {
             return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).entity(e.toString()).build();
 
      */
-}
