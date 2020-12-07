@@ -103,7 +103,7 @@ import { ImporterService } from './importer.service';
      }
 
 
-     // TODO FIND A BETTER WAY
+
      hasState(...states: ImportState[]): boolean {
          for (let state of states) {
              if (this.state === state) {
@@ -111,6 +111,15 @@ import { ImporterService } from './importer.service';
              }
          }
          return false;
+     }
+
+     hasNotState(...states: ImportState[]): boolean {
+         for (let state of states) {
+             if (this.state === state) {
+                 return false;
+             }
+         }
+         return true;
      }
 
      // TODO: REMOVE
