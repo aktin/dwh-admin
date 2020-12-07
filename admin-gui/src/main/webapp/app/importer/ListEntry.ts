@@ -1,7 +1,7 @@
 /**
  * class to display list entries in HTML
  */
- import { P21Service } from './p21.service';
+import { ImporterService } from './importer.service';
  import { Subject } from 'rxjs/Subject';
  import { Subscription } from 'rxjs/Subscription';
 
@@ -16,18 +16,17 @@
      state: ImportState = ImportState.ready;
      name: string;
      size: number;
-     progress = 0;
      uuid = '';
-     id: string = Math.random().toString(36).substr(2, 9);
+     id_progress_bar: string = Math.random().toString(36).substr(2, 9);
 
-     is_error = false;
-     error_message: string;
+     messages_error: any[] = [];
+     messages_warning: any[] = [];
 
-     is_warning = false;
-     warning_message: string;
+     show_error: Boolean = false;
+     show_warning: Boolean = false;
 
      constructor(
-         private _p21service: P21Service,
+         private _importerService: ImporterService,
          public file: File,
          ) { 
          this.name = file.name,
@@ -37,30 +36,40 @@
      upload_and_verificate() {
          // TODO in queue
          this.state = ImportState.uploading;
-         this._p21service.uploadFile(this.file, this.id)
+         this._importerService.uploadFile(this.file, this.id_progress_bar)
          .takeUntil(this.ngUnsubscribe)
          .subscribe(event => {
              this.state = ImportState.verifying;
              this.uuid = event._body;
-             
-             this._p21service.verifyFile(this.uuid)
-                 .subscribe(event => {
-                     this.state = ImportState.verification_successful;
-                 }, (error: any) => {
-                    this.state = ImportState.verification_failed;
-                    this.is_error = true;
-                    this.error_message = error;
-                 });
-                 
+
+             this._importerService.verifyFile(this.uuid)
+             .subscribe(event => {
+                 this.state = ImportState.verification_successful;
+             }, (error: any) => {
+
+                 this.state = ImportState.verification_failed;
+                 this.messages_error.push({timestamp: new Date(), text: error});
+             });
+
          }, (error: any) => {
              this.state = ImportState.upload_failed;
-             this.is_error = true;
-             this.error_message = error;
+                 this.messages_error.push({ timestamp: new Date(), text: error });
          });
      }
 
-     import() {
 
+
+
+     import() {
+         // TODO
+     }
+
+     showError() {
+         this.show_error = !this.show_error;
+     }
+
+     showWarning() {
+         this.show_warning = !this.show_warning;
      }
 
     /**
@@ -74,17 +83,17 @@
          } else if (this.state === ImportState.importing) {
              this.state = ImportState.import_cancelled;
          }
+         $('#' + this.id_progress_bar).progress('reset');
          this.ngUnsubscribe.next();
      }
 
      delete() {
          this.ngUnsubscribe.complete();
-         this._p21service.deleteFile(this.uuid)
+         this._importerService.deleteFile(this.uuid)
          .subscribe(event => {
              console.log(event);
          }, (error: any) => {
-             this.is_error = true;
-             this.error_message = error;
+                 this.messages_error.push({ timestamp: new Date(), text: error });
          });
      }
 
@@ -103,12 +112,6 @@
          }
          return false;
      }
-
-     ping() {
-         // TODO
-     }
-
-
 
      // TODO: REMOVE
      // $('#' + this.list_files_upload[index].id).progress('increment');

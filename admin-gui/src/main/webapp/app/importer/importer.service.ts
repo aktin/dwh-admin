@@ -1,5 +1,6 @@
 import { Injectable }   from '@angular/core';
 
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { AuthService } from './../users/auth.service';
 import { UrlService, HttpInterceptorService } from '../helpers/index';
 import { Permission } from '../users';
@@ -14,7 +15,7 @@ import { ProgressHttp } from 'angular-progress-http';
 
 // TODO: comments
 @Injectable()
-export class P21Service {
+export class ImporterService {
 
     constructor(
         private _auth: AuthService,
@@ -22,10 +23,6 @@ export class P21Service {
         public _url: UrlService,
         private http: ProgressHttp,
     ) {}
-
-    sayHello (): void {
-        console.log('Hello, I am the P21Service');
-    }
 
     /**
      * Checks if the user has the given permission.
@@ -48,36 +45,25 @@ export class P21Service {
     }
 
 
+
     // TODO may produce problems in future because of ProgressHttp
     uploadFile(file: File, id: string): Observable<any> {
-        // ping
-
-        return this.http.withUploadProgressListener(progress => {
-            console.log(`Uploading ${progress.percentage}%`)
-           // $('#' + id).progress({ percent: progress.percentage });
+        return this.http.withUploadProgressListener(upload => {
+            $('#' + id).progress('set progress', upload.percentage);
         })
             .post(this._url.parse('uploadFile'), file)
-            .catch(err => { return this._http.handleError(err); });
+            .catch(err => { 
+                $('#' + id).progress('reset');
+                    return this._http.handleError(err); });
     }
 
-    verifyFile(uuid: string) {
+    verifyFile(uuid: string): Observable<any> {
         return this._http.post(this._url.parse('verifyFile', { uuid: uuid }), "")
-            .catch(err => { return this._http.handleError(err); });
-    }
-
-
-    // Delete file
-    deleteFile(uuid: string) {
-        return this._http.delete(this._url.parse('deleteFile', { uuid: uuid }))
         .catch(err => { return this._http.handleError(err); });
     }
 
+    deleteFile(uuid: string): Observable<any> {
+        return this._http.delete(this._url.parse('deleteFile', { uuid: uuid }))
+        .catch(err => { return this._http.handleError(err); });
+    }
 }
-
-
-/*
-                    onUploadProgress: function(progressEvent: any) {
-                        let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-                        console.log(percentCompleted)
-                    }
- */

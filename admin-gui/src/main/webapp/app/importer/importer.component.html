@@ -1,0 +1,159 @@
+<div class="ui grid">
+    <div class="row">
+        <div class="ui breadcrumb">
+            <div class="active section breadcrumb-header">Upload von fallbasierten Daten</div>
+        </div>
+    </div>
+    <form class="ui form sixteen wide column">
+        <div class="ui row dropdown-processing">
+            <div class="field">
+                <label>Art der Datenverarbeitung</label>
+                <select class="ui fluid dropdown" name="process_selected" [(ngModel)]="process_selected">
+                    <option *ngFor="let process of list_processes" [value]="process.id" [selected]="process_selected==process.id" >
+                        {{ process.description }}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="ui segment container-border">
+            <div class="container">
+                <div class="ui two row centered grid">
+                    <input type="file" id="FileInput" (change)="onFileBrowse($event.target.files)" />
+                    <div class="row"></div>
+                    <div class="row">
+                        <i class="upload icon green huge"></i>
+                    </div>
+                    <div class="row">
+                        <div class="positive ui button huge">
+                            Durchsuchen...
+                        </div>
+                    </div>
+                    <div class="row"></div>
+                </div>
+            </div>
+        </div>
+        <table class="ui sortable fixed single line table" style="width: 180%;margin-left: -250px;">
+            <thead>
+                <tr>
+                    
+                    <th [ngClass]="{'sorted':sorted&&sortAttribute==='name', 'descending':reverse, 'ascending':!reverse}" (click)="sorted=true; setSortAttribute('name')">Name <i *ngIf="!sorted" class="sort icon"></i></th>
+                    <th [ngClass]="{'sorted':sorted&&sortAttribute==='size', 'descending':reverse, 'ascending':!reverse}" (click)="sorted=true; setSortAttribute('size')">Größe <i *ngIf="!sorted" class="sort icon"></i></th>
+                    <th [ngClass]="{'sorted':sorted&&sortAttribute==='state', 'descending':reverse, 'ascending':!reverse}" (click)="sorted=true; setSortAttribute('state')">Status<i *ngIf="!sorted" class="sort icon"></i></th>
+                    <th colspan="1"> </th>
+                    <th colspan="2"> </th>
+                    <th> </th>
+                    <th> </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let file of list_files_upload | orderBy: [getSortAttribute()]; let i=index">
+                    <td class="file-name">
+                        {{ file.name }}
+                    </td>
+                    <td class="file-name">
+                        {{ formatBytes(file.size) }}
+                    </td>
+                    <td class="file-name">
+                        {{ file.state }}
+                    </td>
+                    <td colspan="1">
+                        <div class="ui green progress" id="{{ file.id_progress_bar }}">
+                            <div class="bar">
+                                <div class="progress"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td colspan="2">
+                        <!--
+                        <div class="ui icon buttons file-buttons">
+                            <button class="ui button" (click)="file.upload_and_verificate()"
+                            *ngIf="file.hasState(ImportState.ready,ImportState.in_queue,ImportState.uploading,ImportState.upload_cancelled,ImportState.upload_failed,ImportState.verificating,ImportState.verification_failed)"
+                            [disabled]="file.hasState(ImportState.in_queue,ImportState.uploading,ImportState.verificating)">
+                            <i class="cloud upload icon green large"></i>
+                            </button>
+                            <button class="ui right labeled icon button" (click)="file.import()"
+                            *ngIf="file.hasState(ImportState.verification_successful,ImportState.importing,ImportState.import_cancelled,ImportState.import_failed,ImportState.import_successful)"
+                            [disabled]="file.hasState(ImportState.importing,ImportState.import_successful)">
+                            <i class="arrow circle up icon green large"></i>
+                            <p class="import-button-label">
+                                {{ list_processes[process_selected-1].description }}
+                            </p>
+                            </button>
+                            <button class="ui button" (click)="file.cancel()"
+                            *ngIf="file.hasState(ImportState.in_queue,ImportState.uploading,ImportState.verificating)"
+                            [disabled]="file.hasState(ImportState.verificating)">
+                            <i class="ban icon red large"></i>
+                            </button>
+                            <button class="ui button" (click)="deleteFile(i)"
+                            *ngIf="file.hasState(ImportState.ready,ImportState.upload_cancelled,ImportState.upload_failed,ImportState.verification_failed,ImportState.verification_successful,ImportState.import_cancelled,ImportState.import_failed,ImportState.import_successful)"
+                            [disabled]="file.hasState(ImportState.import_successful)">
+                            <i class="trash icon red large"></i>
+                            </button>
+                        </div>
+                        -->
+                        <div class="ui icon buttons file-buttons">
+                            <button class="ui button" (click)="file.upload_and_verificate()">
+                            <i class="cloud upload icon green large"></i>
+                            </button>
+                            <button class="ui right labeled icon button" (click)="file.import()">
+                            <i class="arrow circle up icon green large"></i>
+                            <p class="import-button-label">
+                                {{ list_processes[process_selected-1].description }}
+                            </p>
+                            </button>
+                            <button class="ui button" (click)="file.cancel()">
+                            <i class="ban icon red large"></i>
+                            </button>
+                            <button class="ui button" (click)="deleteFile(i)">
+                            <i class="trash icon red large"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="ui icon buttons file-buttons">
+                            <button class="ui vertical animated button"  (click)="file.showError()"> <!-- *ngIf="file.messages_error.length !== 0" -->
+                            <div class="hidden content">
+                                <i class="down arrow icon"></i>
+                            </div>
+                            <div class="visible content">
+                                <i class="exclamation triangle icon red large"></i>
+                                <b> {{ file.messages_error.length }} </b>
+                            </div>
+                            </button>
+                            
+                            <button class="ui vertical animated button"  (click)="file.showWarning()"> <!-- *ngIf="file.messages_warning.length !== 0" -->
+                            <div class="hidden content">
+                                <i class="down arrow icon"></i>
+                            </div>
+                            <div class="visible content">
+                                <i class="exclamation triangle icon yellow large"></i>
+                                <b> {{ file.messages_warning.length }} </b>
+                            </div>
+                            </button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="row" *ngIf="file.show_warning">
+                            <div *ngFor="let warning of file.messages_warning">
+                                <div class="ui segment file-row-element element-warning">
+                                    <i class="exclamation triangle icon yellow large"></i>
+                                    <b> {{ warning.timestamp | momentDate: 'DD.MM.YYYY, HH:mm' }} </b>
+                                    <p> {{ warning.text }} </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" *ngIf="file.show_error">
+                            <div *ngFor="let error of file.messages_error">
+                                <div class="ui segment file-row-element element-error">
+                                    <i class="exclamation triangle icon red large"></i>
+                                    <b> {{ error.timestamp | momentDate: 'DD.MM.YYYY, HH:mm' }} </b>
+                                    <p> {{ error.text }} </p>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>

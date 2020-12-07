@@ -15,7 +15,7 @@ import { UsersComponent, UserSingleComponent, UserNewComponent,
         UserLoginComponent, UserAuthGuard } from './users/index';
 import { ReportsComponent, ReportSingleComponent, ReportNewComponent } from './reports/index';
 import { PreferencesComponent }  from './preferences/index';
-import { P21Component} from './p21/index';
+import { ImporterComponent } from './importer/index';
 import { VisitsComponent }  from './visits/index';
 import { RequestsComponent, RequestSingleComponent }     from './requests/index';
 import { StudyManagerComponent } from './studyManager/index';
@@ -120,11 +120,11 @@ const routes: Routes = [// array of routes
         }
     },
     {
-        path: 'p21',
+        path: 'importer',
         canActivate: [UserAuthGuard],
-        component: P21Component,
+        component: ImporterComponent,
         data : {
-            name : 'P21-Import',
+            name : 'Daten-Import',
             roles : [
                 // 'Admin',
                 'LOGGEDIN',

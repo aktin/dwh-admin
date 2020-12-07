@@ -25,7 +25,7 @@ import { UsersComponent, UserSingleComponent, UserSingleViewComponent, UserNewCo
 import { ReportService, SuccessReportsPipe, ReportSingleViewComponent,
             ReportsComponent, ReportNewComponent, ReportSingleComponent } from './reports/index';
 import { PreferencesComponent, PreferenceService } from './preferences/index';
-import { P21Component, P21Service } from './p21/index';
+import { ImporterComponent, ImporterService } from './importer/index';
 import { VisitService, VisitsComponent, VisitSingleViewComponent } from './visits/index';
 import { RequestsComponent, RequestSingleViewComponent, RequestSingleComponent, RequestStatusBarComponent,
             RequestFilterPipe, RequestService } from './requests/index';
@@ -60,7 +60,7 @@ import { ProgressHttpModule } from 'angular-progress-http';
         ReportSingleComponent,
         ReportNewComponent,
         PreferencesComponent,
-        P21Component,
+        ImporterComponent,
         RequestsComponent,
         RequestSingleViewComponent,
         RequestSingleComponent,
@@ -101,7 +101,7 @@ import { ProgressHttpModule } from 'angular-progress-http';
         VisitService,
         StudyManagerService,
         PreferenceService,
-        P21Service,
+        ImporterService,
         StatusService,
         // {provide: Window, useValue: window },
     ]
