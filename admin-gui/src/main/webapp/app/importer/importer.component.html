@@ -126,7 +126,7 @@
             <td colspan="6">
                 <div *ngIf="file.show_warning">
                     <div *ngFor="let warning of file.messages_warning; let j=index;" >
-                        <div class="ui grid element-warning segment">
+                        <div class="ui padded grid element-warning segment">
                             <div class="four column row">
                                 <div class="left floated left aligned column">
                                     <i class="exclamation triangle icon orange large"></i>
@@ -152,7 +152,7 @@
             <td colspan="6">
                 <div *ngIf="file.show_error">
                     <div *ngFor="let error of file.messages_error; let k=index;" >
-                        <div class="ui grid element-error segment">
+                        <div class="ui padded grid element-error segment">
                             <div class="four column row">
                                 <div class="left floated left aligned column">
                                     <i class="exclamation triangle icon red large"></i>

@@ -10,33 +10,27 @@ import { ImporterService } from './importer.service';
  // TODO: comments
  export class ListEntry {
 
-     // TODO onleave 
      private ngUnsubscribe: Subject<void> = new Subject<void>();
-
-     state: ImportState = ImportState.ready;
-     name: string;
-     size: number;
-     uuid = '';
-     id_progress_bar: string = Math.random().toString(36).substr(2, 9);
-
-     messages_error: any[] = [];
-     messages_warning: any[] = [];
-
-     show_error: Boolean = false;
-     show_warning: Boolean = false;
+     private id_progress_bar: string = Math.random().toString(36).substr(2, 9);
+     
+     private messages_error: any[] = [];
+     private show_error: boolean = false;
+     private messages_warning: any[] = [];
+     private show_warning: boolean = false;
 
      constructor(
          private _importerService: ImporterService,
-         public file: File,
-         ) { 
-         this.name = file.name,
-         this.size = file.size
-     }
+         private file: File,
+         private name: string = file.name,
+         private size: number = file.size,
+         private uuid: string = '',
+         private state: ImportState = ImportState.ready
+         ) {}
 
      upload_and_verificate() {
          // TODO in queue
          this.state = ImportState.uploading;
-         this._importerService.uploadFile(this.file, this.id_progress_bar)
+         this._importerService.uploadFile(this.file, this.name ,this.id_progress_bar)
          .takeUntil(this.ngUnsubscribe)
          .subscribe(event => {
              this.state = ImportState.verifying;
@@ -44,6 +38,7 @@ import { ImporterService } from './importer.service';
 
              this._importerService.verifyFile(this.uuid)
              .subscribe(event => {
+                 this.file = null;
                  this.state = ImportState.verification_successful;
              }, (error: any) => {
 
@@ -53,7 +48,7 @@ import { ImporterService } from './importer.service';
 
          }, (error: any) => {
              this.state = ImportState.upload_failed;
-                 this.messages_error.push({ timestamp: new Date(), text: error });
+             this.messages_error.push({ timestamp: new Date(), text: error });
          });
      }
 
@@ -90,8 +85,7 @@ import { ImporterService } from './importer.service';
      delete() {
          this.ngUnsubscribe.complete();
          this._importerService.deleteFile(this.uuid)
-         .subscribe(event => {
-             console.log(event);
+         .subscribe(event => { 
          }, (error: any) => {
                  this.messages_error.push({ timestamp: new Date(), text: error });
          });
@@ -102,6 +96,10 @@ import { ImporterService } from './importer.service';
          this.ngUnsubscribe.complete();
      }
 
+
+     getUUID(): string {
+         return this.uuid;
+     }
 
 
      hasState(...states: ImportState[]): boolean {

@@ -36,17 +36,38 @@ export class ImporterComponent {
     constructor(private _importerService: ImporterService) {
         this._importerService.getImportScripts()
             .subscribe(event => {
-                let json = JSON.parse(event._body);
-                for (let key of Object.keys(json)) {
-                    let desc = json[key]["DESC"] + ' V' + json[key]["VERSION"];
-                    this.list_processes.push({ id: key, description: desc });
+                if (event._body) {
+                    let json = JSON.parse(event._body);
+                    for (let key of Object.keys(json)) {
+                        let desc = json[key]["DESC"] + ' V' + json[key]["VERSION"];
+                        this.list_processes.push({ id: key, description: desc });
+                    }
+                    this.process_selected = this.list_processes[0].id;
                 }
-                this.process_selected = this.list_processes[0].id;
+            }, (error: any) => {
+                console.log(error);
+            });
+
+        this._importerService.getUploadedFiles()
+            .subscribe(event => {
+                if (event._body) {
+                    let json = JSON.parse(event._body);
+                    for (let uuid of Object.keys(json)) {
+                        this.list_files_upload.push( 
+                            new ListEntry(
+                                this._importerService, 
+                                null, 
+                                json[uuid]['name'], 
+                                json[uuid]['size'], 
+                                uuid, 
+                                ImportState[json[uuid]['lastState'] as keyof typeof ImportState]));
+                    }
+                }
             }, (error: any) => {
                 console.log(error);
             });
     }
-
+    
     /**
      * Checks if the user has the given permission.
      * @returns the permission that will be checked
@@ -70,7 +91,8 @@ export class ImporterComponent {
      * @param index (File index)
      */
     deleteFile(index: number) {
-        if(this.list_files_upload[index].uuid !== "") {
+        if(this.list_files_upload[index].getUUID() !== "") {
+            // TODO stop if error appears
             this.list_files_upload[index].delete();
         }
         this.list_files_upload.splice(index, 1);

@@ -47,28 +47,32 @@ export class ImporterService {
 
 
     // TODO may produce problems in future because of ProgressHttp
-    uploadFile(file: File, id: string): Observable<any> {
-        return this.http.withUploadProgressListener(upload => {
-            $('#' + id).progress('set progress', upload.percentage);
-        })
-            .post(this._url.parse('uploadFile'), file)
+    uploadFile(file: File, file_name: string, id_progress: string): Observable<any> {
+        return this.http.withUploadProgressListener(
+            upload => { $('#' + id_progress).progress('set progress', upload.percentage); })
+            .post(this._url.parse('uploadFile', { name: file_name }), file)
             .catch(err => { 
-                $('#' + id).progress('reset');
-                    return this._http.handleError(err); });
+                $('#' + id_progress).progress('reset');
+                return this._http.handleError(err); });
     }
 
     verifyFile(uuid: string): Observable<any> {
         return this._http.post(this._url.parse('verifyFile', { uuid: uuid }), "")
-        .catch(err => { return this._http.handleError(err); });
+            .catch(err => { return this._http.handleError(err); });
     }
 
     deleteFile(uuid: string): Observable<any> {
         return this._http.delete(this._url.parse('deleteFile', { uuid: uuid }))
-        .catch(err => { return this._http.handleError(err); });
+            .catch(err => { return this._http.handleError(err); });
     }
 
     getImportScripts(): Observable<any> {
         return this._http.get(this._url.parse('getScripts'))
-        .catch(err => { return this._http.handleError(err); });
+            .catch(err => { return this._http.handleError(err); });
+    }
+
+    getUploadedFiles(): Observable<any> {
+        return this._http.get(this._url.parse('getFiles'))
+            .catch(err => { return this._http.handleError(err); });
     }
 }
