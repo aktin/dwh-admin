@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-#@ID=1616
 #@VERSION=1.0
 #@DESC=TEST TEST
 
