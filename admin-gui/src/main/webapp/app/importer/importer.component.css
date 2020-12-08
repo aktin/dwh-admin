@@ -31,15 +31,13 @@ input {
     margin-right: 1.5rem;
 }
 
-.element-item {
-    margin-bottom: 1em;
-}
-
 .element-warning {
     background-color: rgba(255, 255, 0, 0.2);
+    margin-bottom: 1em;
 }
 
 .element-error {
     background-color: rgba(255, 0, 0, 0.2);
+    margin-bottom: 1em;
 }
 
