@@ -61,13 +61,14 @@ export class UrlService {
         // versions endpoint
         version: 'info/version',
 
-        // file import (p21) endpoint
-        uploadFile: 'file/upload/@script@/@name@',
-        verifyFile: 'file/verify/@uuid@',
-        importFile: 'file/import/@uuid@',
-        deleteFile: 'file/delete/@uuid@',
-        getScripts: 'file/import/scripts',
-        getFiles:   'file/upload/files',
+        // file import (p21) endpoints
+        getFiles:   'file/get',
+        uploadFile: 'file/upload',
+        deleteFile: 'file/@uuid@/delete',
+
+        getScripts: 'script/get',
+        verifyFile: 'script/@uuid@/verify',
+        importFile: 'script/@uuid@/import',
     };
 
     setServerUrl (serverUrl: string) {

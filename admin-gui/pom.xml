@@ -82,14 +82,6 @@
 
 
 
-		<dependency>
-			<groupId>org.apache.tika</groupId>
-			<artifactId>tika-core</artifactId>
-			<version>1.25</version>
-		</dependency>
-
-
-
 		<!-- test with jetty -->
 		<!-- test dependencies to run a server for testing -->
 		<dependency>
