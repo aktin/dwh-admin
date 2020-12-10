@@ -43,12 +43,13 @@ public class FileImportEndpoint {
      * moves uploaded file from /tmp to new folder
      *
      * @param file: uploaded file to save
-     * @param name: name of uploaded to file (to avoid using formParam)
+     * @param name: name of uploaded file (to upload filename and avoid using formParam)
+     * @param script: name (id) of script to run verification/import with
      * @return Response with status 201 and uuid of uploaded file
      */
-    @Path("upload/{name}")
+    @Path("upload/{script}/{name}")
     @POST
-    public Response uploadFile(@PathParam("name") String name, File file) {
+    public Response uploadFile(@PathParam("script") String script, @PathParam("name") String name, File file) {
         try {
             String uuid = UUID.randomUUID().toString();
 
@@ -66,6 +67,7 @@ public class FileImportEndpoint {
             properties.setProperty("ID", uuid);
             properties.setProperty("NAME", name);
             properties.setProperty("PATH", newFile.toString());
+            properties.setProperty("SCRIPT", script);
             properties.setProperty("TYPE", tika.detect(newFile));
 
             File file_properties = new File(newPath + "/properties");
@@ -95,6 +97,9 @@ public class FileImportEndpoint {
         try {
             String path = prefs.get(PreferenceKey.importDataPath) + "/" + uuid + "/properties";
 
+            //get script from properties
+            //run magic
+
             Properties properties = new Properties();
             try (FileInputStream input = new FileInputStream(path)) {
                 properties.load(input);
@@ -105,6 +110,43 @@ public class FileImportEndpoint {
             }
 
             LOGGER.log(Level.INFO, "Verified file at " + path);
+            return Response.status(Response.Status.OK).build();
+        } catch (FileNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "File could not be found", e);
+            return Response.status(Response.Status.CONFLICT).entity(e.toString()).build();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
+        }
+    }
+
+    /**
+     * POST request to import uploaded file using an extern script
+     *
+     * TODO
+     *
+     * @param uuid: uuid of file to verify
+     * @return Response with status 200
+     */
+    @Path("import/{uuid}")
+    @POST
+    public Response importFile(@PathParam("uuid") String uuid) {
+        try {
+            String path = prefs.get(PreferenceKey.importDataPath) + "/" + uuid + "/properties";
+
+            //get script from properties
+            //run magic
+
+            Properties properties = new Properties();
+            try (FileInputStream input = new FileInputStream(path)) {
+                properties.load(input);
+            }
+            try (FileOutputStream output = new FileOutputStream(path)) {
+                properties.setProperty(String.valueOf(ImportState.IMPORTED), String.valueOf(System.currentTimeMillis()));
+                properties.store(output, "");
+            }
+
+            LOGGER.log(Level.INFO, "Imported file at " + path);
             return Response.status(Response.Status.OK).build();
         } catch (FileNotFoundException e) {
             LOGGER.log(Level.SEVERE, "File could not be found", e);
@@ -246,16 +288,20 @@ public class FileImportEndpoint {
                                 if( properties.containsKey("ID") &&
                                     properties.containsKey("NAME") &&
                                     properties.containsKey("SIZE") &&
-                                    ( properties.containsKey("IMPORTED") || properties.containsKey("VERIFIED") )) {
+                                    properties.containsKey("SCRIPT") &&
+                                    ( properties.containsKey("IMPORTED") || properties.containsKey("VERIFIED") || properties.containsKey("UPLOADED") )) {
 
                                     ObjectNode uploaded_file = mapper.createObjectNode();
                                     Set<String> properties_keys = properties.stringPropertyNames();
                                     uploaded_file.put("name", properties.getProperty("NAME"));
                                     uploaded_file.put("size", properties.getProperty("SIZE"));
+                                    uploaded_file.put("script", properties.getProperty("SCRIPT"));
                                     if (properties_keys.contains("IMPORTED"))
                                         uploaded_file.put("lastState", "import_successful");
                                     else if (properties_keys.contains("VERIFIED"))
                                         uploaded_file.put("lastState", "verification_successful");
+                                    else if (properties_keys.contains("UPLOADED"))
+                                        uploaded_file.put("lastState", "upload_successful");
                                     uploaded_files.set(properties.getProperty("ID"), uploaded_file);
                                 }
                             } catch (FileNotFoundException e) {
