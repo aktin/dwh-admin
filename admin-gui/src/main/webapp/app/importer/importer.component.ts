@@ -3,6 +3,7 @@ import { ImporterService } from './importer.service';
 import { ListEntry } from './ListEntry';
 import { ImportState } from './ImportState';
 import {Subject} from 'rxjs/Subject';
+
 import 'rxjs/add/operator/takeUntil';
 import 'rxjs/observable/of'
 import 'rxjs/operator/delay';
@@ -15,13 +16,14 @@ require('semantic-ui');
     styleUrls: ['./importer.component.css'],
 })
 
+
 // TODO: comments
 export class ImporterComponent {
 
     @ViewChild('FileInput') fileInput: any;
 
-    process_selected = 1;
-    list_processes: any[] = [];
+    process_selected: string;
+    list_processes: Map<string, string> = new Map<string, string>();
     list_files_upload: ListEntry[] = [];
     response: string;
 
@@ -39,10 +41,9 @@ export class ImporterComponent {
                 if (event._body) {
                     let json = JSON.parse(event._body);
                     for (let key of Object.keys(json)) {
-                        let desc = json[key]["DESC"] + ' V' + json[key]["VERSION"];
-                        this.list_processes.push({ id: key, description: desc });
+                        this.list_processes.set(key, json[key]["VIEWNAME"] + ' V' + json[key]["VERSION"]);
                     }
-                    this.process_selected = this.list_processes[0].id;
+                    this.process_selected = Array.from(this.list_processes)[0][0];
                 }
             }, (error: any) => {
                 console.log(error);
@@ -53,21 +54,21 @@ export class ImporterComponent {
                 if (event._body) {
                     let json = JSON.parse(event._body);
                     for (let uuid of Object.keys(json)) {
-                        this.list_files_upload.push( 
+                        this.list_files_upload.push(
                             new ListEntry(
-                                this._importerService, 
-                                null, 
-                                json[uuid]['name'], 
-                                json[uuid]['size'], 
-                                uuid, 
-                                ImportState[json[uuid]['lastState'] as keyof typeof ImportState]));
+                                this._importerService,
+                                null,
+                                json[uuid]['script'],
+                                json[uuid]['filename'],
+                                json[uuid]['size'],
+                                uuid,
+                                ImportState[json[uuid]['state'] as keyof typeof ImportState]));
                     }
                 }
             }, (error: any) => {
                 console.log(error);
             });
     }
-    
     /**
      * Checks if the user has the given permission.
      * @returns the permission that will be checked
@@ -81,7 +82,7 @@ export class ImporterComponent {
      */
     onFileBrowse(files: any[]) {
         for (let file of files) {
-            this.list_files_upload.push(new ListEntry(this._importerService, file));
+            this.list_files_upload.push(new ListEntry(this._importerService, file, this.process_selected));
         }
         $('#FileInput').val('');
     }
@@ -97,7 +98,6 @@ export class ImporterComponent {
         }
         this.list_files_upload.splice(index, 1);
     }
-
 
 
     /**
@@ -128,4 +128,5 @@ export class ImporterComponent {
         }
     }
 }
+
 

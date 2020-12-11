@@ -12,18 +12,18 @@
                         <div class="dropdown-processing">
                             <label>Art der Datenverarbeitung</label>
                             <select class="ui fluid dropdown" name="process_selected" [(ngModel)]="process_selected">
-                                <option *ngFor="let process of list_processes" [value]="process.id" [selected]="process_selected==process.id">
-                                    {{ process.description }}
+                                <option *ngFor="let process of list_processes.entries()" [value]="process[0]" [selected]="process_selected==process[0]">
+                                    {{ process[1] }}
                                 </option>
                             </select>
                         </div>
                     </div>
                     <div class="right floated column" style="border: 2px dashed;">
                         <input type="file" id="FileInput" (change)="onFileBrowse($event.target.files)" />
-                        <div class="ui positive labeled icon button">
-                            <i class="upload icon white"></i>
-                            Durchsuchen...
-                        </div>
+                        <button class="ui positive labeled icon button">
+                        <i class="upload icon white"></i>
+                        Durchsuchen...
+                        </button>
                     </div>
                 </div>
                 
@@ -81,19 +81,19 @@
             </td>
             <td>
                 <div class="ui icon buttons file-buttons">
-                    <button class="ui button" (click)="file.upload_and_verificate()" *ngIf="file.hasNotState(ImportState.verification_successful,ImportState.importing,ImportState.import_cancelled,ImportState.import_failed,ImportState.import_successful)" [disabled]="file.hasState(ImportState.in_queue,ImportState.uploading,ImportState.verificating)">
+                    <button class="ui button" (click)="file.upload_and_verificate()" *ngIf="file.hasNotState(ImportState.verification_successful,ImportState.importing,ImportState.import_cancelled,ImportState.import_failed,ImportState.import_successful)" [disabled]="file.hasState(ImportState.uploading,ImportState.verificating)">
                     <i class="cloud upload icon green large"></i>
                     </button>
                     <button class="ui right labeled icon button" (click)="file.import()" *ngIf="file.hasState(ImportState.verification_successful,ImportState.importing,ImportState.import_cancelled,ImportState.import_failed,ImportState.import_successful)" [disabled]="file.hasState(ImportState.importing,ImportState.import_successful)">
                     <i class="arrow circle up icon green large"></i>
                     <p class="import-button-label">
-                        {{ process_selected }}
+                        {{ list_processes.get(file.selected_script) }}
                     </p>
                     </button>
-                    <button class="ui button" (click)="file.cancel()" *ngIf="file.hasState(ImportState.in_queue,ImportState.uploading,ImportState.verificating,ImportState.importing)" [disabled]="file.hasState(ImportState.verificating)">
+                    <button class="ui button" (click)="file.cancel()" *ngIf="file.hasState(ImportState.uploading,ImportState.verificating,ImportState.importing)">
                     <i class="ban icon red large"></i>
                     </button>
-                    <button class="ui button" (click)="deleteFile(i)" *ngIf="file.hasNotState(ImportState.in_queue,ImportState.uploading,ImportState.verificating,ImportState.importing)" [disabled]="file.hasState(ImportState.import_successful)">
+                    <button class="ui button" (click)="deleteFile(i)" *ngIf="file.hasNotState(ImportState.uploading,ImportState.verificating,ImportState.importing)" [disabled]="file.hasState(ImportState.import_successful)">
                     <i class="trash icon red large"></i>
                     </button>
                 </div>

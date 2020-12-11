@@ -1,11 +1,11 @@
 export enum ImportState {
     ready = 'Bereit',
-    in_queue = 'In Warteschlange',
     uploading = 'Wird hochgeladen',
     upload_cancelled = 'Hochladen abgebrochen',
     upload_failed = 'Hochladen fehlgeschlagen',
     upload_successful = 'Hochladen abgeschlossen',
     verifying = 'Wird geprüft',
+    verification_cancelled = 'Prüfung abgebrochen',
     verification_failed = 'Prüfung fehlgeschlagen',
     verification_successful = 'Prüfung abgeschlossen',
     importing = 'Wird importiert',
