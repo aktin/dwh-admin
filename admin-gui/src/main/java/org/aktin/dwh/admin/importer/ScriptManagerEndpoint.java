@@ -17,7 +17,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -51,52 +50,48 @@ public class ScriptManagerEndpoint {
      * if no files exist, empty json is returned
      * if directory {importScriptPath} does not exists (noSuchFileException), empty json is returned
      * TODO make POJOs
+     *
      * @return Response object with list of meta-data as json
      */
     @Path("get")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getImportScripts() {
-        try {
-            String path = prefs.get(PreferenceKey.importScriptPath);
-            ObjectMapper mapper = new ObjectMapper();
-            ObjectNode scripts = mapper.createObjectNode();
+        String path = prefs.get(PreferenceKey.importScriptPath);
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode scripts = mapper.createObjectNode();
+        try (Stream<java.nio.file.Path> walk = Files.walk(Paths.get(path))) {
+            walk.filter(Files::isRegularFile)
+                    .map(java.nio.file.Path::toFile)
+                    .forEach(file -> {
+                        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                            ObjectNode script = mapper.createObjectNode();
+                            List<String> list = new LinkedList<>();
+                            list.addAll(LIST_KEYS);
 
-            try (Stream<java.nio.file.Path> walk = Files.walk(Paths.get(path))) {
-                walk.filter(Files::isRegularFile)
-                        .map(java.nio.file.Path::toFile)
-                        .forEach(file -> {
-                            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                                ObjectNode script = mapper.createObjectNode();
-                                List<String>list = new LinkedList<>();
-                                list.addAll(LIST_KEYS);
+                            String line, key, value;
+                            br.readLine();
 
-                                String line, key, value;
-                                br.readLine();
-
-                                for (int i = 0; i < 6; i++) {
-                                    line = br.readLine();
-                                    if(line.startsWith("#") && line.contains("@") && line.contains("=")) {
-                                        key = line.substring(line.indexOf('@') + 1, line.indexOf('='));
-                                        value = line.substring(line.indexOf('=') + 1);
-                                        if (list.contains(key)) {
-                                            list.remove(key);
-                                            script.put(key, value);
-                                        }
-                                    } else {
-                                        break;
+                            for (int i = 0; i < 6; i++) {
+                                line = br.readLine();
+                                if (line.startsWith("#") && line.contains("@") && line.contains("=")) {
+                                    key = line.substring(line.indexOf('@') + 1, line.indexOf('='));
+                                    value = line.substring(line.indexOf('=') + 1);
+                                    if (list.contains(key)) {
+                                        list.remove(key);
+                                        script.put(key, value);
                                     }
-                                }
-                                if (list.isEmpty())
-                                    scripts.set(file.getName(), script);
-
-                            } catch (FileNotFoundException e) {
-                                LOGGER.log(Level.SEVERE, "File could not be found", e);
-                            } catch (IOException e) {
-                                LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+                                } else
+                                    break;
                             }
-                        });
-            }
+                            if (list.isEmpty())
+                                scripts.set(file.getName(), script);
+                        } catch (FileNotFoundException e) {
+                            LOGGER.log(Level.SEVERE, "File could not be found", e);
+                        } catch (IOException e) {
+                            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+                        }
+                    });
 
             return Response.status(Response.Status.OK).entity(scripts).build();
         } catch (java.nio.file.NoSuchFileException e) {
@@ -110,7 +105,7 @@ public class ScriptManagerEndpoint {
 
     /**
      * POST request to verify uploaded file using an extern script
-     *
+     * <p>
      * TODO
      *
      * @param uuid: uuid of file to verify
@@ -119,8 +114,10 @@ public class ScriptManagerEndpoint {
     @Path("{uuid}/verify")
     @POST
     public Response verifyFile(@PathParam("uuid") String uuid) {
+        String path = prefs.get(PreferenceKey.importDataPath) + "/" + uuid + "/properties";
         try {
-            String path = prefs.get(PreferenceKey.importDataPath) + "/" + uuid + "/properties";
+            ImportHelper.changeStateProperty(path, ImportState.verifying, LOGGER);
+
 
             //get script from properties
             //run magic
@@ -129,13 +126,14 @@ public class ScriptManagerEndpoint {
             return Response.status(Response.Status.ACCEPTED).build();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+            ImportHelper.changeStateProperty(path, ImportState.verification_failed, LOGGER);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
         }
     }
 
     /**
      * POST request to import uploaded file using an extern script
-     *
+     * <p>
      * TODO
      *
      * @param uuid: uuid of file to verify
@@ -144,8 +142,10 @@ public class ScriptManagerEndpoint {
     @Path("{uuid}/import")
     @POST
     public Response importFile(@PathParam("uuid") String uuid) {
+        String path = prefs.get(PreferenceKey.importDataPath) + "/" + uuid + "/properties";
         try {
-            String path = prefs.get(PreferenceKey.importDataPath) + "/" + uuid + "/properties";
+            ImportHelper.changeStateProperty(path, ImportState.importing, LOGGER);
+
 
             //get script from properties
             //run magic
@@ -154,10 +154,13 @@ public class ScriptManagerEndpoint {
             return Response.status(Response.Status.ACCEPTED).build();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+            ImportHelper.changeStateProperty(path, ImportState.import_failed, LOGGER);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
         }
     }
+
 }
+
 
 /*
     @Path("{uuid}/status")
@@ -172,10 +175,9 @@ public class ScriptManagerEndpoint {
             }
             try (FileOutputStream output = new FileOutputStream(path)) {
                 properties.setProperty(String.valueOf(ImportState.verified), String.valueOf(System.currentTimeMillis()));
+                properties.setProperty("state", String.valueOf(ImportState.upload_successful));
                 properties.store(output, "");
             }
-
-
 
 
 
@@ -195,7 +197,23 @@ public class ScriptManagerEndpoint {
             }
             try (FileOutputStream output = new FileOutputStream(path)) {
                 properties.setProperty(String.valueOf(ImportState.imported), String.valueOf(System.currentTimeMillis()));
+                properties.setProperty("state", String.valueOf(ImportState.upload_successful));
                 properties.store(output, "");
             }
 
 */
+
+
+
+
+    /*
+    MOVE TO VERIFICATION
+                RandomAccessFile raf = new RandomAccessFile(file, "r");
+            int fileSignature = raf.readInt();
+            if (! (fileSignature == 0x504B0304 || fileSignature == 0x504B0506 || fileSignature == 0x504B0708))
+                throw new ZipException();
+                 } catch (ZipException e) {
+            LOGGER.log(Level.SEVERE, "MEDIA_TYPE is not ZIP", e);
+            return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).entity(e.toString()).build();
+
+     */
