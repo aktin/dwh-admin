@@ -75,18 +75,18 @@ public class FileManagerEndpoint {
                                 uploaded_files.set(properties.getProperty("id"), uploaded_file);
                             }
                         } catch (FileNotFoundException e) {
-                            LOGGER.log(Level.SEVERE, "File could not be found", e);
+                            LOGGER.log(Level.SEVERE, "getUploadFiles(): File could not be found", e);
                         } catch (IOException e) {
-                            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+                            LOGGER.log(Level.SEVERE, "getUploadFiles(): An Exception was thrown", e);
                         }
                     });
 
             return Response.status(Response.Status.OK).entity(uploaded_files).build();
         } catch (java.nio.file.NoSuchFileException e) {
-            LOGGER.log(Level.SEVERE, "Directory does not exist", e);
+            LOGGER.log(Level.SEVERE, "getUploadFiles(): Directory does not exist", e);
             return Response.status(Response.Status.OK).entity("[]").build();
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+            LOGGER.log(Level.SEVERE, "getUploadFiles(): An Exception was thrown", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
         }
     }
@@ -107,10 +107,10 @@ public class FileManagerEndpoint {
     @POST
     public Response uploadFile(@QueryParam("script") String script, @QueryParam("filename") String filename, File file) {
         try {
-            String uuid = UUID.randomUUID().toString();
+            if (script == null || filename == null || file == null)
+                throw new Exception();
 
-            Properties properties = new Properties();
-            properties.setProperty("size", String.valueOf(file.length()));
+            String uuid = UUID.randomUUID().toString();
 
             String newPath = prefs.get(PreferenceKey.importDataPath) + "/" + uuid;
             Files.createDirectories(Paths.get(newPath));
@@ -119,13 +119,14 @@ public class FileManagerEndpoint {
             java.nio.file.Path newFile = Paths.get(newPath, filename);
             Files.move(oldFile, newFile);
 
-            properties.setProperty("uploaded", String.valueOf(System.currentTimeMillis()));
-            properties.setProperty("state", String.valueOf(ImportState.upload_successful));
+            Properties properties = new Properties();
             properties.setProperty("id", uuid);
             properties.setProperty("path", newFile.toString());
             properties.setProperty("filename", filename);
+            properties.setProperty("size", String.valueOf(Files.size(newFile)));
             properties.setProperty("script", script);
-
+            properties.setProperty("uploaded", String.valueOf(System.currentTimeMillis()));
+            properties.setProperty("state", String.valueOf(ImportState.upload_successful));
             File file_properties = new File(newPath + "/properties");
             try (FileOutputStream fileOut = new FileOutputStream(file_properties)) {
                 properties.store(fileOut, "");
@@ -134,7 +135,7 @@ public class FileManagerEndpoint {
             LOGGER.log(Level.INFO, "Uploaded file to {0}", newFile.toString());
             return Response.status(Response.Status.CREATED).entity(uuid).build();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+            LOGGER.log(Level.SEVERE, "uploadFile(): An Exception was thrown", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
         }
     }
@@ -158,7 +159,7 @@ public class FileManagerEndpoint {
             LOGGER.log(Level.INFO, "Deleted file at {0}", path);
             return Response.status(Response.Status.OK).build();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+            LOGGER.log(Level.SEVERE, "deleteFile(): An Exception was thrown", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
         }
     }

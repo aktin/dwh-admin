@@ -81,7 +81,7 @@
             </td>
             <td>
                 <div class="ui icon buttons file-buttons">
-                    <button class="ui button" (click)="file.upload_and_verificate()" *ngIf="file.hasNotState(ImportState.verification_successful,ImportState.importing,ImportState.import_cancelled,ImportState.import_failed,ImportState.import_successful)" [disabled]="file.hasState(ImportState.uploading,ImportState.verificating)">
+                    <button class="ui button" (click)="file.upload_and_verificate()" *ngIf="file.hasNotState(ImportState.verification_successful,ImportState.importing,ImportState.import_cancelled,ImportState.import_failed,ImportState.import_successful)" [disabled]="file.hasState(ImportState.uploading,ImportState.verifying)">
                     <i class="cloud upload icon green large"></i>
                     </button>
                     <button class="ui right labeled icon button" (click)="file.import()" *ngIf="file.hasState(ImportState.verification_successful,ImportState.importing,ImportState.import_cancelled,ImportState.import_failed,ImportState.import_successful)" [disabled]="file.hasState(ImportState.importing,ImportState.import_successful)">
@@ -90,10 +90,10 @@
                         {{ list_processes.get(file.selected_script) }}
                     </p>
                     </button>
-                    <button class="ui button" (click)="file.cancel()" *ngIf="file.hasState(ImportState.uploading,ImportState.verificating,ImportState.importing)">
+                    <button class="ui button" (click)="file.cancel()" *ngIf="file.hasState(ImportState.uploading,ImportState.verifying,ImportState.importing)">
                     <i class="ban icon red large"></i>
                     </button>
-                    <button class="ui button" (click)="deleteFile(i)" *ngIf="file.hasNotState(ImportState.uploading,ImportState.verificating,ImportState.importing)" [disabled]="file.hasState(ImportState.import_successful)">
+                    <button class="ui button" (click)="deleteFile(i)" *ngIf="file.hasNotState(ImportState.uploading,ImportState.verifying,ImportState.importing)" [disabled]="file.hasState(ImportState.import_successful)">
                     <i class="trash icon red large"></i>
                     </button>
                 </div>

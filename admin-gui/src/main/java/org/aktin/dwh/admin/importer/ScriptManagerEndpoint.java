@@ -87,18 +87,18 @@ public class ScriptManagerEndpoint {
                             if (list.isEmpty())
                                 scripts.set(file.getName(), script);
                         } catch (FileNotFoundException e) {
-                            LOGGER.log(Level.SEVERE, "File could not be found", e);
+                            LOGGER.log(Level.SEVERE, "getImportScripts(): File could not be found", e);
                         } catch (IOException e) {
-                            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+                            LOGGER.log(Level.SEVERE, "getImportScripts(): An Exception was thrown", e);
                         }
                     });
 
             return Response.status(Response.Status.OK).entity(scripts).build();
         } catch (java.nio.file.NoSuchFileException e) {
-            LOGGER.log(Level.SEVERE, "Directory does not exist", e);
+            LOGGER.log(Level.SEVERE, "getImportScripts(): Directory does not exist", e);
             return Response.status(Response.Status.OK).entity("[]").build();
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+            LOGGER.log(Level.SEVERE, "getImportScripts(): An Exception was thrown", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
     }
@@ -125,7 +125,7 @@ public class ScriptManagerEndpoint {
             LOGGER.log(Level.INFO, "Started file verification at {0}", path);
             return Response.status(Response.Status.ACCEPTED).build();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+            LOGGER.log(Level.SEVERE, "verifyFile(): An Exception was thrown", e);
             ImportHelper.changeStateProperty(path, ImportState.verification_failed, LOGGER);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
         }
@@ -153,7 +153,7 @@ public class ScriptManagerEndpoint {
             LOGGER.log(Level.INFO, "Started file import at {0}", path);
             return Response.status(Response.Status.ACCEPTED).build();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+            LOGGER.log(Level.SEVERE, "importFile(): An Exception was thrown", e);
             ImportHelper.changeStateProperty(path, ImportState.import_failed, LOGGER);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
         }

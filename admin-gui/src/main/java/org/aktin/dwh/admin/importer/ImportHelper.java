@@ -19,9 +19,9 @@ public class ImportHelper {
                 properties.store(output, "");
             }
         } catch (FileNotFoundException e) {
-            logger.log(Level.SEVERE, "File for changeStateProperty() could not be found", e);
+            logger.log(Level.SEVERE, "changeStateProperty(): File for  could not be found", e);
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "An Exception was thrown", e);
+            logger.log(Level.SEVERE, "changeStateProperty(): An Exception was thrown", e);
         }
     }
 }
