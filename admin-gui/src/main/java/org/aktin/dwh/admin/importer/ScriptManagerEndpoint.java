@@ -6,6 +6,8 @@ import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
 
 import javax.inject.Inject;
+import javax.validation.ValidationException;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -17,6 +19,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -30,10 +33,13 @@ import java.util.stream.Stream;
 public class ScriptManagerEndpoint {
 
     private static final Logger LOGGER = Logger.getLogger(ScriptManagerEndpoint.class.getName());
-    private static final List<String> LIST_KEYS = new LinkedList<String>(Arrays.asList("VIEWNAME", "VERSION"));
+    private final String[] LIST_KEYS = new String[]{"VIEWNAME", "VERSION"};
 
     @Inject
     private Preferences prefs;
+
+    @Inject
+    private ImportStateManager importStateManager;
 
     @Context
     private SecurityContext security;
@@ -45,7 +51,7 @@ public class ScriptManagerEndpoint {
      * Example: #@DESC=TEST TEST -> { "DESC":"TEST TEST" }
      * identifier of DESC and VERSION is the name of the script i.e. "script.py"
      * writes values in a json in format { NAME_OF_SCRIPT : { DESC, VERSION } } and returns it
-     *
+     * <p>
      * both keys are mandatory, if one key is missing, whole element is skipped
      * if no files exist, empty json is returned
      * if directory {importScriptPath} does not exists (noSuchFileException), empty json is returned
@@ -57,48 +63,43 @@ public class ScriptManagerEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getImportScripts() {
-        String path = prefs.get(PreferenceKey.importScriptPath);
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode scripts = mapper.createObjectNode();
+
+        String path = prefs.get(PreferenceKey.importScriptPath);
         try (Stream<java.nio.file.Path> walk = Files.walk(Paths.get(path))) {
             walk.filter(Files::isRegularFile)
                     .map(java.nio.file.Path::toFile)
                     .forEach(file -> {
+                        String line, key;
+                        ObjectNode script = mapper.createObjectNode();
+                        List<String> list = new LinkedList<>(Arrays.asList(LIST_KEYS));
                         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                            ObjectNode script = mapper.createObjectNode();
-                            List<String> list = new LinkedList<>();
-                            list.addAll(LIST_KEYS);
-
-                            String line, key, value;
-                            br.readLine();
-
-                            for (int i = 0; i < 6; i++) {
+                            for (int i = 0; i < 15; i++) {
                                 line = br.readLine();
-                                if (line.startsWith("#") && line.contains("@") && line.contains("=")) {
+                                if (line != null && line.startsWith("#") && line.contains("@") && line.contains("=")) {
                                     key = line.substring(line.indexOf('@') + 1, line.indexOf('='));
-                                    value = line.substring(line.indexOf('=') + 1);
-                                    if (list.contains(key)) {
+                                    if (key != null && list.contains(key)) {
+                                        script.put(key, line.substring(line.indexOf('=') + 1));
                                         list.remove(key);
-                                        script.put(key, value);
                                     }
-                                } else
-                                    break;
+                                }
                             }
                             if (list.isEmpty())
                                 scripts.set(file.getName(), script);
                         } catch (FileNotFoundException e) {
-                            LOGGER.log(Level.SEVERE, "getImportScripts(): File could not be found", e);
+                            LOGGER.log(Level.SEVERE, "File could not be found", e);
                         } catch (IOException e) {
-                            LOGGER.log(Level.SEVERE, "getImportScripts(): An Exception was thrown", e);
+                            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
                         }
                     });
 
             return Response.status(Response.Status.OK).entity(scripts).build();
         } catch (java.nio.file.NoSuchFileException e) {
-            LOGGER.log(Level.SEVERE, "getImportScripts(): Directory does not exist", e);
+            LOGGER.log(Level.SEVERE, "Directory does not exist", e);
             return Response.status(Response.Status.OK).entity("[]").build();
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "getImportScripts(): An Exception was thrown", e);
+            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
         }
     }
@@ -113,20 +114,24 @@ public class ScriptManagerEndpoint {
      */
     @Path("{uuid}/verify")
     @POST
-    public Response verifyFile(@PathParam("uuid") String uuid) {
-        String path = prefs.get(PreferenceKey.importDataPath) + "/" + uuid + "/properties";
+    public Response queueFileVerification(@NotNull @PathParam("uuid") String uuid) {
+        String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
         try {
-            ImportHelper.changeStateProperty(path, ImportState.verifying, LOGGER);
 
+            // get file_path from properties
+            // get script from properties
+            // method "verify"
+            // run magic
 
-            //get script from properties
-            //run magic
-
-            LOGGER.log(Level.INFO, "Started file verification at {0}", path);
+            importStateManager.changeStateProperty(uuid, ImportState.verification_queued);
+            LOGGER.log(Level.INFO, "Queued file verification at {0}", path);
             return Response.status(Response.Status.ACCEPTED).build();
+        } catch (ValidationException e) {
+            LOGGER.log(Level.SEVERE, "PathParam must not be null", e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.toString()).build();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "verifyFile(): An Exception was thrown", e);
-            ImportHelper.changeStateProperty(path, ImportState.verification_failed, LOGGER);
+            importStateManager.changeStateProperty(uuid, ImportState.verification_failed);
+            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
         }
     }
@@ -141,24 +146,31 @@ public class ScriptManagerEndpoint {
      */
     @Path("{uuid}/import")
     @POST
-    public Response importFile(@PathParam("uuid") String uuid) {
-        String path = prefs.get(PreferenceKey.importDataPath) + "/" + uuid + "/properties";
+    public Response queueFileImport(@NotNull @PathParam("uuid") String uuid) {
+        String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
         try {
-            ImportHelper.changeStateProperty(path, ImportState.importing, LOGGER);
 
+            // get file_path from properties
+            // get script from properties
+            // method "import"
+            // run magic
 
-            //get script from properties
-            //run magic
-
-            LOGGER.log(Level.INFO, "Started file import at {0}", path);
+            importStateManager.changeStateProperty(uuid, ImportState.importing_queued);
+            LOGGER.log(Level.INFO, "Queued file import at {0}", path);
             return Response.status(Response.Status.ACCEPTED).build();
+        } catch (ValidationException e) {
+            LOGGER.log(Level.SEVERE, "PathParam must not be null", e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.toString()).build();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "importFile(): An Exception was thrown", e);
-            ImportHelper.changeStateProperty(path, ImportState.import_failed, LOGGER);
+            importStateManager.changeStateProperty(uuid, ImportState.import_failed);
+            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
         }
     }
 
+    // @Path("{uuid}/cancel")
+
+    // @Path("{uuid}/status")
 }
 
 
@@ -206,14 +218,4 @@ public class ScriptManagerEndpoint {
 
 
 
-    /*
-    MOVE TO VERIFICATION
-                RandomAccessFile raf = new RandomAccessFile(file, "r");
-            int fileSignature = raf.readInt();
-            if (! (fileSignature == 0x504B0304 || fileSignature == 0x504B0506 || fileSignature == 0x504B0708))
-                throw new ZipException();
-                 } catch (ZipException e) {
-            LOGGER.log(Level.SEVERE, "MEDIA_TYPE is not ZIP", e);
-            return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).entity(e.toString()).build();
-
-     */
+    
