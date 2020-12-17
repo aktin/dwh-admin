@@ -13,6 +13,7 @@ import java.util.zip.ZipOutputStream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.aktin.dwh.PreferenceKey;
 import org.junit.Assert;
 import org.junit.Test;
 import sun.applet.Main;
@@ -56,7 +57,6 @@ public class ImportEndpointTester {
         Assert.assertEquals(409, r.getStatus());
     }
 
-    @Test
     public void testVerify() throws Exception {
         URL url = Main.class.getResource("/folder1/folder3/script.py");
         File file = new File(url.toURI());
@@ -156,6 +156,53 @@ public class ImportEndpointTester {
         String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(uploaded_files);
         System.out.println(json);
         Assert.assertEquals(true, true);
+    }
+
+    @Test
+    public void testGetScripts() throws IOException {
+
+        String[] LIST_KEYS = new String[]{"VIEWNAME", "VERSION"};
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode scripts = mapper.createObjectNode();
+
+        String path = "C:\\Users\\User\\IdeaProjects\\dwh-admin\\admin-gui\\src\\test\\resources\\folder1\\folder3";
+        try (Stream<java.nio.file.Path> walk = Files.walk(Paths.get(path))) {
+            walk.filter(Files::isRegularFile)
+                    .map(java.nio.file.Path::toFile)
+                    .forEach(file -> {
+                        System.out.println(file.getName());
+
+                        String line, key;
+                        ObjectNode script = mapper.createObjectNode();
+                        List<String> list = new LinkedList<>(Arrays.asList(LIST_KEYS));
+                        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                            for (int i = 0; i < 15; i++) {
+                                line = br.readLine();
+                                if (line != null) {
+                                    if (line.startsWith("#") && line.contains("@") && line.contains("=")) {
+                                        key = line.substring(line.indexOf('@') + 1, line.indexOf('='));
+                                        if (key != null && list.contains(key)) {
+                                            script.put(key, line.substring(line.indexOf('=') + 1));
+                                            list.remove(key);
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (list.isEmpty())
+                                scripts.set(file.getName(), script);
+                        } catch (FileNotFoundException e) {
+                            System.out.println("ERROR");
+                        } catch (IOException e) {
+                            System.out.println("ERROR");
+                        }
+                    });
+            String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(scripts);
+            System.out.println(json);
+        }
+
+
     }
 
     public void printZip(ZipFile zip) throws IOException {
