@@ -19,7 +19,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -33,7 +32,8 @@ import java.util.stream.Stream;
 public class ScriptManagerEndpoint {
 
     private static final Logger LOGGER = Logger.getLogger(ScriptManagerEndpoint.class.getName());
-    private final String[] LIST_KEYS = new String[]{"VIEWNAME", "VERSION"};
+    private final String[] SCRIPT_KEYS = new String[]{ScriptKey.VIEWNAME.name(), ScriptKey.VERSION.name()};
+
 
     @Inject
     private Preferences prefs;
@@ -73,7 +73,7 @@ public class ScriptManagerEndpoint {
                     .forEach(file -> {
                         String line, key;
                         ObjectNode script = mapper.createObjectNode();
-                        List<String> list = new LinkedList<>(Arrays.asList(LIST_KEYS));
+                        List<String> list = new LinkedList<>(Arrays.asList(SCRIPT_KEYS));
                         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                             for (int i = 0; i < 15; i++) {
                                 line = br.readLine();

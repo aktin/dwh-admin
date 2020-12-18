@@ -35,14 +35,14 @@ public class ImportStateManager {
         }
     }
 
-    public void writePropertyToFile(String uuid, String key, String value) {
+    public void writePropertyToFile(String uuid, PropertyKey key, String value) {
         String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
 
         Properties properties = new Properties();
         try (FileInputStream input = new FileInputStream(path)) {
             properties.load(input);
             try (FileOutputStream output = new FileOutputStream(path)) {
-                properties.setProperty(key, value);
+                properties.setProperty(key.name(), value);
                 properties.store(output, "");
             }
         } catch (FileNotFoundException e) {
@@ -59,7 +59,7 @@ public class ImportStateManager {
         try (FileInputStream input = new FileInputStream(path)) {
             properties.load(input);
             try (FileOutputStream output = new FileOutputStream(path)) {
-                properties.setProperty("state", String.valueOf(state));
+                properties.setProperty(PropertyKey.state.name(), state.name());
                 properties.store(output, "");
             }
         } catch (FileNotFoundException e) {
@@ -69,15 +69,15 @@ public class ImportStateManager {
         }
     }
 
-    public boolean checkPropertyFileForKeys(String uuid, String[] list_keys) {
+    public boolean checkPropertyFileForKeys(String uuid, PropertyKey[] list_keys) {
         String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
         boolean result = false;
 
         Properties properties = new Properties();
         try (FileInputStream input = new FileInputStream(path)) {
             properties.load(input);
-            for (String key : list_keys) {
-                if (!properties.containsKey(key)) {
+            for (PropertyKey key : list_keys) {
+                if (!properties.containsKey(key.name())) {
                     return false;
                 }
             }
@@ -92,14 +92,14 @@ public class ImportStateManager {
     }
 
     //TODO RAPHAEL FRAGEN wegen ="";
-    public String getPropertyByKey(String uuid, String key) {
+    public String getPropertyByKey(String uuid, PropertyKey key) {
         String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
         String result = "";
 
         Properties properties = new Properties();
         try (FileInputStream input = new FileInputStream(path)) {
             properties.load(input);
-            result = properties.getProperty(key);
+            result = properties.getProperty(key.name());
         } catch (FileNotFoundException e) {
             LOGGER.log(Level.SEVERE, "File for could not be found", e);
         } catch (IOException e) {

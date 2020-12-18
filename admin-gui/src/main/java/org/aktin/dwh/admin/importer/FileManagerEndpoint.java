@@ -27,7 +27,8 @@ import java.util.stream.Stream;
 public class FileManagerEndpoint {
 
     private static final Logger LOGGER = Logger.getLogger(FileManagerEndpoint.class.getName());
-    private final String[] PROPERTY_KEYS = new String[]{"id", "filename", "size", "script", "state"};
+    private final PropertyKey[] PROPERTY_KEYS = new PropertyKey[]{PropertyKey.id, PropertyKey.filename, PropertyKey.size, PropertyKey.script, PropertyKey.state};
+
 
     @Inject
     private Preferences prefs;
@@ -67,11 +68,15 @@ public class FileManagerEndpoint {
                     .forEach(name_dir -> {
                         if (importStateManager.checkPropertyFileForKeys(name_dir, PROPERTY_KEYS)) {
                             ObjectNode uploaded_file = mapper.createObjectNode();
-                            uploaded_file.put("filename", importStateManager.getPropertyByKey(name_dir, "filename"));
-                            uploaded_file.put("size", importStateManager.getPropertyByKey(name_dir, "size"));
-                            uploaded_file.put("script", importStateManager.getPropertyByKey(name_dir, "script"));
-                            uploaded_file.put("state", importStateManager.getPropertyByKey(name_dir, "state"));
-                            uploaded_files.set(importStateManager.getPropertyByKey(name_dir, "id"), uploaded_file);
+                            uploaded_file.put(PropertyKey.filename.name(),
+                                    importStateManager.getPropertyByKey(name_dir, PropertyKey.filename));
+                            uploaded_file.put(PropertyKey.size.name(),
+                                    importStateManager.getPropertyByKey(name_dir, PropertyKey.size));
+                            uploaded_file.put(PropertyKey.script.name(),
+                                    importStateManager.getPropertyByKey(name_dir, PropertyKey.script));
+                            uploaded_file.put(PropertyKey.state.name(),
+                                    importStateManager.getPropertyByKey(name_dir, PropertyKey.state));
+                            uploaded_files.set(importStateManager.getPropertyByKey(name_dir, PropertyKey.id), uploaded_file);
                         }
                     });
 
@@ -110,13 +115,13 @@ public class FileManagerEndpoint {
             Files.move(oldFile, newFile);
 
             importStateManager.createPropertyFile(uuid);
-            importStateManager.writePropertyToFile(uuid, "id", uuid);
-            importStateManager.writePropertyToFile(uuid, "path", newFile.toString());
-            importStateManager.writePropertyToFile(uuid, "filename", filename);
-            importStateManager.writePropertyToFile(uuid, "size", String.valueOf(Files.size(newFile)));
-            importStateManager.writePropertyToFile(uuid, "script", script);
-            importStateManager.writePropertyToFile(uuid, "uploaded", String.valueOf(System.currentTimeMillis()));
-            importStateManager.writePropertyToFile(uuid, "state", String.valueOf(ImportState.upload_successful));
+            importStateManager.writePropertyToFile(uuid, PropertyKey.id, uuid);
+            importStateManager.writePropertyToFile(uuid, PropertyKey.path, String.valueOf(newFile));
+            importStateManager.writePropertyToFile(uuid, PropertyKey.filename, filename);
+            importStateManager.writePropertyToFile(uuid, PropertyKey.size, String.valueOf(Files.size(newFile)));
+            importStateManager.writePropertyToFile(uuid, PropertyKey.script, script);
+            importStateManager.writePropertyToFile(uuid, PropertyKey.uploaded, String.valueOf(System.currentTimeMillis()));
+            importStateManager.writePropertyToFile(uuid, PropertyKey.state, ImportState.upload_successful.name());
 
             LOGGER.log(Level.INFO, "Uploaded file to {0}", newFile.toString());
             return Response.status(Response.Status.CREATED).entity(uuid).build();
