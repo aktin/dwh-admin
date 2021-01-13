@@ -294,7 +294,7 @@
                         </goals>
                         <phase>generate-resources</phase>
                         <configuration>
-                            <nodeVersion>v6.7.0</nodeVersion>
+                            <nodeVersion>v14.15.0</nodeVersion>
                         </configuration>
                     </execution>
 
