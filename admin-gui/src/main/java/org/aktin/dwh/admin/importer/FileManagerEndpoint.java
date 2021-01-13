@@ -21,14 +21,13 @@ import java.util.stream.Stream;
 /**
  * TODO Comments
  * TODO DO NOT FORGET DWH-API:0.7-SNAPSHOT
+ * TODO Aufräumen?
  */
 
 @Path("file")
 public class FileManagerEndpoint {
 
     private static final Logger LOGGER = Logger.getLogger(FileManagerEndpoint.class.getName());
-    private final PropertyKey[] PROPERTY_KEYS = new PropertyKey[]{PropertyKey.id, PropertyKey.filename, PropertyKey.size, PropertyKey.script, PropertyKey.state};
-
 
     @Inject
     private Preferences prefs;
@@ -41,14 +40,17 @@ public class FileManagerEndpoint {
 
     /**
      * GET request for a list of uploaded files
-     * iterates recursively through directory {importDataPath} to catch all regular files named 'properties'
-     * extracts keys named "ID", "NAME", "SIZE" and "IMPORTED"/"VERIFIED"
-     * writes values in a json in format { ID : { NAME, SIZE, IMPORTED/VERIFIED } } and returns it
-     * <p>
+     * iteriert durch alle ordner in importDataPath
+     * ordnername = uuid
+     * nutzt uuid, um properties zu öffnen
+     * checkt if properties vollständig ist
+     * extrahiert keys "filename". "size", "script", "state" und "id" aus properties
+     * schreibt value in json objekt
      * all keys are mandatory, if one key is missing, whole element is skipped
      * if no files named 'properties' exist, empty json is returned
      * if directory [importDataPath} does not exists (noSuchFileException), empty json is returned
      * TODO make POJOs
+     * TODO läuft es auch wenn properties file fehlt?
      *
      * @return Response object with list of meta-data as json
      */
@@ -66,7 +68,7 @@ public class FileManagerEndpoint {
                     .map(java.nio.file.Path::getFileName)
                     .map(java.nio.file.Path::toString)
                     .forEach(name_dir -> {
-                        if (importStateManager.checkPropertyFileForKeys(name_dir, PROPERTY_KEYS)) {
+                        if (importStateManager.checkPropertyFileForIntegrity(name_dir)) {
                             ObjectNode uploaded_file = mapper.createObjectNode();
                             uploaded_file.put(PropertyKey.filename.name(),
                                     importStateManager.getPropertyByKey(name_dir, PropertyKey.filename));
@@ -94,11 +96,12 @@ public class FileManagerEndpoint {
      * POST request for a new file
      * creates a new uuid for the file
      * creates a new folder named {uuid} in directory {importDataPath}
-     * creates a new properties file in folder with ID, SIZE, IMPORTSTATE, NAME, PATH and TYPE
      * moves uploaded file from /tmp to new folder
+     * creates a new properties file in folder with id, filepath, filename, filesize, used script and filestate
+     * Meilenstein state wird hinzugefügt "uploaded"
      *
-     * @param file:     uploaded file to save
-     * @param filename: name of uploaded file (to upload filename and avoid using formParam)
+     * @param file:     uploaded binary file
+     * @param filename: name of uploaded file (filename cant be extracted from binary?)
      * @param script:   name (id) of script to run verification/import with
      * @return Response with status 201 and uuid of uploaded file
      */
@@ -136,9 +139,9 @@ public class FileManagerEndpoint {
 
     /**
      * DELETE request for an uploaded file
-     * deletes recursively folder named {uuid} in directory {importDataPath}
+     * deletes all files of folder named {uuid} in directory {importDataPath} and then the folder itself
      *
-     * @param uuid: uuid of file to delete
+     * @param uuid: uuid of file to delete (corresponds to folder name)
      * @return Response with status 200
      */
     @Path("{uuid}/delete")

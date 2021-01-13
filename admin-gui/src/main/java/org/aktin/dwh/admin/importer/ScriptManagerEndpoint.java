@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 /**
  * TODO Comments
  * TODO DO NOT FORGET DWH-API:0.7-SNAPSHOT
+ * TODO Aufräumen?
  */
 
 @Path("script")
@@ -33,7 +34,6 @@ public class ScriptManagerEndpoint {
 
     private static final Logger LOGGER = Logger.getLogger(ScriptManagerEndpoint.class.getName());
     private final String[] SCRIPT_KEYS = new String[]{ScriptKey.VIEWNAME.name(), ScriptKey.VERSION.name()};
-
 
     @Inject
     private Preferences prefs;
@@ -47,7 +47,7 @@ public class ScriptManagerEndpoint {
     /**
      * GET request for a list of import scripts
      * iterates recursively through directory {importScriptPath} to catch all regular files
-     * iterates through the first three lines of each file (first one is skipped) to extract the keys "DESC" and "VERSION"
+     * iterates through the first fifteen lines of each file (first one is skipped) to extract the keys "DESC" and "VERSION"
      * Example: #@DESC=TEST TEST -> { "DESC":"TEST TEST" }
      * identifier of DESC and VERSION is the name of the script i.e. "script.py"
      * writes values in a json in format { NAME_OF_SCRIPT : { DESC, VERSION } } and returns it
@@ -106,8 +106,7 @@ public class ScriptManagerEndpoint {
 
     /**
      * POST request to verify uploaded file using an extern script
-     * <p>
-     * TODO
+     * UNFINISHED
      *
      * @param uuid: uuid of file to verify
      * @return Response with status 200
@@ -120,11 +119,11 @@ public class ScriptManagerEndpoint {
 
             // get file_path from properties
             // get script from properties
-            // method "verify"
+            // PythonScriptExecutor.addTask(String path_file, String name_script, ScriptMethod.verify_file)
             // run magic
 
             importStateManager.changeStateProperty(uuid, ImportState.verification_queued);
-            LOGGER.log(Level.INFO, "Queued file verification at {0}", path);
+            LOGGER.log(Level.INFO, "Queued file verification of {0}", uuid);
             return Response.status(Response.Status.ACCEPTED).build();
         } catch (ValidationException e) {
             LOGGER.log(Level.SEVERE, "PathParam must not be null", e);
@@ -138,10 +137,9 @@ public class ScriptManagerEndpoint {
 
     /**
      * POST request to import uploaded file using an extern script
-     * <p>
-     * TODO
+     * UNFINISHED
      *
-     * @param uuid: uuid of file to verify
+     * @param uuid: uuid of file to import
      * @return Response with status 200
      */
     @Path("{uuid}/import")
@@ -152,11 +150,11 @@ public class ScriptManagerEndpoint {
 
             // get file_path from properties
             // get script from properties
-            // method "import"
+            // PythonScriptExecutor.addTask(String path_file, String name_script, ScriptMethod.import_file)
             // run magic
 
             importStateManager.changeStateProperty(uuid, ImportState.importing_queued);
-            LOGGER.log(Level.INFO, "Queued file import at {0}", path);
+            LOGGER.log(Level.INFO, "Queued file import of {0}", uuid);
             return Response.status(Response.Status.ACCEPTED).build();
         } catch (ValidationException e) {
             LOGGER.log(Level.SEVERE, "PathParam must not be null", e);
@@ -168,9 +166,68 @@ public class ScriptManagerEndpoint {
         }
     }
 
-    // @Path("{uuid}/cancel")
+    /**
+     * POST request to cancel script processing of uuid
+     * UNFINISHED
+     *
+     * @param uuid: uuid of file to verify
+     * @return Response with status 200
+     */
+    @Path("{uuid}/cancel")
+    @POST
+    public Response cancelScriptProcessing(@NotNull @PathParam("uuid") String uuid) {
+        String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
+        try {
 
-    // @Path("{uuid}/status")
+            // get state from properties
+            // switch state
+
+            // case verify
+            importStateManager.changeStateProperty(uuid, ImportState.verification_cancelled);
+            LOGGER.log(Level.INFO, "Cancelled file verification of {0}", uuid);
+
+            // case import
+            importStateManager.changeStateProperty(uuid, ImportState.import_cancelled);
+            LOGGER.log(Level.INFO, "Cancelled file import of {0}", uuid);
+
+
+            return Response.status(Response.Status.ACCEPTED).build();
+        } catch (ValidationException e) {
+            LOGGER.log(Level.SEVERE, "PathParam must not be null", e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.toString()).build();
+        } catch (Exception e) {
+            importStateManager.changeStateProperty(uuid, ImportState.import_failed);
+            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
+        }
+    }
+
+    /**
+     * GET request for status of script processing
+     * UNFINISHED
+     *
+     * @param uuid: uuid of file to verify
+     * @return Response with status 200
+     */
+    @Path("{uuid}/status")
+    @GET
+    public Response getScriptProcessStatus(@NotNull @PathParam("uuid") String uuid) {
+        String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
+        try {
+
+            // get status somehow?
+            // wird im intervall aufgerufen vom Frontend? -> wenn Status ist queued oder running setze intervall abfrage
+
+            return Response.status(Response.Status.ACCEPTED).build();
+        } catch (ValidationException e) {
+            LOGGER.log(Level.SEVERE, "PathParam must not be null", e);
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.toString()).build();
+        } catch (Exception e) {
+            importStateManager.changeStateProperty(uuid, ImportState.import_failed);
+            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
+        }
+    }
 }
 
 

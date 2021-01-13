@@ -46,6 +46,7 @@ export class ImporterService {
     }
 
     // TODO may produce problems in future because of ProgressHttp
+    // TODO Upload Queue
     uploadFile(file: File, file_name: string, script: string, id_progress_bar: string): Observable<any> {
         return this.http.withUploadProgressListener(
             upload => { $('#' + id_progress_bar).progress('set progress', upload.percentage); })

@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 // TODO COMMENTS + JAVA DOC
 // TODO synchronized
+// TODO Aufräumen?
 
 @Singleton
 public class ImportStateManager {
@@ -29,7 +30,7 @@ public class ImportStateManager {
         try (FileOutputStream fileOut = new FileOutputStream(new File(path))) {
             properties.store(fileOut, "");
         } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "File for could not be found", e);
+            LOGGER.log(Level.SEVERE, "File could not be found", e);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
         }
@@ -46,7 +47,7 @@ public class ImportStateManager {
                 properties.store(output, "");
             }
         } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "File for could not be found", e);
+            LOGGER.log(Level.SEVERE, "File could not be found", e);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
         }
@@ -63,13 +64,14 @@ public class ImportStateManager {
                 properties.store(output, "");
             }
         } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "File for could not be found", e);
+            LOGGER.log(Level.SEVERE, "File could not be found", e);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
         }
     }
 
-    public boolean checkPropertyFileForKeys(String uuid, PropertyKey[] list_keys) {
+    public boolean checkPropertyFileForIntegrity(String uuid) {
+        PropertyKey[] list_keys = new PropertyKey[]{PropertyKey.id, PropertyKey.filename, PropertyKey.size, PropertyKey.script, PropertyKey.state};
         String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
         boolean result = false;
 
@@ -83,7 +85,7 @@ public class ImportStateManager {
             }
             result = true;
         } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "File for could not be found", e);
+            LOGGER.log(Level.SEVERE, "File could not be found", e);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
         } finally {
@@ -101,7 +103,7 @@ public class ImportStateManager {
             properties.load(input);
             result = properties.getProperty(key.name());
         } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "File for could not be found", e);
+            LOGGER.log(Level.SEVERE, "File could not be found", e);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
         } finally {
