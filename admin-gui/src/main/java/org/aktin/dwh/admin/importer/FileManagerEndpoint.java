@@ -67,18 +67,18 @@ public class FileManagerEndpoint {
                     .filter(path_dir -> !path_dir.equals(Paths.get(path)))
                     .map(java.nio.file.Path::getFileName)
                     .map(java.nio.file.Path::toString)
-                    .forEach(name_dir -> {
-                        if (importStateManager.checkPropertyFileForIntegrity(name_dir)) {
+                    .forEach(uuid -> {
+                        if (importStateManager.checkPropertyFileForIntegrity(uuid)) {
                             ObjectNode uploaded_file = mapper.createObjectNode();
                             uploaded_file.put(PropertyKey.filename.name(),
-                                    importStateManager.getPropertyByKey(name_dir, PropertyKey.filename));
+                                    importStateManager.getPropertyByKey(uuid, PropertyKey.filename));
                             uploaded_file.put(PropertyKey.size.name(),
-                                    importStateManager.getPropertyByKey(name_dir, PropertyKey.size));
+                                    importStateManager.getPropertyByKey(uuid, PropertyKey.size));
                             uploaded_file.put(PropertyKey.script.name(),
-                                    importStateManager.getPropertyByKey(name_dir, PropertyKey.script));
+                                    importStateManager.getPropertyByKey(uuid, PropertyKey.script));
                             uploaded_file.put(PropertyKey.state.name(),
-                                    importStateManager.getPropertyByKey(name_dir, PropertyKey.state));
-                            uploaded_files.set(importStateManager.getPropertyByKey(name_dir, PropertyKey.id), uploaded_file);
+                                    importStateManager.getPropertyByKey(uuid, PropertyKey.state));
+                            uploaded_files.set(importStateManager.getPropertyByKey(uuid, PropertyKey.id), uploaded_file);
                         }
                     });
 

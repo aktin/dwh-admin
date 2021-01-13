@@ -53,6 +53,24 @@ public class ImportStateManager {
         }
     }
 
+    //TODO RAPHAEL FRAGEN wegen ="";
+    public String getPropertyByKey(String uuid, PropertyKey key) {
+        String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
+        String result = "";
+
+        Properties properties = new Properties();
+        try (FileInputStream input = new FileInputStream(path)) {
+            properties.load(input);
+            result = properties.getProperty(key.name());
+        } catch (FileNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "File could not be found", e);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+        } finally {
+            return result;
+        }
+    }
+
     public void changeStateProperty(String uuid, ImportState state) {
         String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
 
@@ -70,6 +88,23 @@ public class ImportStateManager {
         }
     }
 
+    public ImportState getStateProperty(String uuid) {
+        String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
+        String result = "";
+
+        Properties properties = new Properties();
+        try (FileInputStream input = new FileInputStream(path)) {
+            properties.load(input);
+            result = properties.getProperty(PropertyKey.state.name());
+        } catch (FileNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "File could not be found", e);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+        } finally {
+            return ImportState.valueOf(result);
+        }
+    }
+
     public boolean checkPropertyFileForIntegrity(String uuid) {
         PropertyKey[] list_keys = new PropertyKey[]{PropertyKey.id, PropertyKey.filename, PropertyKey.size, PropertyKey.script, PropertyKey.state};
         String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
@@ -84,24 +119,6 @@ public class ImportStateManager {
                 }
             }
             result = true;
-        } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "File could not be found", e);
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
-        } finally {
-            return result;
-        }
-    }
-
-    //TODO RAPHAEL FRAGEN wegen ="";
-    public String getPropertyByKey(String uuid, PropertyKey key) {
-        String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
-        String result = "";
-
-        Properties properties = new Properties();
-        try (FileInputStream input = new FileInputStream(path)) {
-            properties.load(input);
-            result = properties.getProperty(key.name());
         } catch (FileNotFoundException e) {
             LOGGER.log(Level.SEVERE, "File could not be found", e);
         } catch (IOException e) {

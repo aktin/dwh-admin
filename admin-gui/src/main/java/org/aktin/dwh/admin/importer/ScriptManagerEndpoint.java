@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -33,7 +34,7 @@ import java.util.stream.Stream;
 public class ScriptManagerEndpoint {
 
     private static final Logger LOGGER = Logger.getLogger(ScriptManagerEndpoint.class.getName());
-    private final String[] SCRIPT_KEYS = new String[]{ScriptKey.VIEWNAME.name(), ScriptKey.VERSION.name()};
+    private final ScriptKey[] SCRIPT_KEYS = {ScriptKey.VIEWNAME, ScriptKey.VERSION};
 
     @Inject
     private Preferences prefs;
@@ -67,31 +68,20 @@ public class ScriptManagerEndpoint {
         ObjectNode scripts = mapper.createObjectNode();
 
         String path = prefs.get(PreferenceKey.importScriptPath);
+        final String[] value = {null};
         try (Stream<java.nio.file.Path> walk = Files.walk(Paths.get(path))) {
             walk.filter(Files::isRegularFile)
                     .map(java.nio.file.Path::toFile)
                     .forEach(file -> {
-                        String line, key;
                         ObjectNode script = mapper.createObjectNode();
-                        List<String> list = new LinkedList<>(Arrays.asList(SCRIPT_KEYS));
-                        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                            for (int i = 0; i < 15; i++) {
-                                line = br.readLine();
-                                if (line != null && line.startsWith("#") && line.contains("@") && line.contains("=")) {
-                                    key = line.substring(line.indexOf('@') + 1, line.indexOf('='));
-                                    if (key != null && list.contains(key)) {
-                                        script.put(key, line.substring(line.indexOf('=') + 1));
-                                        list.remove(key);
-                                    }
-                                }
+                        for (ScriptKey key : SCRIPT_KEYS) {
+                            value[0] = getScriptValueByKey(file, key);
+                            if (!value[0].isEmpty()) {
+                                script.put(key.name(), value[0]);
                             }
-                            if (list.isEmpty())
-                                scripts.set(file.getName(), script);
-                        } catch (FileNotFoundException e) {
-                            LOGGER.log(Level.SEVERE, "File could not be found", e);
-                        } catch (IOException e) {
-                            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
                         }
+                        if (script.size() == SCRIPT_KEYS.length)
+                            scripts.set(file.getName(), script);
                     });
 
             return Response.status(Response.Status.OK).entity(scripts).build();
@@ -101,6 +91,28 @@ public class ScriptManagerEndpoint {
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build();
+        }
+    }
+
+    public String getScriptValueByKey(File script, ScriptKey key) {
+        String line, line_key;
+        String result = "";
+        try (BufferedReader br = new BufferedReader(new FileReader(script))) {
+            for (int i = 0; i < 15; i++) {
+                line = br.readLine();
+                if (line != null && line.startsWith("#") && line.contains("@") && line.contains("=")) {
+                    line_key = line.substring(line.indexOf('@') + 1, line.indexOf('='));
+                    if (line_key != null && line_key.equals(key.name())) {
+                        result = line.substring(line.indexOf('=') + 1);
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "File could not be found", e);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
+        } finally {
+            return result;
         }
     }
 
