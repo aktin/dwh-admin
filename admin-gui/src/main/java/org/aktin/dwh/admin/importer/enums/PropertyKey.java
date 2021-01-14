@@ -6,8 +6,8 @@ public enum PropertyKey {
     filename,   // original filename/displayed filename in frontend
     size,       // size of binary
     script,     // id of selected processing script
-    state,      // current processing state of binary
-    operation,  // current operation on processing state
+    operation,  // current operation on binary
+    state,      // current processing state of oepration
     uploaded,   // milestone timestamp of upload
     verified,   // milestone timestamp of verification
     imported    // milestone timestamp of import

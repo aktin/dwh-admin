@@ -1,10 +1,8 @@
 package org.aktin.dwh.admin.importer.enums;
 
-// possible operations for ImportState
+// possible operations for PropertyKey.operation
 public enum ImportOperation {
-    queued,
-    in_progress,
-    successful,
-    cancelled,
-    failed
+    uploading,
+    verifying,
+    importing
 }
