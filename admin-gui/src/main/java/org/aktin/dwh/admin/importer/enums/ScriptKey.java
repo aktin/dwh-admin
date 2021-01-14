@@ -1,4 +1,4 @@
-package org.aktin.dwh.admin.importer;
+package org.aktin.dwh.admin.importer.enums;
 
 // possible keys for extern processing scripts
 public enum ScriptKey {
