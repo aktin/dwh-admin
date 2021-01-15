@@ -2,6 +2,7 @@ package org.aktin.dwh.admin.importer;
 
 import org.aktin.dwh.admin.importer.enums.ScriptKey;
 import org.aktin.dwh.admin.importer.enums.ScriptMimeValue;
+import org.aktin.dwh.admin.importer.pojos.PropertiesFilePOJO;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -15,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * TODO Comments
+ * TODO Comments + JAVADOC
  * TODO DO NOT FORGET DWH-API:0.7-SNAPSHOT
  */
 
@@ -53,8 +54,9 @@ public class FileManagerEndpoint {
         ArrayList<PropertiesFilePOJO> list_propertiesPOJOs = new ArrayList<>();
         ArrayList<String> list_uuids = fileOperationManager.getUploadedFileIDs();
         for (String uuid : list_uuids) {
-            if (fileOperationManager.checkPropertyFileForIntegrity(uuid)) {
-                PropertiesFilePOJO pojo_properties = fileOperationManager.createPropertyPOJO(uuid);
+            HashMap<String,String> map_properties = fileOperationManager.checkPropertiesFileForIntegrity(uuid);
+            if (map_properties != null && !map_properties.isEmpty()) {
+                PropertiesFilePOJO pojo_properties = fileOperationManager.createPropertiesPOJO(map_properties);
                 list_propertiesPOJOs.add(pojo_properties);
             } else {
                 LOGGER.log(Level.INFO, "{0} misses some keys", uuid);

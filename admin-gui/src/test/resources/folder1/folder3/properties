@@ -1,6 +1,9 @@
-PATH=/var/lib/aktin/import/c9251-t523-c125/pfx54899954sfx
-SIZE=1125126
-ID=c9251-t523-c125
-TYPE=application/zip
-UPLOADED=1607517875622
-NAME=testtesttest
+path=/var/lib/aktin/import/c9251-t523-c125/pfx54899954sfx
+size=1125126
+id=c9251-t523-c125
+type=application/zip
+uploaded=1607517875622
+filename=testtesttest
+state=successful
+operation=uploading
+script=script1.py

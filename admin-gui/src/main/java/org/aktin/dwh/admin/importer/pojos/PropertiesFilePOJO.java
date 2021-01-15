@@ -1,13 +1,13 @@
-package org.aktin.dwh.admin.importer;
+package org.aktin.dwh.admin.importer.pojos;
 
 public class PropertiesFilePOJO {
 
-    private final String id;
-    private final String filename;
-    private final String size;
-    private final String script;
-    private final String operation;
-    private final String state;
+    private String id;
+    private String filename;
+    private String size;
+    private String script;
+    private String operation;
+    private String state;
 
     public PropertiesFilePOJO(String id, String filename, String size, String script, String operation, String state) {
         this.id = id;

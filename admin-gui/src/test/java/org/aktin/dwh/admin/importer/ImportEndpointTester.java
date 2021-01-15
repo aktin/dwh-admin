@@ -3,9 +3,9 @@ package org.aktin.dwh.admin.importer;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -13,7 +13,10 @@ import java.util.zip.ZipOutputStream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.aktin.dwh.PreferenceKey;
+import org.aktin.dwh.admin.importer.enums.ImportOperation;
+import org.aktin.dwh.admin.importer.enums.ImportState;
+import org.aktin.dwh.admin.importer.enums.ScriptKey;
+import org.aktin.dwh.admin.importer.pojos.PropertiesFilePOJO;
 import org.junit.Assert;
 import org.junit.Test;
 import sun.applet.Main;
@@ -117,7 +120,7 @@ public class ImportEndpointTester {
         Assert.assertEquals(true, true);
     }
 
-
+@Test
     public void testGetFiles() throws Exception {
         String path = "C:\\Users\\User\\IdeaProjects\\dwh-admin\\admin-gui\\src\\test\\resources\\folder1";
 
@@ -158,7 +161,6 @@ public class ImportEndpointTester {
         Assert.assertEquals(true, true);
     }
 
-    @Test
     public void testGetScripts() throws IOException {
 
         String[] LIST_KEYS = new String[]{"VIEWNAME", "VERSION"};
@@ -167,42 +169,47 @@ public class ImportEndpointTester {
         ObjectNode scripts = mapper.createObjectNode();
 
         String path = "C:\\Users\\User\\IdeaProjects\\dwh-admin\\admin-gui\\src\\test\\resources\\folder1\\folder3";
+        final String[] value = {null};
         try (Stream<java.nio.file.Path> walk = Files.walk(Paths.get(path))) {
             walk.filter(Files::isRegularFile)
                     .map(java.nio.file.Path::toFile)
                     .forEach(file -> {
-                        System.out.println(file.getName());
-
-                        String line, key;
                         ObjectNode script = mapper.createObjectNode();
-                        List<String> list = new LinkedList<>(Arrays.asList(LIST_KEYS));
-                        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                            for (int i = 0; i < 15; i++) {
-                                line = br.readLine();
-                                if (line != null) {
-                                    if (line.startsWith("#") && line.contains("@") && line.contains("=")) {
-                                        key = line.substring(line.indexOf('@') + 1, line.indexOf('='));
-                                        if (key != null && list.contains(key)) {
-                                            script.put(key, line.substring(line.indexOf('=') + 1));
-                                            list.remove(key);
-                                        }
-                                    }
-                                }
-                            }
 
-                            if (list.isEmpty())
-                                scripts.set(file.getName(), script);
-                        } catch (FileNotFoundException e) {
-                            System.out.println("ERROR");
-                        } catch (IOException e) {
-                            System.out.println("ERROR");
+                        for (String key : LIST_KEYS) {
+                            value[0] = getScriptValueByKey(file, ScriptKey.valueOf(key));
+                            if (!value[0].isEmpty()) {
+                                script.put(key, value[0]);
+                            }
                         }
+                        if (script.size() == LIST_KEYS.length)
+                            scripts.set(file.getName(), script);
                     });
             String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(scripts);
             System.out.println(json);
         }
+    }
 
-
+    public String getScriptValueByKey(File script, ScriptKey key) {
+        String line, line_key;
+        String result = "";
+        try (BufferedReader br = new BufferedReader(new FileReader(script))) {
+            for (int i = 0; i < 15; i++) {
+                line = br.readLine();
+                if (line != null && line.startsWith("#") && line.contains("@") && line.contains("=")) {
+                    line_key = line.substring(line.indexOf('@') + 1, line.indexOf('='));
+                    if (line_key != null && line_key.equals(key.name())) {
+                        result = line.substring(line.indexOf('=') + 1);
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("ERROR");
+        } catch (IOException e) {
+            System.out.println("ERROR");
+        } finally {
+            return result;
+        }
     }
 
     public void printZip(ZipFile zip) throws IOException {
@@ -235,5 +242,50 @@ public class ImportEndpointTester {
         zipOut.close();
         fis.close();
         fos.close();
+    }
+
+    @Test
+    public void testGetUploadedFileIDs() throws IOException {
+
+        String path = "C:\\Users\\User\\IdeaProjects\\dwh-admin\\admin-gui\\src\\test\\resources\\folder1";
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode uploaded_files = mapper.createObjectNode();
+        try (Stream<Path> walk = Files.walk(Paths.get(path))) {
+            walk.filter(Files::isDirectory)
+                    .filter(path_dir -> !path_dir.equals(Paths.get(path)))
+                    .map(java.nio.file.Path::getFileName)
+                    .map(java.nio.file.Path::toString)
+                    .forEach(file -> {
+                        System.out.println(file);
+                    });
+        }
+
+
+        Assert.assertEquals(true, true);
+    }
+
+
+    @Test
+    public void testJsonSerializer() throws IOException {
+        String id = UUID.randomUUID().toString();
+        String filename = "testname";
+        String size = "2131251";
+        String script = "testname2";
+        String operation = ImportOperation.uploading.name();
+        String state = ImportState.successful.name();
+
+        PropertiesFilePOJO d = new PropertiesFilePOJO(id, filename, size, script, operation, state);
+
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(new File("src/test/resources/properties.json"), d);
+        PropertiesFilePOJO[] d1 = {d, d, d};
+        String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(d1);
+        System.out.println(json);
+
+        // TODO make to json and test against d.json
+
+        Assert.assertEquals(true, true);
     }
 }
