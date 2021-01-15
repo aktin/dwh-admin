@@ -1,6 +1,6 @@
 package org.aktin.dwh.admin.importer.enums;
 
-// possible states of ImportOperation
+// possible values for PropertyKey.state
 public enum ImportState {
     queued,
     in_progress,

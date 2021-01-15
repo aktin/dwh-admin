@@ -7,7 +7,7 @@ public enum PropertyKey {
     size,       // size of binary
     script,     // id of selected processing script
     operation,  // current operation on binary
-    state,      // current processing state of oepration
+    state,      // current processing state of operation
     uploaded,   // milestone timestamp of upload
     verified,   // milestone timestamp of verification
     imported    // milestone timestamp of import

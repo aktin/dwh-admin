@@ -1,37 +1,25 @@
 package org.aktin.dwh.admin.importer;
 
-public class PropertyFilePOJO {
+public class PropertiesFilePOJO {
 
     private final String id;
-    private final DefaultPropertiesPOJO properties;
-
-    public PropertyFilePOJO(String id, String filename, String size, String script, String operation, String state) {
-        this.id = id;
-        this.properties = new DefaultPropertiesPOJO(filename, size, script, operation, state);
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public DefaultPropertiesPOJO getProperties() {
-        return properties;
-    }
-}
-
-class DefaultPropertiesPOJO {
     private final String filename;
     private final String size;
     private final String script;
     private final String operation;
     private final String state;
 
-    DefaultPropertiesPOJO(String filename, String size, String script, String operation, String state) {
+    public PropertiesFilePOJO(String id, String filename, String size, String script, String operation, String state) {
+        this.id = id;
         this.filename = filename;
         this.size = size;
         this.script = script;
         this.operation = operation;
         this.state = state;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getFilename() {
