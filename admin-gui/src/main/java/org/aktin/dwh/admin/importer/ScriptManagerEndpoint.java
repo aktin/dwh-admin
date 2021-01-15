@@ -7,14 +7,16 @@ import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.admin.importer.enums.ScriptKey;
 import org.aktin.dwh.admin.importer.pojos.PropertiesFilePOJO;
 import org.aktin.dwh.admin.importer.pojos.ScriptFilePOJO;
-//import org.aktin.scripts.PythonScriptExecutor;
-//import org.aktin.scripts.ScriptMethod;
+import org.aktin.scripts.PythonScriptExecutor;
+import org.aktin.scripts.ScriptOperation;
 
+import javax.validation.constraints.NotNull;
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-//import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.SecurityContext;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -27,23 +29,21 @@ import java.util.stream.Stream;
 /**
  * TODO Comments
  * TODO DO NOT FORGET DWH-API:0.7-SNAPSHOT
- * TODO Aufräumen?
  */
 
 @Path("script")
 public class ScriptManagerEndpoint {
 
     private static final Logger LOGGER = Logger.getLogger(ScriptManagerEndpoint.class.getName());
-    private final ScriptKey[] SCRIPT_KEYS = {ScriptKey.VIEWNAME, ScriptKey.VERSION};
 
     @Inject
     private FileOperationManager fileOperationManager;
 
-    //@Inject
-    //private PythonScriptExecutor pythonScriptExecutor;
+    @Inject
+    private PythonScriptExecutor pythonScriptExecutor;
 
-    //@Context
-    //private SecurityContext security;
+    @Context
+    private SecurityContext security;
 
     /**
      * GET request for a list of import scripts
@@ -56,7 +56,6 @@ public class ScriptManagerEndpoint {
      * both keys are mandatory, if one key is missing, whole element is skipped
      * if no files exist, empty json is returned
      * if directory {importScriptPath} does not exists (noSuchFileException), empty json is returned
-     * TODO make POJOs
      *
      * @return Response object with list of meta-data as json
      */
@@ -68,7 +67,7 @@ public class ScriptManagerEndpoint {
         ArrayList<ScriptFilePOJO> list_scriptPOJOs = new ArrayList<>();
         ArrayList<String> list_scripts = fileOperationManager.getScriptIDs();
         for (String script : list_scripts) {
-            HashMap<String,String> map_script = fileOperationManager.checkScriptFileForIntegrity(script);
+            HashMap<String, String> map_script = fileOperationManager.checkScriptFileForIntegrity(script);
             if (map_script != null && !map_script.isEmpty()) {
                 ScriptFilePOJO pojo_script = fileOperationManager.createScriptPOJO(map_script);
                 list_scriptPOJOs.add(pojo_script);
@@ -79,7 +78,6 @@ public class ScriptManagerEndpoint {
         return list_scriptPOJOs;
     }
 
-
     /**
      * POST request to verify uploaded file using an extern script
      * UNFINISHED
@@ -87,14 +85,13 @@ public class ScriptManagerEndpoint {
      * @param uuid: uuid of file to verify
      * @return Response with status 200
      * woher kommt exception und was bedeutet sie?
-
+     */
     @Path("{uuid}/verify")
     @POST
-    public Response queueFileVerification(@NotNull @PathParam("uuid") String uuid) throws IOException {
-        pythonScriptExecutor.addTask(uuid, ScriptMethod.verify_file);
+    public Response queueFileVerification(@NotNull @PathParam("uuid") String uuid) {
+        pythonScriptExecutor.addTask(uuid, ScriptOperation.verify_file);
         return Response.status(Response.Status.ACCEPTED).build();
     }
-     */
 
     /**
      * POST request to import uploaded file using an extern script
@@ -102,56 +99,37 @@ public class ScriptManagerEndpoint {
      *
      * @param uuid: uuid of file to import
      * @return Response with status 200
-
+     */
     @Path("{uuid}/import")
     @POST
     public Response queueFileImport(@NotNull @PathParam("uuid") String uuid) {
-        try {
-            pythonScriptExecutor.addTask(uuid, ScriptMethod.import_file);
-            return Response.status(Response.Status.ACCEPTED).build();
-        } catch (Exception e) {
-            fileOperationManager.changeStateProperty(uuid, ImportState.failed);
-            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
-        }
+        pythonScriptExecutor.addTask(uuid, ScriptOperation.import_file);
+        return Response.status(Response.Status.ACCEPTED).build();
     }
-     */
 
     /**
      * POST request to cancel script processing of uuid
      *
      * @param uuid: uuid of file to verify
      * @return Response with status 200
-
+     */
     @Path("{uuid}/cancel")
     @POST
     public Response cancelFileProcessing(@NotNull @PathParam("uuid") String uuid) {
-        try {
-            pythonScriptExecutor.cancelTask(uuid);
-            return Response.status(Response.Status.ACCEPTED).build();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
-        }
+        pythonScriptExecutor.cancelTask(uuid);
+        return Response.status(Response.Status.ACCEPTED).build();
     }
-     */
 
     /**
      * GET request for status of script processing
      *
      * @param uuid: uuid of file to verify
      * @return Response with status 200
-
+     */
     @Path("{uuid}/status")
     @GET
     public Response getFileProcessingStatus(@NotNull @PathParam("uuid") String uuid) {
-        try {
-            Boolean result = pythonScriptExecutor.isTaskDone(uuid);
-            return Response.status(Response.Status.OK).entity(result).build();
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.toString()).build();
-        }
+        boolean result = pythonScriptExecutor.isTaskDone(uuid);
+        return Response.status(Response.Status.OK).entity(result).build();
     }
-     */
 }

@@ -105,21 +105,6 @@ public class FileOperationManager {
         }
     }
 
-    public void changeOperationStateProperty(String uuid, ImportOperation operation, ImportState state) {
-        String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
-        Properties properties = new Properties();
-        try (FileInputStream input = new FileInputStream(path)) {
-            properties.load(input);
-            try (FileOutputStream output = new FileOutputStream(path)) {
-                properties.setProperty(PropertyKey.operation.name(), operation.name());
-                properties.setProperty(PropertyKey.state.name(), state.name());
-                properties.store(output, "");
-            }
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "An Exception was thrown", e);
-        }
-    }
-
     // files.walk -> IOExveption
     public ArrayList<String> getUploadedFileIDs() throws IOException {
         String path = prefs.get(PreferenceKey.importDataPath);
@@ -168,6 +153,11 @@ public class FileOperationManager {
         return pojo_properties;
     }
 
+    public String getFilePath(String uuid) {
+        String name_file = getPropertyByKey(uuid, PropertyKey.filename);
+        return Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, name_file).toString();
+    }
+
     // Exception by createDirecotries
     public String deleteUploadFileFolder(String uuid) throws IOException {
         String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid).toString();
@@ -178,6 +168,7 @@ public class FileOperationManager {
         }
         return path;
     }
+
 
     public String getScriptValueByKey(String name_script, ScriptKey search_key) {
         String path = Paths.get(prefs.get(PreferenceKey.importScriptPath), name_script).toString();
@@ -252,5 +243,9 @@ public class FileOperationManager {
         String name_script = map.get("id");
         pojo_script = new ScriptFilePOJO(name_script, viewname, version);
         return pojo_script;
+    }
+
+    public String getScriptPath(String name_script) {
+        return Paths.get(prefs.get(PreferenceKey.importScriptPath), name_script).toString();
     }
 }

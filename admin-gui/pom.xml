@@ -65,7 +65,7 @@
             <version>7.0</version>
             <scope>provided</scope>
         </dependency>
-        <!-- generic file upload / p21-import -->
+        <!-- generic file upload / p21- -->
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>script-executor</artifactId>
