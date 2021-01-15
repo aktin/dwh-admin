@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -29,6 +28,7 @@ import java.util.stream.Stream;
 public class FileOperationManager {
 
     private static final Logger LOGGER = Logger.getLogger(FileOperationManager.class.getName());
+    private final PropertyKey[] DEFAULT_KEYS = {PropertyKey.id, PropertyKey.filename, PropertyKey.size, PropertyKey.script, PropertyKey.operation, PropertyKey.state};
 
     @Inject
     private Preferences prefs;
@@ -106,11 +106,15 @@ public class FileOperationManager {
     public boolean checkPropertyFileForIntegrity(String uuid) {
         String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
         Properties properties = new Properties();
-        PropertyKey[] list_keys = {PropertyKey.id, PropertyKey.filename, PropertyKey.size, PropertyKey.script, PropertyKey.operation, PropertyKey.state};
-        Boolean result = false;
+        boolean result = false;
         try (FileInputStream input = new FileInputStream(path)) {
             properties.load(input);
-            result = properties.keySet().containsAll(Arrays.asList(list_keys));
+            for (PropertyKey key : DEFAULT_KEYS) {
+                if (!properties.containsKey(key.name())) {
+                    return false;
+                }
+            }
+            result = true;
         } catch (java.io.FileNotFoundException e) {
             LOGGER.log(Level.SEVERE, "No file to stream found", e);
         } catch (IOException e) {
@@ -120,10 +124,10 @@ public class FileOperationManager {
         }
     }
 
-    public PropertyFilePOJO createPropertyPOJO(String uuid) {
+    public PropertiesFilePOJO createPropertyPOJO(String uuid) {
         String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
         Properties properties = new Properties();
-        PropertyFilePOJO pojo_property = null;
+        PropertiesFilePOJO pojo_properties = null;
         try (FileInputStream input = new FileInputStream(path)) {
             properties.load(input);
             String id = properties.getProperty(PropertyKey.id.name());
@@ -132,13 +136,13 @@ public class FileOperationManager {
             String script = properties.getProperty(PropertyKey.script.name());
             String operation = properties.getProperty(PropertyKey.operation.name());
             String state = properties.getProperty(PropertyKey.state.name());
-            pojo_property = new PropertyFilePOJO(id, filename, script, size, operation, state);
+            pojo_properties = new PropertiesFilePOJO(id, filename, script, size, operation, state);
         } catch (java.io.FileNotFoundException e) {
             LOGGER.log(Level.SEVERE, "No file to stream found", e);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "No file to load found", e);
         } finally {
-            return pojo_property;
+            return pojo_properties;
         }
     }
 

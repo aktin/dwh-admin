@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 public class FileManagerEndpoint {
 
     private static final Logger LOGGER = Logger.getLogger(FileManagerEndpoint.class.getName());
-    private final ScriptKey SCRIPT_KEY = ScriptKey.MIMETYPE;
 
     @Inject
     private FileOperationManager fileOperationManager;
@@ -42,7 +41,7 @@ public class FileManagerEndpoint {
      * all keys are mandatory, if one key is missing, whole element is skipped
      * if no files named 'properties' exist, empty json is returned
      * if directory [importDataPath} does not exists (noSuchFileException), empty json is returned
-     * TODO läuft es auch wenn properties file fehlt?
+     * läuft es auch wenn properties file fehlt? -> ja, exception wird geloggt aber flow wird nicht unterbrochen
      *
      * @return Response object with list of meta-data as json
      */
@@ -50,16 +49,18 @@ public class FileManagerEndpoint {
     @Path("get")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUploadedFiles() throws IOException {
-        ArrayList<PropertyFilePOJO> list_propertyPOJOs = new ArrayList<>();
+    public ArrayList<PropertiesFilePOJO> getUploadedFiles() throws IOException {
+        ArrayList<PropertiesFilePOJO> list_propertiesPOJOs = new ArrayList<>();
         ArrayList<String> list_uuids = fileOperationManager.getUploadedFileIDs();
         for (String uuid : list_uuids) {
             if (fileOperationManager.checkPropertyFileForIntegrity(uuid)) {
-                PropertyFilePOJO pojo_propertyFile = fileOperationManager.createPropertyPOJO(uuid);
-                list_propertyPOJOs.add(pojo_propertyFile);
+                PropertiesFilePOJO pojo_properties = fileOperationManager.createPropertyPOJO(uuid);
+                list_propertiesPOJOs.add(pojo_properties);
+            } else {
+                LOGGER.log(Level.INFO, "{0} misses some keys", uuid);
             }
         }
-        return Response.status(Response.Status.OK).entity(list_propertyPOJOs).build();
+        return list_propertiesPOJOs;
     }
 
 
@@ -97,8 +98,8 @@ public class FileManagerEndpoint {
     }
 
     private boolean doesContentTypeMatchScript(File file, String script_name) throws IOException {
-        String script_value = fileOperationManager.getScriptValueByKey(script_name, SCRIPT_KEY);
-        switch (ScriptMimeValue.valueOf(script_value)) {
+        String script_mime = fileOperationManager.getScriptValueByKey(script_name, ScriptKey.MIMETYPE);
+        switch (ScriptMimeValue.valueOf(script_mime)) {
             case zip:
                 int[] bytesArray_header = new int[]{0x504B0304, 0x504B0506, 0x504B0708};
                 return compareContentBytes(file, bytesArray_header);
