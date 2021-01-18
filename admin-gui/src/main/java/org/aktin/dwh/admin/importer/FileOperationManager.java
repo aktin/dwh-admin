@@ -153,9 +153,8 @@ public class FileOperationManager {
         return pojo_properties;
     }
 
-    public String getFilePath(String uuid) {
-        String name_file = getPropertyByKey(uuid, PropertyKey.filename);
-        return Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, name_file).toString();
+    public String getFileFolder(String uuid) {
+        return Paths.get(prefs.get(PreferenceKey.importDataPath), uuid).toString();
     }
 
     // Exception by createDirecotries

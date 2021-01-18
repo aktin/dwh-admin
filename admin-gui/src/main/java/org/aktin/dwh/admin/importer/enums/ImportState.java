@@ -6,5 +6,6 @@ public enum ImportState {
     in_progress,
     successful,
     cancelled,
-    failed
+    failed,
+    timeout
 }
