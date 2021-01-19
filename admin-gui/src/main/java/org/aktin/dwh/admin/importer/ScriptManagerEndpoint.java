@@ -54,7 +54,7 @@ public class ScriptManagerEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public ArrayList<ScriptFilePOJO> getImportScripts() {
         ArrayList<ScriptFilePOJO> list_scriptPOJOs = new ArrayList<>();
-        for (HashMap<String, String> map_script : scriptOperationManager.getValues()) {
+        for (HashMap<String, String> map_script : scriptOperationManager.getHashMaps()) {
             ScriptFilePOJO pojo_script = scriptOperationManager.createScriptPOJO(map_script);
             list_scriptPOJOs.add(pojo_script);
         }

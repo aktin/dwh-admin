@@ -55,7 +55,7 @@ public class FileManagerEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public ArrayList<PropertiesFilePOJO> getUploadedFiles() {
         ArrayList<PropertiesFilePOJO> list_propertiesPOJOs = new ArrayList<>();
-        for (HashMap<String, String> map_properties : fileOperationManager.getValues()) {
+        for (HashMap<String, String> map_properties : fileOperationManager.getHashMaps()) {
                 PropertiesFilePOJO pojo_properties = fileOperationManager.createPropertiesPOJO(map_properties);
                 list_propertiesPOJOs.add(pojo_properties);
         }

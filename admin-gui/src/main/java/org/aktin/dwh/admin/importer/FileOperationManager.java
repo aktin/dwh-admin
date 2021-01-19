@@ -165,7 +165,7 @@ public class FileOperationManager {
         }
     }
 
-    public ArrayList<HashMap<String, String>> getValues() {
+    public ArrayList<HashMap<String, String>> getHashMaps() {
         synchronized (operationLock_properties) {
             return new ArrayList<>(operationLock_properties.values());
         }

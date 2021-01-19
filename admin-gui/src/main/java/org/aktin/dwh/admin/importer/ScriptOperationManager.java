@@ -94,7 +94,7 @@ public class ScriptOperationManager {
         return result;
     }
 
-    public ArrayList<HashMap<String, String>> getValues() {
+    public ArrayList<HashMap<String, String>> getHashMaps() {
         synchronized (operationLock_script) {
             return new ArrayList<>(operationLock_script.values());
         }
