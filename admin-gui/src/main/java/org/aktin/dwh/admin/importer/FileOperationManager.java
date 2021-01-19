@@ -136,7 +136,7 @@ public class FileOperationManager {
         addPropertiesToOperationLock(properties);
     }
 
-    public void addNewPropertyToProperties(String uuid, PropertyKey key, String value) {
+    public void addPropertyToProperties(String uuid, PropertyKey key, String value) {
         synchronized (operationLock_properties.get(uuid)) {
             String path = Paths.get(preferences.get(PreferenceKey.importDataPath), uuid, "properties").toString();
             Properties properties = new Properties();
