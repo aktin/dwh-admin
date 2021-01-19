@@ -28,6 +28,9 @@ public class FileManagerEndpoint {
     @Inject
     private FileOperationManager fileOperationManager;
 
+    @Inject
+    private ScriptOperationManager scriptOperationManager;
+
     @Context
     private SecurityContext security;
 
@@ -50,21 +53,14 @@ public class FileManagerEndpoint {
     @Path("get")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public ArrayList<PropertiesFilePOJO> getUploadedFiles() throws IOException {
+    public ArrayList<PropertiesFilePOJO> getUploadedFiles() {
         ArrayList<PropertiesFilePOJO> list_propertiesPOJOs = new ArrayList<>();
-        ArrayList<String> list_uuids = fileOperationManager.getUploadedFileIDs();
-        for (String uuid : list_uuids) {
-            HashMap<String,String> map_properties = fileOperationManager.checkPropertiesFileForIntegrity(uuid);
-            if (map_properties != null && !map_properties.isEmpty()) {
+        for (HashMap<String, String> map_properties : fileOperationManager.getPropertiesValues()) {
                 PropertiesFilePOJO pojo_properties = fileOperationManager.createPropertiesPOJO(map_properties);
                 list_propertiesPOJOs.add(pojo_properties);
-            } else {
-                LOGGER.log(Level.INFO, "{0} misses some keys", uuid);
-            }
         }
         return list_propertiesPOJOs;
     }
-
 
     /**
      * POST request for a new file
@@ -81,6 +77,8 @@ public class FileManagerEndpoint {
      * <p>
      * EXCEPTION for Files.createDirectories and Files.move and Files.size
      */
+
+
     @Path("upload")
     @POST
     public Response uploadFile(@NotNull @QueryParam("script") String script_name, @NotNull @QueryParam("filename") String file_name, @NotNull File file) throws IOException {
@@ -89,7 +87,7 @@ public class FileManagerEndpoint {
             String path_newFolder = fileOperationManager.createUploadFileFolder(uuid);
             fileOperationManager.moveUploadFile(file.getAbsolutePath(), path_newFolder, file_name);
             java.nio.file.Path newFile = Paths.get(path_newFolder, file_name);
-            fileOperationManager.createUploadFileProperty(uuid, file_name, Files.size(newFile), script_name);
+            fileOperationManager.createUploadFileProperties(uuid, file_name, Files.size(newFile), script_name);
 
             LOGGER.log(Level.INFO, "Uploaded file to {0}", newFile.toString());
             return Response.status(Response.Status.CREATED).entity(uuid).build();
@@ -100,7 +98,7 @@ public class FileManagerEndpoint {
     }
 
     private boolean doesContentTypeMatchScript(File file, String script_name) throws IOException {
-        String script_mime = fileOperationManager.getScriptValueByKey(script_name, ScriptKey.MIMETYPE);
+        String script_mime = scriptOperationManager.getScriptValueByKey(script_name, ScriptKey.MIMETYPE);
         switch (ScriptMimeValue.valueOf(script_mime)) {
             case zip:
                 int[] bytesArray_header = new int[]{0x504B0304, 0x504B0506, 0x504B0708};

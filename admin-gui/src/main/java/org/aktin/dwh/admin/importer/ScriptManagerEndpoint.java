@@ -1,11 +1,5 @@
 package org.aktin.dwh.admin.importer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.aktin.Preferences;
-import org.aktin.dwh.PreferenceKey;
-import org.aktin.dwh.admin.importer.enums.ScriptKey;
-import org.aktin.dwh.admin.importer.pojos.PropertiesFilePOJO;
 import org.aktin.dwh.admin.importer.pojos.ScriptFilePOJO;
 import org.aktin.scripts.PythonScriptExecutor;
 import org.aktin.scripts.ScriptOperation;
@@ -17,14 +11,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 /**
  * TODO Comments
@@ -37,7 +26,7 @@ public class ScriptManagerEndpoint {
     private static final Logger LOGGER = Logger.getLogger(ScriptManagerEndpoint.class.getName());
 
     @Inject
-    private FileOperationManager fileOperationManager;
+    private ScriptOperationManager scriptOperationManager;
 
     @Inject
     private PythonScriptExecutor pythonScriptExecutor;
@@ -63,17 +52,11 @@ public class ScriptManagerEndpoint {
     @Path("get")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public ArrayList<ScriptFilePOJO> getImportScripts() throws IOException {
+    public ArrayList<ScriptFilePOJO> getImportScripts() {
         ArrayList<ScriptFilePOJO> list_scriptPOJOs = new ArrayList<>();
-        ArrayList<String> list_scripts = fileOperationManager.getScriptIDs();
-        for (String script : list_scripts) {
-            HashMap<String, String> map_script = fileOperationManager.checkScriptFileForIntegrity(script);
-            if (map_script != null && !map_script.isEmpty()) {
-                ScriptFilePOJO pojo_script = fileOperationManager.createScriptPOJO(map_script);
-                list_scriptPOJOs.add(pojo_script);
-            } else {
-                LOGGER.log(Level.INFO, "{0} misses some keys", script);
-            }
+        for (HashMap<String, String> map_script : scriptOperationManager.getScriptValues()) {
+            ScriptFilePOJO pojo_script = scriptOperationManager.createScriptPOJO(map_script);
+            list_scriptPOJOs.add(pojo_script);
         }
         return list_scriptPOJOs;
     }
