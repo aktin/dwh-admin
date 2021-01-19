@@ -2,13 +2,10 @@ package org.aktin.dwh.admin.importer;
 
 import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
-import org.aktin.dwh.admin.importer.enums.ImportOperation;
-import org.aktin.dwh.admin.importer.enums.ImportState;
-import org.aktin.dwh.admin.importer.enums.PropertyKey;
-import org.aktin.dwh.admin.importer.enums.ScriptKey;
+import org.aktin.dwh.admin.importer.enums.*;
 import org.aktin.dwh.admin.importer.pojos.PropertiesFilePOJO;
-import org.aktin.dwh.admin.importer.pojos.ScriptFilePOJO;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.*;
@@ -16,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -31,83 +29,26 @@ public class FileOperationManager {
     private final PropertyKey[] DEFAULT_PROPERTIES = {PropertyKey.id, PropertyKey.filename, PropertyKey.size, PropertyKey.script, PropertyKey.operation, PropertyKey.state};
 
     @Inject
-    private Preferences prefs;
+    private Preferences preferences;
 
-    //TODO hat ALLE lese/schreib operationen
+    private HashMap<String, HashMap<String, String>> operationLock_properties = new HashMap<>();
 
-    //TODO INIT get all scripts und files in /var/lib/aktin -> HashMap mit UUID
-
-
-    // Exception by createDirecotries
-    public String createUploadFileFolder(String uuid) throws IOException {
-        String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid).toString();
-        Files.createDirectories(Paths.get(path));
-        return path;
-    }
-
-    //Exception by move
-    public void moveUploadFile(String path_old, String path_new, String file_name) throws IOException {
-        java.nio.file.Path oldFile = Paths.get(path_old);
-        java.nio.file.Path newFile = Paths.get(path_new, file_name);
-        Files.move(oldFile, newFile);
-    }
-
-    // outputstream -> java.io.FileNotFoundException
-    // store -> IOException
-    public void createUploadFileProperty(String uuid, String file_name, long file_size, String script_name) {
-        String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
-        Properties properties = new Properties();
-        try (FileOutputStream fileOut = new FileOutputStream(new File(path))) {
-            properties.setProperty(PropertyKey.id.name(), uuid);
-            properties.setProperty(PropertyKey.filename.name(), file_name);
-            properties.setProperty(PropertyKey.size.name(), String.valueOf(file_size));
-            properties.setProperty(PropertyKey.script.name(), script_name);
-            properties.setProperty(PropertyKey.operation.name(), String.valueOf(ImportOperation.uploading));
-            properties.setProperty(PropertyKey.state.name(), String.valueOf(ImportState.successful));
-            properties.setProperty(PropertyKey.uploaded.name(), String.valueOf(System.currentTimeMillis()));
-            properties.store(fileOut, "");
-        } catch (java.io.FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "No file to stream found", e);
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "No file to store found", e);
-        }
-    }
-
-    public void writePropertyToFile(String uuid, PropertyKey key, String value) {
-        String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
-        Properties properties = new Properties();
-        try (FileInputStream input = new FileInputStream(path)) {
-            properties.load(input);
-            try (FileOutputStream output = new FileOutputStream(path)) {
-                properties.setProperty(key.name(), value);
-                properties.store(output, "");
-            }
-        } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "No file to stream found", e);
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "No file to process found", e);
-        }
-    }
-
-    public String getPropertyByKey(String uuid, PropertyKey key) {
-        String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
-        Properties properties = new Properties();
-        String result = "";
-        try (FileInputStream input = new FileInputStream(path)) {
-            properties.load(input);
-            result = properties.getProperty(key.name());
-        } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "No file to stream found", e);
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "No file to read found", e);
-        } finally {
-            return result;
+    // only integrated properties in operationLock
+    @PostConstruct
+    public void initOperationLock() {
+        HashMap<String, String> hashMap_tmp;
+        for (String uuid : getUploadedFileIDs()) {
+            hashMap_tmp = checkPropertiesFileForIntegrity(uuid);
+            if (hashMap_tmp != null && !hashMap_tmp.isEmpty())
+                operationLock_properties.put(uuid, hashMap_tmp);
+            else
+                LOGGER.log(Level.INFO, "{0} misses some keys", uuid);
         }
     }
 
     // files.walk -> IOExveption
-    public ArrayList<String> getUploadedFileIDs() throws IOException {
-        String path = prefs.get(PreferenceKey.importDataPath);
+    private ArrayList<String> getUploadedFileIDs() {
+        String path = preferences.get(PreferenceKey.importDataPath);
         ArrayList<String> list_uuid = new ArrayList<>();
         try (Stream<java.nio.file.Path> walk = Files.walk(Paths.get(path))) {
             walk.filter(Files::isDirectory)
@@ -115,12 +56,14 @@ public class FileOperationManager {
                     .map(java.nio.file.Path::getFileName)
                     .map(java.nio.file.Path::toString)
                     .forEach(list_uuid::add);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "No file to walk found", e);
         }
         return list_uuid;
     }
 
-    public HashMap<String, String> checkPropertiesFileForIntegrity(String uuid) {
-        String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid, "properties").toString();
+    private HashMap<String, String> checkPropertiesFileForIntegrity(String uuid) {
+        String path = Paths.get(preferences.get(PreferenceKey.importDataPath), uuid, "properties").toString();
         Properties properties = new Properties();
         HashMap<String, String> result = new HashMap<>();
         try (FileInputStream input = new FileInputStream(path)) {
@@ -136,13 +79,117 @@ public class FileOperationManager {
             LOGGER.log(Level.SEVERE, "No file to stream found", e);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "No file to load found", e);
-        } finally {
+        }
+        return result;
+    }
+
+
+    // Exception by createDirecotries
+    public String createUploadFileFolder(String uuid) throws IOException {
+        String path = Paths.get(preferences.get(PreferenceKey.importDataPath), uuid).toString();
+        Files.createDirectories(Paths.get(path));
+        return path;
+    }
+
+    // Exception by createDirecotries
+    public String deleteUploadFileFolder(String uuid) throws IOException {
+        synchronized (operationLock_properties.get(uuid)) {
+            String path = Paths.get(preferences.get(PreferenceKey.importDataPath), uuid).toString();
+            try (Stream<Path> walk = Files.walk(Paths.get(path))) {
+                walk.sorted(Comparator.reverseOrder())
+                        .map(java.nio.file.Path::toFile)
+                        .forEach(File::delete);
+            }
+            synchronized (operationLock_properties) {
+                operationLock_properties.remove(uuid);
+            }
+            return path;
+        }
+    }
+
+    //Exception by move
+    public void moveUploadFile(String path_old, String path_new, String file_name) throws IOException {
+        java.nio.file.Path oldFile = Paths.get(path_old);
+        java.nio.file.Path newFile = Paths.get(path_new, file_name);
+        Files.move(oldFile, newFile);
+    }
+
+    // outputstream -> java.io.FileNotFoundException
+    // store -> IOException
+    public void createUploadFileProperties(String uuid, String file_name, long file_size, String script_name) {
+        String path = Paths.get(preferences.get(PreferenceKey.importDataPath), uuid, "properties").toString();
+        Properties properties = new Properties();
+        try (FileOutputStream fileOut = new FileOutputStream(new File(path))) {
+            properties.setProperty(PropertyKey.id.name(), uuid);
+            properties.setProperty(PropertyKey.filename.name(), file_name);
+            properties.setProperty(PropertyKey.size.name(), String.valueOf(file_size));
+            properties.setProperty(PropertyKey.script.name(), script_name);
+            properties.setProperty(PropertyKey.operation.name(), String.valueOf(ImportOperation.uploading));
+            properties.setProperty(PropertyKey.state.name(), String.valueOf(ImportState.successful));
+            properties.setProperty(PropertyKey.uploaded.name(), String.valueOf(System.currentTimeMillis()));
+            properties.store(fileOut, "");
+        } catch (java.io.FileNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "No file to stream found", e);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "No file to store found", e);
+        }
+        addPropertiesToOperationLock(properties);
+    }
+
+    public void addNewPropertyToProperties(String uuid, PropertyKey key, String value) {
+        synchronized (operationLock_properties.get(uuid)) {
+            String path = Paths.get(preferences.get(PreferenceKey.importDataPath), uuid, "properties").toString();
+            Properties properties = new Properties();
+            try (FileInputStream input = new FileInputStream(path)) {
+                properties.load(input);
+                try (FileOutputStream output = new FileOutputStream(path)) {
+                    properties.setProperty(key.name(), value);
+                    properties.store(output, "");
+                }
+            } catch (FileNotFoundException e) {
+                LOGGER.log(Level.SEVERE, "No file to stream found", e);
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "No file to process found", e);
+            }
+            addPropertiesToOperationLock(properties);
+        }
+    }
+
+    private void addPropertiesToOperationLock(Properties properties) {
+        HashMap<String, String> hashmap_tmp = new HashMap<>();
+        for (Map.Entry<Object, Object> entry : properties.entrySet())
+            hashmap_tmp.put((String) entry.getKey(), (String) entry.getValue());
+        synchronized (operationLock_properties) {
+            operationLock_properties.put(hashmap_tmp.get(PropertyKey.id.name()), hashmap_tmp);
+        }
+    }
+
+    public String[] getPropertiesKeys() {
+        synchronized (operationLock_properties) {
+            return operationLock_properties.keySet().toArray(new String[0]);
+        }
+    }
+
+    public ArrayList<HashMap<String, String>> getPropertiesValues() {
+        synchronized (operationLock_properties) {
+            return operationLock_properties.values().stream().collect(Collectors.toCollection(ArrayList::new));
+        }
+    }
+
+    public HashMap<String, String> getPropertiesHashMap(String uuid) {
+        synchronized (operationLock_properties.get(uuid)) {
+            HashMap<String, String> result = new HashMap<>();
+            try {
+                result = operationLock_properties.get(uuid);
+            } catch (NullPointerException e) {
+                LOGGER.log(Level.SEVERE, "{0} misses some keys. Check integrity", uuid);
+            }
             return result;
         }
     }
 
     public PropertiesFilePOJO createPropertiesPOJO(HashMap<String, String> map) {
-        PropertiesFilePOJO pojo_properties = null;
+        PropertiesFilePOJO pojo_properties;
         String id = map.get(PropertyKey.id.name());
         String filename = map.get(PropertyKey.filename.name());
         String size = map.get(PropertyKey.size.name());
@@ -153,98 +200,7 @@ public class FileOperationManager {
         return pojo_properties;
     }
 
-    public String getFileFolder(String uuid) {
-        return Paths.get(prefs.get(PreferenceKey.importDataPath), uuid).toString();
-    }
-
-    // Exception by createDirecotries
-    public String deleteUploadFileFolder(String uuid) throws IOException {
-        String path = Paths.get(prefs.get(PreferenceKey.importDataPath), uuid).toString();
-        try (Stream<Path> walk = Files.walk(Paths.get(path))) {
-            walk.sorted(Comparator.reverseOrder())
-                    .map(java.nio.file.Path::toFile)
-                    .forEach(File::delete);
-        }
-        return path;
-    }
-
-
-    public String getScriptValueByKey(String name_script, ScriptKey search_key) {
-        String path = Paths.get(prefs.get(PreferenceKey.importScriptPath), name_script).toString();
-        String line, key;
-        String result = "";
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-            for (int i = 0; i < 15; i++) {
-                line = br.readLine();
-                if (line != null && line.startsWith("#") && line.contains("@") && line.contains("=")) {
-                    key = line.substring(line.indexOf('@') + 1, line.indexOf('='));
-                    if (key != null && key.equals(search_key.name())) {
-                        result = line.substring(line.indexOf('=') + 1);
-                    }
-                }
-            }
-        } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "No file to read found", e);
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "No line to read found", e);
-        } finally {
-            return result;
-        }
-    }
-
-    public ArrayList<String> getScriptIDs() throws IOException {
-        String path = prefs.get(PreferenceKey.importScriptPath);
-        ArrayList<String> list_scripts = new ArrayList<>();
-        try (Stream<java.nio.file.Path> walk = Files.walk(Paths.get(path))) {
-            walk.filter(Files::isRegularFile)
-                    .map(java.nio.file.Path::getFileName)
-                    .map(java.nio.file.Path::toString)
-                    .forEach(list_scripts::add);
-        }
-        return list_scripts;
-    }
-
-    // WIE SCHÖNER MACHEN MIT "ID"??
-    public HashMap<String, String> checkScriptFileForIntegrity(String name_script) {
-        String path = Paths.get(prefs.get(PreferenceKey.importScriptPath), name_script).toString();
-        String line, key, value;
-        HashMap<String, String> result = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-            List<String> list = Stream.of(ScriptKey.values()).map(Enum::name).collect(Collectors.toList());
-            for (int i = 0; i < 15; i++) {
-                line = br.readLine();
-                if (line != null && line.startsWith("#") && line.contains("@") && line.contains("=")) {
-                    key = line.substring(line.indexOf('@') + 1, line.indexOf('='));
-                    if (key != null && list.contains(key)) {
-                        list.remove(key);
-                        value = line.substring(line.indexOf('=') + 1);
-                        result.put(key, value);
-                    }
-                }
-            }
-            if (!list.isEmpty())
-                result = new HashMap<>();
-            else
-                result.put("id", name_script);
-        } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "No file to read found", e);
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "No line to read found", e);
-        } finally {
-            return result;
-        }
-    }
-
-    public ScriptFilePOJO createScriptPOJO(HashMap<String, String> map) {
-        ScriptFilePOJO pojo_script = null;
-        String viewname = map.get(ScriptKey.VIEWNAME.name());
-        String version = map.get(ScriptKey.VERSION.name());
-        String name_script = map.get("id");
-        pojo_script = new ScriptFilePOJO(name_script, viewname, version);
-        return pojo_script;
-    }
-
-    public String getScriptPath(String name_script) {
-        return Paths.get(prefs.get(PreferenceKey.importScriptPath), name_script).toString();
+    public String getUploadFileFolderPath(String uuid) {
+        return Paths.get(preferences.get(PreferenceKey.importDataPath), uuid).toString();
     }
 }
