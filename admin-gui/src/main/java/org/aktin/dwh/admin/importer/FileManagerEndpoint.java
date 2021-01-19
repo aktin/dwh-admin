@@ -98,7 +98,8 @@ public class FileManagerEndpoint {
     }
 
     private boolean doesContentTypeMatchScript(File file, String script_name) throws IOException {
-        String script_mime = scriptOperationManager.getScriptValueByKey(script_name, ScriptKey.MIMETYPE);
+        HashMap<String, String> hashMap_tmp = scriptOperationManager.getScriptHashMap(script_name);
+        String script_mime = hashMap_tmp.get(ScriptKey.MIMETYPE.name());
         switch (ScriptMimeValue.valueOf(script_mime)) {
             case zip:
                 int[] bytesArray_header = new int[]{0x504B0304, 0x504B0506, 0x504B0708};
