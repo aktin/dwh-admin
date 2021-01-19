@@ -120,7 +120,6 @@ public class ImportEndpointTester {
         Assert.assertEquals(true, true);
     }
 
-@Test
     public void testGetFiles() throws Exception {
         String path = "C:\\Users\\User\\IdeaProjects\\dwh-admin\\admin-gui\\src\\test\\resources\\folder1";
 
@@ -244,7 +243,6 @@ public class ImportEndpointTester {
         fos.close();
     }
 
-    @Test
     public void testGetUploadedFileIDs() throws IOException {
 
         String path = "C:\\Users\\User\\IdeaProjects\\dwh-admin\\admin-gui\\src\\test\\resources\\folder1";
@@ -266,7 +264,6 @@ public class ImportEndpointTester {
     }
 
 
-    @Test
     public void testJsonSerializer() throws IOException {
         String id = UUID.randomUUID().toString();
         String filename = "testname";
