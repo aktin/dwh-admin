@@ -188,6 +188,11 @@ public class FileOperationManager {
         }
     }
 
+    public String getPropertiesValueByKey(String uuid, PropertyKey key) {
+        HashMap<String, String> hashmap_tmp = getPropertiesHashMap(uuid);
+        return hashmap_tmp.get(key.name());
+    }
+
     public PropertiesFilePOJO createPropertiesPOJO(HashMap<String, String> map) {
         PropertiesFilePOJO pojo_properties;
         String id = map.get(PropertyKey.id.name());

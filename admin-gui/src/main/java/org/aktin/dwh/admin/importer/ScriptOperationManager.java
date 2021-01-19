@@ -118,6 +118,11 @@ public class ScriptOperationManager {
         }
     }
 
+    public String getScriptValueByKey(String name_script, ScriptKey key) {
+        HashMap<String, String> hashmap_tmp = getScriptHashMap(name_script);
+        return hashmap_tmp.get(key.name());
+    }
+
     public ScriptFilePOJO createScriptPOJO(HashMap<String, String> map) {
         ScriptFilePOJO pojo_script;
         String viewname = map.get(ScriptKey.VIEWNAME.name());
