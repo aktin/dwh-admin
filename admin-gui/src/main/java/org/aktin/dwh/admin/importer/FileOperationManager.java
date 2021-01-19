@@ -136,6 +136,7 @@ public class FileOperationManager {
         addPropertiesToOperationLock(properties);
     }
 
+    // runner uses this
     public void addPropertyToProperties(String uuid, PropertyKey key, String value) {
         synchronized (operationLock_properties.get(uuid)) {
             String path = Paths.get(preferences.get(PreferenceKey.importDataPath), uuid, "properties").toString();
@@ -164,15 +165,9 @@ public class FileOperationManager {
         }
     }
 
-    public String[] getKeys() {
-        synchronized (operationLock_properties) {
-            return operationLock_properties.keySet().toArray(new String[0]);
-        }
-    }
-
     public ArrayList<HashMap<String, String>> getValues() {
         synchronized (operationLock_properties) {
-            return operationLock_properties.values().stream().collect(Collectors.toCollection(ArrayList::new));
+            return new ArrayList<>(operationLock_properties.values());
         }
     }
 
@@ -186,11 +181,6 @@ public class FileOperationManager {
             }
             return result;
         }
-    }
-
-    public String getPropertiesValueByKey(String uuid, PropertyKey key) {
-        HashMap<String, String> hashmap_tmp = getPropertiesHashMap(uuid);
-        return hashmap_tmp.get(key.name());
     }
 
     public PropertiesFilePOJO createPropertiesPOJO(HashMap<String, String> map) {

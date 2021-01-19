@@ -94,15 +94,9 @@ public class ScriptOperationManager {
         return result;
     }
 
-    public String[] getKeys() {
-        synchronized (operationLock_script) {
-            return operationLock_script.keySet().toArray(new String[0]);
-        }
-    }
-
     public ArrayList<HashMap<String, String>> getValues() {
         synchronized (operationLock_script) {
-            return operationLock_script.values().stream().collect(Collectors.toCollection(ArrayList::new));
+            return new ArrayList<>(operationLock_script.values());
         }
     }
 
@@ -116,11 +110,6 @@ public class ScriptOperationManager {
             }
             return result;
         }
-    }
-
-    public String getScriptValueByKey(String name_script, ScriptKey key) {
-        HashMap<String, String> hashmap_tmp = getScriptHashMap(name_script);
-        return hashmap_tmp.get(key.name());
     }
 
     public ScriptFilePOJO createScriptPOJO(HashMap<String, String> map) {
