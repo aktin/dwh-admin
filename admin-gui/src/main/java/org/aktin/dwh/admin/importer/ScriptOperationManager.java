@@ -94,13 +94,13 @@ public class ScriptOperationManager {
         return result;
     }
 
-    public String[] getScriptKeys() {
+    public String[] getKeys() {
         synchronized (operationLock_script) {
             return operationLock_script.keySet().toArray(new String[0]);
         }
     }
 
-    public ArrayList<HashMap<String, String>> getScriptValues() {
+    public ArrayList<HashMap<String, String>> getValues() {
         synchronized (operationLock_script) {
             return operationLock_script.values().stream().collect(Collectors.toCollection(ArrayList::new));
         }

@@ -164,13 +164,13 @@ public class FileOperationManager {
         }
     }
 
-    public String[] getPropertiesKeys() {
+    public String[] getKeys() {
         synchronized (operationLock_properties) {
             return operationLock_properties.keySet().toArray(new String[0]);
         }
     }
 
-    public ArrayList<HashMap<String, String>> getPropertiesValues() {
+    public ArrayList<HashMap<String, String>> getValues() {
         synchronized (operationLock_properties) {
             return operationLock_properties.values().stream().collect(Collectors.toCollection(ArrayList::new));
         }
