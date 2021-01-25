@@ -69,6 +69,8 @@ export class UrlService {
         getScripts: 'script/get',
         verifyFile: 'script/@uuid@/verify',
         importFile: 'script/@uuid@/import',
+        cancelProcessing: 'script/@uuid@/cancel',
+        getProcessingStatus: 'script/@uuid@/status'
     };
 
     setServerUrl (serverUrl: string) {
