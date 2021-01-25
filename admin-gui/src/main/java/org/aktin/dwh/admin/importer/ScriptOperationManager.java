@@ -45,7 +45,7 @@ public class ScriptOperationManager {
             if (hashMap_tmp != null && !hashMap_tmp.isEmpty())
                 operationLock_script.put(script, hashMap_tmp);
             else
-                LOGGER.log(Level.INFO, "{0} misses some keys", script);
+                LOGGER.log(Level.WARNING, "{0} misses some keys", script);
         }
     }
 
@@ -75,7 +75,7 @@ public class ScriptOperationManager {
                 line = br.readLine();
                 if (line != null && line.startsWith("#") && line.contains("@") && line.contains("=")) {
                     key = line.substring(line.indexOf('@') + 1, line.indexOf('='));
-                    if (key != null && list.contains(key)) {
+                    if (list.contains(key)) {
                         list.remove(key);
                         value = line.substring(line.indexOf('=') + 1);
                         result.put(key, value);

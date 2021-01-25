@@ -41,7 +41,7 @@ public class FileOperationManager {
             if (hashMap_tmp != null && !hashMap_tmp.isEmpty())
                 operationLock_properties.put(uuid, hashMap_tmp);
             else
-                LOGGER.log(Level.INFO, "{0} misses some keys", uuid);
+                LOGGER.log(Level.WARNING, "{0} misses some keys", uuid);
         }
     }
 
@@ -190,7 +190,7 @@ public class FileOperationManager {
         String script = map.get(PropertyKey.script.name());
         String operation = map.get(PropertyKey.operation.name());
         String state = map.get(PropertyKey.state.name());
-        pojo_properties = new PropertiesFilePOJO(id, filename, script, size, operation, state);
+        pojo_properties = new PropertiesFilePOJO(id, filename, size, script, operation, state);
         return pojo_properties;
     }
 
