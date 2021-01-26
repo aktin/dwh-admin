@@ -34,17 +34,19 @@ public class ScriptOperationManager {
     @Inject
     private Preferences preferences;
 
-    private HashMap<String, HashMap<String, String>> operationLock_script = new HashMap<>();
+    private final HashMap<String, ScriptFilePOJO> operationLock_script = new HashMap<>();
 
     // only integrated properties in operationLock
     @PostConstruct
     public void initOperationLock() {
-        HashMap<String, String> hashMap_tmp;
+        HashMap<String, String> map;
+        ScriptFilePOJO pojo;
         for (String script : getScriptIDs()) {
-            hashMap_tmp = checkScriptFileForIntegrity(script);
-            if (hashMap_tmp != null && !hashMap_tmp.isEmpty())
-                operationLock_script.put(script, hashMap_tmp);
-            else
+            map = checkScriptFileForIntegrity(script);
+            if (map != null && !map.isEmpty()) {
+                pojo = createScriptPOJO(map);
+                operationLock_script.put(script, pojo);
+            } else
                 LOGGER.log(Level.WARNING, "{0} misses some keys", script);
         }
     }
@@ -84,8 +86,6 @@ public class ScriptOperationManager {
             }
             if (!list.isEmpty())
                 result = new HashMap<>();
-            else
-                result.put("id", name_script);
         } catch (FileNotFoundException e) {
             LOGGER.log(Level.SEVERE, "No file to read found", e);
         } catch (IOException e) {
@@ -94,15 +94,23 @@ public class ScriptOperationManager {
         return result;
     }
 
-    public ArrayList<HashMap<String, String>> getHashMaps() {
+    private ScriptFilePOJO createScriptPOJO(HashMap<String, String> map) {
+        String id = map.get(ScriptKey.ID.name());
+        String viewname = map.get(ScriptKey.VIEWNAME.name());
+        String version = map.get(ScriptKey.VERSION.name());
+        String mimetype = map.get(ScriptKey.MIMETYPE.name());
+        return new ScriptFilePOJO(id, viewname, version, mimetype);
+    }
+
+    public ArrayList<ScriptFilePOJO> getScriptPOJOs() {
         synchronized (operationLock_script) {
             return new ArrayList<>(operationLock_script.values());
         }
     }
 
-    public HashMap<String, String> getScriptHashMap(String name_script) {
+    public ScriptFilePOJO getScriptPOJO(String name_script) {
         synchronized (operationLock_script.get(name_script)) {
-            HashMap<String, String> result = new HashMap<>();
+            ScriptFilePOJO result = null;
             try {
                 result = operationLock_script.get(name_script);
             } catch (NullPointerException e) {
@@ -110,15 +118,6 @@ public class ScriptOperationManager {
             }
             return result;
         }
-    }
-
-    public ScriptFilePOJO createScriptPOJO(HashMap<String, String> map) {
-        ScriptFilePOJO pojo_script;
-        String viewname = map.get(ScriptKey.VIEWNAME.name());
-        String version = map.get(ScriptKey.VERSION.name());
-        String name_script = map.get("id");
-        pojo_script = new ScriptFilePOJO(name_script, viewname, version);
-        return pojo_script;
     }
 
     public String getScriptPath(String name_script) {

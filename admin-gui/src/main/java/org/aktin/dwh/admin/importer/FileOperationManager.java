@@ -30,17 +30,19 @@ public class FileOperationManager {
     @Inject
     private Preferences preferences;
 
-    private HashMap<String, HashMap<String, String>> operationLock_properties = new HashMap<>();
+    private final HashMap<String, PropertiesFilePOJO> operationLock_properties = new HashMap<>();
 
     // only integrated properties in operationLock
     @PostConstruct
-    public void initOperationLock() {
-        HashMap<String, String> hashMap_tmp;
+    private void initOperationLock() {
+        HashMap<String, String> map;
+        PropertiesFilePOJO pojo;
         for (String uuid : getUploadedFileIDs()) {
-            hashMap_tmp = checkPropertiesFileForIntegrity(uuid);
-            if (hashMap_tmp != null && !hashMap_tmp.isEmpty())
-                operationLock_properties.put(uuid, hashMap_tmp);
-            else
+            map = checkPropertiesFileForIntegrity(uuid);
+            if (map != null && !map.isEmpty()) {
+                pojo = createPropertiesPOJO(map);
+                operationLock_properties.put(uuid, pojo);
+            } else
                 LOGGER.log(Level.WARNING, "{0} misses some keys", uuid);
         }
     }
@@ -82,12 +84,28 @@ public class FileOperationManager {
         return result;
     }
 
+    private PropertiesFilePOJO createPropertiesPOJO(HashMap<String, String> map) {
+        String id = map.get(PropertyKey.id.name());
+        String filename = map.get(PropertyKey.filename.name());
+        String size = map.get(PropertyKey.size.name());
+        String script = map.get(PropertyKey.script.name());
+        String operation = map.get(PropertyKey.operation.name());
+        String state = map.get(PropertyKey.state.name());
+        return new PropertiesFilePOJO(id, filename, size, script, operation, state);
+    }
 
     // Exception by createDirecotries
     public String createUploadFileFolder(String uuid) throws IOException {
         String path = Paths.get(preferences.get(PreferenceKey.importDataPath), uuid).toString();
         Files.createDirectories(Paths.get(path));
         return path;
+    }
+
+    //Exception by move
+    public void moveUploadFile(String path_old, String path_new, String file_name) throws IOException {
+        java.nio.file.Path oldFile = Paths.get(path_old);
+        java.nio.file.Path newFile = Paths.get(path_new, file_name);
+        Files.move(oldFile, newFile);
     }
 
     // Exception by createDirecotries
@@ -106,13 +124,6 @@ public class FileOperationManager {
         }
     }
 
-    //Exception by move
-    public void moveUploadFile(String path_old, String path_new, String file_name) throws IOException {
-        java.nio.file.Path oldFile = Paths.get(path_old);
-        java.nio.file.Path newFile = Paths.get(path_new, file_name);
-        Files.move(oldFile, newFile);
-    }
-
     // outputstream -> java.io.FileNotFoundException
     // store -> IOException
     public void createUploadFileProperties(String uuid, String file_name, long file_size, String script_name) {
@@ -127,12 +138,12 @@ public class FileOperationManager {
             properties.setProperty(PropertyKey.state.name(), String.valueOf(ImportState.successful));
             properties.setProperty(PropertyKey.uploaded.name(), String.valueOf(System.currentTimeMillis()));
             properties.store(fileOut, "");
+            addPropertiesToOperationLock(properties);
         } catch (java.io.FileNotFoundException e) {
             LOGGER.log(Level.SEVERE, "No file to stream found", e);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "No file to store found", e);
         }
-        addPropertiesToOperationLock(properties);
     }
 
     // runner uses this
@@ -146,33 +157,38 @@ public class FileOperationManager {
                     properties.setProperty(key.name(), value);
                     properties.store(output, "");
                 }
+                addPropertiesToOperationLock(properties);
             } catch (FileNotFoundException e) {
                 LOGGER.log(Level.SEVERE, "No file to stream found", e);
             } catch (IOException e) {
                 LOGGER.log(Level.SEVERE, "No file to process found", e);
             }
-            addPropertiesToOperationLock(properties);
         }
     }
 
     private void addPropertiesToOperationLock(Properties properties) {
-        HashMap<String, String> hashmap_tmp = new HashMap<>();
-        for (Map.Entry<Object, Object> entry : properties.entrySet())
-            hashmap_tmp.put((String) entry.getKey(), (String) entry.getValue());
+        HashMap<String, String> map = new HashMap<>();
+        PropertyKey key;
+        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+            key = PropertyKey.valueOf((String) entry.getKey());
+            if (Arrays.asList(DEFAULT_PROPERTIES).contains(key))
+                map.put((String) entry.getKey(), (String) entry.getValue());
+        }
+        PropertiesFilePOJO pojo = createPropertiesPOJO(map);
         synchronized (operationLock_properties) {
-            operationLock_properties.put(hashmap_tmp.get(PropertyKey.id.name()), hashmap_tmp);
+            operationLock_properties.put(pojo.getId(), pojo);
         }
     }
 
-    public ArrayList<HashMap<String, String>> getHashMaps() {
+    public ArrayList<PropertiesFilePOJO> getPropertiesPOJOs() {
         synchronized (operationLock_properties) {
             return new ArrayList<>(operationLock_properties.values());
         }
     }
 
-    public HashMap<String, String> getPropertiesHashMap(String uuid) {
+    public PropertiesFilePOJO getPropertiesPOJO(String uuid) {
         synchronized (operationLock_properties.get(uuid)) {
-            HashMap<String, String> result = new HashMap<>();
+            PropertiesFilePOJO result = null;
             try {
                 result = operationLock_properties.get(uuid);
             } catch (NullPointerException e) {
@@ -180,18 +196,6 @@ public class FileOperationManager {
             }
             return result;
         }
-    }
-
-    public PropertiesFilePOJO createPropertiesPOJO(HashMap<String, String> map) {
-        PropertiesFilePOJO pojo_properties;
-        String id = map.get(PropertyKey.id.name());
-        String filename = map.get(PropertyKey.filename.name());
-        String size = map.get(PropertyKey.size.name());
-        String script = map.get(PropertyKey.script.name());
-        String operation = map.get(PropertyKey.operation.name());
-        String state = map.get(PropertyKey.state.name());
-        pojo_properties = new PropertiesFilePOJO(id, filename, size, script, operation, state);
-        return pojo_properties;
     }
 
     public String getUploadFileFolderPath(String uuid) {

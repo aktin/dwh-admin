@@ -3,6 +3,7 @@ package org.aktin.dwh.admin.importer;
 import org.aktin.dwh.admin.importer.enums.ScriptKey;
 import org.aktin.dwh.admin.importer.enums.ScriptMimeValue;
 import org.aktin.dwh.admin.importer.pojos.PropertiesFilePOJO;
+import org.aktin.dwh.admin.importer.pojos.ScriptFilePOJO;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -54,12 +55,19 @@ public class FileManagerEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public ArrayList<PropertiesFilePOJO> getUploadedFiles() {
-        ArrayList<PropertiesFilePOJO> list_propertiesPOJOs = new ArrayList<>();
-        for (HashMap<String, String> map_properties : fileOperationManager.getHashMaps()) {
-                PropertiesFilePOJO pojo_properties = fileOperationManager.createPropertiesPOJO(map_properties);
-                list_propertiesPOJOs.add(pojo_properties);
-        }
-        return list_propertiesPOJOs;
+        return fileOperationManager.getPropertiesPOJOs();
+    }
+
+    /**
+     * GET request for a single properties file of uploaded binary
+     * @param uuid: uuid of uploaded file
+     * @return PropertiesFilePojo of selected uuid as json
+     */
+    @Path("{uuid}/get")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public PropertiesFilePOJO getUploadedFile(@NotNull @PathParam("uuid") String uuid) {
+        return fileOperationManager.getPropertiesPOJO(uuid);
     }
 
     /**
@@ -77,8 +85,6 @@ public class FileManagerEndpoint {
      * <p>
      * EXCEPTION for Files.createDirectories and Files.move and Files.size
      */
-
-
     @Path("upload")
     @POST
     public Response uploadFile(@NotNull @QueryParam("script") String script_name, @NotNull @QueryParam("filename") String file_name, @NotNull File file) throws IOException {
@@ -98,9 +104,8 @@ public class FileManagerEndpoint {
     }
 
     private boolean doesContentTypeMatchScript(File file, String script_name) throws IOException {
-        HashMap<String, String> hashMap_tmp = scriptOperationManager.getScriptHashMap(script_name);
-        String script_mime = hashMap_tmp.get(ScriptKey.MIMETYPE.name());
-        switch (ScriptMimeValue.valueOf(script_mime)) {
+        ScriptFilePOJO pojo_script = scriptOperationManager.getScriptPOJO(script_name);
+        switch (ScriptMimeValue.valueOf(pojo_script.getMimetype())) {
             case zip:
                 int[] bytesArray_header = new int[]{0x504B0304, 0x504B0506, 0x504B0708};
                 return compareContentBytes(file, bytesArray_header);
