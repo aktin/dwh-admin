@@ -36,7 +36,7 @@ public class ScriptOperationManager {
 
     private final HashMap<String, ScriptFilePOJO> operationLock_script = new HashMap<>();
 
-    // only integrated properties in operationLock
+    // only scripts with all keys in operationLock
     @PostConstruct
     public void initOperationLock() {
         HashMap<String, String> map;
@@ -53,9 +53,9 @@ public class ScriptOperationManager {
 
     // files.walk -> IOExveption
     private ArrayList<String> getScriptIDs() {
-        String path = preferences.get(PreferenceKey.importScriptPath);
+        Path path = Paths.get(preferences.get(PreferenceKey.importScriptPath));
         ArrayList<String> list_scripts = new ArrayList<>();
-        try (Stream<Path> walk = Files.walk(Paths.get(path))) {
+        try (Stream<Path> walk = Files.walk(path)) {
             walk.filter(Files::isRegularFile)
                     .map(java.nio.file.Path::getFileName)
                     .map(java.nio.file.Path::toString)
@@ -66,7 +66,6 @@ public class ScriptOperationManager {
         return list_scripts;
     }
 
-    // WIE SCHÖNER MACHEN MIT "ID"??
     private HashMap<String, String> checkScriptFileForIntegrity(String name_script) {
         String path = Paths.get(preferences.get(PreferenceKey.importScriptPath), name_script).toString();
         String line, key, value;
@@ -77,9 +76,9 @@ public class ScriptOperationManager {
                 line = br.readLine();
                 if (line != null && line.startsWith("#") && line.contains("@") && line.contains("=")) {
                     key = line.substring(line.indexOf('@') + 1, line.indexOf('='));
-                    if (list.contains(key)) {
+                    value = line.substring(line.indexOf('=') + 1);
+                    if (list.contains(key) && !value.isEmpty()) {
                         list.remove(key);
-                        value = line.substring(line.indexOf('=') + 1);
                         result.put(key, value);
                     }
                 }

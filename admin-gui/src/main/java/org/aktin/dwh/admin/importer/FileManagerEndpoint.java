@@ -1,10 +1,14 @@
 package org.aktin.dwh.admin.importer;
 
+import org.aktin.dwh.admin.importer.enums.LogType;
 import org.aktin.dwh.admin.importer.enums.ScriptKey;
 import org.aktin.dwh.admin.importer.enums.ScriptMimeValue;
 import org.aktin.dwh.admin.importer.pojos.PropertiesFilePOJO;
 import org.aktin.dwh.admin.importer.pojos.ScriptFilePOJO;
+import org.aktin.dwh.admin.importer.pojos.ScriptLogPOJO;
+import sun.rmi.runtime.Log;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
@@ -13,6 +17,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -136,6 +141,21 @@ public class FileManagerEndpoint {
     public Response deleteFile(@NotNull @PathParam("uuid") String uuid) throws IOException {
         String path_deletedFolder = fileOperationManager.deleteUploadFileFolder(uuid);
         LOGGER.log(Level.INFO, "Deleted file at {0}", path_deletedFolder);
+        return Response.status(Response.Status.OK).build();
+    }
+
+    @Path("{uuid}/log/get")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public ArrayList<ScriptLogPOJO> getUploadedFileLogs(@NotNull @PathParam("uuid") String uuid) {
+         return fileOperationManager.getScriptLogList(uuid);
+    }
+
+    @Path("{uuid}/log/{logType}/delete")
+    @DELETE
+    public Response deleteUploadedFileLog(@NotNull @PathParam("uuid") String uuid, @NotNull @PathParam("logType") String logType) throws IOException {
+        String path_deletedLog = fileOperationManager.deleteScriptLog(uuid, LogType.valueOf(logType));
+        LOGGER.log(Level.INFO, "Deleted log file at {0}", path_deletedLog);
         return Response.status(Response.Status.OK).build();
     }
 }

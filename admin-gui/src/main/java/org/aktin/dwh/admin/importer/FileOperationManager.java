@@ -4,11 +4,13 @@ import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.admin.importer.enums.*;
 import org.aktin.dwh.admin.importer.pojos.PropertiesFilePOJO;
+import org.aktin.dwh.admin.importer.pojos.ScriptLogPOJO;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,6 +18,7 @@ import java.util.*;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 // TODO COMMENTS + JAVA DOC
@@ -31,19 +34,33 @@ public class FileOperationManager {
     private Preferences preferences;
 
     private final HashMap<String, PropertiesFilePOJO> operationLock_properties = new HashMap<>();
+    private final HashMap<String, ArrayList<ScriptLogPOJO>> operationLock_scriptLog = new HashMap<>();
 
     // only integrated properties in operationLock
     @PostConstruct
     private void initOperationLock() {
         HashMap<String, String> map;
-        PropertiesFilePOJO pojo;
+        PropertiesFilePOJO pojo_properties;
+        ArrayList<ScriptLogPOJO> list_scriptLog;
         for (String uuid : getUploadedFileIDs()) {
-            map = checkPropertiesFileForIntegrity(uuid);
-            if (map != null && !map.isEmpty()) {
-                pojo = createPropertiesPOJO(map);
-                operationLock_properties.put(uuid, pojo);
-            } else
-                LOGGER.log(Level.WARNING, "{0} misses some keys", uuid);
+            synchronized (operationLock_properties) {
+                map = checkPropertiesFileForIntegrity(uuid);
+                if (map != null && !map.isEmpty()) {
+                    pojo_properties = createPropertiesPOJO(map);
+                    operationLock_properties.put(uuid, pojo_properties);
+                } else
+                    LOGGER.log(Level.WARNING, "{0} misses some keys", uuid);
+            }
+
+            synchronized (operationLock_scriptLog) {
+                list_scriptLog = createScriptLogList(uuid);
+                operationLock_scriptLog.put(uuid, list_scriptLog);
+            }
+        }
+
+        System.out.println(operationLock_scriptLog.keySet());
+        for(String key : operationLock_scriptLog.keySet()){
+            System.out.println(operationLock_scriptLog.get(key).size());
         }
     }
 
@@ -96,9 +113,9 @@ public class FileOperationManager {
 
     // Exception by createDirecotries
     public String createUploadFileFolder(String uuid) throws IOException {
-        String path = Paths.get(preferences.get(PreferenceKey.importDataPath), uuid).toString();
-        Files.createDirectories(Paths.get(path));
-        return path;
+        Path path = Paths.get(preferences.get(PreferenceKey.importDataPath), uuid);
+        Files.createDirectories(path);
+        return path.toString();
     }
 
     //Exception by move
@@ -111,8 +128,8 @@ public class FileOperationManager {
     // Exception by createDirecotries
     public String deleteUploadFileFolder(String uuid) throws IOException {
         synchronized (operationLock_properties.get(uuid)) {
-            String path = Paths.get(preferences.get(PreferenceKey.importDataPath), uuid).toString();
-            try (Stream<Path> walk = Files.walk(Paths.get(path))) {
+            Path path = Paths.get(preferences.get(PreferenceKey.importDataPath), uuid);
+            try (Stream<Path> walk = Files.walk(path)) {
                 walk.sorted(Comparator.reverseOrder())
                         .map(java.nio.file.Path::toFile)
                         .forEach(File::delete);
@@ -120,7 +137,7 @@ public class FileOperationManager {
             synchronized (operationLock_properties) {
                 operationLock_properties.remove(uuid);
             }
-            return path;
+            return path.toString();
         }
     }
 
@@ -200,5 +217,68 @@ public class FileOperationManager {
 
     public String getUploadFileFolderPath(String uuid) {
         return Paths.get(preferences.get(PreferenceKey.importDataPath), uuid).toString();
+    }
+
+
+    private ArrayList<ScriptLogPOJO> createScriptLogList(String uuid) {
+        ArrayList<ScriptLogPOJO> list_scriptLog = new ArrayList<>();
+        ScriptLogPOJO pojo;
+        for (LogType logType : LogType.values()) {
+            pojo = createScriptLogPOJO(uuid, logType);
+            if (pojo != null)
+                list_scriptLog.add(pojo);
+        }
+        return list_scriptLog;
+    }
+
+    // readAllLines
+    private ScriptLogPOJO createScriptLogPOJO(String uuid, LogType logType) {
+        Path path = Paths.get(preferences.get(PreferenceKey.importDataPath), uuid, logType.name());
+        ScriptLogPOJO pojo = null;
+        if (Files.exists(path)) {
+            try {
+                String content = Files.readAllLines(path).stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining("\n"));
+                if (!content.isEmpty())
+                    pojo = new ScriptLogPOJO(uuid, logType, content);
+            } catch (IOException e) {
+                LOGGER.log(Level.SEVERE, "No file to read found", e);
+            }
+        }
+        return pojo;
+    }
+
+    // only for python runner
+    public void reloadScriptLogList(String uuid) {
+        synchronized (operationLock_scriptLog.get(uuid)) {
+            ArrayList<ScriptLogPOJO> list_scriptLog = createScriptLogList(uuid);
+            updateScriptLogList(uuid, list_scriptLog);
+        }
+    }
+
+    //deleteIfExists
+    public String deleteScriptLog(String uuid, LogType logType) throws IOException {
+        synchronized (operationLock_scriptLog.get(uuid)) {
+            Path path = Paths.get(preferences.get(PreferenceKey.importDataPath), uuid, logType.name());
+            Files.deleteIfExists(path);
+            ArrayList<ScriptLogPOJO> list_scriptLog = operationLock_scriptLog.get(uuid);
+            list_scriptLog.removeIf(scriptLog -> scriptLog.getType().equals(logType));
+            updateScriptLogList(uuid, list_scriptLog);
+            return path.toString();
+        }
+    }
+
+    private void updateScriptLogList(String uuid, ArrayList<ScriptLogPOJO> list) {
+        synchronized (operationLock_scriptLog) {
+            operationLock_scriptLog.put(uuid, list);
+        }
+    }
+
+    public ArrayList<ScriptLogPOJO> getScriptLogList(String uuid) {
+        synchronized (operationLock_scriptLog) {
+            return operationLock_scriptLog.get(uuid);
+        }
+
     }
 }
