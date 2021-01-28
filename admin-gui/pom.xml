@@ -242,7 +242,6 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <attachClasses>true</attachClasses>
                     <warSourceExcludes>node_modules/**,**/*.ts,**/*.js.map</warSourceExcludes>
                 </configuration>
             </plugin>

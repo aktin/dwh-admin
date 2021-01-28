@@ -152,7 +152,7 @@ public class FileManagerEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public ArrayList<ScriptLogPOJO> getUploadedFileLogs(@NotNull @PathParam("uuid") String uuid) {
-         return fileOperationManager.getScriptLogList(uuid);
+         return fileOperationManager.getScriptLogs(uuid);
     }
 
     @Path("{uuid}/log/{logType}/delete")
