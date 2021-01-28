@@ -1,10 +1,12 @@
 package org.aktin.dwh.admin.importer;
 
-import org.aktin.dwh.admin.importer.enums.LogType;
-import org.aktin.dwh.admin.importer.enums.ScriptMimeValue;
-import org.aktin.dwh.admin.importer.pojos.PropertiesFilePOJO;
-import org.aktin.dwh.admin.importer.pojos.ScriptFilePOJO;
-import org.aktin.dwh.admin.importer.pojos.ScriptLogPOJO;
+import org.aktin.importer.FileOperationManager;
+import org.aktin.importer.ScriptOperationManager;
+import org.aktin.importer.enums.LogType;
+import org.aktin.importer.enums.ScriptMimeValue;
+import org.aktin.importer.pojos.PropertiesFilePOJO;
+import org.aktin.importer.pojos.ScriptFilePOJO;
+import org.aktin.importer.pojos.ScriptLogPOJO;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;

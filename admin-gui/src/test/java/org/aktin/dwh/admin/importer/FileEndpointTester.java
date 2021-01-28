@@ -1,6 +1,5 @@
 package org.aktin.dwh.admin.importer;
 
-
 //TODO implement integration tests
 public class FileEndpointTester {
 

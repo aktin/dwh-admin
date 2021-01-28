@@ -1,8 +1,9 @@
 package org.aktin.dwh.admin.importer;
 
-import org.aktin.dwh.admin.importer.pojos.ScriptFilePOJO;
-import org.aktin.scripts.PythonScriptExecutor;
-import org.aktin.scripts.ScriptOperation;
+import org.aktin.importer.ScriptOperationManager;
+import org.aktin.importer.enums.ScriptOperation;
+import org.aktin.importer.pojos.ScriptFilePOJO;
+import org.aktin.importer.executor.PythonScriptExecutor;
 
 import javax.validation.constraints.NotNull;
 import javax.inject.Inject;
@@ -105,6 +106,7 @@ public class ScriptManagerEndpoint {
      */
     @Path("{uuid}/status")
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getFileProcessingStatus(@NotNull @PathParam("uuid") String uuid) {
         boolean result = pythonScriptExecutor.isTaskDone(uuid);
         return Response.status(Response.Status.OK).entity(result).build();
