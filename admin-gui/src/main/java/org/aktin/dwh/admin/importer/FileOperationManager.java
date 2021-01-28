@@ -2,7 +2,10 @@ package org.aktin.dwh.admin.importer;
 
 import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
-import org.aktin.dwh.admin.importer.enums.*;
+import org.aktin.dwh.admin.importer.enums.ImportOperation;
+import org.aktin.dwh.admin.importer.enums.ImportState;
+import org.aktin.dwh.admin.importer.enums.LogType;
+import org.aktin.dwh.admin.importer.enums.PropertyKey;
 import org.aktin.dwh.admin.importer.pojos.PropertiesFilePOJO;
 import org.aktin.dwh.admin.importer.pojos.ScriptLogPOJO;
 
@@ -10,12 +13,10 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -59,7 +60,7 @@ public class FileOperationManager {
         }
 
         System.out.println(operationLock_scriptLog.keySet());
-        for(String key : operationLock_scriptLog.keySet()){
+        for (String key : operationLock_scriptLog.keySet()) {
             System.out.println(operationLock_scriptLog.get(key).size());
         }
     }
@@ -250,11 +251,10 @@ public class FileOperationManager {
     }
 
     // only for python runner
+    //TODO make better??
     public void reloadScriptLogList(String uuid) {
-        synchronized (operationLock_scriptLog.get(uuid)) {
-            ArrayList<ScriptLogPOJO> list_scriptLog = createScriptLogList(uuid);
-            updateScriptLogList(uuid, list_scriptLog);
-        }
+        ArrayList<ScriptLogPOJO> list_scriptLog = createScriptLogList(uuid);
+        updateScriptLogList(uuid, list_scriptLog);
     }
 
     //deleteIfExists

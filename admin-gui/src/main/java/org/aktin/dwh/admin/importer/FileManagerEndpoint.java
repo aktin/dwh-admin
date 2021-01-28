@@ -1,23 +1,25 @@
 package org.aktin.dwh.admin.importer;
 
 import org.aktin.dwh.admin.importer.enums.LogType;
-import org.aktin.dwh.admin.importer.enums.ScriptKey;
 import org.aktin.dwh.admin.importer.enums.ScriptMimeValue;
 import org.aktin.dwh.admin.importer.pojos.PropertiesFilePOJO;
 import org.aktin.dwh.admin.importer.pojos.ScriptFilePOJO;
 import org.aktin.dwh.admin.importer.pojos.ScriptLogPOJO;
-import sun.rmi.runtime.Log;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import java.io.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.concurrent.locks.ReadWriteLock;
+import java.util.ArrayList;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
