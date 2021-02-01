@@ -62,15 +62,18 @@ export class UrlService {
         version: 'info/version',
 
         // file import (p21) endpoints
-        getFiles:   'file/get',
+        getUploadedFiles:   'file/get',
+        getUploadedFile: 'file/@uuid@/get',
         uploadFile: 'file/upload',
         deleteFile: 'file/@uuid@/delete',
+        getUploadFileLogs: 'file/@uuid@/log/get',
+        deleteUploadFileLog: 'file/@uuid@/log/@logType@/delete',
 
-        getScripts: 'script/get',
+        getImportScripts: 'script/get',
         verifyFile: 'script/@uuid@/verify',
         importFile: 'script/@uuid@/import',
-        cancelProcessing: 'script/@uuid@/cancel',
-        getProcessingStatus: 'script/@uuid@/status'
+        cancelProgress: 'script/@uuid@/cancel',
+        getStatus: 'script/@uuid@/status'
     };
 
     setServerUrl (serverUrl: string) {
