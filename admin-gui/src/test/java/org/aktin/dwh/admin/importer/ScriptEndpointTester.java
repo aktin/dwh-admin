@@ -8,18 +8,18 @@ public class ScriptEndpointTester {
     }
 
     public void testQueueFileVerification() {
-
+        // POSTMAN
     }
 
     public void testQueueFileImport() {
-
+        // POSTMAN
     }
 
     public void testCancelFileProcessing() {
-
+        // POSTMAN
     }
 
     public void testGetFileProcessingStatus() {
-
+        // POSTMAN
     }
 }

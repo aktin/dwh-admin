@@ -2,11 +2,6 @@ package org.aktin.dwh.admin.importer;
 
 import org.aktin.importer.FileOperationManager;
 import org.aktin.importer.ScriptOperationManager;
-import org.aktin.importer.enums.LogType;
-import org.aktin.importer.enums.ScriptMimeValue;
-import org.aktin.importer.pojos.PropertiesFilePOJO;
-import org.aktin.importer.pojos.ScriptFilePOJO;
-import org.aktin.importer.pojos.ScriptLogPOJO;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -17,18 +12,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-/**
- * TODO Comments + JAVADOC
- * TODO DO NOT FORGET DWH-API:0.7-SNAPSHOT
- */
 
 @Path("file")
 public class FileManagerEndpoint {
@@ -45,38 +34,29 @@ public class FileManagerEndpoint {
     private SecurityContext security;
 
     /**
-     * GET request for a list of uploaded files
-     * iteriert durch alle ordner in importDataPath
-     * ordnername = uuid
-     * nutzt uuid, um properties zu öffnen
-     * checkt if properties vollständig ist
-     * extrahiert keys "filename". "size", "script", "state" und "id" aus properties
-     * schreibt value in json objekt
-     * all keys are mandatory, if one key is missing, whole element is skipped
-     * if no files named 'properties' exist, empty json is returned
-     * if directory [importDataPath} does not exists (noSuchFileException), empty json is returned
-     * läuft es auch wenn properties file fehlt? -> ja, exception wird geloggt aber flow wird nicht unterbrochen
+     * GET request for "properties"-File of all uploaded files detected by fileOperationManager
+     * Each item contains id, name, size in bytes, corresponding script and current state and operation of
+     * corresponding file (see PropertiesFile in generic-file-importer)
      *
-     * @return Response object with list of meta-data as json
+     * @return List of uploaded file data
      */
-
-    @Path("get")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public ArrayList<PropertiesFilePOJO> getUploadedFiles() {
-        return fileOperationManager.getPropertiesPOJOs();
+    public List<PropertiesFile> getUploadedFiles() {
+        return fileOperationManager.getProperties();
     }
 
     /**
-     * GET request for a single properties file of uploaded binary
-     * @param uuid: uuid of uploaded file
-     * @return PropertiesFilePojo of selected uuid as json
+     * GET request for a single "properties"-File of uploaded file
+     *
+     * @param uuid universally unique id of uploaded file
+     * @return PropertiesFile object with content of corresponding "properties"-File
      */
-    @Path("{uuid}/get")
+    @Path("{uuid}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public PropertiesFilePOJO getUploadedFile(@NotNull @PathParam("uuid") String uuid) {
-        return fileOperationManager.getPropertiesPOJO(uuid);
+    public PropertiesFile getUploadedFile(@NotNull @PathParam("uuid") String uuid) {
+        return fileOperationManager.getProperties(uuid);
     }
 
     /**
@@ -84,82 +64,63 @@ public class FileManagerEndpoint {
      * creates a new uuid for the file
      * creates a new folder named {uuid} in directory {importDataPath}
      * moves uploaded file from /tmp to new folder
-     * creates a new properties file in folder with id, filepath, filename, filesize, used script and filestate
-     * Meilenstein state wird hinzugefügt "uploaded"
+     * creates a new properties file in folder
      *
-     * @param file:        uploaded binary file
-     * @param file_name:   name of uploaded file on the client's computer (filename cant be extracted from binary?)
-     * @param script_name: name (id) of script to run verification/import with
-     * @return Response with status 201 and uuid of uploaded file
-     * <p>
-     * EXCEPTION for Files.createDirectories and Files.move and Files.size
+     * @param script_id id of corresponding processing script
+     * @param file_name original name of file
+     * @param file      binary file to upload
+     * @return Response with status 201 and uri of uploaded file
+     * @throws IOException if error occurs during creation of directory, moving of file or Files.size(newFile)
      */
-    @Path("upload")
     @POST
-    public Response uploadFile(@NotNull @QueryParam("script") String script_name, @NotNull @QueryParam("filename") String file_name, @NotNull File file) throws IOException {
-        if (doesContentTypeMatchScript(file, script_name)) {
-            String uuid = UUID.randomUUID().toString();
-            String path_newFolder = fileOperationManager.createUploadFileFolder(uuid);
-            fileOperationManager.moveUploadFile(file.getAbsolutePath(), path_newFolder, file_name);
-            java.nio.file.Path newFile = Paths.get(path_newFolder, file_name);
-            fileOperationManager.createUploadFileProperties(uuid, file_name, Files.size(newFile), script_name);
-
-            LOGGER.log(Level.INFO, "Uploaded file to {0}", newFile.toString());
-            return Response.status(Response.Status.CREATED).entity(uuid).build();
-        } else {
-            LOGGER.log(Level.SEVERE, "Type of {0} does not match {1}", new Object[]{file_name, script_name});
-            return Response.status(Response.Status.UNSUPPORTED_MEDIA_TYPE).build();
-        }
-    }
-
-    private boolean doesContentTypeMatchScript(File file, String script_name) throws IOException {
-        ScriptFilePOJO pojo_script = scriptOperationManager.getScriptPOJO(script_name);
-        switch (ScriptMimeValue.valueOf(pojo_script.getMimetype())) {
-            case zip:
-                int[] bytesArray_header = new int[]{0x504B0304, 0x504B0506, 0x504B0708};
-                return compareContentBytes(file, bytesArray_header);
-            default:
-                return false;
-        }
-    }
-
-    private boolean compareContentBytes(File file, int[] bytesArray) throws IOException {
-        RandomAccessFile raf = new RandomAccessFile(file, "r");
-        int fileSignature = raf.readInt();
-        for (int bytes : bytesArray) {
-            if (fileSignature == bytes)
-                return true;
-        }
-        return false;
+    public Response uploadFile(@NotNull @QueryParam("scriptId") String script_id, @NotNull @QueryParam("filename") String file_name, @NotNull File file) throws IOException {
+        String uuid = UUID.randomUUID().toString();
+        String path_newFolder = fileOperationManager.createUploadFileFolder(uuid);
+        java.nio.file.Path newFile = Paths.get(path_newFolder, file_name);
+        fileOperationManager.moveUploadFile(file.getAbsolutePath(), path_newFolder, file_name);
+        fileOperationManager.createUploadFileProperties(uuid, file_name, Files.size(newFile), script_id);
+        LOGGER.log(Level.INFO, "Uploaded file to {0}", newFile.toString());
+        return Response.status(Response.Status.CREATED).location(URI.create(uuid)).build();
     }
 
     /**
      * DELETE request for an uploaded file
-     * deletes all files of folder named {uuid} in directory {importDataPath} and then the folder itself
+     * deletes all files inside folder named {uuid} in directory {importDataPath} and then the folder itself
      *
-     * @param uuid: uuid of file to delete (corresponds to folder name)
-     * @return Response with status 200
+     * @param uuid universally unique id of file to delete
+     * @throws IOException for errors during Files.walk and Files.delete operation
      */
-    @Path("{uuid}/delete")
+    @Path("{uuid}")
     @DELETE
-    public Response deleteFile(@NotNull @PathParam("uuid") String uuid) throws IOException {
+    public void deleteFile(@NotNull @PathParam("uuid") String uuid) throws IOException {
         String path_deletedFolder = fileOperationManager.deleteUploadFileFolder(uuid);
         LOGGER.log(Level.INFO, "Deleted file at {0}", path_deletedFolder);
-        return Response.status(Response.Status.OK).build();
     }
 
-    @Path("{uuid}/log/get")
+    /**
+     * GET request for logs created during script processing of uploaded file
+     * only two log files exist per file (stdError and stdOutput)
+     *
+     * @param uuid universally unique id of file
+     * @return List with script log objects
+     */
+    @Path("{uuid}/log")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public ArrayList<ScriptLogPOJO> getUploadedFileLogs(@NotNull @PathParam("uuid") String uuid) {
-         return fileOperationManager.getScriptLogs(uuid);
+    public List<ScriptLog> getUploadedFileLogs(@NotNull @PathParam("uuid") String uuid) {
+        return fileOperationManager.getScriptLogs(uuid);
     }
 
-    @Path("{uuid}/log/{logType}/delete")
+    /**
+     * DELETE request for all script logs of uploaded file
+     *
+     * @param uuid universally unique id of file
+     * @throws IOException for error during delete operation
+     */
+    @Path("{uuid}/log")
     @DELETE
-    public Response deleteUploadedFileLog(@NotNull @PathParam("uuid") String uuid, @NotNull @PathParam("logType") String logType) throws IOException {
-        String path_deletedLog = fileOperationManager.deleteScriptLog(uuid, LogType.valueOf(logType));
+    public void deleteUploadedFileLog(@NotNull @PathParam("uuid") String uuid) {
+        String path_deletedLog = fileOperationManager.deleteScriptLog(uuid);
         LOGGER.log(Level.INFO, "Deleted log file at {0}", path_deletedLog);
-        return Response.status(Response.Status.OK).build();
     }
 }
