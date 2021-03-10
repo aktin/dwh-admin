@@ -3,6 +3,7 @@ package org.aktin.dwh.admin.importer;
 import org.aktin.importer.ScriptOperationManager;
 import org.aktin.importer.enums.ScriptOperation;
 import org.aktin.importer.executor.PythonScriptExecutor;
+import org.aktin.importer.pojos.ScriptFile;
 
 import javax.validation.constraints.NotNull;
 import javax.inject.Inject;
@@ -10,6 +11,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
+import java.util.List;
 import java.util.logging.Logger;
 
 @Path("script")
@@ -35,8 +37,8 @@ public class ScriptManagerEndpoint {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public ArrayList<ScriptFile> getImportScripts() {
-        return scriptOperationManager.getScriptPOJOs();
+    public List<ScriptFile> getImportScripts() {
+        return scriptOperationManager.getScripts();
     }
 
     /**

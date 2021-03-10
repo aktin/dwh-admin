@@ -2,6 +2,7 @@ package org.aktin.dwh.admin.importer;
 
 import org.aktin.importer.FileOperationManager;
 import org.aktin.importer.ScriptOperationManager;
+import org.aktin.importer.pojos.ScriptLog;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -15,6 +16,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,8 +45,8 @@ public class FileManagerEndpoint {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<PropertiesFile> getUploadedFiles() {
-        return fileOperationManager.getProperties();
+    public List<Properties> getUploadedFiles() {
+        return fileOperationManager.getPropertiesFiles();
     }
 
     /**
@@ -55,8 +58,8 @@ public class FileManagerEndpoint {
     @Path("{uuid}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public PropertiesFile getUploadedFile(@NotNull @PathParam("uuid") String uuid) {
-        return fileOperationManager.getProperties(uuid);
+    public Properties getUploadedFile(@NotNull @PathParam("uuid") String uuid) {
+        return fileOperationManager.getPropertiesFile(uuid);
     }
 
     /**
@@ -66,19 +69,19 @@ public class FileManagerEndpoint {
      * moves uploaded file from /tmp to new folder
      * creates a new properties file in folder
      *
-     * @param script_id id of corresponding processing script
-     * @param file_name original name of file
+     * @param id_script id of corresponding processing script
+     * @param name_file original name of file
      * @param file      binary file to upload
      * @return Response with status 201 and uri of uploaded file
      * @throws IOException if error occurs during creation of directory, moving of file or Files.size(newFile)
      */
     @POST
-    public Response uploadFile(@NotNull @QueryParam("scriptId") String script_id, @NotNull @QueryParam("filename") String file_name, @NotNull File file) throws IOException {
+    public Response uploadFile(@NotNull @QueryParam("scriptId") String id_script, @NotNull @QueryParam("filename") String name_file, @NotNull File file) throws IOException {
         String uuid = UUID.randomUUID().toString();
         String path_newFolder = fileOperationManager.createUploadFileFolder(uuid);
-        java.nio.file.Path newFile = Paths.get(path_newFolder, file_name);
-        fileOperationManager.moveUploadFile(file.getAbsolutePath(), path_newFolder, file_name);
-        fileOperationManager.createUploadFileProperties(uuid, file_name, Files.size(newFile), script_id);
+        fileOperationManager.moveUploadFile(file.getAbsolutePath(), path_newFolder, name_file);
+        java.nio.file.Path newFile = Paths.get(path_newFolder, name_file);
+        fileOperationManager.createNewPropertiesFile(uuid, name_file, Files.size(newFile), id_script);
         LOGGER.log(Level.INFO, "Uploaded file to {0}", newFile.toString());
         return Response.status(Response.Status.CREATED).location(URI.create(uuid)).build();
     }
@@ -119,8 +122,8 @@ public class FileManagerEndpoint {
      */
     @Path("{uuid}/log")
     @DELETE
-    public void deleteUploadedFileLog(@NotNull @PathParam("uuid") String uuid) {
-        String path_deletedLog = fileOperationManager.deleteScriptLog(uuid);
-        LOGGER.log(Level.INFO, "Deleted log file at {0}", path_deletedLog);
+    public void deleteUploadedFileLog(@NotNull @PathParam("uuid") String uuid) throws IOException {
+        fileOperationManager.deleteScriptLogs(uuid);
+        LOGGER.log(Level.INFO, "Deleted log files of {0}", uuid);
     }
 }
