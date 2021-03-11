@@ -8,83 +8,80 @@ import _ = require('underscore');
 export class UrlService {
     private _serverUrls = [
         // 'http://134.106.36.86:8020/aktin/admin/rest/',
-        '/aktin/admin/rest/',
+        'http://localhost:81/aktin/admin/rest/',
+        //'/aktin/admin/rest/',
     ];
     private _serverUrl = this._serverUrls[0];
     private _endUrls = {
-        login : 'auth/login',
-        logout : 'auth/logout',
-        adminCheck : 'auth/has/admin',
-        authCheck : 'auth/check/',
-        userUpdate : 'auth/update',
-        permissions : 'auth/permissions',
+        login: 'auth/login',
+        logout: 'auth/logout',
+        adminCheck: 'auth/has/admin',
+        authCheck: 'auth/check/',
+        userUpdate: 'auth/update',
+        permissions: 'auth/permissions',
 
-        getUsers : 'users', // get
-        editUser : 'users/@user@', // put / delete
-        getRoles : 'users/roles', // get
-        getUserRoles : 'users/@user@/roles', // get
-        editUserRole : 'users/@user@/roles/@role@', // put / delete
+        getUsers: 'users', // get
+        editUser: 'users/@user@', // put / delete
+        getRoles: 'users/roles', // get
+        getUserRoles: 'users/@user@/roles', // get
+        editUserRole: 'users/@user@/roles/@role@', // put / delete
 
-        prefs : 'prefs',
+        prefs: 'prefs',
 
-        status : 'import-summary',
+        status: 'import-summary',
 
-        reportsList : 'report/archive',
-        newMonthlyReport : 'report/monthly/email',
-        reportTemplates : 'report/template', // get
-        newReport : 'report/template/@templateId@', // post, with start and end in data, json in header
+        reportsList: 'report/archive',
+        newMonthlyReport: 'report/monthly/email',
+        reportTemplates: 'report/template', // get
+        newReport: 'report/template/@templateId@', // post, with start and end in data, json in header
 
-        requestList : 'request',
-        request : 'request/@requestId@',
-        requestUnmapped : 'request/@requestId@/unmapped',
-        requestResult : 'request/@requestId@/result',
+        requestList: 'request',
+        request: 'request/@requestId@',
+        requestUnmapped: 'request/@requestId@/unmapped',
+        requestResult: 'request/@requestId@/result',
         setRequestAutoSubmit: 'request/@requestId@/autoSubmit/@submit@',
         setRequestStatus: 'request/@requestId@/status/@status@',
         setRequestMarker: 'request/@requestId@/marker/@marker@',
         updateRequestMarker: 'request/@requestId@/marker', // put / delete
 
-        setQueryRule : 'request/@requestId@/rule/@action@',
-        query : 'query/@queryId@',
-        queryRule : 'query/@queryId@/rule', // get/delete
-        applyRule : 'query/@queryId@/applyRule',
+        setQueryRule: 'request/@requestId@/rule/@action@',
+        query: 'query/@queryId@',
+        queryRule: 'query/@queryId@/rule', // get/delete
+        applyRule: 'query/@queryId@/applyRule',
 
         // visitList : 'files',
-        visit : 'visit/@root@/@id@?xslt=@filter@',
-        visitId : 'visit/@id@?xslt=@filter@',
-        visitEide : 'visit/',
+        visit: 'visit/@root@/@id@?xslt=@filter@',
+        visitId: 'visit/@id@?xslt=@filter@',
+        visitEide: 'visit/',
 
-        studyPrefs : 'optin/preferences',
-        studies : 'optin/studies',
-        entries : 'optin/@studyId@',
-        entry : 'optin/@studyId@/@reference@/@root@/@extension@', // get/post/delete
+        studyPrefs: 'optin/preferences',
+        studies: 'optin/studies',
+        entries: 'optin/@studyId@',
+        entry: 'optin/@studyId@/@reference@/@root@/@extension@', // get/post/delete
 
         // versions endpoint
         version: 'info/version',
 
         // file import (p21) endpoints
-        getUploadedFiles:   'file/get',
-        getUploadedFile: 'file/@uuid@/get',
-        uploadFile: 'file/upload',
-        deleteFile: 'file/@uuid@/delete',
-        getUploadFileLogs: 'file/@uuid@/log/get',
-        deleteUploadFileLog: 'file/@uuid@/log/@logType@/delete',
-
-        getImportScripts: 'script/get',
+        uploadFiles: 'file',
+        uploadFile: 'file/@uuid@',
+        importScripts: 'script',
+        scriptLogs: 'file/@uuid@/log',
         verifyFile: 'script/@uuid@/verify',
         importFile: 'script/@uuid@/import',
         cancelProgress: 'script/@uuid@/cancel',
         getStatus: 'script/@uuid@/status'
     };
 
-    setServerUrl (serverUrl: string) {
+    setServerUrl(serverUrl: string) {
         this._serverUrl = serverUrl;
     }
 
-    get serverUrls (): string[] {
+    get serverUrls(): string[] {
         return this._serverUrls;
     }
 
-    get serverUrl (): string {
+    get serverUrl(): string {
         return this._serverUrl;
     }
 
@@ -94,13 +91,13 @@ export class UrlService {
      * @param args has the form {user: some user, role: some role}
      * @returns {string}
      */
-    parse (url: string, args ?: any): string {
+    parse(url: string, args?: any): string {
         let endUrl = this._endUrls[url] || url;
         let keys = endUrl.match(/@\w*@/g);
         if (keys && keys.length >= 0) {
             endUrl = _.reduce(
                 keys,
-                (memo: string, item: string) =>  memo.replace(item, args[/\w+/.exec(item)[0]]),
+                (memo: string, item: string) => memo.replace(item, args[/\w+/.exec(item)[0]]),
                 endUrl
             );
         }
