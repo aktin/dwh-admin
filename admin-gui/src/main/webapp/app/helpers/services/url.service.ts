@@ -69,7 +69,7 @@ export class UrlService {
         scriptLogs: 'file/@uuid@/log',
         verifyFile: 'script/@uuid@/verify',
         importFile: 'script/@uuid@/import',
-        cancelProgress: 'script/@uuid@/cancel',
+        cancelProcess: 'script/@uuid@/cancel',
         getStatus: 'script/@uuid@/status'
     };
 

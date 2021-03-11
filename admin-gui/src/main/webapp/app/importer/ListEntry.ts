@@ -1,135 +1,179 @@
 /**
- * class to display list entries in HTML
+ * class to display table list entries in HTML
  */
 import { ImporterService } from './importer.service';
 import { Subject } from 'rxjs/Subject';
-import { Subscription } from 'rxjs/Subscription';
 
-import { ImportState } from './ImportState';
+import { ImportOperationState } from './enums/ImportOperationState';
+import { PropertiesKey } from './enums/PropertiesKey';
+import { LogType } from './enums/LogType';
 
- // TODO: comments
+// TODO: comments
 export class ListEntry {
 
     private ngUnsubscribe: Subject<void> = new Subject<void>();
-    private id_progress_bar: string = Math.random().toString(36).substr(2, 9);
-     
-    private messages_error: any[] = [];
-    private show_error: boolean = false;
-    private messages_warning: any[] = [];
-    private show_warning: boolean = false;
+
+    private operationState: ImportOperationState;
+    private msg_error: string = '';
+    private msg_output: string = '';
+    private timer_interval = 1000;
+    private call_interval: any;
+
+    private ImportOperationState: typeof ImportOperationState = ImportOperationState;
 
     constructor(
         private _importerService: ImporterService,
         private file: File,
-        private selected_script: string,
-        private name: string = file.name,
-        private size: number = file.size,
+        private id_script: string,
+        private name_file: string = file.name,
+        private size_file: number = file.size,
         private uuid: string = '',
-        private state: ImportState = ImportState.ready,
-        ) {}
+        private operation: string = 'uploading',
+        private state: string = 'ready',
+    ) {
+        this.setOperationState();
+        this.getScriptLogs();
+        this.call_interval = setInterval(() => this.reload(), this.timer_interval);
+    }
 
-    upload_and_verificate() {
-        if (this.uuid === "") {
-            this.state = ImportState.uploading;
-            this._importerService.uploadFile(this.file, this.name, this.selected_script, this.id_progress_bar)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(event => {
-                    this.uuid = event._body;
-                    this.file = null;
-                    this.verify();
-                }, (error: any) => {
-                    this.state = ImportState.upload_failed;
-                    this.messages_error.push({ timestamp: new Date(), text: error });
-                });
+    uploadFile() {
+        this.operationState = ImportOperationState.uploading_in_progress;
+        this._importerService.uploadFile(this.file, this.name_file, this.id_script)
+            .takeUntil(this.ngUnsubscribe)
+            .subscribe(event => {
+                this.uuid = event._body; //TODO
+                this.file = null;
+                this.operationState = ImportOperationState.uploading_successful;
+                this.call_interval = setInterval(() => this.reload(), this.timer_interval);
+            }, (error: any) => {
+                this.operationState = ImportOperationState.uploading_failed;
+                console.log(error);
+            });
+    }
+
+    verifyFile() {
+        this._importerService.verifyFile(this.uuid)
+            .subscribe(event => {
+                this.operationState = ImportOperationState.verifying_queued;
+            }, (error: any) => {
+                this.operationState = ImportOperationState.verifying_failed;
+                console.log(error);
+            });
+    }
+
+    importFile() {
+        this._importerService.importFile(this.uuid)
+            .subscribe(event => {
+                this.operationState = ImportOperationState.importing_queued;
+            }, (error: any) => {
+                this.operationState = ImportOperationState.importing_failed;
+                console.log(error);
+            });
+    }
+
+    cancelProcess() {
+        if (!this.uuid) {
+            this.ngUnsubscribe.complete();
+            this.operationState = ImportOperationState.uploading_cancelled;
         } else {
-            this.verify();
+            this._importerService.cancelProcess(this.uuid)
+                .subscribe(event => {
+                    switch (this.operationState) {
+                        case ImportOperationState.verifying_queued:
+                        case ImportOperationState.verifying_in_progress:
+                            this.operationState = ImportOperationState.verifying_cancelled;
+                            break;
+                        case ImportOperationState.importing_queued:
+                        case ImportOperationState.importing_in_progress:
+                            this.operationState = ImportOperationState.importing_cancelled;
+                            break;
+                    }
+                }, (error: any) => {
+                    console.log(error);
+                });
         }
     }
 
-    verify() {
-        this._importerService.verifyFile(this.uuid)
+    deleteFile() {
+        this.ngOnDestroy();
+        this._importerService.deleteFile(this.uuid)
             .subscribe(event => {
-                this.state = ImportState.verifying;
             }, (error: any) => {
-                this.state = ImportState.verification_failed;
-                this.messages_error.push({ timestamp: new Date(), text: error });
+                console.log(error);
             });
     }
 
-    import() {
-        this._importerService.importFile(this.uuid)
+    getUUID(): string {
+        return this.uuid;
+    }
+
+    reload() {
+        this._importerService.getUploadedFile(this.uuid)
             .subscribe(event => {
-                this.state = ImportState.importing;
+                if (event._body) {
+                    let json = JSON.parse(event._body);
+                    this.id_script = json[PropertiesKey.script]
+                    this.name_file = json[PropertiesKey.filename]
+                    this.size_file = json[PropertiesKey.size]
+                    this.uuid = json[PropertiesKey.id]
+                    this.operation = json[PropertiesKey.operation]
+                    this.state = json[PropertiesKey.state]
+                    this.setOperationState();
+                    this.getScriptLogs();
+                    console.log("PING " + this.uuid); // TODO REMOVE
+                }
             }, (error: any) => {
-                this.state = ImportState.import_failed;
-                this.messages_error.push({ timestamp: new Date(), text: error });
-            });
+                console.log(error);
+            })
     }
 
-    showError() {
-        this.show_error = !this.show_error;
+    setOperationState() {
+        this.operationState = ImportOperationState[[this.operation, this.state].join("_") as keyof typeof ImportOperationState]
     }
 
-    showWarning() {
-        this.show_warning = !this.show_warning;
+    getScriptLogs() {
+        this._importerService.getScriptLogs(this.uuid)
+            .subscribe(event => {
+                if (event._body) {
+                    let list_logs = JSON.parse(event._body);
+                    list_logs.forEach((json: any) => {
+                        if (json['type'] == LogType.stdError && json['text'] != null) {
+                            this.msg_error = json['text'];
+                        } else if (json['type'] == LogType.stdOutput && json['text'] != null) {
+                            this.msg_output = json['text'];
+                        }
+                    })
+                }
+            }, (error: any) => {
+                console.log(error);
+            })
     }
 
-    /**
-     * Abort current progress
-     * delete entry from list_files_upload list
-     * @param index (File index)
-     */
-     cancel() {
-         if (this.state === ImportState.uploading) {
-             this.state = ImportState.upload_cancelled;
-         } else if (this.state === ImportState.verifying) {
-             this.state = ImportState.verification_cancelled;
-         } else if (this.state === ImportState.importing) {
-             this.state = ImportState.import_cancelled;
-         }
-         $('#' + this.id_progress_bar).progress('reset');
-         this.ngUnsubscribe.next();
-     }
+    ngOnDestroy() {
+        console.log("I AM CALLED") //TODO
+        this.ngUnsubscribe.next();
+        this.ngUnsubscribe.complete();
+        clearInterval(this.call_interval);
+    }
 
-// TODO ABORT AT ERROR
-     delete() {
-         this.ngUnsubscribe.complete();
-         this._importerService.deleteFile(this.uuid)
-         .subscribe(event => { 
-         }, (error: any) => {
-                 this.messages_error.push({ timestamp: new Date(), text: error });
-         });
-     }
-
-     ngOnDestroy() {
-         this.ngUnsubscribe.next();
-         this.ngUnsubscribe.complete();
-     }
-
-
-     getUUID(): string {
-         return this.uuid;
-     }
-
-
-     hasState(...states: ImportState[]): boolean {
-         for (let state of states) {
-             if (this.state === state) {
-                 return true;
+    /*
+        hasState(...states: ImportState[]): boolean {
+             for (let state of states) {
+                 if (this.state === state) {
+                     return true;
+                 }
              }
+             return false;
          }
-         return false;
-     }
 
-     hasNotState(...states: ImportState[]): boolean {
-         for (let state of states) {
-             if (this.state === state) {
-                 return false;
+        hasNotState(...states: ImportState[]): boolean {
+             for (let state of states) {
+                 if (this.state === state) {
+                     return false;
+                 }
              }
+             return true;
          }
-         return true;
-     }
+    */
 
-     // TODO: REMOVE
-     // $('#' + this.list_files_upload[index].id).progress('increment');
- }
+}

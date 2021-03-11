@@ -1,5 +1,5 @@
 // possible keys in received property file object from backend
-export enum PropertyPojoKey {
+export enum PropertiesKey {
 	id = 'id',         		// unique uuid
 	filename = 'filename',  // original filename
 	size = 'size',       	// size of binary

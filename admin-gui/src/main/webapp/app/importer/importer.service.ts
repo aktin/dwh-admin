@@ -71,8 +71,8 @@ export class ImporterService {
             .catch(err => { return this._http.handleError(err); });
     }
 
-    cancelProgress(uuid: string): Observable<any> {
-        return this._http.post(this._url.parse('cancelProgress', { uuid: uuid }), "")
+    cancelProcess(uuid: string): Observable<any> {
+        return this._http.post(this._url.parse('cancelProcess', { uuid: uuid }), "")
             .catch(err => { return this._http.handleError(err); });
     }
 
