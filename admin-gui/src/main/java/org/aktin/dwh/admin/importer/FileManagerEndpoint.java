@@ -97,7 +97,7 @@ public class FileManagerEndpoint {
     @DELETE
     public void deleteFile(@NotNull @PathParam("uuid") String uuid) throws IOException {
         String path_deletedFolder = fileOperationManager.deleteUploadFileFolder(uuid);
-        LOGGER.log(Level.INFO, "Deleted file at {0}", path_deletedFolder);
+        LOGGER.log(Level.INFO, "Deleted folder at {0}", path_deletedFolder);
     }
 
     /**
