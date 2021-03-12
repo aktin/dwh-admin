@@ -18,10 +18,12 @@ export class ListEntry {
     private operationState: ImportOperationState;
     private msg_error: string = '';
     private msg_output: string = '';
+
+    private show_error: boolean = false;
+    private show_output: boolean = false;
+
     private timer_interval = 5000;
     private call_interval: any;
-
-    private ImportOperationState: typeof ImportOperationState = ImportOperationState;
 
     constructor(
         private _importerService: ImporterService,
@@ -34,8 +36,10 @@ export class ListEntry {
         private state: ImportState = ImportState.ready,
     ) {
         this.computeOperationState();
-        this.getScriptLogs();
-        this.call_interval = setInterval(() => this.reload(), this.timer_interval);
+        if (this.uuid) {
+            this.getScriptLogs();
+            this.call_interval = setInterval(() => this.reload(), this.timer_interval);
+        }
     }
 
     uploadFile() {
@@ -46,7 +50,7 @@ export class ListEntry {
                 this.uuid = event._body; //TODO
                 this.file = null;
                 this.setOperationState(ImportOperation.uploading, ImportState.successful);
-                this.call_interval = setInterval(() => this.reload(), this.timer_interval);
+                this.call_interval = setInterval(() => this.reload(), this.timer_interval);// TODO
             }, (error: any) => {
                 this.setOperationState(ImportOperation.uploading, ImportState.failed);
                 console.log(error);
@@ -164,24 +168,23 @@ export class ListEntry {
         clearInterval(this.call_interval);
     }
 
-    hasState(...states: ImportState[]): boolean {
-        for (let state of states) {
-            if (this.state === state) {
-                return true;
-            }
+    checkButtonVisibility(operation_prev: ImportOperation, operation: ImportOperation): boolean {
+        if (this.operation === operation_prev && this.state === ImportState.successful) {
+            return true;
+        } else if (this.operation === operation && this.state === ImportState.successful) {
+            return false;
+        } else if (this.operation === operation) {
+            return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
-    /*
-   hasNotState(...states: ImportState[]): boolean {
-        for (let state of states) {
-            if (this.state === state) {
-                return false;
-            }
-        }
-        return true;
+    switch_show_error() {
+        this.show_error = !this.show_error;
     }
-*/
 
+    switch_show_output() {
+        this.show_output = !this.show_output;
+    }
 }
