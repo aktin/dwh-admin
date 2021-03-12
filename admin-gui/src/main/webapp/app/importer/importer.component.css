@@ -1,18 +1,23 @@
-.dropdown-processing {
-    margin-top: 50px;
+.segment {
+    margin: auto;
 }
 
-input {
+.dropdown-processing {
+    width: 140%;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.input-field {
     position: absolute;
     opacity: 0;
     z-index: 2;
 }
 
-.file-header {
-    font-size: 15px;
-    font-weight: 1000;
-    color: rgba(53, 63, 74, 1);
-    margin: 0;
+.table {
+    width: 160%;
+    margin-left: -30%;
+    table-layout: fixed;
 }
 
 .file-name {
@@ -23,15 +28,7 @@ input {
     white-space: normal;
 }
 
-.file-buttons {
-    float: right;
-}
-
-.import-button-label {
-    margin-right: 1.5rem;
-}
-
-.element-warning {
+.element-output {
     background-color: rgba(255, 255, 0, 0.2);
     margin-bottom: 1em;
 }
@@ -40,4 +37,3 @@ input {
     background-color: rgba(255, 0, 0, 0.2);
     margin-bottom: 1em;
 }
-
