@@ -1,6 +1,7 @@
 package org.aktin.dwh.admin.importer;
 
 import org.aktin.importer.FileOperationManager;
+import org.aktin.importer.ImportDeleteManager;
 import org.aktin.importer.ScriptOperationManager;
 import org.aktin.importer.pojos.ScriptLog;
 
@@ -32,6 +33,9 @@ public class FileManagerEndpoint {
 
     @Inject
     private ScriptOperationManager scriptOperationManager;
+
+    @Inject
+    private ImportDeleteManager importDeleteManager;
 
     @Context
     private SecurityContext security;
@@ -89,6 +93,7 @@ public class FileManagerEndpoint {
     /**
      * DELETE request for an uploaded file
      * deletes all files inside folder named {uuid} in directory {importDataPath} and then the folder itself
+     * if file was previously imported into database, all imported data is also deleted
      *
      * @param uuid universally unique id of file to delete
      * @throws IOException for errors during Files.walk and Files.delete operation
@@ -96,8 +101,9 @@ public class FileManagerEndpoint {
     @Path("{uuid}")
     @DELETE
     public void deleteFile(@NotNull @PathParam("uuid") String uuid) throws IOException {
+        importDeleteManager.deleteImportedDataFromDB(uuid);
         String path_deletedFolder = fileOperationManager.deleteUploadFileFolder(uuid);
-        LOGGER.log(Level.INFO, "Deleted folder at {0}", path_deletedFolder);
+        LOGGER.log(Level.INFO, "Deleted files of {0}", path_deletedFolder);
     }
 
     /**
