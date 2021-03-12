@@ -7,3 +7,4 @@ target/
 dwh-mail/
 .idea
 *.iml
+.vscode

@@ -4,6 +4,8 @@
 import { ImporterService } from './importer.service';
 import { Subject } from 'rxjs/Subject';
 
+import { ImportState } from './enums/ImportState';
+import { ImportOperation } from './enums/ImportOperation';
 import { ImportOperationState } from './enums/ImportOperationState';
 import { PropertiesKey } from './enums/PropertiesKey';
 import { LogType } from './enums/LogType';
@@ -16,7 +18,7 @@ export class ListEntry {
     private operationState: ImportOperationState;
     private msg_error: string = '';
     private msg_output: string = '';
-    private timer_interval = 1000;
+    private timer_interval = 5000;
     private call_interval: any;
 
     private ImportOperationState: typeof ImportOperationState = ImportOperationState;
@@ -28,25 +30,25 @@ export class ListEntry {
         private name_file: string = file.name,
         private size_file: number = file.size,
         private uuid: string = '',
-        private operation: string = 'uploading',
-        private state: string = 'ready',
+        private operation: ImportOperation = ImportOperation.uploading,
+        private state: ImportState = ImportState.ready,
     ) {
-        this.setOperationState();
+        this.computeOperationState();
         this.getScriptLogs();
         this.call_interval = setInterval(() => this.reload(), this.timer_interval);
     }
 
     uploadFile() {
-        this.operationState = ImportOperationState.uploading_in_progress;
+        this.setOperationState(ImportOperation.uploading, ImportState.in_progress);
         this._importerService.uploadFile(this.file, this.name_file, this.id_script)
             .takeUntil(this.ngUnsubscribe)
             .subscribe(event => {
                 this.uuid = event._body; //TODO
                 this.file = null;
-                this.operationState = ImportOperationState.uploading_successful;
+                this.setOperationState(ImportOperation.uploading, ImportState.successful);
                 this.call_interval = setInterval(() => this.reload(), this.timer_interval);
             }, (error: any) => {
-                this.operationState = ImportOperationState.uploading_failed;
+                this.setOperationState(ImportOperation.uploading, ImportState.failed);
                 console.log(error);
             });
     }
@@ -54,9 +56,9 @@ export class ListEntry {
     verifyFile() {
         this._importerService.verifyFile(this.uuid)
             .subscribe(event => {
-                this.operationState = ImportOperationState.verifying_queued;
+                this.setOperationState(ImportOperation.verifying, ImportState.queued);
             }, (error: any) => {
-                this.operationState = ImportOperationState.verifying_failed;
+                this.setOperationState(ImportOperation.verifying, ImportState.failed);
                 console.log(error);
             });
     }
@@ -64,9 +66,9 @@ export class ListEntry {
     importFile() {
         this._importerService.importFile(this.uuid)
             .subscribe(event => {
-                this.operationState = ImportOperationState.importing_queued;
+                this.setOperationState(ImportOperation.importing, ImportState.queued);
             }, (error: any) => {
-                this.operationState = ImportOperationState.importing_failed;
+                this.setOperationState(ImportOperation.importing, ImportState.failed);
                 console.log(error);
             });
     }
@@ -74,18 +76,18 @@ export class ListEntry {
     cancelProcess() {
         if (!this.uuid) {
             this.ngUnsubscribe.complete();
-            this.operationState = ImportOperationState.uploading_cancelled;
+            this.setOperationState(ImportOperation.uploading, ImportState.cancelled);
         } else {
             this._importerService.cancelProcess(this.uuid)
                 .subscribe(event => {
                     switch (this.operationState) {
                         case ImportOperationState.verifying_queued:
                         case ImportOperationState.verifying_in_progress:
-                            this.operationState = ImportOperationState.verifying_cancelled;
+                            this.setOperationState(ImportOperation.verifying, ImportState.cancelled);
                             break;
                         case ImportOperationState.importing_queued:
                         case ImportOperationState.importing_in_progress:
-                            this.operationState = ImportOperationState.importing_cancelled;
+                            this.setOperationState(ImportOperation.importing, ImportState.cancelled);
                             break;
                     }
                 }, (error: any) => {
@@ -118,7 +120,7 @@ export class ListEntry {
                     this.uuid = json[PropertiesKey.id]
                     this.operation = json[PropertiesKey.operation]
                     this.state = json[PropertiesKey.state]
-                    this.setOperationState();
+                    this.computeOperationState();
                     this.getScriptLogs();
                     console.log("PING " + this.uuid); // TODO REMOVE
                 }
@@ -127,7 +129,13 @@ export class ListEntry {
             })
     }
 
-    setOperationState() {
+    setOperationState(operation: ImportOperation, state: ImportState) {
+        this.operation = operation;
+        this.state = state;
+        this.computeOperationState();
+    }
+
+    computeOperationState() {
         this.operationState = ImportOperationState[[this.operation, this.state].join("_") as keyof typeof ImportOperationState]
     }
 
@@ -156,24 +164,24 @@ export class ListEntry {
         clearInterval(this.call_interval);
     }
 
-    /*
-        hasState(...states: ImportState[]): boolean {
-             for (let state of states) {
-                 if (this.state === state) {
-                     return true;
-                 }
-             }
-             return false;
-         }
+    hasState(...states: ImportState[]): boolean {
+        for (let state of states) {
+            if (this.state === state) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-        hasNotState(...states: ImportState[]): boolean {
-             for (let state of states) {
-                 if (this.state === state) {
-                     return false;
-                 }
-             }
-             return true;
-         }
-    */
+    /*
+   hasNotState(...states: ImportState[]): boolean {
+        for (let state of states) {
+            if (this.state === state) {
+                return false;
+            }
+        }
+        return true;
+    }
+*/
 
 }

@@ -1,13 +1,16 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { ImporterService } from './importer.service';
-import { ListEntry } from './ListEntry';
-import { ImportState } from './ImportState';
-import {Subject} from 'rxjs/Subject';
-
+import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
 import 'rxjs/observable/of'
 import 'rxjs/operator/delay';
-import { delay } from 'rxjs/operator/delay';
+
+import { ImportState } from './enums/ImportState';
+import { ImportOperation } from './enums/ImportOperation';
+import { PropertiesKey } from './enums/PropertiesKey';
+import { ScriptKey } from './enums/ScriptKey';
+
+import { ImporterService } from './importer.service';
+import { ListEntry } from './ListEntry';
 
 require('semantic-ui');
 
@@ -16,59 +19,23 @@ require('semantic-ui');
     styleUrls: ['./importer.component.css'],
 })
 
-
-// TODO: comments
 export class ImporterComponent {
 
+    private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+    // connector to file browser
     @ViewChild('FileInput') fileInput: any;
 
-    process_selected: string;
-    list_processes: Map<string, string> = new Map<string, string>();
-    list_files_upload: ListEntry[] = [];
-    response: string;
+    // lists for uploaded files and scripts
+    private script_selected: string;
+    private list_scripts: Map<string, string> = new Map<string, string>();
+    private list_files_upload: ListEntry[] = [];
 
-    reverse = true; // sort order ascending/descending
-    sortAttribute = 'name';
-    sorted = false;
+    // table sorting
+    private sortAttribute = 'name_file';
+    private reverse = true; // sort order ascending/descending
+    private sorted = false;
 
-    // TODO onleave this.ngUnsubscribe.complete();
-    ImportState: typeof ImportState = ImportState;
-
-
-    constructor(private _importerService: ImporterService) {
-        this._importerService.getImportScripts()
-            .subscribe(event => {
-                if (event._body) {
-                    let json = JSON.parse(event._body);
-                    for (let key of Object.keys(json)) {
-                        this.list_processes.set(key, json[key]["VIEWNAME"] + ' V' + json[key]["VERSION"]);
-                    }
-                    this.process_selected = Array.from(this.list_processes)[0][0];
-                }
-            }, (error: any) => {
-                console.log(error);
-            });
-
-        this._importerService.getUploadedFiles()
-            .subscribe(event => {
-                if (event._body) {
-                    let json = JSON.parse(event._body);
-                    for (let uuid of Object.keys(json)) {
-                        this.list_files_upload.push(
-                            new ListEntry(
-                                this._importerService,
-                                null,
-                                json[uuid]['script'],
-                                json[uuid]['filename'],
-                                json[uuid]['size'],
-                                uuid,
-                                ImportState[json[uuid]['state'] as keyof typeof ImportState]));
-                    }
-                }
-            }, (error: any) => {
-                console.log(error);
-            });
-    }
     /**
      * Checks if the user has the given permission.
      * @returns the permission that will be checked
@@ -78,41 +45,100 @@ export class ImporterComponent {
     }
 
     /**
-     * Handler for upload of file browser
+     * constructor for importer.component with two GET requests
+     * first GET: request to '/aktin/admin/rest/script/get'
+     * gets a json list of uploaded scripts and converts it to a list of string maps with <ID, name+version> (exp. <"script1.py", "importer V1.0">)
+     * second GET: request to '/aktin/admin/rest/file/get'
+     * gets a json list of uploaded files and converts it to a list of ListEntry(s)
+     *
+     * both lists are used to display the corresponding items in the view
+     * @param _importerService: injected service to perform requests
      */
-    onFileBrowse(files: any[]) {
-        for (let file of files) {
-            this.list_files_upload.push(new ListEntry(this._importerService, file, this.process_selected));
-        }
-        $('#FileInput').val('');
+    constructor(private _importerService: ImporterService) {
+        this._importerService.getImportScripts()
+            .subscribe(event => {
+                if (event._body) {
+                    let list_json = JSON.parse(event._body);
+                    list_json.forEach((json: any) => {
+                        this.list_scripts.set(json[ScriptKey.id], [json[ScriptKey.viewname], " ", "V", json[ScriptKey.version]].join(""));
+                    });
+                    this.script_selected = Array.from(this.list_scripts)[0][0];
+                }
+            }, (error: any) => {
+                console.log(error);
+            });
+        this._importerService.getUploadedFiles()
+            .subscribe(event => {
+                if (event._body) {
+                    let list_json = JSON.parse(event._body);
+                    list_json.forEach((json: any) => {
+                        this.list_files_upload.push(
+                            new ListEntry(
+                                this._importerService,
+                                null, // <- this is the binary file
+                                json[PropertiesKey.script],
+                                json[PropertiesKey.filename],
+                                json[PropertiesKey.size],
+                                json[PropertiesKey.id],
+                                ImportOperation[json[PropertiesKey.operation] as keyof typeof ImportOperation],
+                                ImportState[json[PropertiesKey.state] as keyof typeof ImportState]));
+                    });
+                }
+            }, (error: any) => {
+                console.log(error);
+            });
+    }
+
+    ngOnDestroy() {
+        this.list_scripts.forEach((value, index) => {
+            delete this.list_scripts[index];
+        })
+        this.list_files_upload.forEach((value, index) => {
+            this.list_files_upload[index].ngOnDestroy();
+            delete this.list_files_upload[index];
+        });
+        this.ngUnsubscribe.next();
+        this.ngUnsubscribe.complete();
     }
 
     /**
-     * Delete entry from list_files_upload list
-     * @param index (File index)
+     * Handler for file upload browser
+     * @param files: list of binaries to upload
+     */
+    onFileBrowse(files: any[]) {
+        for (let file of files) {
+            this.list_files_upload.push(new ListEntry(this._importerService, file, this.script_selected));
+        }
+        $('#FileInput').val(''); // delete held item of file browser
+    }
+
+    /**
+     * If file exists in backend, sent delete request, then delete entry from list_files_upload
+     * @param index: index of file in list_files_upload
      */
     deleteFile(index: number) {
-        if(this.list_files_upload[index].getUUID() !== "") {
-            // TODO stop if error appears
-            this.list_files_upload[index].delete();
+        if (this.list_files_upload[index].getUUID() !== "") {
+            this.list_files_upload[index].deleteFile();
         }
         this.list_files_upload.splice(index, 1);
     }
 
-
     /**
      * Format file size in view
      * @param bytes: file size in bytes
-     * @param decimals: decimals point (default: 2)
+     * @returns input bytes converted to corresponding measurement
      */
-    formatBytes(bytes: number, decimals = 2) {
+    formatBytes(bytes: number) {
         if (bytes === 0) { return '0 Bytes'; }
-        const dm = decimals <= 0 ? 0 : decimals;
         const sizes = ['Bytes', 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(1024));
-        return parseFloat((bytes / Math.pow(1024, i)).toFixed(dm)) + ' ' + sizes[i];
+        return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
+    /**
+     * Sort table in view to corresponding header and switch current sorting type (ascending <-> descending)
+     * @param attr: table header
+     */
     setSortAttribute(attr: string) {
         if (this.sortAttribute === attr) {
             this.reverse = !this.reverse;
@@ -120,6 +146,9 @@ export class ImporterComponent {
         this.sortAttribute = attr;
     }
 
+    /**
+     * @returns current sorted table header with sorting type (ascending/descending)
+     */
     getSortAttribute() {
         if (this.reverse) {
             return '-' + this.sortAttribute;
@@ -128,5 +157,3 @@ export class ImporterComponent {
         }
     }
 }
-
-
