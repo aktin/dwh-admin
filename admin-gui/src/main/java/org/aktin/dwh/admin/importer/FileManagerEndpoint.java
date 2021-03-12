@@ -87,7 +87,7 @@ public class FileManagerEndpoint {
         java.nio.file.Path newFile = Paths.get(path_newFolder, name_file);
         fileOperationManager.createNewPropertiesFile(uuid, name_file, Files.size(newFile), id_script);
         LOGGER.log(Level.INFO, "Uploaded file to {0}", newFile.toString());
-        return Response.status(Response.Status.CREATED).location(URI.create(uuid)).build();
+        return Response.status(Response.Status.CREATED).entity(uuid).build();
     }
 
     /**
