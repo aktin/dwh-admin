@@ -148,24 +148,28 @@ export class ImporterComponent {
      * @param index: index of file in list_files_upload
      */
     confirmDelete(index: number) {
-        let buttons = [['Löschen', 'green'], ['Abbrechen', 'orange']];
-        this.popUpDeleteConfirm.setConfirm(buttons);
-        this.popUpDeleteConfirm.onTop = true;
-        this.popUpDeleteConfirm.setData(true, 'Eintrag löschen',
-            'Wollen Sie diesen Eintrag wirklich unwiderruflich löschen?\nAlle importierten Daten werden ebenso gelöscht!',
-            (submit: boolean) => {
-                if (submit) {
-                    this.deleteFile(index);
+        if (this.isAuthorized('WRITE_P21')) {
+            let buttons = [['Löschen', 'green'], ['Abbrechen', 'orange']];
+            this.popUpDeleteConfirm.setConfirm(buttons);
+            this.popUpDeleteConfirm.onTop = true;
+            this.popUpDeleteConfirm.setData(true, 'Eintrag löschen',
+                'Wollen Sie diesen Eintrag wirklich unwiderruflich löschen?\nAlle importierten Daten werden ebenso gelöscht!',
+                (submit: boolean) => {
+                    if (submit) {
+                        this.deleteFile(index);
+                    }
                 }
-            }
-        );
+            );
+        }
     }
 
     deleteFile(index: number) {
-        if (this.list_files_upload[index].getUUID() !== "") {
-            this.list_files_upload[index].deleteFile();
+        if (this.isAuthorized('WRITE_P21')) {
+            if (this.list_files_upload[index].getUUID() !== "") {
+                this.list_files_upload[index].deleteFile();
+            }
+            this.list_files_upload.splice(index, 1);
         }
-        this.list_files_upload.splice(index, 1);
     }
 
     /**

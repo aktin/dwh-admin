@@ -5,29 +5,31 @@
  * Routing module
  */
 
-import { NgModule }             from '@angular/core';
+import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import _ = require('underscore');
 
-import { HomeComponent, TestComponent }     from './home/index';
-import { UsersComponent, UserSingleComponent, UserNewComponent,
-        UserLoginComponent, UserAuthGuard } from './users/index';
+import { HomeComponent, TestComponent } from './home/index';
+import {
+    UsersComponent, UserSingleComponent, UserNewComponent,
+    UserLoginComponent, UserAuthGuard
+} from './users/index';
 import { ReportsComponent, ReportSingleComponent, ReportNewComponent } from './reports/index';
-import { PreferencesComponent }  from './preferences/index';
+import { PreferencesComponent } from './preferences/index';
 import { ImporterComponent } from './importer/index';
-import { VisitsComponent }  from './visits/index';
-import { RequestsComponent, RequestSingleComponent }     from './requests/index';
+import { VisitsComponent } from './visits/index';
+import { RequestsComponent, RequestSingleComponent } from './requests/index';
 import { StudyManagerComponent } from './studyManager/index';
-import { StatusComponent }       from './status/index';
+import { StatusComponent } from './status/index';
 import { Permission } from './users/index';
 
 const routes: Routes = [// array of routes
     {
         path: 'home',
         component: HomeComponent,
-        data : {
-            name : 'Start',
+        data: {
+            name: 'Start',
         },
     },
     {
@@ -37,20 +39,20 @@ const routes: Routes = [// array of routes
     {
         path: 'request',
         canActivate: [UserAuthGuard],
-        data : {
-            name : 'Anfragen',
-            roles : [
+        data: {
+            name: 'Anfragen',
+            roles: [
                 'LOGGEDIN',
             ],
-            permissions : [
+            permissions: [
                 Permission.READ_REQUESTS,
                 Permission.WRITE_REQUESTS,
             ]
         },
-        children : [
+        children: [
             {
-                path : '',
-                component : RequestsComponent,
+                path: '',
+                component: RequestsComponent,
             },
             {
                 path: ':id',
@@ -59,23 +61,23 @@ const routes: Routes = [// array of routes
         ],
     },
     {
-        path : 'report',
-        canActivate : [UserAuthGuard],
-        canActivateChild : [UserAuthGuard],
-        data : {
-            name : 'Berichte',
-            roles : [
+        path: 'report',
+        canActivate: [UserAuthGuard],
+        canActivateChild: [UserAuthGuard],
+        data: {
+            name: 'Berichte',
+            roles: [
                 'LOGGEDIN',
             ],
-            permissions : [
+            permissions: [
                 Permission.READ_REPORTS,
                 Permission.WRITE_REPORTS
             ]
         },
-        children : [
+        children: [
             {
-                path : '',
-                component : ReportsComponent,
+                path: '',
+                component: ReportsComponent,
             },
             {
                 path: 'new',
@@ -123,15 +125,11 @@ const routes: Routes = [// array of routes
         path: 'importer',
         canActivate: [UserAuthGuard],
         component: ImporterComponent,
-        data : {
-            name : 'Daten-Import',
-            roles : [
-                // 'Admin',
-                'LOGGEDIN',
-            ],
-            permissions : [
-                //Permission.READ_P21,
-                //Permission.WRITE_P21
+        data: {
+            name: 'Daten-Import',
+            permissions: [
+                Permission.READ_P21,
+                Permission.WRITE_P21
             ]
         },
     },
@@ -139,13 +137,13 @@ const routes: Routes = [// array of routes
         path: 'preferences',
         canActivate: [UserAuthGuard],
         component: PreferencesComponent,
-        data : {
-            name : 'Konfigurationen',
-            roles : [
+        data: {
+            name: 'Konfigurationen',
+            roles: [
                 // 'Admin',
                 'LOGGEDIN',
             ],
-            permissions : [
+            permissions: [
                 Permission.CONFIG
             ]
         },
@@ -178,13 +176,13 @@ const routes: Routes = [// array of routes
         path: 'status',
         canActivate: [UserAuthGuard],
         component: StatusComponent,
-        data : {
-            name : 'Status',
-            roles : [
+        data: {
+            name: 'Status',
+            roles: [
                 // 'Admin',
                 'LOGGEDIN',
             ],
-            permissions : [
+            permissions: [
                 Permission.STATUS
             ]
         },
@@ -206,15 +204,15 @@ const routes: Routes = [// array of routes
 ];
 
 export const routings = _.reduce(routes, (memo, route) => {
-        if (route.data && route.data['name']) {
-            memo.push(route);
-        }
-        return memo;
-    }, []);
+    if (route.data && route.data['name']) {
+        memo.push(route);
+    }
+    return memo;
+}, []);
 
 @NgModule({
-    imports: [ RouterModule.forRoot(routes, { useHash: true }) ],
-    exports: [ RouterModule ]
+    imports: [RouterModule.forRoot(routes, { useHash: true })],
+    exports: [RouterModule]
 })
 
-export class AppRoutingModule {}
+export class AppRoutingModule { }

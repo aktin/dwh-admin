@@ -7,7 +7,7 @@ export enum Permission {
     WRITE_STUDYMANAGER,
     VISITS,
     CONFIG,
-    STATUS// ,
-    // READ_P21,
-    // WRITE_P21
+    STATUS,
+    READ_P21,
+    WRITE_P21
 }

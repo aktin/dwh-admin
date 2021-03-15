@@ -43,70 +43,80 @@ export class ListEntry {
     }
 
     uploadFile() {
-        this.setOperationState(ImportOperation.uploading, ImportState.in_progress);
-        this._importerService.uploadFile(this.file, this.name_file, this.id_script)
-            .takeUntil(this.ngUnsubscribe)
-            .subscribe(event => {
-                this.uuid = event._body; //TODO
-                this.file = null;
-                this.setOperationState(ImportOperation.uploading, ImportState.successful);
-                this.call_interval = setInterval(() => this.reload(), this.timer_interval);// TODO
-            }, (error: any) => {
-                this.setOperationState(ImportOperation.uploading, ImportState.failed);
-                console.log(error);
-            });
-    }
-
-    verifyFile() {
-        this._importerService.verifyFile(this.uuid)
-            .subscribe(event => {
-                this.setOperationState(ImportOperation.verifying, ImportState.queued);
-            }, (error: any) => {
-                this.setOperationState(ImportOperation.verifying, ImportState.failed);
-                console.log(error);
-            });
-    }
-
-    importFile() {
-        this._importerService.importFile(this.uuid)
-            .subscribe(event => {
-                this.setOperationState(ImportOperation.importing, ImportState.queued);
-            }, (error: any) => {
-                this.setOperationState(ImportOperation.importing, ImportState.failed);
-                console.log(error);
-            });
-    }
-
-    cancelProcess() {
-        if (!this.uuid) {
-            this.ngUnsubscribe.complete();
-            this.setOperationState(ImportOperation.uploading, ImportState.cancelled);
-        } else {
-            this._importerService.cancelProcess(this.uuid)
+        if (this.isAuthorized('WRITE_P21')) {
+            this.setOperationState(ImportOperation.uploading, ImportState.in_progress);
+            this._importerService.uploadFile(this.file, this.name_file, this.id_script)
+                .takeUntil(this.ngUnsubscribe)
                 .subscribe(event => {
-                    switch (this.operationState) {
-                        case ImportOperationState.verifying_queued:
-                        case ImportOperationState.verifying_in_progress:
-                            this.setOperationState(ImportOperation.verifying, ImportState.cancelled);
-                            break;
-                        case ImportOperationState.importing_queued:
-                        case ImportOperationState.importing_in_progress:
-                            this.setOperationState(ImportOperation.importing, ImportState.cancelled);
-                            break;
-                    }
+                    this.uuid = event._body; //TODO
+                    this.file = null;
+                    this.setOperationState(ImportOperation.uploading, ImportState.successful);
+                    this.call_interval = setInterval(() => this.reload(), this.timer_interval);// TODO
                 }, (error: any) => {
+                    this.setOperationState(ImportOperation.uploading, ImportState.failed);
                     console.log(error);
                 });
         }
     }
 
+    verifyFile() {
+        if (this.isAuthorized('WRITE_P21')) {
+            this._importerService.verifyFile(this.uuid)
+                .subscribe(event => {
+                    this.setOperationState(ImportOperation.verifying, ImportState.queued);
+                }, (error: any) => {
+                    this.setOperationState(ImportOperation.verifying, ImportState.failed);
+                    console.log(error);
+                });
+        }
+    }
+
+    importFile() {
+        if (this.isAuthorized('WRITE_P21')) {
+            this._importerService.importFile(this.uuid)
+                .subscribe(event => {
+                    this.setOperationState(ImportOperation.importing, ImportState.queued);
+                }, (error: any) => {
+                    this.setOperationState(ImportOperation.importing, ImportState.failed);
+                    console.log(error);
+                });
+        }
+    }
+
+    cancelProcess() {
+        if (this.isAuthorized('WRITE_P21')) {
+            if (!this.uuid) {
+                this.ngUnsubscribe.complete();
+                this.setOperationState(ImportOperation.uploading, ImportState.cancelled);
+            } else {
+                this._importerService.cancelProcess(this.uuid)
+                    .subscribe(event => {
+                        switch (this.operationState) {
+                            case ImportOperationState.verifying_queued:
+                            case ImportOperationState.verifying_in_progress:
+                                this.setOperationState(ImportOperation.verifying, ImportState.cancelled);
+                                break;
+                            case ImportOperationState.importing_queued:
+                            case ImportOperationState.importing_in_progress:
+                                this.setOperationState(ImportOperation.importing, ImportState.cancelled);
+                                break;
+                        }
+                    }, (error: any) => {
+                        console.log(error);
+                    });
+            }
+        }
+    }
+
     deleteFile() {
-        this.ngOnDestroy();
-        this._importerService.deleteFile(this.uuid)
-            .subscribe(event => {
-            }, (error: any) => {
-                console.log(error);
-            });
+        if (this.isAuthorized('WRITE_P21')) {
+            this.ngOnDestroy();
+            this._importerService.deleteFile(this.uuid)
+                .subscribe(event => {
+                }, (error: any) => {
+                    console.log(error);
+                });
+        }
     }
 
     getUUID(): string {
@@ -179,4 +189,15 @@ export class ListEntry {
             return false;
         }
     }
+
+    /**
+  * Checks if the user has the given permission.
+  * @returns the permission that will be checked
+  */
+    isAuthorized(permission: string) {
+        let a = this._importerService.checkPermission(permission);
+        console.log(a)
+        return a;
+    }
+
 }
