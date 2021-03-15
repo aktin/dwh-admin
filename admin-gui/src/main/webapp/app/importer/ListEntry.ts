@@ -195,9 +195,7 @@ export class ListEntry {
   * @returns the permission that will be checked
   */
     isAuthorized(permission: string) {
-        let a = this._importerService.checkPermission(permission);
-        console.log(a)
-        return a;
+        return this._importerService.checkPermission(permission);
     }
 
 }

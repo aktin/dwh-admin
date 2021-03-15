@@ -44,13 +44,7 @@ export class ImporterComponent {
     public importState: typeof ImportState = ImportState;
     public importOperation: typeof ImportOperation = ImportOperation;
 
-    /**
-     * Checks if the user has the given permission.
-     * @returns the permission that will be checked
-     */
-    isAuthorized(permission: string) {
-        return this._importerService.checkPermission(permission);
-    }
+
 
     /**
      * constructor for importer.component with two GET requests
@@ -204,5 +198,13 @@ export class ImporterComponent {
         } else {
             return '+' + this.sortAttribute;
         }
+    }
+
+    /**
+    * Checks if the user has the given permission.
+    * @returns the permission that will be checked
+    */
+    isAuthorized(permission: string) {
+        return this._importerService.checkPermission(permission);
     }
 }
