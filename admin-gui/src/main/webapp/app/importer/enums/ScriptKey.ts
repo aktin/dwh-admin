@@ -1,6 +1,6 @@
-// possible keys in received script file object from backend
+// possible keys in received script file object (from java endpoint)
 export enum ScriptKey {
-    id = 'id', // corresponds to name of script file
-    viewname = 'viewname',
-    version = 'version'
+    id = 'id',              // id of script
+    viewname = 'viewname',  // display name of script
+    version = 'version'     // script version
 }

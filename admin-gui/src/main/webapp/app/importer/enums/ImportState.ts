@@ -1,3 +1,4 @@
+// possible values for PropertiesKey.state
 export enum ImportState {
     ready = 'ready',
     queued = 'queued',

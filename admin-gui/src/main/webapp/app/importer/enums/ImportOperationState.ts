@@ -1,4 +1,4 @@
-// all possible combinations of PropertyPojoKey.operation and PorpertyPojoKey.state
+// all possible combinations of PropertiesKey.operation and PropertiesKey.state
 // used, to display current combination in view
 export enum ImportOperationState {
     uploading_ready = 'Bereit',
