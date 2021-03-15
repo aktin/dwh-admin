@@ -31,9 +31,11 @@ export class ImporterComponent {
 
     private ngUnsubscribe: Subject<void> = new Subject<void>();
 
-    // lists for uploaded files and scripts
+    // hashmap for uploaded scripts by <ScriptId:DisplayName>
     private script_selected: string;
     private list_scripts: Map<string, string> = new Map<string, string>();
+
+    // lists for uploaded files
     private list_files_upload: ListEntry[] = [];
 
     // table sorting
@@ -44,7 +46,7 @@ export class ImporterComponent {
     public importState: typeof ImportState = ImportState;
     public importOperation: typeof ImportOperation = ImportOperation;
 
-
+    private perm_write: boolean = false;
 
     /**
      * constructor for importer.component with two GET requests
@@ -89,7 +91,7 @@ export class ImporterComponent {
             }, (error: any) => {
                 console.log(error);
             });
-
+        this.perm_write = this.isAuthorized('WRITE_P21');
 
 
 
@@ -131,10 +133,12 @@ export class ImporterComponent {
      * @param files: list of binaries to upload
      */
     onFileBrowse(files: any[]) {
-        for (let file of files) {
-            this.list_files_upload.push(new ListEntry(this._importerService, file, this.script_selected));
+        if (this.isAuthorized('WRITE_P21')) {
+            for (let file of files) {
+                this.list_files_upload.push(new ListEntry(this._importerService, file, this.script_selected));
+            }
+            $('#FileInput').val(''); // delete held item of file browser
         }
-        $('#FileInput').val(''); // delete held item of file browser
     }
 
     /**

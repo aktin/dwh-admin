@@ -25,6 +25,9 @@ export class ListEntry {
     private timer_interval = 5000;
     private call_interval: any;
 
+    private perm_write: boolean = false;
+
+
     constructor(
         private _importerService: ImporterService,
         private file: File,
@@ -40,6 +43,7 @@ export class ListEntry {
             this.getScriptLogs();
             this.call_interval = setInterval(() => this.reload(), this.timer_interval);
         }
+        this.perm_write = this.isAuthorized('WRITE_P21');
     }
 
     uploadFile() {
