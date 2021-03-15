@@ -179,12 +179,4 @@ export class ListEntry {
             return false;
         }
     }
-
-    switch_show_error() {
-        this.show_error = !this.show_error;
-    }
-
-    switch_show_output() {
-        this.show_output = !this.show_output;
-    }
 }

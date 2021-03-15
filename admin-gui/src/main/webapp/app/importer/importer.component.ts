@@ -1,8 +1,10 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, forwardRef, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
 import 'rxjs/observable/of'
 import 'rxjs/operator/delay';
+
+import { PopUpMessageComponent } from './../helpers/popup-message.component';
 
 import { ImportState } from './enums/ImportState';
 import { ImportOperation } from './enums/ImportOperation';
@@ -21,10 +23,13 @@ require('semantic-ui');
 
 export class ImporterComponent {
 
-    private ngUnsubscribe: Subject<void> = new Subject<void>();
+    @ViewChild(forwardRef(() => PopUpMessageComponent))
+    popUpDeleteConfirm: PopUpMessageComponent = new PopUpMessageComponent();
 
     // connector to file browser
     @ViewChild('FileInput') fileInput: any;
+
+    private ngUnsubscribe: Subject<void> = new Subject<void>();
 
     // lists for uploaded files and scripts
     private script_selected: string;
@@ -35,6 +40,9 @@ export class ImporterComponent {
     private sortAttribute = 'name_file';
     private reverse = true; // sort order ascending/descending
     private sorted = false;
+
+    public importState: typeof ImportState = ImportState;
+    public importOperation: typeof ImportOperation = ImportOperation;
 
     /**
      * Checks if the user has the given permission.
@@ -87,6 +95,29 @@ export class ImporterComponent {
             }, (error: any) => {
                 console.log(error);
             });
+
+
+
+
+        let i_script = "test.py";
+        let i_name = "NAME";
+        let i_size = 1024;
+        let i_id = "";
+
+        for (let o in ImportOperation) {
+            for (let s in ImportState) {
+                this.list_files_upload.push(
+                    new ListEntry(
+                        this._importerService,
+                        null,
+                        i_script,
+                        i_name,
+                        i_size,
+                        i_id,
+                        ImportOperation[o as keyof typeof ImportOperation],
+                        ImportState[s as keyof typeof ImportState]));
+            }
+        }
     }
 
     ngOnDestroy() {
@@ -116,6 +147,20 @@ export class ImporterComponent {
      * If file exists in backend, sent delete request, then delete entry from list_files_upload
      * @param index: index of file in list_files_upload
      */
+    confirmDelete(index: number) {
+        let buttons = [['Löschen', 'green'], ['Abbrechen', 'orange']];
+        this.popUpDeleteConfirm.setConfirm(buttons);
+        this.popUpDeleteConfirm.onTop = true;
+        this.popUpDeleteConfirm.setData(true, 'Eintrag löschen',
+            'Wollen Sie diesen Eintrag wirklich unwiderruflich löschen?\nAlle importierten Daten werden ebenso gelöscht!',
+            (submit: boolean) => {
+                if (submit) {
+                    this.deleteFile(index);
+                }
+            }
+        );
+    }
+
     deleteFile(index: number) {
         if (this.list_files_upload[index].getUUID() !== "") {
             this.list_files_upload[index].deleteFile();
