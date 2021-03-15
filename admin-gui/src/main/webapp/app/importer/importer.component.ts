@@ -43,6 +43,8 @@ export class ImporterComponent {
     private reverse = true; // sort order ascending/descending
     private sorted = false;
 
+    private page = 1;
+
     public importState: typeof ImportState = ImportState;
     public importOperation: typeof ImportOperation = ImportOperation;
 

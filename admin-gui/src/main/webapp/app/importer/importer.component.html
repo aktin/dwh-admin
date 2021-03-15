@@ -56,7 +56,7 @@
             </tr>
         </thead>
         <tbody
-            *ngFor="let file of list_files_upload | paginate: { itemsPerPage: 7, currentPage: p } | orderBy: [getSortAttribute()]; let i=index">
+            *ngFor="let file of list_files_upload | paginate: { itemsPerPage: 7, currentPage: page } | orderBy: [getSortAttribute()]; let i=index">
             <tr>
                 <td>
                     <p class="file-name"> {{ file.name_file }} </p>
@@ -115,7 +115,7 @@
                             title="Prozess abbrechen">
                             <i class="ban icon red"></i>
                         </button>
-                        <button class="ui button" (click)="confirmDelete(i)"
+                        <button class="ui button" (click)="confirmDelete((page-1)*7+i)"
                             *ngIf="file.state !== importState.in_progress && file.state !== importState.queued && file.perm_write"
                             title="Datei löschen">
                             <i class="trash icon red"></i>
@@ -146,7 +146,7 @@
         </tbody>
         <tfoot>
             <th colspan="5">
-                <pagination-controls class="pagination" (pageChange)="p = $event" autoHide="true"
+                <pagination-controls class="pagination" (pageChange)="page = $event" autoHide="true"
                     previousLabel="Vorherige Seite" nextLabel="Nächste Seite">
                 </pagination-controls>
             </th>
