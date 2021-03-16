@@ -70,7 +70,6 @@ export class UrlService {
         verifyFile: 'script/@uuid@/verify',
         importFile: 'script/@uuid@/import',
         cancelProcess: 'script/@uuid@/cancel',
-        getStatus: 'script/@uuid@/status'
     };
 
     setServerUrl(serverUrl: string) {

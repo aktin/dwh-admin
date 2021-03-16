@@ -3,7 +3,7 @@
  */
 
 /**
- * services
+ * service
  */
 export * from './importer.service'
 
@@ -11,5 +11,3 @@ export * from './importer.service'
  * components
  */
 export * from './importer.component';
-
-
