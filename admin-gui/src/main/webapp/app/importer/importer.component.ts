@@ -27,9 +27,6 @@ export class ImporterComponent {
     @ViewChild(forwardRef(() => PopUpMessageComponent))
     popUpDeleteConfirm: PopUpMessageComponent = new PopUpMessageComponent();
 
-    // connector to file browser
-    @ViewChild('FileInput') fileInput: any;
-
     private ngUnsubscribe: Subject<void> = new Subject<void>(); // object to cancel subscriptions
 
     // hashmap for uploaded scripts by <ScriptId:DisplayName>
@@ -100,7 +97,7 @@ export class ImporterComponent {
 
 
     /**
-     * Handler for file upload browser
+     * Handler for file browser button
      * Opens file browser in view and allows selection of file to upload. Selected files are
      * added as entries to list_files_upload
      * @param files: list of binaries to upload
@@ -146,9 +143,8 @@ export class ImporterComponent {
      * @returns input bytes converted to corresponding measurement
      */
     formatBytes(bytes: number) {
-        if (bytes === 0) { return '0 Bytes'; }
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        let sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        let i = Math.floor(Math.log(bytes) / Math.log(1024));
         return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
@@ -178,7 +174,7 @@ export class ImporterComponent {
     /**
      * PreDestroy method call
      * Clears list of script metadata and list of file metadata and unsubscribes from all ongoing
-     * subscriptions
+     * subscriptions (including subscriptions of ListEntry objects)
      */
     ngOnDestroy() {
         this.list_scripts.forEach((value, index) => {
