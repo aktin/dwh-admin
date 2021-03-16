@@ -16,7 +16,7 @@
                 </select>
             </div>
             <div class="ui grid input-field-row">
-                <div class="right floated right aligned eighteen wide column">
+                <div class="right floated right aligned sixteen wide column">
                     <button class="ui green labeled icon button" [disabled]="!perm_write">
                         <input class="input-field" type="file" id="FileInput"
                             (change)="onFileBrowse($event.target.files)" />
@@ -33,7 +33,7 @@
         <thead>
             <tr>
                 <th [ngClass]="{'sorted':sorted&&sortAttribute==='name_file', 'descending':reverse, 'ascending':!reverse}"
-                    (click)="sorted=true; setSortAttribute('name_file')" width="30%">
+                    (click)="sorted=true; setSortAttribute('name_file')" width="30%" class="center aligned">
                     Name
                     <i *ngIf="!sorted" class="sort icon"></i>
                 </th>
@@ -115,7 +115,7 @@
                             title="Prozess abbrechen">
                             <i class="ban icon red"></i>
                         </button>
-                        <button class="ui button" (click)="confirmDelete((page-1)*7+i)"
+                        <button class="ui button" (click)="confirmDelete(file)"
                             *ngIf="file.state !== importState.in_progress && file.state !== importState.queued && file.perm_write"
                             title="Datei löschen">
                             <i class="trash icon red"></i>

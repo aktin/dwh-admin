@@ -1,18 +1,19 @@
 import { Component, ViewChild, forwardRef, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
+import { Subscription } from 'rxjs';
 import 'rxjs/add/operator/takeUntil';
 import 'rxjs/observable/of'
 import 'rxjs/operator/delay';
 
 import { PopUpMessageComponent } from './../helpers/popup-message.component';
 
+import { ImporterService } from './importer.service';
+import { ListEntry } from './ListEntry';
+
 import { ImportState } from './enums/ImportState';
 import { ImportOperation } from './enums/ImportOperation';
 import { PropertiesKey } from './enums/PropertiesKey';
 import { ScriptKey } from './enums/ScriptKey';
-
-import { ImporterService } from './importer.service';
-import { ListEntry } from './ListEntry';
 
 require('semantic-ui');
 
@@ -29,7 +30,7 @@ export class ImporterComponent {
     // connector to file browser
     @ViewChild('FileInput') fileInput: any;
 
-    private ngUnsubscribe: Subject<void> = new Subject<void>();
+    private ngUnsubscribe: Subject<void> = new Subject<void>(); // object to cancel subscriptions
 
     // hashmap for uploaded scripts by <ScriptId:DisplayName>
     private script_selected: string;
@@ -43,22 +44,23 @@ export class ImporterComponent {
     private reverse = true; // sort order ascending/descending
     private sorted = false;
 
-    private page = 1;
-
+    // initialization of enum classes
+    // used to access enums in html
     public importState: typeof ImportState = ImportState;
     public importOperation: typeof ImportOperation = ImportOperation;
 
     private perm_write: boolean = false;
 
     /**
-     * constructor for importer.component with two GET requests
-     * first GET: request to '/aktin/admin/rest/script/get'
-     * gets a json list of uploaded scripts and converts it to a list of string maps with <ID, name+version> (exp. <"script1.py", "importer V1.0">)
-     * second GET: request to '/aktin/admin/rest/file/get'
-     * gets a json list of uploaded files and converts it to a list of ListEntry(s)
-     *
-     * both lists are used to display the corresponding items in the view
-     * @param _importerService: injected service to perform requests
+     * Constructor for importer.component with two GET requests
+     * First GET: Requests uploaded script metadata from backend. Gets a json list of
+     * uploaded scripts and converts it to a list of string maps with <ID, name+version>
+     * (for example. <"script1.py", "importer V1.0">). List is used to view and select
+     * uploaded scripts from dropdown menu.
+     * Second GET: Requests uploaded file metadata from backend. Gets a json list of
+     * uploaded files and converts it to a list of ListEntry(s). List is used to
+     * view uploaded files in table and select file operations
+     * @param _importerService: injected service to perform requests and check permissions
      */
     constructor(private _importerService: ImporterService) {
         this._importerService.getImportScripts()
@@ -94,44 +96,13 @@ export class ImporterComponent {
                 console.log(error);
             });
         this.perm_write = this.isAuthorized('WRITE_P21');
-
-
-
-        let i_script = "test.py";
-        let i_name = "NAME";
-        let i_size = 1024;
-        let i_id = "";
-
-        for (let o in ImportOperation) {
-            for (let s in ImportState) {
-                this.list_files_upload.push(
-                    new ListEntry(
-                        this._importerService,
-                        null,
-                        i_script,
-                        i_name,
-                        i_size,
-                        i_id,
-                        ImportOperation[o as keyof typeof ImportOperation],
-                        ImportState[s as keyof typeof ImportState]));
-            }
-        }
     }
 
-    ngOnDestroy() {
-        this.list_scripts.forEach((value, index) => {
-            delete this.list_scripts[index];
-        })
-        this.list_files_upload.forEach((value, index) => {
-            this.list_files_upload[index].ngOnDestroy();
-            delete this.list_files_upload[index];
-        });
-        this.ngUnsubscribe.next();
-        this.ngUnsubscribe.complete();
-    }
 
     /**
      * Handler for file upload browser
+     * Opens file browser in view and allows selection of file to upload. Selected files are
+     * added as entries to list_files_upload
      * @param files: list of binaries to upload
      */
     onFileBrowse(files: any[]) {
@@ -139,15 +110,18 @@ export class ImporterComponent {
             for (let file of files) {
                 this.list_files_upload.push(new ListEntry(this._importerService, file, this.script_selected));
             }
-            $('#FileInput').val(''); // delete held item of file browser
+            $('#FileInput').val(''); // delete held item of file browser afterwards
         }
     }
 
     /**
-     * If file exists in backend, sent delete request, then delete entry from list_files_upload
-     * @param index: index of file in list_files_upload
+     * Delete request for entries in table
+     * Opens delete confirmation popup when called. If confirmed and file exists in backend (== has uuid),
+     * delete request is sent to backend. If file does not exists in backend or delete request was
+     * successful, entry is deleted from list_files_upload
+     * @param listEntry: ListEntry object to delete/remove from list_files_upload
      */
-    confirmDelete(index: number) {
+    confirmDelete(listEntry: ListEntry) {
         if (this.isAuthorized('WRITE_P21')) {
             let buttons = [['Löschen', 'green'], ['Abbrechen', 'orange']];
             this.popUpDeleteConfirm.setConfirm(buttons);
@@ -156,24 +130,18 @@ export class ImporterComponent {
                 'Wollen Sie diesen Eintrag wirklich unwiderruflich löschen?\nAlle importierten Daten werden ebenso gelöscht!',
                 (submit: boolean) => {
                     if (submit) {
-                        this.deleteFile(index);
+                        if (listEntry.getUUID() !== "") {
+                            listEntry.deleteFile();
+                        }
+                        this.list_files_upload = this.list_files_upload.filter(entry => entry !== listEntry);
                     }
                 }
             );
         }
     }
 
-    deleteFile(index: number) {
-        if (this.isAuthorized('WRITE_P21')) {
-            if (this.list_files_upload[index].getUUID() !== "") {
-                this.list_files_upload[index].deleteFile();
-            }
-            this.list_files_upload.splice(index, 1);
-        }
-    }
-
     /**
-     * Format file size in view
+     * Formats binary file size for view
      * @param bytes: file size in bytes
      * @returns input bytes converted to corresponding measurement
      */
@@ -185,7 +153,8 @@ export class ImporterComponent {
     }
 
     /**
-     * Sort table in view to corresponding header and switch current sorting type (ascending <-> descending)
+     * Sorts table in view after giving attribute (table header). Switches sorting type (ascending <-> descending),
+     * if same attribute is selected again.
      * @param attr: table header
      */
     setSortAttribute(attr: string) {
@@ -207,9 +176,27 @@ export class ImporterComponent {
     }
 
     /**
-    * Checks if the user has the given permission.
-    * @returns the permission that will be checked
-    */
+     * PreDestroy method call
+     * Clears list of script metadata and list of file metadata and unsubscribes from all ongoing
+     * subscriptions
+     */
+    ngOnDestroy() {
+        this.list_scripts.forEach((value, index) => {
+            delete this.list_scripts[index];
+        })
+        this.list_files_upload.forEach((value, index) => {
+            this.list_files_upload[index].ngOnDestroy();
+            delete this.list_files_upload[index];
+        });
+        this.ngUnsubscribe.next();
+        this.ngUnsubscribe.complete();
+    }
+
+    /**
+     * Checks user permission via importer.service
+     * @param permission enum of Permissions.ts as string
+     * @returns boolean if current user has requested permission
+     */
     isAuthorized(permission: string) {
         return this._importerService.checkPermission(permission);
     }

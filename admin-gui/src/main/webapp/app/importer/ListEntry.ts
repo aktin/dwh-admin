@@ -1,4 +1,5 @@
 import { Subject } from 'rxjs/Subject';
+import { Subscription } from 'rxjs';
 
 import { ImporterService } from './importer.service';
 
@@ -7,7 +8,6 @@ import { ImportOperation } from './enums/ImportOperation';
 import { ImportOperationState } from './enums/ImportOperationState';
 import { PropertiesKey } from './enums/PropertiesKey';
 import { LogType } from './enums/LogType';
-import { Subscription } from 'rxjs';
 
 /**
  * Displays uploaded and to be uploaded files in view and
