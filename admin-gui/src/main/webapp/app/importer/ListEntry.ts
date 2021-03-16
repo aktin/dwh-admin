@@ -1,61 +1,72 @@
-/**
- * class to display table list entries in HTML
- */
-import { ImporterService } from './importer.service';
 import { Subject } from 'rxjs/Subject';
+
+import { ImporterService } from './importer.service';
 
 import { ImportState } from './enums/ImportState';
 import { ImportOperation } from './enums/ImportOperation';
 import { ImportOperationState } from './enums/ImportOperationState';
 import { PropertiesKey } from './enums/PropertiesKey';
 import { LogType } from './enums/LogType';
+import { Subscription } from 'rxjs';
 
-// TODO: comments
+/**
+ * Displays uploaded and to be uploaded files in view and
+ * manages file operations for corresponding file
+ * Each instance of ListEntry represents one row in html table
+ */
 export class ListEntry {
 
-    private ngUnsubscribe: Subject<void> = new Subject<void>();
+    private ngUnsubscribe: Subject<void> = new Subject<void>(); // object to cancel subscriptions
+    private subscription_reload: Subscription;
+    private subscription_scriptLogs: Subscription;
 
-    private operationState: ImportOperationState;
     private msg_error: string = '';
     private msg_output: string = '';
-
     private show_error: boolean = false;
     private show_output: boolean = false;
+
+    private operationState: ImportOperationState;
 
     private timer_interval = 5000;
     private call_interval: any;
 
     private perm_write: boolean = false;
 
-
     constructor(
         private _importerService: ImporterService,
         private file: File,
         private id_script: string,
-        private name_file: string = file.name,
+        public name_file: string = file.name,
         private size_file: number = file.size,
         private uuid: string = '',
         private operation: ImportOperation = ImportOperation.uploading,
         private state: ImportState = ImportState.ready,
     ) {
         this.computeOperationState();
+        this.perm_write = this.isAuthorized('WRITE_P21');
         if (this.uuid) {
             this.getScriptLogs();
             this.call_interval = setInterval(() => this.reload(), this.timer_interval);
         }
-        this.perm_write = this.isAuthorized('WRITE_P21');
     }
 
+    /**
+     * Upload file via importer.service
+     * Process is done via subscription (can be cancelled using .takeUntil)
+     * Deletes binary file from this object after successful upload and creates an
+     * interval to call reload() every {timer_interval} ms. Prior upload, file metadata
+     * is read via binary file and after upload via endpoint calls (by reload())
+     */
     uploadFile() {
         if (this.isAuthorized('WRITE_P21')) {
             this.setOperationState(ImportOperation.uploading, ImportState.in_progress);
             this._importerService.uploadFile(this.file, this.name_file, this.id_script)
                 .takeUntil(this.ngUnsubscribe)
                 .subscribe(event => {
-                    this.uuid = event._body; //TODO
-                    this.file = null;
+                    this.uuid = event._body;
                     this.setOperationState(ImportOperation.uploading, ImportState.successful);
-                    this.call_interval = setInterval(() => this.reload(), this.timer_interval);// TODO
+                    this.call_interval = setInterval(() => this.reload(), this.timer_interval);
+                    this.file = null;
                 }, (error: any) => {
                     this.setOperationState(ImportOperation.uploading, ImportState.failed);
                     console.log(error);
@@ -63,6 +74,10 @@ export class ListEntry {
         }
     }
 
+    /**
+     * Starts async file verification process via importer.service
+     * Only a request to backend to verify file by given id
+     */
     verifyFile() {
         if (this.isAuthorized('WRITE_P21')) {
             this._importerService.verifyFile(this.uuid)
@@ -75,6 +90,10 @@ export class ListEntry {
         }
     }
 
+    /**
+     * Starts async file import process via importer.service
+     * Only a request to backend to import file by given id
+     */
     importFile() {
         if (this.isAuthorized('WRITE_P21')) {
             this._importerService.importFile(this.uuid)
@@ -87,6 +106,11 @@ export class ListEntry {
         }
     }
 
+    /**
+     * Cancels current file processing by case differentiation
+     * case upload: Cancels subscription of upload
+     * case verify/import: Sends a request to backend to stop processing of given file id
+     */
     cancelProcess() {
         if (this.isAuthorized('WRITE_P21')) {
             if (!this.uuid) {
@@ -112,23 +136,31 @@ export class ListEntry {
         }
     }
 
+    /**
+    * Deletes uploaded file data via importer.service (only if file has a uuid and is therefore uploaded)
+    * Cancels all subscription of this object and requests deletion of file via importer.service
+    */
     deleteFile() {
         if (this.isAuthorized('WRITE_P21')) {
-            this.ngOnDestroy();
-            this._importerService.deleteFile(this.uuid)
-                .subscribe(event => {
-                }, (error: any) => {
-                    console.log(error);
-                });
+            if (this.uuid) {
+                this.ngOnDestroy();
+                this._importerService.deleteFile(this.uuid)
+                    .subscribe(event => {
+                    }, (error: any) => {
+                        console.log(error);
+                    });
+            }
         }
     }
 
-    getUUID(): string {
-        return this.uuid;
-    }
-
+    /**
+    * GET request to backend for metadata of this file, as well as created script logs
+    * Used to update information in view consistently. As reload() is called in an interval, a new
+    * subscription would be created each call. To avoid this, a subscription variable is reused
+    * and unsubscribed after each first response from observable
+    */
     reload() {
-        this._importerService.getUploadedFile(this.uuid)
+        this.subscription_reload = this._importerService.getUploadedFile(this.uuid)
             .subscribe(event => {
                 if (event._body) {
                     let json = JSON.parse(event._body);
@@ -140,25 +172,20 @@ export class ListEntry {
                     this.state = json[PropertiesKey.state]
                     this.computeOperationState();
                     this.getScriptLogs();
-                    console.log("PING " + this.uuid); // TODO REMOVE
+                    this.subscription_reload.unsubscribe();
                 }
             }, (error: any) => {
                 console.log(error);
             })
     }
 
-    setOperationState(operation: ImportOperation, state: ImportState) {
-        this.operation = operation;
-        this.state = state;
-        this.computeOperationState();
-    }
-
-    computeOperationState() {
-        this.operationState = ImportOperationState[[this.operation, this.state].join("_") as keyof typeof ImportOperationState]
-    }
-
+    /**
+     * GET request for created script logs to this file.
+     * Response from observable is saved to msg_error and msg_output. Is called by reload()
+     * in an interval. Like with reload() a subscription variable is reused each iteration
+     */
     getScriptLogs() {
-        this._importerService.getScriptLogs(this.uuid)
+        this.subscription_scriptLogs = this._importerService.getScriptLogs(this.uuid)
             .subscribe(event => {
                 if (event._body) {
                     let list_logs = JSON.parse(event._body);
@@ -169,19 +196,42 @@ export class ListEntry {
                             this.msg_output = json['text'];
                         }
                     })
+                    this.subscription_scriptLogs.unsubscribe();
                 }
             }, (error: any) => {
                 console.log(error);
             })
     }
 
-    ngOnDestroy() {
-        console.log("I AM CALLED") //TODO
-        this.ngUnsubscribe.next();
-        this.ngUnsubscribe.complete();
-        clearInterval(this.call_interval);
+    /**
+     * Sets operation and state of this file to given values and computes new ImportOperationState
+     * @param operation ImportOperation enum
+     * @param state ImportState enum
+     */
+    setOperationState(operation: ImportOperation, state: ImportState) {
+        this.operation = operation;
+        this.state = state;
+        this.computeOperationState();
     }
 
+    /**
+     * Merges values of current operation and current state to new enum ImportOperationState
+     */
+    computeOperationState() {
+        this.operationState = ImportOperationState[[this.operation, this.state].join("_") as keyof typeof ImportOperationState]
+    }
+
+    /**
+     * Checks current operation and current state of object against given input. Used
+     * to hide/show file operation buttons in view. Each operation button is shown with
+     * the success of the previous operation and hidden with the success of its own
+     * operation, example:
+     * Upload success -> upload button hidden, verify button shown
+     * Verify success -> verify button hidden, import button shown
+     * @param operation_prev previous operation (upload or verify)
+     * @param operation current operation (verify or import)
+     * @returns boolean if button shall be shown or hidden
+     */
     checkButtonVisibility(operation_prev: ImportOperation, operation: ImportOperation): boolean {
         if (this.operation === operation_prev && this.state === ImportState.successful) {
             return true;
@@ -195,11 +245,28 @@ export class ListEntry {
     }
 
     /**
-  * Checks if the user has the given permission.
-  * @returns the permission that will be checked
-  */
+     * PreDestroy method call
+     * Unsubscribes from all ongoing subscriptions and cancels interval call of reload()
+     */
+    ngOnDestroy() {
+        this.ngUnsubscribe.next();
+        this.ngUnsubscribe.complete();
+        clearInterval(this.call_interval);
+    }
+
+    /**
+     * Checks user permission via importer.service
+     * @param permission enum of Permissions.ts as string
+     * @returns boolean if current user has requested permission
+     */
     isAuthorized(permission: string) {
         return this._importerService.checkPermission(permission);
     }
 
+    /**
+     * @returns uuid of object
+     */
+    getUUID(): string {
+        return this.uuid;
+    }
 }

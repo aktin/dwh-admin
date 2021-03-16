@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+
 import { Permission } from './../users/index';
 import { AuthService } from './../users/auth.service';
 import { UrlService, HttpInterceptorService } from '../helpers/index';
-import { Observable } from 'rxjs/Observable';
 
 /**
  * Service component of file importer
