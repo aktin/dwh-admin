@@ -73,18 +73,4 @@ public class ScriptManagerEndpoint {
     public void cancelFileProcessing(@NotNull @PathParam("uuid") String uuid) {
         pythonScriptExecutor.cancelTask(uuid);
     }
-
-    /**
-     * GET request for status of file processing
-     *
-     * @param uuid: uuid of file to verify
-     * @return boolean if current operation of file is finished
-     */
-    @Path("{uuid}/status")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public boolean getFileProcessingStatus(@NotNull @PathParam("uuid") String uuid) {
-        return pythonScriptExecutor.isTaskDone(uuid);
-    }
-
 }
