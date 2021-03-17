@@ -129,17 +129,19 @@
                         <p>
                             <i class="exclamation triangle icon orange"></i>
                             Konsolenausgabe Skript:
-                        <pre> {{ file.msg_output }} </pre>
+                        </p>
+                        <pre style="overflow-x:auto;"> {{ file.msg_output }} </pre>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td colspan="5" *ngIf="file.show_error">
                     <div class="ui padded element-error segment animationIf">
-                        <p> <i class="exclamation triangle icon red"></i>
+                        <p>
+                            <i class="exclamation triangle icon red"></i>
                             Fehlermeldung Skript:
                         </p>
-                        <pre> {{ file.msg_error }} </pre>
+                        <pre style="overflow-x:auto;"> {{ file.msg_error }} </pre>
                     </div>
                 </td>
             </tr>
