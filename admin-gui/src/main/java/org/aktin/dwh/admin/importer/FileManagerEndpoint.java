@@ -8,10 +8,8 @@ import org.aktin.importer.pojos.ScriptLog;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,9 +33,6 @@ public class FileManagerEndpoint {
 
     @Inject
     private ImportDeleteManager importDeleteManager;
-
-    @Context
-    private SecurityContext security;
 
     /**
      * GET request for "properties"-File of all uploaded files detected by fileOperationManager
