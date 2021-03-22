@@ -96,6 +96,7 @@ public class FileManagerEndpoint {
     @DELETE
     public void deleteFile(@NotNull @PathParam("uuid") String uuid) throws IOException {
         importDeleteManager.deleteImportedDataFromDB(uuid);
+        fileOperationManager.removeScriptLogs(uuid);
         String path_deletedFolder = fileOperationManager.deleteUploadFileFolder(uuid);
         LOGGER.log(Level.INFO, "Deleted files of {0}", path_deletedFolder);
     }
@@ -112,18 +113,5 @@ public class FileManagerEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public List<ScriptLog> getUploadedFileLogs(@NotNull @PathParam("uuid") String uuid) {
         return fileOperationManager.getScriptLogs(uuid);
-    }
-
-    /**
-     * DELETE request for all script logs of uploaded file
-     *
-     * @param uuid universally unique id of file
-     * @throws IOException for error during delete operation
-     */
-    @Path("{uuid}/log")
-    @DELETE
-    public void deleteUploadedFileLog(@NotNull @PathParam("uuid") String uuid) throws IOException {
-        fileOperationManager.deleteScriptLogs(uuid);
-        LOGGER.log(Level.INFO, "Deleted log files of {0}", uuid);
     }
 }
