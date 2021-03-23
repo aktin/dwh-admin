@@ -1,5 +1,6 @@
 package org.aktin.dwh.admin.importer;
 
+import org.aktin.dwh.admin.auth.Secured;
 import org.aktin.importer.FileOperationManager;
 import org.aktin.importer.ImportDeleteManager;
 import org.aktin.importer.ScriptOperationManager;
@@ -8,8 +9,10 @@ import org.aktin.importer.pojos.ScriptLog;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,6 +37,9 @@ public class FileManagerEndpoint {
     @Inject
     private ImportDeleteManager importDeleteManager;
 
+    @Context
+    private SecurityContext security;
+
     /**
      * GET request for "properties"-File of all uploaded files detected by fileOperationManager
      * Each item contains id, name, size in bytes, corresponding script and current state and operation of
@@ -41,6 +47,7 @@ public class FileManagerEndpoint {
      *
      * @return List of uploaded file data
      */
+    @Secured
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Properties> getUploadedFiles() {
@@ -53,6 +60,7 @@ public class FileManagerEndpoint {
      * @param uuid universally unique id of uploaded file
      * @return PropertiesFile object with content of corresponding "properties"-File
      */
+    @Secured
     @Path("{uuid}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -73,6 +81,7 @@ public class FileManagerEndpoint {
      * @return Response with status 201 and uri of uploaded file
      * @throws IOException if error occurs during creation of directory, moving of file or Files.size(newFile)
      */
+    @Secured
     @POST
     public Response uploadFile(@NotNull @QueryParam("scriptId") String id_script, @NotNull @QueryParam("filename") String name_file, @NotNull File file) throws IOException {
         String uuid = UUID.randomUUID().toString();
@@ -93,6 +102,7 @@ public class FileManagerEndpoint {
      * @param uuid universally unique id of file to delete
      * @throws IOException for errors during Files.walk and Files.delete operation
      */
+    @Secured
     @Path("{uuid}")
     @DELETE
     public void deleteFile(@NotNull @PathParam("uuid") String uuid) throws IOException {
@@ -109,6 +119,7 @@ public class FileManagerEndpoint {
      * @param uuid universally unique id of file
      * @return List with script log objects
      */
+    @Secured
     @Path("{uuid}/log")
     @GET
     @Produces(MediaType.APPLICATION_JSON)

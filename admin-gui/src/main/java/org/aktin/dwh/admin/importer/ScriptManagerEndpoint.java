@@ -1,5 +1,6 @@
 package org.aktin.dwh.admin.importer;
 
+import org.aktin.dwh.admin.auth.Secured;
 import org.aktin.importer.ScriptOperationManager;
 import org.aktin.importer.enums.ScriptOperation;
 import org.aktin.importer.executor.PythonScriptExecutor;
@@ -8,7 +9,9 @@ import org.aktin.importer.pojos.ScriptFile;
 import javax.validation.constraints.NotNull;
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.SecurityContext;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -23,6 +26,9 @@ public class ScriptManagerEndpoint {
     @Inject
     private PythonScriptExecutor pythonScriptExecutor;
 
+    @Context
+    private SecurityContext security;
+
     /**
      * GET request for import scripts detected by scriptOperationManager
      * Each item contains id, version, name in view and processed mimetype of corresponding script
@@ -30,6 +36,7 @@ public class ScriptManagerEndpoint {
      *
      * @return List of uploaded script data
      */
+    @Secured
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<ScriptFile> getImportScripts() {
@@ -41,6 +48,7 @@ public class ScriptManagerEndpoint {
      *
      * @param uuid universally unique id of file to verify
      */
+    @Secured
     @Path("{uuid}/verify")
     @POST
     public void queueFileVerification(@NotNull @PathParam("uuid") String uuid) {
@@ -52,6 +60,7 @@ public class ScriptManagerEndpoint {
      *
      * @param uuid: universally unique id of file to import
      */
+    @Secured
     @Path("{uuid}/import")
     @POST
     public void queueFileImport(@NotNull @PathParam("uuid") String uuid) {
@@ -63,6 +72,7 @@ public class ScriptManagerEndpoint {
      *
      * @param uuid universally unique id of file
      */
+    @Secured
     @Path("{uuid}/cancel")
     @POST
     public void cancelFileProcessing(@NotNull @PathParam("uuid") String uuid) {
