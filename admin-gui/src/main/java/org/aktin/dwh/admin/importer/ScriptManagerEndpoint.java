@@ -36,7 +36,6 @@ public class ScriptManagerEndpoint {
      *
      * @return List of uploaded script data
      */
-    @Secured
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<ScriptFile> getImportScripts() {

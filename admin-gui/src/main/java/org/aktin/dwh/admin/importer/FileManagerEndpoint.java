@@ -47,7 +47,6 @@ public class FileManagerEndpoint {
      *
      * @return List of uploaded file data
      */
-    @Secured
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Properties> getUploadedFiles() {
@@ -60,7 +59,6 @@ public class FileManagerEndpoint {
      * @param uuid universally unique id of uploaded file
      * @return PropertiesFile object with content of corresponding "properties"-File
      */
-    @Secured
     @Path("{uuid}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -119,7 +117,6 @@ public class FileManagerEndpoint {
      * @param uuid universally unique id of file
      * @return List with script log objects
      */
-    @Secured
     @Path("{uuid}/log")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
