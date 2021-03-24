@@ -126,8 +126,8 @@
             <tr>
                 <td colspan="5" *ngIf="file.show_output" class="animationIf">
                     <div class="ui padded element-output segment ">
-                        <p>
-                            <i class="exclamation triangle icon orange"></i>
+                        <p class="element-title">
+                            <i class="info circle icon large"></i>
                             Konsolenausgabe Skript:
                         </p>
                         <pre style="overflow-x:auto;"> {{ file.msg_output }} </pre>
@@ -137,8 +137,8 @@
             <tr>
                 <td colspan="5" *ngIf="file.show_error">
                     <div class="ui padded element-error segment animationIf">
-                        <p>
-                            <i class="exclamation triangle icon red"></i>
+                        <p class="element-title">
+                            <i class="exclamation triangle icon red large"></i>
                             Fehlermeldung Skript:
                         </p>
                         <pre style="overflow-x:auto;"> {{ file.msg_error }} </pre>
