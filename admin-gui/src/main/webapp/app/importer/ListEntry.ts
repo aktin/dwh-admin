@@ -232,17 +232,28 @@ export class ListEntry {
      * @param operation current operation (verify or import)
      * @returns boolean if button shall be shown or hidden
      */
-    checkButtonVisibility(operation_prev: ImportOperation, operation: ImportOperation): boolean {
-        if (this.operation === operation_prev && this.state === ImportState.successful) {
+    checkVerifyButtonVisibility(): boolean {
+        if (this.operation === ImportOperation.uploading && this.state === ImportState.successful) {
             return true;
-        } else if (this.operation === operation && this.state === ImportState.successful) {
+        } else if (this.operation === ImportOperation.verifying && this.state === ImportState.successful) {
             return false;
-        } else if (this.operation === operation) {
+        } else if (this.operation === ImportOperation.verifying) {
             return true;
         } else {
             return false;
         }
     }
+
+    checkImportButtonVisibility(): boolean {
+        if (this.operation === ImportOperation.verifying && this.state === ImportState.successful) {
+            return true;
+        } else if (this.operation === ImportOperation.importing) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
     /**
      * PreDestroy method call

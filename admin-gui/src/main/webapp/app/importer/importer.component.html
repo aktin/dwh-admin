@@ -17,8 +17,8 @@
             </div>
             <div class="ui grid input-field-row">
                 <div class="right floated right aligned sixteen wide column">
-                    <button class="ui green labeled icon button" [disabled]="!perm_write">
-                        <input class="input-field" type="file" id="FileInput"
+                    <button class="ui green labeled icon button">
+                        <input class="input-field" type="file" id="FileInput" [disabled]="!perm_write"
                             (change)="onFileBrowse($event.target.files)" />
                         <i class="upload icon white"></i>
                         Durchsuchen...
@@ -33,7 +33,7 @@
         <thead>
             <tr>
                 <th [ngClass]="{'sorted':sorted&&sortAttribute==='name_file', 'descending':reverse, 'ascending':!reverse}"
-                    (click)="sorted=true; setSortAttribute('name_file')" width="30%" class="center aligned">
+                    (click)="sorted=true; setSortAttribute('name_file')" width="25%" class="center aligned">
                     Name
                     <i *ngIf="!sorted" class="sort icon"></i>
                 </th>
@@ -52,7 +52,7 @@
                     Status
                     <i *ngIf="!sorted" class="sort icon"></i>
                 </th>
-                <th width="20%"></th>
+                <th width="25%"></th>
             </tr>
         </thead>
         <tbody
@@ -74,23 +74,23 @@
                     </div>
                 </td>
                 <td>
-                    <div class="ui icon four buttons file-buttons">
-                        <button class="ui button" (click)="file.uploadFile()"
+                    <div class="ui icon five buttons file-buttons">
+                        <button class="compact ui button" (click)="file.uploadFile()"
                             *ngIf="file.operation === importOperation.uploading && file.state !== importState.successful && file.perm_write"
                             [disabled]="file.state === importState.in_progress" title="Datei hochladen">
-                            <i class="upload icon green"></i>
+                            Upload
                         </button>
-                        <button class="ui button" (click)="file.verifyFile()"
-                            *ngIf="file.checkButtonVisibility(importOperation.uploading, importOperation.verifying) && file.perm_write"
+                        <button class="compact ui button" (click)="file.verifyFile()"
+                            *ngIf="file.checkVerifyButtonVisibility() && file.perm_write"
                             [disabled]="file.state === importState.queued || file.state === importState.in_progress"
                             title="Datei prüfen">
-                            <i class="search icon green"></i>
+                            Prüfen
                         </button>
-                        <button class="ui button" (click)="file.importFile()"
-                            *ngIf="file.checkButtonVisibility(importOperation.verifying, importOperation.importing) && file.perm_write"
-                            [disabled]="file.state === importState.queued || file.state === importState.in_progress"
+                        <button class="compact ui button" (click)="file.importFile()"
+                            *ngIf="file.checkImportButtonVisibility() && file.perm_write"
+                            [disabled]="file.state === importState.queued || file.state === importState.in_progress || (file.operation === importOperation.importing && file.state === importState.successful)"
                             title="Datei importieren">
-                            <i style="margin-left:6px;" class="sign in clockwise rotated icon green"></i>
+                            Import
                         </button>
                         <button class="ui vertical animated button" (click)="file.show_output = !file.show_output;"
                             [disabled]="file.msg_output.length == 0" title="Konsolenausgabe von Skript anzeigen">
@@ -98,16 +98,19 @@
                                 <i class="down arrow icon"></i>
                             </div>
                             <div class="visible content">
-                                <i style="margin-left:6px;" class="file alternate outline icon"></i>
+                                <i style="margin-left:10px;" class="file alternate outline icon"></i>
                             </div>
                         </button>
+                        <button class="ui disabled button" *ngIf="file.msg_error.length == 0">
+                            <i class="exclamation triangle icon grey"></i>
+                        </button>
                         <button class="ui vertical animated button" (click)="file.show_error = !file.show_error"
-                            [disabled]="file.msg_error.length == 0" title="Fehlermeldung von Skript anzeigen">
+                            *ngIf="file.msg_error.length != 0" title="Fehlermeldung von Skript anzeigen">
                             <div class="hidden content">
                                 <i class="down arrow icon"></i>
                             </div>
                             <div class="visible content">
-                                <i style="margin-left:6px;" class="exclamation triangle icon red"></i>
+                                <i style="margin-left:10px;" class="exclamation triangle icon red"></i>
                             </div>
                         </button>
                         <button class="ui button" (click)="file.cancelProcess()"
