@@ -1,7 +1,7 @@
 // all possible combinations of PropertiesKey.operation and PropertiesKey.state
 // used, to display current combination in view
 export enum ImportOperationState {
-    uploading_ready = 'Bereit',
+    uploading_ready = 'Bereit zum Hochladen',
     uploading_in_progress = 'Wird hochgeladen',
     uploading_successful = 'Hochladen abgeschlossen',
     uploading_cancelled = 'Hochladen abgebrochen',
