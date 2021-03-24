@@ -51,30 +51,6 @@ export class ListEntry {
     }
 
     /**
-     * Upload file via importer.service
-     * Process is done via subscription (can be cancelled using .takeUntil)
-     * Deletes binary file from this object after successful upload and creates an
-     * interval to call reload() every {timer_interval} ms. Prior upload, file metadata
-     * is read via binary file and after upload via endpoint calls (by reload())
-     */
-    uploadFile() {
-        if (this.isAuthorized('WRITE_P21')) {
-            this.setOperationState(ImportOperation.uploading, ImportState.in_progress);
-            this._importerService.uploadFile(this.file, this.name_file, this.id_script)
-                .takeUntil(this.ngUnsubscribe)
-                .subscribe(event => {
-                    this.uuid = event._body;
-                    this.setOperationState(ImportOperation.uploading, ImportState.successful);
-                    this.call_interval = setInterval(() => this.reload(), this.timer_interval);
-                    this.file = null;
-                }, (error: any) => {
-                    this.setOperationState(ImportOperation.uploading, ImportState.failed);
-                    console.log(error);
-                });
-        }
-    }
-
-    /**
      * Starts async file verification process via importer.service
      * Only a request to backend to verify file by given id
      */
@@ -113,26 +89,21 @@ export class ListEntry {
      */
     cancelProcess() {
         if (this.isAuthorized('WRITE_P21')) {
-            if (!this.uuid) {
-                this.ngUnsubscribe.complete();
-                this.setOperationState(ImportOperation.uploading, ImportState.cancelled);
-            } else {
-                this._importerService.cancelProcess(this.uuid)
-                    .subscribe(event => {
-                        switch (this.operationState) {
-                            case ImportOperationState.verifying_queued:
-                            case ImportOperationState.verifying_in_progress:
-                                this.setOperationState(ImportOperation.verifying, ImportState.cancelled);
-                                break;
-                            case ImportOperationState.importing_queued:
-                            case ImportOperationState.importing_in_progress:
-                                this.setOperationState(ImportOperation.importing, ImportState.cancelled);
-                                break;
-                        }
-                    }, (error: any) => {
-                        console.log(error);
-                    });
-            }
+            this._importerService.cancelProcess(this.uuid)
+                .subscribe(event => {
+                    switch (this.operationState) {
+                        case ImportOperationState.verifying_queued:
+                        case ImportOperationState.verifying_in_progress:
+                            this.setOperationState(ImportOperation.verifying, ImportState.cancelled);
+                            break;
+                        case ImportOperationState.importing_queued:
+                        case ImportOperationState.importing_in_progress:
+                            this.setOperationState(ImportOperation.importing, ImportState.cancelled);
+                            break;
+                    }
+                }, (error: any) => {
+                    console.log(error);
+                });
         }
     }
 
@@ -221,15 +192,10 @@ export class ListEntry {
         this.operationState = ImportOperationState[[this.operation, this.state].join("_") as keyof typeof ImportOperationState]
     }
 
+
     /**
-     * Checks current operation and current state of object against given input. Used
-     * to hide/show file operation buttons in view. Each operation button is shown with
-     * the success of the previous operation and hidden with the success of its own
-     * operation, example:
-     * Upload success -> upload button hidden, verify button shown
-     * Verify success -> verify button hidden, import button shown
-     * @param operation_prev previous operation (upload or verify)
-     * @param operation current operation (verify or import)
+     * Checks if button "verify" should be shown or hidden, is shown during all verifaction operation,
+     * but is hidden after successful verification. Is also shown after successful upload
      * @returns boolean if button shall be shown or hidden
      */
     checkVerifyButtonVisibility(): boolean {
@@ -244,6 +210,12 @@ export class ListEntry {
         }
     }
 
+
+    /**
+     * Checks if button "import" should be shown or hidden, is shown during all import operation.
+     * Is also shown after successful verification
+     * @returns boolean if button shall be shown or hidden
+     */
     checkImportButtonVisibility(): boolean {
         if (this.operation === ImportOperation.verifying && this.state === ImportState.successful) {
             return true;
