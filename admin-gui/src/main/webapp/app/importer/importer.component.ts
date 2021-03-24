@@ -14,6 +14,7 @@ import { ImportState } from './enums/ImportState';
 import { ImportOperation } from './enums/ImportOperation';
 import { PropertiesKey } from './enums/PropertiesKey';
 import { ScriptKey } from './enums/ScriptKey';
+import { ImportOperationState } from './enums/ImportOperationState';
 
 require('semantic-ui');
 
@@ -40,6 +41,10 @@ export class ImporterComponent {
     private sortAttribute = 'name_file';
     private reverse = true; // sort order ascending/descending
     private sorted = false;
+
+    // browsed file to upload
+    private currentFile: any = null;
+    private currentFile_OperationState: ImportOperationState;
 
     // initialization of enum classes
     // used to access enums in html
@@ -80,7 +85,6 @@ export class ImporterComponent {
                         this.list_files_upload.push(
                             new ListEntry(
                                 this._importerService,
-                                null, // <- this is the binary file
                                 json[PropertiesKey.script],
                                 json[PropertiesKey.filename],
                                 json[PropertiesKey.size],
@@ -98,24 +102,79 @@ export class ImporterComponent {
 
     /**
      * Handler for file browser button
-     * Opens file browser in view and allows selection of file to upload. Selected files are
-     * added as entries to list_files_upload
+     * Opens file browser in view and allows selection of file to upload.
+     * Selected file is held in a variable and allows uploading of it
      * @param files: list of binaries to upload
      */
     onFileBrowse(files: any[]) {
         if (this.isAuthorized('WRITE_P21')) {
-            for (let file of files) {
-                this.list_files_upload.push(new ListEntry(this._importerService, file, this.script_selected));
-            }
-            $('#FileInput').val(''); // delete held item of file browser afterwards
+            this.currentFile = files[0];
+            this.currentFile_OperationState = ImportOperationState.uploading_ready;
+        }
+    }
+
+
+    /**
+     * Deletes the currently held file from cache
+     * Clears the variable and operationState
+     */
+    deleteHoldingFile() {
+        if (this.isAuthorized('WRITE_P21')) {
+            this.currentFile = null;
+            this.currentFile_OperationState = null;
+            $('#FileInput').val(''); // delete held item of file browser
+        }
+    }
+
+
+    /**
+    * Upload currently held file via importer.service
+    * Process is done via subscription (can be cancelled using .takeUntil)
+    * Metadata of file is converted to a ListEntry object after succesful
+    * upload and added to list_files_upload, binary file itself is deleted
+    * from cache after success
+    * Lock_script and Lock_file are used as temporary variables, as
+    * script and files could be reselected during long uploads
+    */
+    uploadHoldingFile() {
+        if (this.isAuthorized('WRITE_P21')) {
+            this.currentFile_OperationState = ImportOperationState.uploading_in_progress;
+            let lock_script = this.script_selected;
+            let lock_file = this.currentFile;
+            this._importerService.uploadFile(lock_file, lock_file.name, lock_script)
+                .takeUntil(this.ngUnsubscribe)
+                .subscribe(event => {
+                    this.list_files_upload.push(new ListEntry(
+                        this._importerService,
+                        lock_script,
+                        lock_file.name,
+                        lock_file.size,
+                        event._body
+                    ));
+                    this.deleteHoldingFile();
+                }, (error: any) => {
+                    this.currentFile_OperationState = ImportOperationState.uploading_failed;
+                    console.log(error);
+                });
         }
     }
 
     /**
+     * Completes all ongoing subscriptions aka cancels file upload subscription
+     * (GET subscriptions are only called once during view initialization)
+     */
+    cancelHoldingFileUpload() {
+        if (this.isAuthorized('WRITE_P21')) {
+            this.ngUnsubscribe.complete();
+            this.currentFile_OperationState = ImportOperationState.uploading_cancelled;
+        }
+    }
+
+
+    /**
      * Delete request for entries in table
-     * Opens delete confirmation popup when called. If confirmed and file exists in backend (== has uuid),
-     * delete request is sent to backend. If file does not exists in backend or delete request was
-     * successful, entry is deleted from list_files_upload
+     * Opens delete confirmation popup when called. If confirmed, delete request is sent to backend and entry
+     * is deleted from list_files_upload
      * @param listEntry: ListEntry object to delete/remove from list_files_upload
      */
     confirmDelete(listEntry: ListEntry) {
@@ -127,9 +186,7 @@ export class ImporterComponent {
                 'Wollen Sie diesen Eintrag wirklich unwiderruflich löschen?\nAlle importierten Daten werden ebenso gelöscht!',
                 (submit: boolean) => {
                     if (submit) {
-                        if (listEntry.getUUID() !== "") {
-                            listEntry.deleteFile();
-                        }
+                        listEntry.deleteFile();
                         this.list_files_upload = this.list_files_upload.filter(entry => entry !== listEntry);
                     }
                 }
