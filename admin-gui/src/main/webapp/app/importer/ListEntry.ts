@@ -10,8 +10,7 @@ import { PropertiesKey } from './enums/PropertiesKey';
 import { LogType } from './enums/LogType';
 
 /**
- * Displays uploaded and to be uploaded files in view and
- * manages file operations for corresponding file
+ * Displays uploaded files in view and manages file operations for corresponding file
  * Each instance of ListEntry represents one row in html table
  */
 export class ListEntry {
@@ -34,25 +33,22 @@ export class ListEntry {
 
     constructor(
         private _importerService: ImporterService,
-        private file: File,
         private id_script: string,
-        public name_file: string = file.name,
-        private size_file: number = file.size,
-        private uuid: string = '',
+        public name_file: string,
+        private size_file: number,
+        private uuid: string,
         private operation: ImportOperation = ImportOperation.uploading,
-        private state: ImportState = ImportState.ready,
+        private state: ImportState = ImportState.successful,
     ) {
         this.computeOperationState();
         this.perm_write = this.isAuthorized('WRITE_P21');
-        if (this.uuid) {
-            this.getScriptLogs();
-            this.call_interval = setInterval(() => this.reload(), this.timer_interval);
-        }
+        this.getScriptLogs();
+        this.call_interval = setInterval(() => this.reload(), this.timer_interval);
     }
 
     /**
      * Starts async file verification process via importer.service
-     * Only a request to backend to verify file by given id
+     * Only a request to backend to start file verification of given id
      */
     verifyFile() {
         if (this.isAuthorized('WRITE_P21')) {
@@ -68,7 +64,7 @@ export class ListEntry {
 
     /**
      * Starts async file import process via importer.service
-     * Only a request to backend to import file by given id
+     * Only a request to backend to start file import of given id
      */
     importFile() {
         if (this.isAuthorized('WRITE_P21')) {
@@ -83,9 +79,7 @@ export class ListEntry {
     }
 
     /**
-     * Cancels current file processing by case differentiation
-     * case upload: Cancels subscription of upload
-     * case verify/import: Sends a request to backend to stop processing of given file id
+     * Requests backend to cancel current file processing of given file id
      */
     cancelProcess() {
         if (this.isAuthorized('WRITE_P21')) {
@@ -108,19 +102,17 @@ export class ListEntry {
     }
 
     /**
-    * Deletes uploaded file data via importer.service (only if file has a uuid and is therefore uploaded)
+    * Deletes uploaded file data via importer.service
     * Cancels all subscription of this object and requests deletion of file via importer.service
     */
     deleteFile() {
         if (this.isAuthorized('WRITE_P21')) {
-            if (this.uuid) {
-                this.ngOnDestroy();
-                this._importerService.deleteFile(this.uuid)
-                    .subscribe(event => {
-                    }, (error: any) => {
-                        console.log(error);
-                    });
-            }
+            this.ngOnDestroy();
+            this._importerService.deleteFile(this.uuid)
+                .subscribe(event => {
+                }, (error: any) => {
+                    console.log(error);
+                });
         }
     }
 
@@ -194,7 +186,7 @@ export class ListEntry {
 
 
     /**
-     * Checks if button "verify" should be shown or hidden, is shown during all verifaction operation,
+     * Checks if button "verify" should be shown or hidden, is shown during all verifaction operations,
      * but is hidden after successful verification. Is also shown after successful upload
      * @returns boolean if button shall be shown or hidden
      */
@@ -212,7 +204,7 @@ export class ListEntry {
 
 
     /**
-     * Checks if button "import" should be shown or hidden, is shown during all import operation.
+     * Checks if button "import" should be shown or hidden, is shown during all import operations.
      * Is also shown after successful verification
      * @returns boolean if button shall be shown or hidden
      */
