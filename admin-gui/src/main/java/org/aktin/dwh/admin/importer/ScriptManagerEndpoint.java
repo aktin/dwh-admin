@@ -77,4 +77,13 @@ public class ScriptManagerEndpoint {
     public void cancelFileProcessing(@NotNull @PathParam("uuid") String uuid) {
         pythonScriptExecutor.cancelTask(uuid);
     }
+
+    /**
+     * @return length of PythonRunner's current Queue
+     */
+    @Path("queue")
+    @GET
+    public int getRunnerQueue() {
+        return pythonScriptExecutor.getQueueSize();
+    }
 }
