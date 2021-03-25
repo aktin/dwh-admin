@@ -1,5 +1,4 @@
 import { Component, ViewChild, forwardRef, ElementRef } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs';
 import 'rxjs/add/operator/takeUntil';
 import 'rxjs/observable/of'
@@ -28,7 +27,9 @@ export class ImporterComponent {
     @ViewChild(forwardRef(() => PopUpMessageComponent))
     popUpDeleteConfirm: PopUpMessageComponent = new PopUpMessageComponent();
 
-    private ngUnsubscribe: Subject<void> = new Subject<void>(); // object to cancel subscriptions
+    private subscription_upload: Subscription;
+    private subscription_files: Subscription;
+    private subscription_scripts: Subscription;
 
     // hashmap for uploaded scripts by <ScriptId:DisplayName>
     private script_selected: string;
@@ -44,12 +45,14 @@ export class ImporterComponent {
 
     // browsed file to upload
     private currentFile: any = null;
+    private currentFile_name = '';
     private currentFile_OperationState: ImportOperationState;
 
     // initialization of enum classes
     // used to access enums in html
     public importState: typeof ImportState = ImportState;
     public importOperation: typeof ImportOperation = ImportOperation;
+    public importOperationState: typeof ImportOperationState = ImportOperationState;
 
     private perm_write: boolean = false;
 
@@ -65,7 +68,7 @@ export class ImporterComponent {
      * @param _importerService: injected service to perform requests and check permissions
      */
     constructor(private _importerService: ImporterService) {
-        this._importerService.getImportScripts()
+        this.subscription_scripts = this._importerService.getImportScripts()
             .subscribe(event => {
                 if (event._body) {
                     let list_json = JSON.parse(event._body);
@@ -74,10 +77,11 @@ export class ImporterComponent {
                     });
                     this.script_selected = Array.from(this.list_scripts)[0][0];
                 }
+                this.subscription_scripts.unsubscribe();
             }, (error: any) => {
                 console.log(error);
             });
-        this._importerService.getUploadedFiles()
+        this.subscription_files = this._importerService.getUploadedFiles()
             .subscribe(event => {
                 if (event._body) {
                     let list_json = JSON.parse(event._body);
@@ -93,12 +97,12 @@ export class ImporterComponent {
                                 ImportState[json[PropertiesKey.state] as keyof typeof ImportState]));
                     });
                 }
+                this.subscription_files.unsubscribe();
             }, (error: any) => {
                 console.log(error);
             });
         this.perm_write = this.isAuthorized('WRITE_P21');
     }
-
 
     /**
      * Handler for file browser button
@@ -109,10 +113,11 @@ export class ImporterComponent {
     onFileBrowse(files: any[]) {
         if (this.isAuthorized('WRITE_P21')) {
             this.currentFile = files[0];
+            this.currentFile_name = this.currentFile.name;
             this.currentFile_OperationState = ImportOperationState.uploading_ready;
+            $('#file').val(''); // delete held item of file browser
         }
     }
-
 
     /**
      * Deletes the currently held file from cache
@@ -121,11 +126,10 @@ export class ImporterComponent {
     deleteHoldingFile() {
         if (this.isAuthorized('WRITE_P21')) {
             this.currentFile = null;
+            this.currentFile_name = '';
             this.currentFile_OperationState = null;
-            $('#FileInput').val(''); // delete held item of file browser
         }
     }
-
 
     /**
     * Upload currently held file via importer.service
@@ -137,12 +141,11 @@ export class ImporterComponent {
     * script and files could be reselected during long uploads
     */
     uploadHoldingFile() {
-        if (this.isAuthorized('WRITE_P21')) {
+        if (this.isAuthorized('WRITE_P21') && this.currentFile !== null) {
             this.currentFile_OperationState = ImportOperationState.uploading_in_progress;
             let lock_script = this.script_selected;
             let lock_file = this.currentFile;
-            this._importerService.uploadFile(lock_file, lock_file.name, lock_script)
-                .takeUntil(this.ngUnsubscribe)
+            this.subscription_upload = this._importerService.uploadFile(lock_file, lock_file.name, lock_script)
                 .subscribe(event => {
                     this.list_files_upload.push(new ListEntry(
                         this._importerService,
@@ -152,6 +155,7 @@ export class ImporterComponent {
                         event._body
                     ));
                     this.deleteHoldingFile();
+                    this.subscription_upload.unsubscribe();
                 }, (error: any) => {
                     this.currentFile_OperationState = ImportOperationState.uploading_failed;
                     console.log(error);
@@ -164,12 +168,11 @@ export class ImporterComponent {
      * (GET subscriptions are only called once during view initialization)
      */
     cancelHoldingFileUpload() {
-        if (this.isAuthorized('WRITE_P21')) {
-            this.ngUnsubscribe.complete();
+        if (this.isAuthorized('WRITE_P21') && this.currentFile !== null) {
+            this.subscription_upload.unsubscribe();
             this.currentFile_OperationState = ImportOperationState.uploading_cancelled;
         }
     }
-
 
     /**
      * Delete request for entries in table
@@ -241,8 +244,12 @@ export class ImporterComponent {
             this.list_files_upload[index].ngOnDestroy();
             delete this.list_files_upload[index];
         });
-        this.ngUnsubscribe.next();
-        this.ngUnsubscribe.complete();
+        if (this.subscription_scripts)
+            this.subscription_scripts.unsubscribe();
+        if (this.subscription_files)
+            this.subscription_files.unsubscribe();
+        if (this.subscription_upload)
+            this.subscription_upload.unsubscribe();
     }
 
     /**
