@@ -1,4 +1,3 @@
-import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs';
 
 import { ImporterService } from './importer.service';
@@ -15,7 +14,10 @@ import { LogType } from './enums/LogType';
  */
 export class ListEntry {
 
-    private ngUnsubscribe: Subject<void> = new Subject<void>(); // object to cancel subscriptions
+    private subscription_verify: Subscription;
+    private subscription_import: Subscription;
+    private subscription_cancel: Subscription;
+    private subscription_delete: Subscription;
     private subscription_reload: Subscription;
     private subscription_scriptLogs: Subscription;
 
@@ -52,9 +54,10 @@ export class ListEntry {
      */
     verifyFile() {
         if (this.isAuthorized('WRITE_P21')) {
-            this._importerService.verifyFile(this.uuid)
+            this.subscription_verify = this._importerService.verifyFile(this.uuid)
                 .subscribe(event => {
                     this.setOperationState(ImportOperation.verifying, ImportState.queued);
+                    this.subscription_verify.unsubscribe();
                 }, (error: any) => {
                     this.setOperationState(ImportOperation.verifying, ImportState.failed);
                     console.log(error);
@@ -68,9 +71,10 @@ export class ListEntry {
      */
     importFile() {
         if (this.isAuthorized('WRITE_P21')) {
-            this._importerService.importFile(this.uuid)
+            this.subscription_import = this._importerService.importFile(this.uuid)
                 .subscribe(event => {
                     this.setOperationState(ImportOperation.importing, ImportState.queued);
+                    this.subscription_import.unsubscribe();
                 }, (error: any) => {
                     this.setOperationState(ImportOperation.importing, ImportState.failed);
                     console.log(error);
@@ -83,7 +87,7 @@ export class ListEntry {
      */
     cancelProcess() {
         if (this.isAuthorized('WRITE_P21')) {
-            this._importerService.cancelProcess(this.uuid)
+            this.subscription_cancel = this._importerService.cancelProcess(this.uuid)
                 .subscribe(event => {
                     switch (this.operationState) {
                         case ImportOperationState.verifying_queued:
@@ -95,6 +99,7 @@ export class ListEntry {
                             this.setOperationState(ImportOperation.importing, ImportState.cancelled);
                             break;
                     }
+                    this.subscription_cancel.unsubscribe();
                 }, (error: any) => {
                     console.log(error);
                 });
@@ -108,8 +113,9 @@ export class ListEntry {
     deleteFile() {
         if (this.isAuthorized('WRITE_P21')) {
             this.ngOnDestroy();
-            this._importerService.deleteFile(this.uuid)
+            this.subscription_delete = this._importerService.deleteFile(this.uuid)
                 .subscribe(event => {
+                    this.subscription_delete.unsubscribe();
                 }, (error: any) => {
                     console.log(error);
                 });
@@ -224,9 +230,17 @@ export class ListEntry {
      * Unsubscribes from all ongoing subscriptions and cancels interval call of reload()
      */
     ngOnDestroy() {
-        this.ngUnsubscribe.next();
-        this.ngUnsubscribe.complete();
         clearInterval(this.call_interval);
+        if (this.subscription_verify)
+            this.subscription_verify.unsubscribe();
+        if (this.subscription_import)
+            this.subscription_import.unsubscribe();
+        if (this.subscription_cancel)
+            this.subscription_cancel.unsubscribe();
+        if (this.subscription_reload)
+            this.subscription_reload.unsubscribe();
+        if (this.subscription_scriptLogs)
+            this.subscription_scriptLogs.unsubscribe();
     }
 
     /**
