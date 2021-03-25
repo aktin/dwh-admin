@@ -190,7 +190,6 @@ export class ListEntry {
         this.operationState = ImportOperationState[[this.operation, this.state].join("_") as keyof typeof ImportOperationState]
     }
 
-
     /**
      * Checks if button "verify" should be shown or hidden, is shown during all verifaction operations,
      * but is hidden after successful verification. Is also shown after successful upload
@@ -208,7 +207,6 @@ export class ListEntry {
         }
     }
 
-
     /**
      * Checks if button "import" should be shown or hidden, is shown during all import operations.
      * Is also shown after successful verification
@@ -223,7 +221,6 @@ export class ListEntry {
             return false;
         }
     }
-
 
     /**
      * PreDestroy method call
