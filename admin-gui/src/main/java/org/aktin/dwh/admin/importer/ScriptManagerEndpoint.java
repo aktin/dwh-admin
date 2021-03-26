@@ -39,6 +39,7 @@ public class ScriptManagerEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<ScriptFile> getImportScripts() {
+        pythonScriptExecutor.getQueueSize();
         return scriptOperationManager.getScripts();
     }
 
