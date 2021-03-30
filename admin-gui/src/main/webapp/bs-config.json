@@ -5,5 +5,5 @@
       "/node_modules": "node_modules"
     }
   },
-  "browser": "chrome"
+  "browser": "msedge"
 }

@@ -25,6 +25,7 @@ import { UsersComponent, UserSingleComponent, UserSingleViewComponent, UserNewCo
 import { ReportService, SuccessReportsPipe, ReportSingleViewComponent,
             ReportsComponent, ReportNewComponent, ReportSingleComponent } from './reports/index';
 import { PreferencesComponent, PreferenceService } from './preferences/index';
+import { ImporterComponent, ImporterService } from './importer/index';
 import { VisitService, VisitsComponent, VisitSingleViewComponent } from './visits/index';
 import { RequestsComponent, RequestSingleViewComponent, RequestSingleComponent, RequestStatusBarComponent,
             RequestFilterPipe, RequestService } from './requests/index';
@@ -57,6 +58,7 @@ import { RestrictedComponent } from './restricted/restricted.component';
         ReportSingleComponent,
         ReportNewComponent,
         PreferencesComponent,
+        ImporterComponent,
         RequestsComponent,
         RequestSingleViewComponent,
         RequestSingleComponent,
@@ -97,8 +99,9 @@ import { RestrictedComponent } from './restricted/restricted.component';
         VisitService,
         StudyManagerService,
         PreferenceService,
+        ImporterService,
         StatusService,
-        //{provide: Window, useValue: window },
+        // {provide: Window, useValue: window },
     ]
 })
 export class AppModule { }

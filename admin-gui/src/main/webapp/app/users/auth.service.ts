@@ -35,25 +35,25 @@ export class AuthService {
 
     private _tokenValidTrustTime = 3000;
 
-    constructor (
+    constructor(
         private _http: HttpInterceptorService,
         private _urls: UrlService,
         private _store: StorageService,
         private _cleanUp: CleanUpAuthService,
-    ) {}
+    ) { }
 
-    redirect2Home (url?: string): void {
+    redirect2Home(url?: string): void {
         return this._cleanUp.redirect2Home(url);
     }
-    redirect2Route () {
+    redirect2Route() {
         return this._cleanUp.redirect2Route();
     }
 
-    userLogin ( username: string, password: string): Observable<User> {
+    userLogin(username: string, password: string): Observable<User> {
         this._cleanUp.cleanUpStorage();
         return this._http.post(
             this._urls.parse('login'),
-            {username: username, password: password}
+            { username: username, password: password }
         ).map(res => {
             let user: User;
             if (res.ok && res.text()) {
@@ -66,12 +66,12 @@ export class AuthService {
                 return user;
             }
             return Observable.throw('Authentication Error, status code: ' + res.status);
-        }).catch( (err) =>  {
+        }).catch((err) => {
             return this._http.handleError(err);
         });
     }
 
-    userLogout (): Observable<boolean> {
+    userLogout(): Observable<boolean> {
         return this._http.post(
             this._urls.parse('logout'),
             this._store.getValue('user.token'),
@@ -81,22 +81,22 @@ export class AuthService {
             this._cleanUp.cleanUpStorage();
             return true;
         })
-        // .catch(this._http.handleError)
-        .finally(() => {
-            sessionStorage.removeItem('permissions');
-            this._cleanUp.cleanUpStorage();
-            this._cleanUp.redirect2Home('');
-        });
+            // .catch(this._http.handleError)
+            .finally(() => {
+                sessionStorage.removeItem('permissions');
+                this._cleanUp.cleanUpStorage();
+                this._cleanUp.redirect2Home('');
+            });
     }
 
-    authCheck (): Observable<boolean>  {
-        return this._http.debouncedGet<boolean> (
+    authCheck(): Observable<boolean> {
+        return this._http.debouncedGet<boolean>(
             'user.auth',
             this._store.getValue('user.token') !== null,
             false,
             this._tokenValidTrustTime,
             this._urls.parse('authCheck'),
-            ( /*res: Response*/ ) => {
+            ( /*res: Response*/) => {
                 // console.log(res);
                 this.adminCheck().subscribe();
                 return this._store.getValue('user.token') !== null;
@@ -115,8 +115,8 @@ export class AuthService {
         );
     }
 
-    adminCheck (): Observable<boolean> {
-        return this._http.debouncedGet<boolean> (
+    adminCheck(): Observable<boolean> {
+        return this._http.debouncedGet<boolean>(
             'user.admin',
             JSON.parse(this._store.getValue('user.admin') || 'false'),
             false,
@@ -141,13 +141,13 @@ export class AuthService {
      * get user roles from server.
      * @returns {Observable<string[]>}
      */
-    userRoles (): Observable<string[]> {
-        return this._http.debouncedGet<string[]> (
+    userRoles(): Observable<string[]> {
+        return this._http.debouncedGet<string[]>(
             'user.roles',
             JSON.parse(this._store.getValue('user.roles') || '[]'),
             null,
             this._tokenValidTrustTime,
-            this._urls.parse('getUserRoles', {user: this._store.getValue('user.name')}),
+            this._urls.parse('getUserRoles', { user: this._store.getValue('user.name') }),
             (res: Response) => {
                 this._store.setValue('user.roles', res.text());
                 return JSON.parse(res.text() || '[]');
@@ -166,7 +166,7 @@ export class AuthService {
      * @param {string[]} roles
      * @returns {Observable<boolean>}
      */
-    userRolesCheck (roles: string[]): Observable<boolean> {
+    userRolesCheck(roles: string[]): Observable<boolean> {
         return this.userRoles().map(
             userRoles => { // at least one role is in userRoles
                 return _.some(roles, function (role) {
@@ -176,7 +176,7 @@ export class AuthService {
         );
     }
 
-    userRolesCheckFull (roles: string[]): Observable<boolean> {
+    userRolesCheckFull(roles: string[]): Observable<boolean> {
 
         // require admin role (if passed indicates user!) ADMIN is GOD. ADMIN trumps all roles
         if (_.contains(roles, 'ADMIN')) {
@@ -196,14 +196,14 @@ export class AuthService {
      * get local user
      * @returns {User}
      */
-    userLocal (): User {
+    userLocal(): User {
         if (this.userLocalCheck()) {
             if (this._store.getValue('user.name') === null) {
                 // some thing went wrong. user name error. we will wipe it then
                 sessionStorage.removeItem('permissions');
                 this._cleanUp.cleanUpStorage();
             }
-            return new User (this._store.getValue('user.name'), this._store.getValue('user.token'));
+            return new User(this._store.getValue('user.name'), this._store.getValue('user.token'));
         }
         return null;
     }
@@ -212,7 +212,7 @@ export class AuthService {
      * whether there is a user locally
      * @returns {boolean}
      */
-    userLocalCheck (): boolean {
+    userLocalCheck(): boolean {
         return this._store.getValue('user.token') !== null;
     }
 
@@ -238,9 +238,9 @@ export class AuthService {
             return false;
         }
         let perm: Permission[] = [];
-            JSON.parse(sessionStorage.getItem('permissions')).forEach(function(p: String) {
-                perm.push(Permission[p as keyof typeof Permission]);
-            });
+        JSON.parse(sessionStorage.getItem('permissions')).forEach(function (p: String) {
+            perm.push(Permission[p as keyof typeof Permission]);
+        });
         for (let i = 0; i < checkPermissions.length; i++) {
             if (perm.indexOf(checkPermissions[i]) !== -1) {
                 return true;
@@ -254,12 +254,12 @@ export class AuthService {
      * @param {string[]} roles
      * @returns {boolean}
      */
-    userLocalCheckRoles (roles: string[]): boolean {
+    userLocalCheckRoles(roles: string[]): boolean {
         if (!roles || roles.length === 0) {
             return true;
         }
         if (_.contains(roles, 'ADMIN')) {
-            if ( this._store.getValue('user.token') !== null ) {
+            if (this._store.getValue('user.token') !== null) {
                 return JSON.parse(this._store.getValue('user.admin')) || false;
             }
             sessionStorage.removeItem('permissions');
@@ -268,7 +268,7 @@ export class AuthService {
             return false;
         }
         if (_.contains(roles, 'LOGGEDIN')) {
-            return  this._store.getValue('user.token') !== null;
+            return this._store.getValue('user.token') !== null;
         }
         let userRoles = JSON.parse(this._store.getValue('user.roles'));
         return _.some(roles, function (role) {

@@ -1,0 +1,42 @@
+.segment {
+    margin: auto;
+}
+
+.table {
+    width: 160%;
+    margin-left: -30%;
+    table-layout: fixed;
+}
+
+.file-name {
+    display: block;
+    height: auto;
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+.element-output {
+    background-color: rgba(240, 240, 240, 0.8);
+    margin-bottom: 1em;
+}
+
+.element-error {
+    background-color: rgba(255, 0, 0, 0.2);
+    margin-bottom: 1em;
+}
+
+.element-title {
+    font-size:14px;
+    font-weight: bold;
+}
+
+.pagination /deep/ .ngx-pagination {
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.pagination /deep/ .ngx-pagination .current {
+    background-color: rgba(33, 186, 69, 1);
+}
