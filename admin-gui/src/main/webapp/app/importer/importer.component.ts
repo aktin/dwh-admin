@@ -185,8 +185,8 @@ export class ImporterComponent {
             let buttons = [['Löschen', 'green'], ['Abbrechen', 'orange']];
             this.popUpDeleteConfirm.setConfirm(buttons);
             this.popUpDeleteConfirm.onTop = true;
-            this.popUpDeleteConfirm.setData(true, 'Eintrag löschen',
-                'Wollen Sie diesen Eintrag wirklich unwiderruflich löschen?\nAlle importierten Daten werden ebenso gelöscht!',
+            this.popUpDeleteConfirm.setData(true, 'Datei löschen',
+                'Wollen Sie diese Datei wirklich unwiderruflich löschen?\nAlle importierten Daten werden ebenso gelöscht!',
                 (submit: boolean) => {
                     if (submit) {
                         listEntry.deleteFile();
