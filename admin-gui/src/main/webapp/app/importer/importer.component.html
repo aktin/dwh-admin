@@ -42,17 +42,17 @@
                     <div class="right aligned four wide column">
                         <div class="ui icon two buttons file-buttons">
                             <button class="compact ui button" (click)="uploadHoldingFile()" title="Datei hochladen"
-                                [disabled]="!perm_write">
+                                [disabled]="!perm_write || currentFile==null">
                                 Upload
                             </button>
                             <button class=" ui button" (click)="cancelHoldingFileUpload()" title="Hochladen abbrechen"
                                 *ngIf="this.currentFile_OperationState === importOperationState.uploading_in_progress"
-                                [disabled]="!perm_write">
+                                [disabled]="!perm_write || currentFile==null">
                                 <i class=" ban icon red"></i>
                             </button>
                             <button class="ui button" (click)="deleteHoldingFile()" title="Datei löschen"
                                 *ngIf="this.currentFile_OperationState !== importOperationState.uploading_in_progress"
-                                [disabled]="!perm_write">
+                                [disabled]="!perm_write || currentFile==null">
                                 <i class=" trash icon red"></i>
                             </button>
                         </div>
