@@ -8,12 +8,13 @@
     <div class="ui header">
         {{head}}
     </div>
+    <!--
     <div class="close-action">
         <a class="ui compact  small icon red circular button" (click)="closeMessage()">
             <i class="remove icon"></i>
         </a>
     </div>
-
+    -->
     <div *ngIf="entry">
         <table class="ui table ">
             <tbody>
@@ -54,21 +55,19 @@
         </table>
 
         <br>
-        <div class="popup-message-buttons">
-            <div *ngIf="isAuthorized('WRITE_STUDYMANAGER')" form="ngForm" class="ui animated fade button popup-message-okay-button"
+        <div class="popup-message-buttons" style="display: flex; justify-content: center;">
+            <div *ngIf="isAuthorized('WRITE_STUDYMANAGER')" form="ngForm" class="ui animated vertical button popup-message-okay-button"
                     [ngClass]="buttons[0][1]" (click)="msgOk()">
                 <div class="visible content">{{buttons[0][0]}}</div>
                 <div class="hidden content">
                     <i class="icon trash"></i>
-                    {{buttons[0][0]}}
                 </div>
             </div>
-            <div class="ui animated fade button popup-message-okay-button"
+            <div class="ui animated vertical button popup-message-okay-button"
                     [ngClass]="buttons[1][1]" (click)="msgCancel()">
                 <div class="visible content">{{buttons[1][0]}}</div>
                 <div class="hidden content">
                     <i class="icon remove"></i>
-                    {{buttons[1][0]}}
                 </div>
             </div>
         </div>
