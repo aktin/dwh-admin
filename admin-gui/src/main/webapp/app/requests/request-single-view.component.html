@@ -51,22 +51,20 @@
             Die Ergebnisse wurden noch nicht zur Übermittlung freigegeben. Bitte wählen Sie eine Aktion.
         </div>
         <div class="actions right aligned middle aligned six wide column">
-            <div class="ui green animated fade button request-allow-button"
+            <div class="ui green animated vertical button request-allow-button"
                  (click)="authorize(true)"
             >
                 <div class="visible content">Freigabe</div>
                 <div class="hidden content">
                     <i class="icon checkmark"></i>
-                    Zulassen
                 </div>
             </div>
-            <div class="ui red animated fade button request-deny-button"
+            <div class="ui red animated vertical button request-deny-button"
                  (click)="authorize(false)"
             >
                 <div class="visible content">Ablehnen</div>
                 <div class="hidden content">
                     <i class="icon remove"></i>
-                    Ablehnen
                 </div>
             </div>
         </div>
@@ -214,4 +212,3 @@
         </div>
     </div>
 </div>
-
