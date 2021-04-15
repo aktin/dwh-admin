@@ -9,13 +9,13 @@
     <div class="ui content">
         <p>{{message}}</p><br>
     </div>
-
+    <!--
     <div class="close-action">
         <a class="ui compact  small icon red circular button" (click)="closeMessage()">
             <i class="remove icon"></i>
         </a>
     </div>
-
+    -->
     <div class="ui extra">
         <form ngNativeValidate #form="ngForm" id="ngForm" class="ui form sixteen wide column form" (submit)="validate()">
             <div class="inline fields">
@@ -71,22 +71,20 @@
                 <textarea rows="4" class="ui input focus thirteen wide field min-rows" name="comment" [(ngModel)]="formdata.comment"></textarea>
             </div>
             <br>
-            <div class="popup-message-buttons">
-                <button type="Submit" form="ngForm" class="ui animated fade button popup-message-okay-button"
+            <div class="popup-message-buttons" style="display: flex; justify-content: center;">
+                <button type="Submit" form="ngForm" class="ui animated vertical button popup-message-okay-button"
                     [ngClass]="buttons[0][1]">
                     <div class="visible content">{{buttons[0][0]}}</div>
                     <div class="hidden content">
                         <i class="icon checkmark"></i>
-                        {{buttons[0][0]}}
                     </div>
                 </button>
 
-                <div class="ui animated fade button popup-message-okay-button"
+                <div class="ui animated vertical button popup-message-okay-button"
                     [ngClass]="buttons[1][1]" (click)="msgCancel()">
                     <div class="visible content">{{buttons[1][0]}}</div>
                     <div class="hidden content">
                         <i class="icon remove"></i>
-                        {{buttons[1][0]}}
                     </div>
                 </div>
             </div>
