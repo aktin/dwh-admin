@@ -10,12 +10,13 @@
         {{message}}
     </div>
 
+    <!--
     <div class="close-action">
         <a class="ui compact  small icon red circular button" (click)="closeMessage()">
             <i class="remove icon"></i>
         </a>
     </div>
-
+    -->
     <div class="ui extra" *ngIf="checkBoxText && checkBoxText.length >= 2">
         <br/>
         <label>{{checkBoxText[0]}}</label>
@@ -74,22 +75,19 @@
 
     <br>
     <div class="popup-message-buttons" *ngIf="mode === 'confirm'">
-        <div class="ui animated fade button popup-message-okay-button"
+        <div class="ui animated vertical button popup-message-okay-button"
              [ngClass]="buttons[0][1]" (click)="msgOk()">
             <div class="visible content">{{buttons[0][0]}}</div>
             <div class="hidden content">
                 <i class="icon checkmark"></i>
-                {{buttons[0][0]}}
             </div>
         </div>
-        <div class="ui animated fade button popup-message-okay-button"
+        <div class="ui animated vertical button popup-message-okay-button"
              [ngClass]="buttons[1][1]" (click)="msgCancel()">
             <div class="visible content">{{buttons[1][0]}}</div>
             <div class="hidden content">
                 <i class="icon remove"></i>
-                {{buttons[1][0]}}
             </div>
         </div>
     </div>
 </div>
-
