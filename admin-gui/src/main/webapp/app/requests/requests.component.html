@@ -43,12 +43,10 @@
             <div class="twelve wide column">
                 <div class="ui header request-single-view-header" [routerLink]="['/request', request.requestId]">
                     {{request.query.query.title}}
-                    <!--<div class="ui red circular label" *ngIf="request.status < 2">neu</div>-->
-                    <div class="ui gray circular label" *ngIf="!single" title="{{request.query.query.description}}">i</div>
                 </div>
             </div>
             <div class="actions four wide right floated right aligned column">
-                <a class="ui circular basic green icon button" [routerLink]="['/request', request.requestId]" title="Details anzeigen">
+                <a class="ui circular icon button" [routerLink]="['/request', request.requestId]" title="Details anzeigen">
                     <i class="eye icon"></i>
                 </a>
             </div>
