@@ -54,9 +54,14 @@
             <div class="ui small labeled left floated icon button" (click)="resetFilter()" [ngClass]="filterActive ? '' : 'disabledButton'" >
                 <i class="close icon"></i> Filter zurücksetzen
             </div>
-            <div *ngIf="isAuthorized('WRITE_STUDYMANAGER')" class="ui small labeled right floated icon button newButton" (click)="createEntry()">
-                <i class="plus icon"></i> Eintrag erstellen
-            </div>
+                <div class="ui right floated left labeled button" *ngIf="isAuthorized('WRITE_STUDYMANAGER')" (click)="createEntry()">
+                    <a class="ui green basic label">
+                        Eintrag erstellen
+                    </a>
+                    <div class="ui green icon button">
+                        <i class="plus icon"></i>
+                    </div>
+                </div>
         </div>
     </div>
     <table class="ui sortable selectable celled table segment">
