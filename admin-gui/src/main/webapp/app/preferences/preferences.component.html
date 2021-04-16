@@ -28,29 +28,28 @@
     </div>
 </div>
 <div class="ui container">
-    <table class="ui celled structured fixed table preferences">
+    <table class="ui celled structured compact fixed table preferences">
         <thead>
             <tr>
-                <th class="two wide">Kategorie</th>
-                <th class="four wide">Einstellung</th>
-                <th class="four wide">Wert</th>
-                <th class="six wide">Beschreibung</th>
+                <th width="15%" class="center aligned">Kategorie</th>
+                <th width="17%" class="center aligned">Einstellung</th>
+                <th width="30%" class="center aligned">Wert</th>
+                <th width="38%" class="center aligned">Beschreibung</th>
             </tr>
         </thead>
         <tbody>
             <ng-container *ngFor="let cat of preferenceCategories">
                 <ng-container *ngFor="let pref of cat.preferences; let i = index">
                 <tr>
-                    <td *ngIf="i === 0"  [attr.rowspan]="cat.preferences.length" class="break-word">{{cat.description}} <span class="tiny text">({{cat.value}})</span></td>
-                        <td class="break-word">{{pref.key}}</td>
-                        <td class="break-word">{{pref.value}}</td>
-                        <td class="break-word">{{pref.description}}</td>
+                    <td *ngIf="i === 0"  [attr.rowspan]="cat.preferences.length" class="break-word">
+                        {{cat.description}}
+                    </td>
+                    <td class="break-word">{{pref.key}}</td>
+                    <td class="break-word">{{pref.value}}</td>
+                    <td class="break-word">{{pref.description}}</td>
                 </tr>
                 </ng-container>
             </ng-container>
         </tbody>
     </table>
-
-
-
 </div>
