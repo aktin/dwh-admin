@@ -53,7 +53,7 @@
                             <button class="ui button" (click)="deleteHoldingFile()" title="Datei löschen"
                                 *ngIf="this.currentFile_OperationState !== importOperationState.uploading_in_progress"
                                 [disabled]="!perm_write || currentFile==null">
-                                <i class=" trash icon red"></i>
+                                <i class=" trash trash alternate outline icon red"></i>
                             </button>
                         </div>
                     </div>
@@ -149,7 +149,7 @@
                             <button class="ui button" (click)="confirmDelete(file)"
                                 *ngIf="file.state !== importState.in_progress && file.state !== importState.queued && file.perm_write"
                                 title="Datei löschen">
-                                <i class="trash icon red"></i>
+                                <i class="trash trash alternate outline icon red"></i>
                             </button>
                         </div>
                     </td>
@@ -161,7 +161,7 @@
                                 <i class="info circle icon large"></i>
                                 Konsolenausgabe Skript:
                             </p>
-                            <pre style="overflow-x:auto;"> {{ file.msg_output }} </pre>
+                            <pre style="overflow-x:auto;">{{ file.msg_output }}</pre>
                         </div>
                     </td>
                 </tr>
@@ -172,7 +172,7 @@
                                 <i class="exclamation triangle icon red large"></i>
                                 Fehlermeldung Skript:
                             </p>
-                            <pre style="overflow-x:auto;"> {{ file.msg_error }} </pre>
+                            <pre style="overflow-x:auto;">{{ file.msg_error }}</pre>
                         </div>
                     </td>
                 </tr>
