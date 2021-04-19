@@ -37,3 +37,8 @@
     z-index: 130;
     top: 280px ;
 }
+
+.close-action {
+    padding-top: 15px;
+    padding-right: 15px;
+}
