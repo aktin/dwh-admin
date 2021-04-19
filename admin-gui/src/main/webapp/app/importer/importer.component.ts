@@ -182,7 +182,7 @@ export class ImporterComponent {
      */
     confirmDelete(listEntry: ListEntry) {
         if (this.isAuthorized('WRITE_P21')) {
-            let buttons = [['Löschen', 'green'], ['Abbrechen', 'orange']];
+            let buttons = [['Löschen', 'red'], ['Abbrechen', 'orange']];
             this.popUpDeleteConfirm.setConfirm(buttons);
             this.popUpDeleteConfirm.onTop = true;
             this.popUpDeleteConfirm.setData(true, 'Datei löschen',
