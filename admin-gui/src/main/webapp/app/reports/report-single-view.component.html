@@ -16,7 +16,7 @@
         <a *ngIf="report.isSuccess() && single" class="ui circular basic green icon button" [ngClass]="{'disabled': downloadLoading }" (click)="downloadResult()" title="Diesen Bericht herunterladen">
             <i class="download icon"></i>
         </a>
-        <button *ngIf="single" class="ui circular basic red icon button" title="Bericht löschen">
+        <button *ngIf="single" class="ui circular basic red icon button" (click)="deleteReport()" title="Bericht löschen">
             <i class="trash alternate outline icon"></i>
         </button>
         <a *ngIf="single" class="ui circular basic green icon button" routerLink="/report" title="Zurück zum Berichtsübersicht">
@@ -39,3 +39,5 @@
         </div>
     </div>
 </div>
+
+<popup-message></popup-message>

@@ -1,9 +1,12 @@
 /**
  * Created by Xu on 15.05.2017.
  */
-import { Component, Input }     from '@angular/core';
+import { ViewChild, Component, Input } from '@angular/core';
 import { Report, ReportStatus } from './report';
 import { ReportService } from './report.service';
+import { PopUpMessageComponent } from './../helpers/popup-message.component';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'report-single-view',
@@ -16,7 +19,11 @@ export class ReportSingleViewComponent  {
     @Input() single = false;
     downloadLoading = false;
 
-    constructor(private _reportService: ReportService) {}
+    @ViewChild(PopUpMessageComponent) popUpDeleteConfirm: PopUpMessageComponent;
+
+    private subscription_delete: Subscription;
+
+    constructor(private _reportService: ReportService, private _router: Router) {}
 
     get report (): Report {
         return this.reportData;
@@ -43,5 +50,25 @@ export class ReportSingleViewComponent  {
         setTimeout(() => {
             this.downloadLoading = false;
         }, 500);
+    }
+
+    deleteReport() {
+        let buttons = [['Löschen', 'red'], ['Abbrechen', 'orange']];
+        this.popUpDeleteConfirm.setConfirm(buttons);
+        this.popUpDeleteConfirm.onTop = true;
+        this.popUpDeleteConfirm.setData(true, 'Bericht löschen',
+        'Wollen Sie diesen Bericht wirklich unwiderruflich löschen?',
+            (submit: boolean) => {
+                if (submit) {
+                    this.subscription_delete = this._reportService.deleteReportFile(this.reportData.id)
+                        .subscribe(event => {
+                            this.subscription_delete.unsubscribe();
+                            this._router.navigate(['/report']);
+                        }, (error: any) => {
+                            console.log(error);
+                        });
+                }
+            }
+        );
     }
 }

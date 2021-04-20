@@ -5,6 +5,8 @@
  */
 import { Injectable }   from '@angular/core';
 import { Response }     from '@angular/http';
+import { Observable } from 'rxjs/Observable';
+
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
@@ -135,5 +137,10 @@ export class ReportService {
 
     downloadReportFile (report: Report) {
         this._download.get(report.name, 'application/pdf', report.url);
+    }
+
+    deleteReportFile(id: number): Observable<any> {
+        return this._http.delete(this._urls.parse('deleteReport', { id: id }))
+            .catch(err => { return this._http.handleError(err); });
     }
 }
