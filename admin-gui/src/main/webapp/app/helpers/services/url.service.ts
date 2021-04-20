@@ -33,6 +33,7 @@ export class UrlService {
         newMonthlyReport: 'report/monthly/email',
         reportTemplates: 'report/template', // get
         newReport: 'report/template/@templateId@', // post, with start and end in data, json in header
+        deleteReport: 'report/archive/@id@',
 
         requestList: 'request',
         request: 'request/@requestId@',
