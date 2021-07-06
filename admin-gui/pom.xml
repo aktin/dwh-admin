@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>dwh-api</artifactId>
-            <version>0.8</version>
+            <version>0.9-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>de.li2b2.facade</groupId>
@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>generic-file-importer</artifactId>
-            <version>0.16</version>
+            <version>0.17-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -152,46 +152,46 @@
         <dependency>
             <groupId>org.aktin.dwh</groupId>
             <artifactId>dwh-prefs</artifactId>
-            <version>0.10</version>
+            <version>0.11-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>report-manager</artifactId>
-            <version>0.11</version>
+            <version>0.12-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>report-archive</artifactId>
-            <version>0.11</version>
+            <version>0.12-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>report-manager</artifactId>
-            <version>0.11</version>
+            <version>0.12-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin.dwh</groupId>
             <artifactId>dwh-db</artifactId>
-            <version>0.10</version>
+            <version>0.11-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>r-script</artifactId>
-            <version>1.3.1</version>
+            <version>1.4-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin.dwh</groupId>
             <artifactId>dwh-db</artifactId>
-            <version>0.10</version>
+            <version>0.11-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -203,13 +203,13 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>request-manager</artifactId>
-            <version>0.11</version>
+            <version>0.12-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>study-manager</artifactId>
-            <version>0.11</version>
+            <version>0.12-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 
