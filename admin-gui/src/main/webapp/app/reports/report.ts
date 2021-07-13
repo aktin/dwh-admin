@@ -96,6 +96,8 @@ export enum ReportStatus {
     'Completed',
     'InsufficientData',
     'Waiting',
+    'Timeout',
+    'Failed',
 }
 
 /**
@@ -105,4 +107,6 @@ export enum ReportStateParse {
     'Erfolg',
     'nicht ausreichend Daten vorhanden',
     'wird erstellt',
+    'Zeitüberschreitung',
+    'Fehler bei der Erstellung'
 }
