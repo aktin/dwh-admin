@@ -40,7 +40,7 @@
         </div>
     </div>
     <div class="row ui warning message" *ngIf="isAuthorized('WRITE_REQUESTS') && request.needAuthorization()">
-        <div class="two wide column">
+        <div class="two wide column middle aligned">
             <i class="huge yellow warning sign icon"></i>
         </div>
         <div class="eight wide column larger middle aligned" *ngIf="request.isNew()">
