@@ -70,6 +70,13 @@ export class UrlService {
         verifyFile: 'script/@uuid@/verify',
         importFile: 'script/@uuid@/import',
         cancelProcess: 'script/@uuid@/cancel',
+
+        // updateEndpoint
+        updateDWH: 'update',
+        getUpdateInfo: 'update/info',
+        getUpdateLog: 'update/log',
+        checkUpdateSuccess: 'update/success',
+        reloadAptPackages: 'update/apt/reload',
     };
 
     setServerUrl(serverUrl: string) {

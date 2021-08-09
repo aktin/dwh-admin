@@ -9,5 +9,6 @@ export enum Permission {
     CONFIG,
     STATUS,
     READ_P21,
-    WRITE_P21
+    WRITE_P21,
+    UPDATE
 }
