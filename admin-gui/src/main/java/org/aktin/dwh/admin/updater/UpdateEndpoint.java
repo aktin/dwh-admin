@@ -9,8 +9,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.util.Map;
 import java.util.Properties;
 
 @Path("update")
@@ -52,14 +52,14 @@ public class UpdateEndpoint {
     @Path("apt/reload")
     @POST
     @Secured
-    public void reloadAptPackageLists() {
-        updateManager.reloadAptPackageLists();
+    public Response reloadAptPackageLists() {
+        return updateManager.reloadAptPackageLists();
     }
 
     @POST
     @Secured
-    public void executeDwhUpdate() {
-        updateManager.executeDwhUpdate();
+    public Response executeDwhUpdate() {
+        return updateManager.executeDwhUpdate();
     }
 
 }

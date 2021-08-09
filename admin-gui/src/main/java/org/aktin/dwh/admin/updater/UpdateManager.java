@@ -5,6 +5,7 @@ import org.aktin.dwh.PreferenceKey;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.ws.rs.core.Response;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
@@ -50,20 +51,24 @@ public class UpdateManager {
             return false;
     }
 
-    public void reloadAptPackageLists() {
+    public Response reloadAptPackageLists() {
         try (Socket ignored = new Socket("localhost", 1002)) {
             Thread.sleep(1000);
+            return Response.status(202).build();
         } catch (IOException | InterruptedException e) {
             LOGGER.log(Level.WARNING, "Error during connection to apt-get update service");
+            return Response.status(500).build();
         }
     }
 
-    public void executeDwhUpdate() {
+    public Response executeDwhUpdate() {
         try (Socket ignored = new Socket("localhost", 1003)) {
             LOGGER.log(Level.INFO, "Started dwh-update service");
             Thread.sleep(1000);
+            return Response.status(202).build();
         } catch (IOException | InterruptedException e) {
             LOGGER.log(Level.WARNING, "Error during connection to dwh-update service");
+            return Response.status(500).build();
         }
     }
 
