@@ -91,13 +91,13 @@
             <tbody
                 *ngFor="let file of list_files_upload | paginate: { itemsPerPage: 7, currentPage: page } | orderBy: [getSortAttribute()]; let i=index">
                 <tr>
-                    <td>
+                    <td title="{{ file.name_file }}">
                         <p class="file-name"> {{ file.name_file }} </p>
                     </td>
                     <td>
                         {{ formatBytes(file.size_file) }}
                     </td>
-                    <td>
+                    <td title="{{ list_scripts.get(file.id_script) }}">
                         {{ list_scripts.get(file.id_script) }}
                     </td>
                     <td>
