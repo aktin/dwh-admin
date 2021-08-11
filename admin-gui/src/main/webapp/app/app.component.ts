@@ -3,12 +3,16 @@
  *
  * Base App Component with layout
  */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, forwardRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/mergeMap';
 import _ = require('underscore');
+
+import { UpdaterService } from './updater/updater.service';
+import { PopUpMessageComponent } from './helpers/popup-message.component';
+import { PopUpUpdateComponent } from './updater/popup-update.component';
 
 import { routings } from './app-routing.module';
 import { AuthService } from './users/index';
@@ -28,13 +32,20 @@ export class AppComponent implements OnInit {
     visibility: any = {};
     versionData = '';
 
-    constructor (private _titleService: Title,
-                 private _authService: AuthService,
-                 private _route: ActivatedRoute,
-                 private _router: Router,
-                 private _http: HttpInterceptorService,
-                 private _url: UrlService,
-                 ) {};
+    @ViewChild(forwardRef(() => PopUpMessageComponent))
+    popUpConfirmDwhUpdate: PopUpMessageComponent = new PopUpMessageComponent();
+
+    @ViewChild(forwardRef(() => PopUpUpdateComponent))
+    popUpUpdateSummary: PopUpUpdateComponent = new PopUpUpdateComponent(this._updaterService);
+
+    constructor(private _titleService: Title,
+        private _authService: AuthService,
+        private _route: ActivatedRoute,
+        private _router: Router,
+        private _http: HttpInterceptorService,
+        private _url: UrlService,
+        private _updaterService: UpdaterService,
+    ) { };
 
     ngOnInit(): void {
         let title = 'AKTIN - Adminverwaltung';
@@ -47,8 +58,7 @@ export class AppComponent implements OnInit {
         $('.ui.sticky.go2top')
             .sticky({
                 context: '.app',
-            })
-        ;
+            });
 
         this._router.events
             .filter(event => event instanceof NavigationEnd)
@@ -69,22 +79,27 @@ export class AppComponent implements OnInit {
                 this._titleService.setTitle(moreTitle);
             });
 
+        // show the update summary popup after a new update
+        // timeout to give UpdaterService time to load variables
+        if (!this.getCookie('AKTIN.showUpdateSummary')) {
+            var that = this;
+            setTimeout(function () {
+                that.openLastUpdateSummary();
+            }, 2000);
+            this.setCookie('AKTIN.showUpdateSummary', 'false');
+        };
     }
 
-    get version () {
+    get version() {
         if (!this.versionData) {
             this._http.debouncedGet('version', '', '', 5000, this._url.parse('version'),
                 (res: Response) => { return res.text(); },
-                (err: Response) => { return err; } )
+                (err: Response) => { return err; })
                 .subscribe(
-                    val => { if (val) {this.versionData = val; } },
+                    val => { if (val) { this.versionData = val; } },
                     error => console.log(error)
                 );
         }
-        if (!this.versionData) {
-            return 'Bitte einloggen zum Anzeigen.';
-        }
-
         return this.versionData.slice(9);
     }
 
@@ -103,7 +118,58 @@ export class AppComponent implements OnInit {
         return routings;
     }
 
-    get visible () {
+    get visible() {
         return this.visibility;
+    }
+
+    openUpdatePopup() {
+        let buttons = [['Update durchführen', 'green'], ['Abbrechen', 'red']];
+        this.popUpConfirmDwhUpdate.setConfirm(buttons);
+        this.popUpConfirmDwhUpdate.onTop = true;
+        this.popUpConfirmDwhUpdate.setData(true, 'Update des AKTIN DWH', 'Das AKTIN Data Warehouse soll von der Version ' + this._updaterService.version_installed + ' auf die Version ' + this._updaterService.version_candidate + ' aktualisert werden. Diese Aktualisierung wird einige Zeit in Anspruch nehmen. Anschließend wird das Data Warehouse neugestart.',
+            (submit: boolean) => {
+                if (submit) {
+                    if (this._updaterService.executeUpdate()) {
+                        this.deleteCookie('AKTIN.showUpdateSummary');
+                        this._updaterService.isUpdating = true;
+                    }
+                }
+            }
+        );
+    }
+
+    openLastUpdateSummary() {
+        if (this._updaterService.wasUpdateSuccessful)
+            this.openUpdateSuccessPopup();
+        else
+            this.openUpdateFailedPopup();
+    }
+
+    openUpdateFailedPopup() {
+        this.popUpUpdateSummary.onTop = true;
+        this.popUpUpdateSummary.setData(true, 'Update fehlgeschlagen', 'Etwas ist schiefgelaufen. Die alte DWH-Version wurde wiederhergestellt', 'grey');
+    }
+
+    openUpdateSuccessPopup() {
+        this.popUpUpdateSummary.onTop = true;
+        this.popUpUpdateSummary.setData(true, 'Update erfolgreich', 'Das DWH wurde auf Version ' + this._updaterService.version_installed + ' aktualisiert.', 'green');
+    }
+
+    setCookie(name: string, value: string) {
+        document.cookie = name + "=" + (value || "") + "; path=/";
+    }
+
+    getCookie(name: string) {
+        let result = "";
+        let cookies = document.cookie.split(';');
+        cookies.forEach(function (cookie) {
+            if (cookie.includes(name))
+                result = cookie.split('=')[1]
+        });
+        return result;
+    }
+
+    deleteCookie(name: string) {
+        document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     }
 }
