@@ -162,7 +162,7 @@ export class AppComponent implements OnInit {
 
     openUpdateFailedPopup() {
         this.popUpUpdateSummary.onTop = true;
-        this.popUpUpdateSummary.setData(true, 'Update fehlgeschlagen', 'Etwas ist schiefgelaufen. Die alte DWH-Version wurde wiederhergestellt', 'grey');
+        this.popUpUpdateSummary.setData(true, 'Update fehlgeschlagen', 'Etwas ist schiefgelaufen. Die alte DWH-Version wurde wiederhergestellt.', 'grey');
     }
 
     openUpdateSuccessPopup() {
