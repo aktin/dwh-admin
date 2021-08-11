@@ -1,0 +1,43 @@
+<div id="popup-message-overlay" [ngClass]="onTop ? 'on-top' : ''" (click)="closeMessage()" *ngIf="show">
+</div>
+
+<div id="popup-message-content" [ngClass]="onTop ? 'on-top' : ''" class="ui text container very padded segment"
+    *ngIf="show">
+    <h2>
+        {{head}}
+    </h2>
+    <h3 class="formatMsg">
+        {{message}}
+    </h3>
+
+    <div class="ui grid">
+        <div class="four column row">
+            <div class="left floated column">
+                <p><b>Log des Updates:</b></p>
+            </div>
+            <div class="right floated column" style="margin-right: 25px;">
+                <p><i>/var/lib/aktin/update/log</i></p>
+            </div>
+        </div>
+        <div class="ui content formatMsg" style="overflow-x: auto; max-height:300px;">
+            <p>{{_updaterService.log_update}}</p>
+        </div>
+    </div>
+
+    <div class="close-action">
+        <a class="ui compact small icon red circular button" (click)="closeMessage()">
+            <i class="remove icon"></i>
+        </a>
+    </div>
+
+    <br>
+    <div class="popup-message-buttons" style="display: flex; justify-content: center;">
+        <div class="ui animated vertical button popup-message-okay-button" [ngClass]="color_button"
+            (click)="closeMessage()">
+            <div class="visible content">Ok</div>
+            <div class="hidden content">
+                <i class="icon checkmark"></i>
+            </div>
+        </div>
+    </div>
+</div>
