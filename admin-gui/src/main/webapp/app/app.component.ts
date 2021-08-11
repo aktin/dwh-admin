@@ -79,15 +79,7 @@ export class AppComponent implements OnInit {
                 this._titleService.setTitle(moreTitle);
             });
 
-        // show the update summary popup after a new update
-        // timeout to give UpdaterService time to load variables
-        if (!this.getCookie('AKTIN.showUpdateSummary')) {
-            var that = this;
-            setTimeout(function () {
-                that.openLastUpdateSummary();
-            }, 2000);
-            this.setCookie('AKTIN.showUpdateSummary', 'false');
-        };
+        this.showDwhUpdateSummary();
     }
 
     get version() {
@@ -120,6 +112,29 @@ export class AppComponent implements OnInit {
 
     get visible() {
         return this.visibility;
+    }
+
+
+    showDwhUpdateSummary() {
+        // if user has permission (aka is logged in) show update summary
+        // else wait for 750ms and check again
+        if (this._updaterService.checkPermission() === true) {
+            // show the update summary popup after a new update
+            // cookie is deleted prior each update
+            // timeout to give UpdaterService time to load variables
+            if (!this.getCookie('AKTIN.showUpdateSummary')) {
+                var that = this;
+                setTimeout(function () {
+                    that.openLastUpdateSummary();
+                }, 1000);
+                this.setCookie('AKTIN.showUpdateSummary', 'false');
+            };
+        } else {
+            var that = this;
+            setTimeout(function () {
+                that.showDwhUpdateSummary();
+            }, 750);
+        }
     }
 
     openUpdatePopup() {
