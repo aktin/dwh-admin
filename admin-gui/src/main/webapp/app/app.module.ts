@@ -26,7 +26,7 @@ import { ReportService, SuccessReportsPipe, ReportSingleViewComponent,
             ReportsComponent, ReportNewComponent, ReportSingleComponent } from './reports/index';
 import { PreferencesComponent, PreferenceService } from './preferences/index';
 import { ImporterComponent, ImporterService } from './importer/index';
-import { UpdaterService } from './updater/index';
+import { UpdaterService, PopUpUpdateComponent } from './updater/index';
 import { VisitService, VisitsComponent, VisitSingleViewComponent } from './visits/index';
 import { RequestsComponent, RequestSingleViewComponent, RequestSingleComponent, RequestStatusBarComponent,
             RequestFilterPipe, RequestService } from './requests/index';
@@ -73,6 +73,7 @@ import { RestrictedComponent } from './restricted/restricted.component';
         RestrictedComponent,
         LoadingComponent,
         PopUpMessageComponent,
+        PopUpUpdateComponent,
         OrderByPipe,
         SafeUrlPipe,
         DurationDataPipe,
