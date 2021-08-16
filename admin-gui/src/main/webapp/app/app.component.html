@@ -14,23 +14,17 @@
 <popup-update style="position: absolute; left: 35%; bottom: 120%;"></popup-update>
 
 <div class="header-version" style="text-align: center;" *ngIf="_updaterService.checkPermission()">
-    <div *ngIf="_updaterService.isUpdating">
-        Update wird durchgeführt
-        <div class="ui active small inline loader" style="margin-left:8px; margin-bottom:4px; z-index:inherit;"></div>
-    </div>
-    <div *ngIf="!_updaterService.isUpdating">
-        <button class="ui basic icon button" *ngIf="!_updaterService.isNewUpdateAvailable"
-            (click)="_updaterService.reloadAptPackages()" title="Auf neue Updates prüfen">
-            <i *ngIf="!_updaterService.isCheckingForUpdates" class="sync large icon"></i>
-            <i *ngIf="_updaterService.isCheckingForUpdates" class="sync loading large icon"></i>
-        </button>
-        <button class="ui basic icon button" *ngIf="_updaterService.isNewUpdateAvailable" (click)="openUpdatePopup()"
-            title="Ein neues Update ist verfügbar">
-            <i class="arrow circle up large icon green"></i>
-        </button>
-        <div style="display: inline" (click)="openLastUpdateSummary()">
-            Version {{ version }}
-        </div>
+    <button class="ui basic icon button" *ngIf="!_updaterService.isNewUpdateAvailable"
+        (click)="_updaterService.reloadAptPackages()" title="Auf neue Updates prüfen">
+        <i *ngIf="!_updaterService.isCheckingForUpdates" class="sync large icon"></i>
+        <i *ngIf="_updaterService.isCheckingForUpdates" class="sync loading large icon"></i>
+    </button>
+    <button class="ui basic icon button" *ngIf="_updaterService.isNewUpdateAvailable" (click)="openUpdatePopup()"
+        title="Ein neues Update ist verfügbar">
+        <i class="arrow circle up large icon green"></i>
+    </button>
+    <div style="display: inline" (click)="openLastUpdateSummary()">
+        Version {{ version }}
     </div>
 </div>
 

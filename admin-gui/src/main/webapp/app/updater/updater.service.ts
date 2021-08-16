@@ -13,7 +13,6 @@ export class UpdaterService {
     public log_update: string;
 
     public isCheckingForUpdates: boolean = false;
-    public isUpdating: boolean = false;
     public showAptUpdateError: boolean = false;
     public showDwhUpdateError: boolean = false;
 

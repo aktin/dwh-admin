@@ -146,7 +146,8 @@ export class AppComponent implements OnInit {
                 if (submit) {
                     if (this._updaterService.executeUpdate()) {
                         this.deleteCookie('AKTIN.showUpdateSummary');
-                        this._updaterService.isUpdating = true;
+                        this._router.ngOnDestroy();
+                        window.location.href = '/aktin/admin/plain/update.html';
                     }
                 }
             }
