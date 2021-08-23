@@ -65,32 +65,31 @@ export class UpdaterService {
             });
     }
 
-    reloadAptPackages(): any {
+    reloadAptPackages(): void {
         if (this.checkPermission()) {
             this._http.post(this._url.parse('reloadAptPackages'), null)
                 .catch(err => { return this._http.handleError(err); })
                 .subscribe(event => {
                     this.isCheckingForUpdates = true;
                     setTimeout(() => { this.isCheckingForUpdates = false; }, 45000);
-                    return true;
                 }, (error: any) => {
                     console.log(error);
                     this.showAptUpdateError = true;
-                    return false;
                 });
         }
     }
 
-    executeUpdate(): any {
+    executeUpdate(): void {
         if (this.checkPermission()) {
             this._http.post(this._url.parse('updateDWH'), null)
                 .catch(err => { return this._http.handleError(err); })
                 .subscribe(event => {
-                    return true;
-                }, (error: any) => {
+                    this.deleteCookie('AKTIN.showUpdateSummary');
+                    window.location.href = "/aktin/admin/plain/update.html";
+                },
+                (error: any) => {
                     console.log(error);
                     this.showDwhUpdateError = true;
-                    return false;
                 });
         }
     }
@@ -104,5 +103,23 @@ export class UpdaterService {
             }, (error: any) => {
                 console.log(error);
             });
+    }
+
+    setCookie(name: string, value: string) {
+        document.cookie = name + "=" + (value || "") + "; path=/";
+    }
+
+    getCookie(name: string) {
+        let result = "";
+        let cookies = document.cookie.split(';');
+        cookies.forEach(function (cookie) {
+            if (cookie.includes(name))
+                result = cookie.split('=')[1]
+        });
+        return result;
+    }
+
+    deleteCookie(name: string) {
+        document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     }
 }

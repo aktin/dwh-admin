@@ -122,12 +122,12 @@ export class AppComponent implements OnInit {
             // show the update summary popup after a new update
             // cookie is deleted prior each update
             // timeout to give UpdaterService time to load variables
-            if (!this.getCookie('AKTIN.showUpdateSummary')) {
+            if (!this._updaterService.getCookie('AKTIN.showUpdateSummary')) {
                 var that = this;
                 setTimeout(function () {
                     that.openLastUpdateSummary();
                 }, 1000);
-                this.setCookie('AKTIN.showUpdateSummary', 'false');
+                this._updaterService.setCookie('AKTIN.showUpdateSummary', 'false');
             };
         } else {
             var that = this;
@@ -144,11 +144,8 @@ export class AppComponent implements OnInit {
         this.popUpConfirmDwhUpdate.setData(true, 'Update des AKTIN DWH', 'Das AKTIN Data Warehouse soll von der Version ' + this._updaterService.version_installed + ' auf die Version ' + this._updaterService.version_candidate + ' aktualisert werden. Diese Aktualisierung wird einige Zeit in Anspruch nehmen. Anschließend wird das Data Warehouse neugestart.',
             (submit: boolean) => {
                 if (submit) {
-                    if (this._updaterService.executeUpdate()) {
-                        this.deleteCookie('AKTIN.showUpdateSummary');
-                        this._router.ngOnDestroy();
-                        window.location.href = '/aktin/admin/plain/update.html';
-                    }
+                    this._router.ngOnDestroy();
+                    this._updaterService.executeUpdate()
                 }
             }
         );
@@ -171,21 +168,4 @@ export class AppComponent implements OnInit {
         this.popUpUpdateSummary.setData(true, 'Update erfolgreich', 'Das DWH wurde auf Version ' + this._updaterService.version_installed + ' aktualisiert.', 'green');
     }
 
-    setCookie(name: string, value: string) {
-        document.cookie = name + "=" + (value || "") + "; path=/";
-    }
-
-    getCookie(name: string) {
-        let result = "";
-        let cookies = document.cookie.split(';');
-        cookies.forEach(function (cookie) {
-            if (cookie.includes(name))
-                result = cookie.split('=')[1]
-        });
-        return result;
-    }
-
-    deleteCookie(name: string) {
-        document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-    }
 }
