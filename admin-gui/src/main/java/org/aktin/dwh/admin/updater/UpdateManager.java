@@ -33,7 +33,7 @@ public class UpdateManager {
             Path path = Paths.get(preferences.get(PreferenceKey.updateDataPath), "info");
             properties = readPropertiesFileFromPath(path);
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Could not read pre-update info file", e);
+            LOGGER.log(Level.WARNING, "Could not read pre-update info file");
         }
         return properties;
     }
@@ -50,6 +50,7 @@ public class UpdateManager {
 
     public Response reloadAptPackageLists() {
         try (Socket ignored = new Socket("localhost", 1002)) {
+            LOGGER.log(Level.INFO, "Started apt-reload service");
             Thread.sleep(1000);
             return Response.status(202).build();
         } catch (IOException | InterruptedException e) {
@@ -76,7 +77,7 @@ public class UpdateManager {
             String wasSuccessful = (String) properties.get(UpdateServiceFileKey.SUCCESS.toString());
             return Boolean.parseBoolean(wasSuccessful);
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Could not read post-update result file", e);
+            LOGGER.log(Level.WARNING, "Could not read post-update result file");
         }
         return false;
     }
@@ -91,7 +92,7 @@ public class UpdateManager {
             } else
                 throw new FileNotFoundException();
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Could not read update service log", e);
+            LOGGER.log(Level.WARNING, "Could not read update service log");
         }
         return "[error]";
     }
