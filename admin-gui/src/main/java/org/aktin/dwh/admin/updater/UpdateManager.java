@@ -27,6 +27,10 @@ public class UpdateManager {
     @Inject
     Preferences preferences;
 
+    public boolean isUpdateAgentInstalled() {
+        return Files.exists(Paths.get(preferences.get(PreferenceKey.updateDataPath)));
+    }
+
     public Properties getDwhUpdateInfo() {
         Properties properties = null;
         try {

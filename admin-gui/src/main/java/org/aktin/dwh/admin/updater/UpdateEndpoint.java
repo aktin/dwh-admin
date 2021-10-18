@@ -22,6 +22,13 @@ public class UpdateEndpoint {
     @Context
     private SecurityContext security;
 
+    @Path("agent")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public boolean isUpdateAgentInstalled() {
+        return updateManager.isUpdateAgentInstalled();
+    }
+
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public boolean isNewDwhUpdateAvailable() {
@@ -49,7 +56,7 @@ public class UpdateEndpoint {
         return updateManager.wasDwhUpdateSuccessful();
     }
 
-    @Path("apt/reload")
+    @Path("agent/reload")
     @POST
     @Secured
     public Response reloadAptPackageLists() {

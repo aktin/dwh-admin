@@ -62,4 +62,9 @@ public class TestUpdateManager {
         map.put("version.candidate", "V1.1");
         Assert.assertEquals(map, updateManager.getDwhUpdateInfo());
     }
+
+    @Test
+    public void isUpdateAgentInstalled() {
+        Assert.assertTrue(updateManager.isUpdateAgentInstalled());
+    }
 }
