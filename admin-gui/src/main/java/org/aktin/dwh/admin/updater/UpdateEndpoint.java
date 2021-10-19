@@ -30,13 +30,6 @@ public class UpdateEndpoint {
     }
 
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public boolean isNewDwhUpdateAvailable() {
-        return updateManager.isNewDwhUpdateAvailable();
-    }
-
-    @Path("info")
-    @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Properties getDwhUpdateInfoContent() {
         return updateManager.getDwhUpdateInfo();
@@ -52,7 +45,7 @@ public class UpdateEndpoint {
     @Path("success")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public boolean wasDwhUpdateSuccessful() {
+    public Boolean wasDwhUpdateSuccessful() {
         return updateManager.wasDwhUpdateSuccessful();
     }
 

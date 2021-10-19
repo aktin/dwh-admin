@@ -42,16 +42,6 @@ public class UpdateManager {
         return properties;
     }
 
-    public boolean isNewDwhUpdateAvailable() {
-        Properties propertiesInfo = getDwhUpdateInfo();
-        if (!propertiesInfo.isEmpty()) {
-            String version_installed = (String) propertiesInfo.get(UpdateServiceFileKey.INSTALLED.toString());
-            String version_candidate = (String) propertiesInfo.get(UpdateServiceFileKey.CANDIDATE.toString());
-            return !version_installed.equals(version_candidate);
-        } else
-            return false;
-    }
-
     public Response reloadAptPackageLists() {
         try (Socket ignored = new Socket("localhost", 1002)) {
             LOGGER.log(Level.INFO, "Started apt-reload service");
@@ -74,7 +64,7 @@ public class UpdateManager {
         }
     }
 
-    public boolean wasDwhUpdateSuccessful() {
+    public Boolean wasDwhUpdateSuccessful() {
         try {
             Path path = Paths.get(preferences.get(PreferenceKey.updateDataPath), "result");
             Properties properties = readPropertiesFileFromPath(path);
@@ -83,7 +73,7 @@ public class UpdateManager {
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not read post-update result file");
         }
-        return false;
+        return null;
     }
 
     public String getDwhUpdateLog() {
@@ -98,7 +88,7 @@ public class UpdateManager {
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Could not read update service log");
         }
-        return "[error]";
+        return null;
     }
 
     private Properties readPropertiesFileFromPath(Path path) throws IOException {

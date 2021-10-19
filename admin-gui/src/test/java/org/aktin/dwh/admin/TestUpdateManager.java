@@ -41,11 +41,6 @@ public class TestUpdateManager {
     }
 
     @Test
-    public void checkForNewDwhUpdate() {
-        Assert.assertTrue(updateManager.isNewDwhUpdateAvailable());
-    }
-
-    @Test
     public void checkDwhUpdateResult() {
         Assert.assertTrue(updateManager.wasDwhUpdateSuccessful());
     }
