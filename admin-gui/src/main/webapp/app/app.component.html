@@ -14,12 +14,12 @@
 <popup-update style="position: absolute; left: 35%; bottom: 120%;"></popup-update>
 
 <div class="header-version" style="text-align: center;" *ngIf="_updaterService.checkPermission()">
-    <button class="ui basic icon button" *ngIf="!_updaterService.isNewUpdateAvailable"
+    <button class="ui basic icon button" *ngIf="!_updaterService.isNewUpdateAvailable" [disabled]="!_updaterService.isUpdateAgentInstalled"
         (click)="_updaterService.reloadAptPackages()" title="Auf neue Updates prüfen">
         <i *ngIf="!_updaterService.isCheckingForUpdates" class="sync large icon"></i>
         <i *ngIf="_updaterService.isCheckingForUpdates" class="sync loading large icon"></i>
     </button>
-    <button class="ui basic icon button" *ngIf="_updaterService.isNewUpdateAvailable" (click)="openUpdatePopup()"
+    <button class="ui basic icon button" *ngIf="_updaterService.isNewUpdateAvailable" (click)="openUpdatePopup()" [disabled]="!_updaterService.isUpdateAgentInstalled"
         title="Ein neues Update ist verfügbar">
         <i class="arrow circle up large icon green"></i>
     </button>

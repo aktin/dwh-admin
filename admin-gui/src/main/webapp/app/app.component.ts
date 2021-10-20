@@ -79,7 +79,10 @@ export class AppComponent implements OnInit {
                 this._titleService.setTitle(moreTitle);
             });
 
-        this.showDwhUpdateSummary();
+        // give updateService time to check if updateagent is installed
+        setTimeout(() => {
+            this.showDwhUpdateSummary();
+        }, 1500);
     }
 
     get version() {
@@ -118,16 +121,16 @@ export class AppComponent implements OnInit {
     showDwhUpdateSummary() {
         // if user has permission (aka is logged in) show update summary
         // else wait for 750ms and check again
-        if (this._updaterService.checkPermission() === true) {
+        if (this._updaterService.checkPermission()) {
             // show the update summary popup after a new update
-            // cookie is deleted prior each update
+            // cookie is set prior each update and deleted after closing the popup
             // timeout to give UpdaterService time to load variables
-            if (!this._updaterService.getCookie('AKTIN.showUpdateSummary')) {
+            if (this._updaterService.getCookie('AKTIN.showUpdateSummary') && this._updaterService.isUpdateAgentInstalled) {
                 var that = this;
                 setTimeout(function () {
                     that.openLastUpdateSummary();
-                }, 1000);
-                this._updaterService.setCookie('AKTIN.showUpdateSummary', 'false');
+                }, 2000);
+                this._updaterService.deleteCookie('AKTIN.showUpdateSummary');
             };
         } else {
             var that = this;
@@ -138,24 +141,28 @@ export class AppComponent implements OnInit {
     }
 
     openUpdatePopup() {
-        let buttons = [['Update durchführen', 'green'], ['Abbrechen', 'red']];
-        this.popUpConfirmDwhUpdate.setConfirm(buttons);
-        this.popUpConfirmDwhUpdate.onTop = true;
-        this.popUpConfirmDwhUpdate.setData(true, 'Update des AKTIN DWH', 'Das AKTIN Data Warehouse soll von der Version ' + this._updaterService.version_installed + ' auf die Version ' + this._updaterService.version_candidate + ' aktualisert werden. Diese Aktualisierung wird einige Zeit in Anspruch nehmen. Anschließend wird das Data Warehouse neugestart.',
-            (submit: boolean) => {
-                if (submit) {
-                    this._router.ngOnDestroy();
-                    this._updaterService.executeUpdate()
+        if (this._updaterService.isUpdateAgentInstalled) {
+            let buttons = [['Update durchführen', 'green'], ['Abbrechen', 'red']];
+            this.popUpConfirmDwhUpdate.setConfirm(buttons);
+            this.popUpConfirmDwhUpdate.onTop = true;
+            this.popUpConfirmDwhUpdate.setData(true, 'Update des AKTIN DWH', 'Das AKTIN Data Warehouse soll von der Version ' + this._updaterService.version_installed + ' auf die Version ' + this._updaterService.version_candidate + ' aktualisert werden. Diese Aktualisierung wird einige Zeit in Anspruch nehmen. Anschließend wird das Data Warehouse neugestart.',
+                (submit: boolean) => {
+                    if (submit) {
+                        this._router.ngOnDestroy();
+                        this._updaterService.executeUpdate()
+                    }
                 }
-            }
-        );
+            );
+        }
     }
 
     openLastUpdateSummary() {
-        if (this._updaterService.wasUpdateSuccessful)
-            this.openUpdateSuccessPopup();
-        else
-            this.openUpdateFailedPopup();
+        if (this._updaterService.isUpdateAgentInstalled) {
+            if (this._updaterService.wasUpdateSuccessful)
+                this.openUpdateSuccessPopup();
+            else
+                this.openUpdateFailedPopup();
+        }
     }
 
     openUpdateFailedPopup() {
