@@ -6,8 +6,11 @@ import { UrlService, HttpInterceptorService } from '../helpers/index';
 @Injectable()
 export class UpdaterService {
 
+    public isUpdateAgentInstalled: boolean = false;
+
     public version_installed: string;
     public version_candidate: string;
+
     public isNewUpdateAvailable: boolean = false;
     public wasUpdateSuccessful: boolean = false;
     public log_update: string;
@@ -21,88 +24,115 @@ export class UpdaterService {
         private _http: HttpInterceptorService,
         private _url: UrlService
     ) {
-        this.checkForNewUpdate();
-        setInterval(() => this.checkForNewUpdate(), 5000);
-        this.getUpdateInfo();
-        setInterval(() => this.getUpdateInfo(), 5000);
-        this.getUpdateLog();
-        this.checkUpdateSuccess();
+        this.checkUpdateAgentInstallation();
+        setTimeout(() => {
+            this.getUpdateLog();
+            this.checkUpdateSuccess();
+            this.checkForNewUpdate();
+            setInterval(() => {
+                this.getUpdateLog();
+                this.checkUpdateSuccess();
+                this.checkForNewUpdate();
+            }, 5000);
+        }, 1500);
     }
 
     checkPermission(): boolean {
         return this._auth.userLocalCheckPermissions([Permission.UPDATE]);
     }
 
-    checkForNewUpdate(): void {
-        if (this.version_candidate && this.version_installed)
-            this.isNewUpdateAvailable = this.version_installed != this.version_candidate;
-        else
-            this.isNewUpdateAvailable = false;
-    }
-
-    getUpdateInfo(): void {
-        this._http.get(this._url.parse('getUpdateInfo'))
-            .catch(err => { return this._http.handleError(err); })
-            .subscribe(event => {
-                if (event._body) {
-                    let json_info = JSON.parse(event._body);
-                    this.version_installed = json_info['version.installed'];
-                    this.version_candidate = json_info['version.candidate'];
-                }
-            }, (error: any) => {
-                console.log(error);
-            });
-    }
-
-    getUpdateLog(): void {
-        this._http.get(this._url.parse('getUpdateLog'))
+    checkUpdateAgentInstallation(): void {
+        this._http.get(this._url.parse('updateAgentInstalled'))
             .catch(err => { return this._http.handleError(err); })
             .subscribe(event => {
                 if (event._body)
-                    this.log_update = event._body;
+                    this.isUpdateAgentInstalled = JSON.parse(event._body);
             }, (error: any) => {
                 console.log(error);
             });
     }
 
-    reloadAptPackages(): void {
-        if (this.checkPermission()) {
-            this._http.post(this._url.parse('reloadAptPackages'), null)
+    checkForNewUpdate(): void {
+        if (this.isUpdateAgentInstalled) {
+            this.getUpdateInfo();
+            setTimeout(() => {
+                if (this.version_candidate && this.version_installed)
+                    this.isNewUpdateAvailable = this.version_installed != this.version_candidate;
+                else
+                    this.isNewUpdateAvailable = false;
+                console.log("new update is " + this.isNewUpdateAvailable + " " + typeof this.isNewUpdateAvailable)
+            }, 1500);
+        }
+    }
+
+    getUpdateInfo(): void {
+        if (this.isUpdateAgentInstalled) {
+            this._http.get(this._url.parse('updateDWH'))
                 .catch(err => { return this._http.handleError(err); })
                 .subscribe(event => {
-                    this.isCheckingForUpdates = true;
-                    setTimeout(() => { this.isCheckingForUpdates = false; }, 45000);
+                    if (event._body) {
+                        let json_info = JSON.parse(event._body);
+                        this.version_installed = json_info['version.installed'];
+                        this.version_candidate = json_info['version.candidate'];
+                    }
                 }, (error: any) => {
                     console.log(error);
-                    this.showAptUpdateError = true;
+                });
+        }
+    }
+
+    getUpdateLog(): void {
+        if (this.isUpdateAgentInstalled) {
+            this._http.get(this._url.parse('getUpdateLog'))
+                .catch(err => { return this._http.handleError(err); })
+                .subscribe(event => {
+                    if (event._body)
+                        this.log_update = event._body;
+                }, (error: any) => {
+                    console.log(error);
+                });
+        }
+    }
+
+    checkUpdateSuccess(): void {
+        if (this.isUpdateAgentInstalled) {
+            this._http.get(this._url.parse('checkUpdateSuccess'))
+                .catch(err => { return this._http.handleError(err); })
+                .subscribe(event => {
+                    if (event._body)
+                        this.wasUpdateSuccessful = JSON.parse(event._body);
+                }, (error: any) => {
+                    console.log(error);
                 });
         }
     }
 
     executeUpdate(): void {
-        if (this.checkPermission()) {
+        if (this.checkPermission() && this.isUpdateAgentInstalled) {
             this._http.post(this._url.parse('updateDWH'), null)
                 .catch(err => { return this._http.handleError(err); })
                 .subscribe(event => {
-                    this.deleteCookie('AKTIN.showUpdateSummary');
+                    this.setCookie('AKTIN.showUpdateSummary', 'true');
                     window.location.href = "/aktin/admin/plain/update.html";
-                },
-                (error: any) => {
+                }, (error: any) => {
                     console.log(error);
                     this.showDwhUpdateError = true;
                 });
         }
     }
 
-    checkUpdateSuccess(): void {
-        this._http.get(this._url.parse('checkUpdateSuccess'))
-            .catch(err => { return this._http.handleError(err); })
-            .subscribe(event => {
-                if (event._body)
-                    this.wasUpdateSuccessful = JSON.parse(event._body);
-            }, (error: any) => {
-                console.log(error);
-            });
+    reloadAptPackages(): void {
+        if (this.checkPermission() && this.isUpdateAgentInstalled) {
+            this._http.post(this._url.parse('reloadAptPackages'), null)
+                .catch(err => { return this._http.handleError(err); })
+                .subscribe(event => {
+                    this.isCheckingForUpdates = true;
+                    setTimeout(() => { this.isCheckingForUpdates = false; }, 15000);
+                }, (error: any) => {
+                    console.log(error);
+                    this.showAptUpdateError = true;
+                });
+        }
     }
 
     setCookie(name: string, value: string) {
