@@ -72,11 +72,11 @@ export class UrlService {
         cancelProcess: 'script/@uuid@/cancel',
 
         // updateEndpoint
+        updateAgentInstalled: 'update/agent',
         updateDWH: 'update',
-        getUpdateInfo: 'update/info',
         getUpdateLog: 'update/log',
         checkUpdateSuccess: 'update/success',
-        reloadAptPackages: 'update/apt/reload',
+        reloadAptPackages: 'update/agent/reload',
     };
 
     setServerUrl(serverUrl: string) {
