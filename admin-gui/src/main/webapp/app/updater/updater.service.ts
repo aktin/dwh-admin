@@ -60,7 +60,6 @@ export class UpdaterService {
                     this.isNewUpdateAvailable = this.version_installed != this.version_candidate;
                 else
                     this.isNewUpdateAvailable = false;
-                console.log("new update is " + this.isNewUpdateAvailable + " " + typeof this.isNewUpdateAvailable)
             }, 1500);
         }
     }
