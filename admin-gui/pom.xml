@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>generic-file-importer</artifactId>
-            <version>0.18</version>
+            <version>0.19-SNAPSHOT</version>
         </dependency>
 
         <dependency>
