@@ -10,39 +10,34 @@
         {{message}}
     </div>
 
-    <div class="ui extra" *ngIf="checkBoxText && checkBoxText.length >= 2">
+    <div class="ui extra" *ngIf="checkBoxText">
         <br/>
         <label>{{checkBoxText[0]}}</label>
         <div class="field">
-            <div class="ui slider checkbox">
+            <div class="ui checkbox">
                 <input type="checkbox" name="frequency" [(ngModel)]="checked">
-                <label class="fontBlack" *ngIf="!checked || checkBoxText.length == 2">{{checkBoxText[1]}}</label>
-                <label class="fontBlack" *ngIf="checked && checkBoxText.length > 2">{{checkBoxText[2]}}</label>
+                <label class="fontBlack">{{ checkBoxText[1] }}</label>
             </div>
         </div>
     </div>
 
-    <div class="ui extra" *ngIf="checkBoxTextQuery && checkBoxTextQuery.length >= 2">
+    <div class="ui extra" *ngIf="checkBoxTextQuery && checkBoxTextApply">
         <br/>
         <label>{{checkBoxTextQuery[0]}}</label>
         <div class="field">
-            <div class="ui slider checkbox">
-                <input type="checkbox" name="query" [(ngModel)]="checkedQuery">
-                <label class="fontBlack" *ngIf="!checkedQuery || checkBoxTextQuery.length == 2">{{checkBoxTextQuery[1]}}</label>
-                <label class="fontBlack" *ngIf="checkedQuery && checkBoxTextQuery.length > 2">{{checkBoxTextQuery[2]}}</label>
+            <div class="ui checkbox">
+                <input type="checkbox" name="query" [(ngModel)]="checkedQuery" (ngModelChange)="checkForJoinedCheck()">
+                <label class="fontBlack">{{ checkBoxTextQuery[1] }}</label>
+            </div>
+        </div>
+        <div class="field">
+            <div class="ui checkbox">
+                <input type="checkbox" name="apply" [(ngModel)]="checkedApply" [disabled]="!checkedQuery">
+                <label class="fontBlack">{{ checkBoxTextApply }}</label>
             </div>
         </div>
     </div>
 
-    <div class="ui extra" *ngIf="checkBoxTextApply">
-        <br/>
-        <div class="field">
-            <div class="ui checkbox">
-                <input type="checkbox" name="apply" [(ngModel)]="checkedApply" [disabled]="!checkedQuery">
-                <label>{{ checkBoxTextApply }}</label>
-            </div>
-        </div>
-    </div>
      <!-- <div class="ui extra" *ngIf="checkBoxTextMail">
         <div class="field">
             <div class="ui checkbox">

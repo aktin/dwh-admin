@@ -100,4 +100,10 @@ export class PopUpMessageComponent {
         // this.checkedMail = false;
         this.onTop = false;
     }
+
+    checkForJoinedCheck (): void {
+        if (this.checkedQuery == false) {
+            this.checkedApply = false;
+        }
+    }
 }

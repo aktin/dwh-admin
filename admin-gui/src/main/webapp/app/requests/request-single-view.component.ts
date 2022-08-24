@@ -111,35 +111,28 @@ export class RequestSingleViewComponent {
      */
     authorize (allow: boolean) {
         if (this.request.isNew()) {
-            let title = allow ? 'Anfrage freigeben:' : 'Anfrage ablehnen:';
-            let message = allow ? 'Bitte bestätigen Sie, dass die Anfrage ausgeführt werden darf. '
-                : 'Bitte bestätigen Sie, dass die Anfrage abgelehnt werden soll. ' +
+            let title = allow ? 'Anfrage freigeben' : 'Anfrage ablehnen';
+            let message = allow ? 'Bitte bestätigen Sie, dass diese Anfrage ausgeführt werden darf. '
+                : 'Bitte bestätigen Sie, dass diese Anfrage abgelehnt werden soll. ' +
                 'Dieser Schritt kann nicht rückgängig gemacht werden.';
             let buttons = [['Jetzt freigeben', 'green'], ['Zurück', 'orange']];
             if (allow) {    // ACCEPT
-                this.popUp.setOptIn(['Ergebnisprüfung vor der Übermittlung',
-                    'Vor der Übermittlung der Ergebnisse wird erneut nachgefragt.',
-                    'Nach der Berechnung werden die Ergebnisse direkt übertragen.']);
+                this.popUp.setOptIn(['Ergebnisprüfung vor der Übermittlung', 'Die Ergebnisse der Abfrage werden nach der Durchführung sofort übertragen.']);
                     if (this.request.isRecurring()) {
-                        this.popUp.setOptQuery(['Serien-Freigabe',
-                        'Nur diese Anfrage freigeben.', 'Diese und alle zukünftigen Anfragen der Serie freigeben.']);
+                        this.popUp.setOptQuery(['Serien-Freigabe', 'Diese und alle zukünftigen Anfragen der Serie freigeben.']);
                         let numAllow = this.getNumApplyRule();
                         if (numAllow > 0) {
                             this.popUp.setOptApply(
-                            'Auch bereits bestehende Anfragen freigeben. ' +
-                            'Anzahl der hiervon betroffenen Anfragen: ' + numAllow);
+                            'Auch bereits bestehende Anfragen freigeben. Anzahl der hiervon betroffenen Anfragen: ' + numAllow);
                         }
-                        // this.popUp.setoptMail('E-Mail-Benachrichtigung nach der Übermittlung von Ergebnissen')
                     }
             } else {    // REJECT
                 if (this.request.isRecurring()) {
-                    this.popUp.setOptQuery(['Serien-Ablehnung',
-                    'Nur diese Anfrage ablehnen.', 'Diese und alle zukünftigen Anfragen der Serie ablehnen.']);
+                    this.popUp.setOptQuery(['Serien-Ablehnung', 'Diese und alle zukünftigen Anfragen der Serie ablehnen.']);
                     let numReject = this.getNumApplyRule();
                     if (numReject > 0) {
                         this.popUp.setOptApply(
-                            'Auch bereits bestehende Anfragen ablehnen. Anzahl der hiervon betroffenen Anfragen: '
-                            + numReject);
+                            'Auch bereits bestehende Anfragen ablehnen. Anzahl der hiervon betroffenen Anfragen: ' + numReject);
                     }
                 }
                 buttons[0] = ['Jetzt ablehnen', 'red'];
