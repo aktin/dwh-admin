@@ -103,9 +103,9 @@
             <div class="ui meta five wide column" *ngIf="requestUnmapped.query.scheduled">
                 Datum der (geplanten) Ausführung:
             </div>
-            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.scheduled">
-                {{requestUnmapped.query.scheduled | date: 'mediumDate'}}
-            </div>
+            <div *ngIf="requestUnmapped.query.scheduled != 'Sofort'; then later else immediate" class="ui meta three wide column"></div>
+            <ng-template #later >{{ requestUnmapped.query.scheduled | date: 'mediumDate' }}</ng-template>
+            <ng-template #immediate >{{ requestUnmapped.query.scheduled }}</ng-template>
             <div class="ui meta five wide column" *ngIf="requestUnmapped.query.query.schedule && requestUnmapped.query.query.schedule.duration && !requestUnmapped.isRecurring()">
                 Erhebungszeitraum der Daten:
             </div>

@@ -1,11 +1,14 @@
 <div style="z-index: -100">
-    <h4 *ngIf="request.isRecurring()" class="ui header left floated request-query-header">
-        Serien-Anfrage {{ getNumRequest(request) }}:
-        Ausführung am {{ request.query.scheduled | date: 'mediumDate' }}
-        [{{ queryDetails[request.queryId].rejected }} abgelehnt,
-        {{ queryDetails[request.queryId].accepted }} freigegeben,
-        {{ queryDetails[request.queryId].submitted }} übertragen]
-    </h4>
+    <div *ngIf="request.isRecurring(); then query else single" class="ui header left floated request-query-header"></div>
+    <ng-template #query>
+        <h4 *ngIf="request.query.scheduled != 'Sofort'">Serien-Anfrage {{ getNumRequest(request) }}: Ausführung am {{ request.query.scheduled | date: 'mediumDate' }}</h4>
+        <h4 *ngIf="request.query.scheduled == 'Sofort'">Serien-Anfrage {{ getNumRequest(request) }}: Sofortige Ausführung</h4>
+    </ng-template>
+    <ng-template #single>
+        <h4 *ngIf="request.query.scheduled != 'Sofort'">Ausführung am {{ request.query.scheduled | date: 'mediumDate' }}</h4>
+        <h4 *ngIf="request.query.scheduled == 'Sofort'">Sofortige Ausführung</h4>
+    </ng-template>
+
     <div class="request-status-bar-box" [class.single]="single" style="z-index: -100">
         <div class="request-status-line">
             <div class="request-status-line-fill" [ngStyle]="{'width': fillBar }" [ngClass]="{'failed': failed, 'expired': expired}"></div>
