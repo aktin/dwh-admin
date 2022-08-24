@@ -41,11 +41,11 @@
     <div class="ui vertical segment" *ngFor="let request of requests | requestFilter:stateFilter | orderBy: ['-requestId'] | paginate: { itemsPerPage: 12, currentPage: p }">
         <div class="ui vertical basic segment request-single-view grid container" id="request-list-{{request.requestId}}">
             <div class="twelve wide column">
-                <div class="ui header request-single-view-header" style="cursor: default;">
+                <div class="ui header request-single-view-header">
                     {{request.query.query.title}}
                 </div>
             </div>
-            <request-status-bar [request]="request" [queryDetails]="queryDetails" class="request-status-bar-overview" style="cursor: default;"></request-status-bar>
+            <request-status-bar [request]="request" [queryDetails]="queryDetails"></request-status-bar>
             <div class="actions four wide right floated right aligned column">
                 <a title="Details anzeigen" [routerLink]="['/request', request.requestId]">Details anzeigen</a>
             </div>

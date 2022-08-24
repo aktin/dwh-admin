@@ -184,7 +184,7 @@
             <div class="request-status-bar-active-request" *ngIf="recurr.requestId === request.requestId">
                 <request-status-bar [request]="recurr" [queryDetails]="getQueryDetails()"></request-status-bar>
             </div>
-            <div class="request-status-bar-overview" *ngIf="recurr.requestId !== request.requestId">
+            <div *ngIf="recurr.requestId !== request.requestId">
                 <request-status-bar [request]="recurr" [queryDetails]="getQueryDetails()" [routerLink]="['/request', recurr.requestId]"></request-status-bar>
             </div>
         </div>

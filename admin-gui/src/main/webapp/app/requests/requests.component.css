@@ -1,10 +1,5 @@
 .request-single-view-header {
     float: left;
-    cursor: pointer;
-}
-
-.request-status-bar-overview {
-    cursor: pointer;
 }
 
 .request-status-bar-active-request {
