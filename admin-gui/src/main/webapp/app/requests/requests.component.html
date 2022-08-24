@@ -41,16 +41,14 @@
     <div class="ui vertical segment" *ngFor="let request of requests | requestFilter:stateFilter | orderBy: ['-requestId'] | paginate: { itemsPerPage: 12, currentPage: p }">
         <div class="ui vertical basic segment request-single-view grid container" id="request-list-{{request.requestId}}">
             <div class="twelve wide column">
-                <div class="ui header request-single-view-header" [routerLink]="['/request', request.requestId]">
+                <div class="ui header request-single-view-header" style="cursor: default;">
                     {{request.query.query.title}}
                 </div>
             </div>
+            <request-status-bar [request]="request" [queryDetails]="queryDetails" class="request-status-bar-overview" style="cursor: default;"></request-status-bar>
             <div class="actions four wide right floated right aligned column">
-                <a class="ui circular basic grey icon button" [routerLink]="['/request', request.requestId]" title="Details anzeigen">
-                    <i class="eye icon"></i>
-                </a>
+                <a title="Details anzeigen" [routerLink]="['/request', request.requestId]">Details anzeigen</a>
             </div>
-            <request-status-bar [request]="request" [queryDetails]="queryDetails" [routerLink]="['/request', request.requestId]" class="request-status-bar-overview"></request-status-bar>
         </div>
     </div>
 </div>
