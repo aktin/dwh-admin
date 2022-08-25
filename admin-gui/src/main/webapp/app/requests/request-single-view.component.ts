@@ -61,7 +61,7 @@ export class RequestSingleViewComponent {
         if (this.hidden) {
             return 'Anfrage wiederherstellen';
         } else {
-            return 'Anfrage ausblenden';
+            return 'Anfrage archivieren';
         }
     }
 

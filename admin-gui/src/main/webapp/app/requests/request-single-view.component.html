@@ -15,9 +15,9 @@
                [ngClass]="{'basic': !hidden, 'disabled': hiddenLoading }"
                (click)="toggleHiddenMarker()"
                title="{{hideMessage}}">
-                <i class="trash alternate outline icon" [class.empty]="!hidden"></i>
+                <i class="archive icon" [class.empty]="!hidden"></i>
             </a>
-            <a class="ui circular basic green icon button" routerLink="/request" title="Zurück zum Berichtsübersicht">
+            <a class="ui circular basic green icon button" routerLink="/request" title="Zurück zur Anfragenübersicht">
                 <i class="arrow left icon"></i>
             </a>
         </div>
