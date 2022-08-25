@@ -40,15 +40,28 @@
     </pagination-controls>
     <div class="ui vertical segment" *ngFor="let request of requests | requestFilter:stateFilter | orderBy: ['-requestId'] | paginate: { itemsPerPage: 12, currentPage: p }">
         <div class="ui vertical basic segment request-single-view grid container" id="request-list-{{request.requestId}}">
-            <div class="twelve wide column">
-                <div class="ui header request-single-view-header">
+              <div class="sixteen wide column row">
+                <div class="twelve wide left floated column ui header request-single-view-header">
                     {{request.query.query.title}}
+                </div>
+                <div class="actions four wide right floated right aligned column">
+                    <a title="Details anzeigen" [routerLink]="['/request', request.requestId]">Details anzeigen</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="eight wide left floated column ui header request-single-view-header" style="margin-top:-20px;">
+                    <div *ngIf="request.isRecurring(); then query else single"></div>
+                    <ng-template #query>
+                        <h4 *ngIf="request.query.scheduled != 'Sofort'">Serien-Anfrage {{ getNumRequest(request) }}: Ausführung am {{ request.query.scheduled | date: 'mediumDate' }}</h4>
+                        <h4 *ngIf="request.query.scheduled == 'Sofort'">Serien-Anfrage {{ getNumRequest(request) }}: Sofortige Ausführung</h4>
+                    </ng-template>
+                    <ng-template #single>
+                        <h4 *ngIf="request.query.scheduled != 'Sofort'">Ausführung am {{ request.query.scheduled | date: 'mediumDate' }}</h4>
+                        <h4 *ngIf="request.query.scheduled == 'Sofort'">Sofortige Ausführung</h4>
+                    </ng-template>
                 </div>
             </div>
             <request-status-bar [request]="request" [queryDetails]="queryDetails"></request-status-bar>
-            <div class="actions four wide right floated right aligned column">
-                <a title="Details anzeigen" [routerLink]="['/request', request.requestId]">Details anzeigen</a>
-            </div>
         </div>
     </div>
 </div>
