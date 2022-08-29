@@ -57,7 +57,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
             [ 'Neue Anfragen', 'new', null ],
             [ 'Einzelanfragen', 'single', null ],
             [ 'Serien-Anfragen', 'recurring', null ],
-            [ 'Gelöschte Anfragen', 'hidden',  null ],
+            [ 'Archivierte Anfragen', 'hidden',  null ],
             [ 'Laufende Anfragen' , null,
                 [
                 [ 'Alle laufenden Anfragen', 'inProgress' ],
