@@ -6,7 +6,6 @@
     position: relative;
     margin-left: 50px;
     margin-bottom: 10px;
-
 }
 .request-status-bar-box.class {
     width: 600px;
@@ -23,7 +22,7 @@
     z-index: -100;
 }
 .request-status-line-fill {
-    background-color: #21BA45;
+    background-color: #FBBD08;
     margin: 0;
     height: 6px;
 }
@@ -31,7 +30,13 @@
     background-color: #DB2828;
 }
 .request-status-line-fill.expired {
-    background-color: rgb(247, 222, 82);
+    background-color: #767676;
+}
+.request-status-line-fill.rejected {
+    background-color: #2185D0;
+}
+.request-status-line-fill.submitted {
+    background-color: #21BA45;
 }
 
 .request-status-bar-item {
@@ -41,42 +46,42 @@
     z-index: 100;
     width: 10px;
     height: 10px;
-    margin: 4px 0;
+    margin: 2px 0;
 }
 
 .request-status-dot {
     margin: 0;
     background-color: lightgray;
-    border-radius: 50%;
-    width: 10px;
-    height: 10px;
-    cursor: help;
+    border-radius: 60%;
+    width: 14px;
+    height: 14px;
 }
 .request-status-dot.visited {
-    margin: -1px;
+    margin: 1px;
     width: 12px;
     height: 12px;
-    background-color: #21BA45;
+    background-color: #FBBD08;
 }
 
 .request-status-dot.active {
-    margin: -4px;
+    margin: -2px;
     width: 18px;
     height: 18px;
-    border: 5px solid #21BA45;
+    border: 5px solid #FBBD08;
     background-color: whitesmoke;
 }
 .request-status-icon {
     position: absolute;
-    margin: -9px;
+    margin: -8px;
     cursor: help;
 }
 
 .request-status-text {
     position: absolute;
-    left: -100px;
+    left: -95px;
     top: 15px;
     margin-top: 8px;
     text-align: center;
     width: 200px;
+    font-size: 14px;
 }

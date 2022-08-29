@@ -19,17 +19,18 @@ export class RequestStatusBarComponent implements OnInit {
     @Input() queryDetails: object;
     failed: boolean;
     expired: boolean;
+    rejected: boolean;
+    submitted: boolean;
     fillBar: string;
-    leftSpace: string;
-    statusLength = 7;
-    myItems: any = null;
+    numberItems = 7;
+    itemsInStatusBar: any = null;
     oldStatus: RequestStatus;
     statusTexts = [
         'Abfrage eingegangen',
         'Abfrage prüfen',
         'Ausführung geplant',
         'Abfrage wird ausgeführt',
-        'Ergebnisse freigeben', // Abfrageergebnis berechnet
+        'Ergebnisse freigeben',
         'Übermittlung der Ergebnisse',
         'Übermittlung abgeschlossen',
         'Fehlgeschlagen',
@@ -40,54 +41,70 @@ export class RequestStatusBarComponent implements OnInit {
     calcView () {
         if (this.request && this.oldStatus !== this.request.status) {
             this.oldStatus = this.request.status;
-            this.failed = this.request.failed();
-            this.expired = this.request.status === RequestStatus.Expired;
-            this.myItems = [];
-            if (this.failed || this.expired) {
+            this.itemsInStatusBar = Array(this.numberItems).fill({})
+            let isStatusTerminal = this.checkRequestForTerminalStatus();
+            if (isStatusTerminal) {
                 this.fillBar = '100%';
-                this.leftSpace = 'calc((100% - 20px)';
-                this.myItems.push({});
                 let obj = {
                     title: this.statusTexts[this.request.status],
                     active: true,
                     dot: false
                 };
                 obj[RequestStatus[this.request.status]] = true;
-                this.myItems.push(obj);
+                this.itemsInStatusBar[3] = obj;
             } else {
-                this.fillBar = Number(this.request.status) / (this.statusLength - 1) * 100 + '%';
-                this.leftSpace = 'calc((100% - ' + (this.statusLength * 10) + 'px) / ' + (this.statusLength - 1) + ')';
-                for (let n = 0; n < this.statusLength; n ++) {
+                this.fillBar = Number(this.request.status) / (this.numberItems - 1) * 100 + '%';
+                for (let n = 0; n < this.numberItems; n ++) {
                     let obj = {
                         title: this.statusTexts[n],
                         dot: true
                     };
                     if ( <RequestStatus> n < this.request.status ) {
                         obj['visited'] = true;
-                    }
+                    };
                     if ( <RequestStatus> n === this.request.status ) {
                         obj['active'] = true;
-                        if (this.request.needAuthorization()) {
-                            obj.dot = false;
+                        switch ( <RequestStatus> n ) {
+                        case RequestStatus.Retrieved:
+                            obj['interaction'] = false;
+                            obj.dot = true;
+                            break;
+                        case RequestStatus.Seen:
+                        case RequestStatus.Completed:
                             obj['interaction'] = true;
-                        }
-                    }
-                    if (this.request.status === RequestStatus.Submitted && n === this.statusLength - 1) {
-                        obj[RequestStatus[this.request.status]] = true;
-                        obj.dot = false;
-                    }
-                    this.myItems.push(obj);
+                            obj.dot = false;
+                            break;
+                        case RequestStatus.Queued:
+                        case RequestStatus.Processing:
+                        case RequestStatus.Sending:
+                            obj['waiting'] = true;
+                            obj.dot = false;
+                            break;
+                        };
+                    };
+                    this.itemsInStatusBar[n] = obj;
                 }
             }
         }
     }
 
+    checkRequestForTerminalStatus() : boolean {
+        this.failed = this.request.status === RequestStatus.Failed;
+        this.expired = this.request.status === RequestStatus.Expired;
+        this.submitted = this.request.status === RequestStatus.Submitted;
+        this.rejected = this.request.status === RequestStatus.Rejected;
+        if (this.failed || this.expired || this.submitted || this.rejected) {
+            return true;
+        }
+        return false;
+    }
+
     get items() {
         this.calcView();
-        return this.myItems;
+        return this.itemsInStatusBar;
     }
 
     ngOnInit () {
         this.calcView();
-    }
+    }        
 }
