@@ -22,22 +22,8 @@
             </a>
         </div>
     </div>
-    <div class="row">
+    <div class="row" style="padding-bottom: 25px;">
         <request-status-bar [request]="request" [queryDetails]="getQueryDetails()" [single]="true"></request-status-bar>
-    </div>
-    <div class="row ui segment" *ngIf="request.hasResultFile()">
-        <div class="twelve wide column middle aligned">
-            Klicken Sie rechts, um die Abfrageergebnisse herunterzuladen und anzusehen. Im Falle einer Freigabe werden die Abfrageergebnisse exakt in dieser Form übertragen.
-        </div>
-        <div class="four wide column middle aligned">
-            <a class="ui basic green icon button"
-               [ngClass]="{'disabled': downloadLoading }"
-               (click)="downloadResult()"
-               title="Die Ergebnisdatei herunterladen."><i class="download icon request-result-button-icon"></i>
-                <div class="request-result-button-text">Ergebnisse<br/>
-                herunterladen</div>
-            </a>
-        </div>
     </div>
     <div class="row ui warning message" *ngIf="isAuthorized('WRITE_REQUESTS') && request.needAuthorization()">
         <div class="two wide column middle aligned">
@@ -67,6 +53,28 @@
                     <i class="icon remove"></i>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="row ui error message" *ngIf="request.failed()">
+        <div class="two wide column middle aligned">
+            <i class="huge red warning sign icon"></i>
+        </div>
+        <div class="twelve wide column larger middle aligned">
+            Bei der Durchführung oder Übertragung der Datenanfrage ist ein Fehler aufgetreten. Bitte melden Sie diesen Fehler an das <a href="mailto:it-support@aktin.org">AKTIN IT-Team</a>.
+        </div>
+    </div>
+    <div class="row ui segment" *ngIf="request.hasResultFile()">
+        <div class="twelve wide column middle aligned">
+            Klicken Sie rechts, um die Abfrageergebnisse herunterzuladen und anzusehen. Im Falle einer Freigabe werden die Abfrageergebnisse exakt in dieser Form übertragen.
+        </div>
+        <div class="four wide column middle aligned">
+            <a class="ui basic green icon button"
+               [ngClass]="{'disabled': downloadLoading }"
+               (click)="downloadResult()"
+               title="Die Ergebnisdatei herunterladen."><i class="download icon request-result-button-icon"></i>
+                <div class="request-result-button-text">Ergebnisse<br/>
+                herunterladen</div>
+            </a>
         </div>
     </div>
     <div class="row ui segment grid">
