@@ -7,7 +7,6 @@
         <div class="twelve wide column">
             <h1 class="ui header">
                 {{request.query.query.title}}
-                <!--<div class="ui red circular label" *ngIf="request.status < 2">neu</div>-->
             </h1>
         </div>
         <div class="actions four wide right floated right aligned column">
@@ -111,7 +110,7 @@
             <div class="ui meta five wide column" *ngIf="requestUnmapped.query.scheduled">
                 Datum der (geplanten) Ausführung:
             </div>
-            <div *ngIf="requestUnmapped.query.scheduled != 'Sofort'; then later else immediate" class="ui meta three wide column"></div>
+            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.scheduled != 'Sofort'; then later else immediate"></div>
             <ng-template #later >{{ requestUnmapped.query.scheduled | date: 'mediumDate' }}</ng-template>
             <ng-template #immediate >{{ requestUnmapped.query.scheduled }}</ng-template>
             <div class="ui meta five wide column" *ngIf="requestUnmapped.query.query.schedule && requestUnmapped.query.query.schedule.duration && !requestUnmapped.isRecurring()">
@@ -155,11 +154,14 @@
             <div class="ui meta five wide column" *ngIf="requestUnmapped.query.query.schedule && requestUnmapped.query.query.schedule.interval">
                 Abfrage-Intervall:
             </div>
-            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.query.schedule && requestUnmapped.query.query.schedule.interval">
+            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.query.schedule && requestUnmapped.query.query.schedule.interval" style="margin-left: -14px;">
                 {{requestUnmapped.query.query.schedule.interval | durationQuery }}
             </div>
         </div>
-        <div class="row" *ngIf="queryRule">
+        <div class="row" *ngIf="queryRule && requestUnmapped.isRecurring()">
+            <div class="ui sixteen wide column divider"></div>
+        </div>
+        <div class="row" *ngIf="queryRule && requestUnmapped.isRecurring()">
             <div class="ui meta eight wide column">
                 Für die Serie liegt folgende Freigabe-Regel vor:<br>
                 (erstellt von {{ queryRule.user }} am {{ queryRule.creationDate | date: 'd. MMM y, HH:mm a' }}) <br>
@@ -175,32 +177,50 @@
                 </div>
             </div>
         </div>
-        <button class="ui button button-query-requests" (click)="showQuery = !showQuery" *ngIf="request.isRecurring()">
-                Alle Anfragen der Serie
-                <span *ngIf="!showQuery">anzeigen</span>
-                <span *ngIf="showQuery">ausblenden</span>
-        </button>
-    </div>
-    <div class="container-query-requests" *ngIf="showQuery">
-        <pagination-controls class="pagination"
-            (pageChange)="p = $event"
-            autoHide="true"
-            previousLabel="Vorherige Seite"
-            nextLabel="Nächste Seite">
-        </pagination-controls>
-        <div *ngFor="let recurr of recurrRequests | paginate: { itemsPerPage: 6, currentPage: p }">
-            <div class="request-status-bar-active-request" *ngIf="recurr.requestId === request.requestId">
-                <request-status-bar [request]="recurr" [queryDetails]="getQueryDetails()"></request-status-bar>
-            </div>
-            <div *ngIf="recurr.requestId !== request.requestId">
-                <request-status-bar [request]="recurr" [queryDetails]="getQueryDetails()" [routerLink]="['/request', recurr.requestId]"></request-status-bar>
+        <div class="row" *ngIf="requestUnmapped.isRecurring()">
+            <div class="ui sixteen wide column divider"></div>
+        </div>
+
+        <div class="row" *ngIf="request.isRecurring()">
+            <div class="ui two column centered grid">
+                <div class="one column row">
+                    <div class="ui button right labeled icon compact button button-query-requests" (click)="showQuery = !showQuery">
+                        {{showQuery? 'Alle Anfragen der Serie ausblenden':'Alle Anfragen der Serie anzeigen'}}
+                        <i class="icon" [ngClass]="showQuery?'hide':'eye'"></i>
+                    </div>
+                </div>
+                <div *ngIf="showQuery"  class="one column centered row">
+                    <pagination-controls class="pagination"
+                        (pageChange)="p = $event"
+                        autoHide="true"
+                        previousLabel="Vorherige Seite"
+                        nextLabel="Nächste Seite">
+                    </pagination-controls>
+                    <div *ngFor="let recurr of recurrRequests | paginate: { itemsPerPage: 5, currentPage: p }">
+                        <div class="ui grid status-bar-request" [ngClass]="recurr.requestId === request.requestId?'status-bar-active-request':''">
+                            <div class="two column row">
+                                <div class="left floated column">
+                                <h4 *ngIf="recurr.query.scheduled == 'Sofort'">Anfrage {{ getNumRequest(recurr) }}: Sofortige Ausführung</h4>
+                                <h4 *ngIf="recurr.query.scheduled != 'Sofort'">Anfrage {{ getNumRequest(recurr) }}: Ausführung am {{ request.query.scheduled | date: 'mediumDate' }}</h4>
+                                </div>
+                            </div>
+                            <div class="centered row">
+                                <div class="column" style="z-index: 999;">
+                                    <request-status-bar *ngIf="recurr.requestId === request.requestId" [request]="recurr" [queryDetails]="getQueryDetails()"></request-status-bar>
+                                    <request-status-bar *ngIf="recurr.requestId !== request.requestId" [request]="recurr" [queryDetails]="getQueryDetails()" [routerLink]="['/request', recurr.requestId]"></request-status-bar>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="row  ui segment">
+
+    <div class="row ui segment">
         <div class="sixteen wide column">
             <b>Beschreibung:</b> <br/>
-            <pre style="overflow-wrap: break-word;  white-space: pre-wrap; word-wrap: break-word;">{{request.query.query.description}}</pre>
+            <pre style="white-space: pre-wrap; word-wrap: break-word;">{{request.query.query.description}}</pre>
         </div>
     </div>
     <div class="row ui segment">
@@ -208,9 +228,7 @@
             Abfragedefinition:
         </div>
         <div class="eight wide column actions right floated right aligned">
-            <div class="ui basic right labeled icon compact button"
-                 (click)="hideSql = !hideSql;"
-            >
+            <div class="ui basic right labeled icon compact button" (click)="hideSql = !hideSql;">
                 {{hideSql? 'Abfragesyntax einblenden':'Abfragesyntax ausblenden'}}
                 <i class="icon" [ngClass]="hideSql?'eye':'hide'"></i>
             </div>

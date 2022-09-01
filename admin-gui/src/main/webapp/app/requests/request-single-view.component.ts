@@ -259,6 +259,14 @@ export class RequestSingleViewComponent {
     }
 
     /**
+    * Returns the position of the request inside the belonging series (ordered by reference date).
+    * @returns position of request in the belonging series
+    */
+    getNumRequest(request: LocalRequest): number {
+        return this.getQueryDetails()[request.queryId].order.indexOf(request.requestId) + 1;
+    }
+
+    /**
      * Returns all requests of current series in reversed order.
      * @returns requests of current series
      */
