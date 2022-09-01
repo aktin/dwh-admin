@@ -21,6 +21,11 @@
     top: -11px;
 }
 
+.popup-buttons {
+    margin-left: 24px;
+    margin-right: 24px;
+}
+
 .fontBlack {
     color: black !important;
 }

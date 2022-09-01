@@ -115,7 +115,7 @@ export class RequestSingleViewComponent {
             let message = allow ? 'Bitte bestätigen Sie, dass diese Anfrage ausgeführt werden darf. '
                 : 'Bitte bestätigen Sie, dass diese Anfrage abgelehnt werden soll. ' +
                 'Dieser Schritt kann nicht rückgängig gemacht werden.';
-            let buttons = [['Jetzt freigeben', 'green'], ['Zurück', 'orange']];
+            let button = ['checkmark icon', 'Jetzt freigeben', 'green'];
             if (allow) {    // ACCEPT
                 this.popUp.setOptIn(['Ergebnisprüfung vor der Übermittlung', 'Die Ergebnisse der Abfrage werden nach der Durchführung sofort übertragen.']);
                     if (this.request.isRecurring()) {
@@ -127,6 +127,7 @@ export class RequestSingleViewComponent {
                         }
                     }
             } else {    // REJECT
+                button = ['icon remove', 'Jetzt ablehnen', 'red'];
                 if (this.request.isRecurring()) {
                     this.popUp.setOptQuery(['Serien-Ablehnung', 'Diese und alle zukünftigen Anfragen der Serie ablehnen.']);
                     let numReject = this.getNumApplyRule();
@@ -135,9 +136,8 @@ export class RequestSingleViewComponent {
                             'Auch bereits bestehende Anfragen ablehnen. Anzahl der hiervon betroffenen Anfragen: ' + numReject);
                     }
                 }
-                buttons[0] = ['Jetzt ablehnen', 'red'];
             }
-            this.popUp.setConfirm(buttons);
+            this.popUp.setConfirm(button);
             this.popUp.setData(true, title, message,
                 // answer: whether the dialog options are submitted; checkedAuto: whether auto submit is selected; checkedQuery: whether a
                 // rule for the series should be created; checkedApply: whether the rule should be applied to already existing requests
@@ -183,11 +183,11 @@ export class RequestSingleViewComponent {
             let message = allow ? 'Bitte bestätigen Sie, dass die Ergebnisse der Anfrage an den zentralen Server übertragen werden dürfen.'
                 : 'Bitte bestätigen Sie, dass die Anfrage abgelehnt werden soll. Es werden keine Ergebnisse übermittelt. ' +
                 'Dieser Schritt kann nicht rückgängig gemacht werden.';
-            let buttons = [['Jetzt freigeben', 'green'], ['Zurück', 'orange']];
+            let button = ['checkmark icon', 'Jetzt freigeben', 'green'];
             if (!allow) {
-                buttons[0] = ['Jetzt ablehnen', 'red'];
+                button = ['icon remove', 'Jetzt ablehnen', 'red'];
             }
-            this.popUp.setConfirm(buttons);
+            this.popUp.setConfirm(button);
             this.popUp.setData(true, title, message,
                 (answer: boolean) => {
                     if (answer) {

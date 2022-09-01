@@ -1,24 +1,17 @@
-<div
-        class="ui basic segment request-single-view grid container"
-        id="request-list-{{request.requestId}}"
-        *ngIf="request"
->
+<div class="ui basic segment request-single-view grid container" id="request-list-{{request.requestId}}" *ngIf="request">
     <div class="compact row">
         <div class="twelve wide column">
-            <h1 class="ui header">
-                {{request.query.query.title}}
-            </h1>
+            <h1 class="ui header">{{request.query.query.title}}</h1>
         </div>
-        <div class="actions four wide right floated right aligned column">
-            <a class="ui circular red icon button"
-               [ngClass]="{'basic': !hidden, 'disabled': hiddenLoading }"
-               (click)="toggleHiddenMarker()"
-               title="{{hideMessage}}">
-                <i class="archive icon" [class.empty]="!hidden"></i>
-            </a>
-            <a class="ui circular basic green icon button" routerLink="/request" title="Zurück zur Anfragenübersicht">
-                <i class="arrow left icon"></i>
-            </a>
+        <div class="six wide right floated right aligned column">           
+            <div class="ui vertical animated button" [ngClass]="{'basic': !hidden, 'disabled': hiddenLoading }" (click)="toggleHiddenMarker()" title="{{hideMessage}}">
+                <div class="hidden content">{{hidden ? "Wiederherstellen" : "Archivieren"}}</div>
+                <div class="visible content"><i class="archive icon icon-archive-request"></i></div>
+            </div>
+            <div class="ui vertical animated basic button" routerLink="/request" title="Zurück zur Anfragenübersicht">
+                <div class="hidden content">Zurück</div>
+                <div class="visible content"><i class="left arrow icon"></i></div>
+            </div>
         </div>
     </div>
     <div class="row" style="padding-bottom: 25px;">
@@ -36,20 +29,16 @@
             Die Ergebnisse wurden noch nicht zur Übermittlung freigegeben. Bitte wählen Sie eine Aktion.
         </div>
         <div class="actions right aligned middle aligned six wide column">
-            <div class="ui green animated vertical button request-allow-button"
-                 (click)="authorize(true)"
-            >
-                <div class="visible content">Freigeben</div>
-                <div class="hidden content">
-                    <i class="icon checkmark"></i>
+            <div class="ui green animated vertical button" (click)="authorize(true)" title="Diese Anfrage freigeben">
+                <div class="hidden content">Freigeben</div>
+                <div class="visible content">
+                    <i class="icon checkmark icons-allow-deny-request"></i>
                 </div>
             </div>
-            <div class="ui red animated vertical button request-deny-button"
-                 (click)="authorize(false)"
-            >
-                <div class="visible content">Ablehnen</div>
-                <div class="hidden content">
-                    <i class="icon remove"></i>
+            <div class="medium ui red animated vertical button" (click)="authorize(false)" title="Diese Anfrage ablehnen">
+                <div class="hidden content">Ablehnen</div>
+                <div class="visible content">
+                    <i class="icon remove icons-allow-deny-request"></i>
                 </div>
             </div>
         </div>
@@ -66,14 +55,11 @@
         <div class="twelve wide column middle aligned">
             Klicken Sie rechts, um die Abfrageergebnisse herunterzuladen und anzusehen. Im Falle einer Freigabe werden die Abfrageergebnisse exakt in dieser Form übertragen.
         </div>
-        <div class="four wide column middle aligned">
-            <a class="ui basic green icon button"
-               [ngClass]="{'disabled': downloadLoading }"
-               (click)="downloadResult()"
-               title="Die Ergebnisdatei herunterladen."><i class="download icon request-result-button-icon"></i>
-                <div class="request-result-button-text">Ergebnisse<br/>
-                herunterladen</div>
-            </a>
+            <div class=" three wide column middle aligned centered ui green animated vertical button" [ngClass]="{'disabled': downloadLoading }" (click)="downloadResult()" title="Die Ergebnisse der Abfrage herunterladen">
+                <div class="hidden content" style="margin-top:-14px;">Ergebnisse herunterladen</div>
+                <div class="visible content">
+                    <i class="download icon request-result-button-icon"></i>
+                </div>
         </div>
     </div>
     <div class="row ui segment grid">

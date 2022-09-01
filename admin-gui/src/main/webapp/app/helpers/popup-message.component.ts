@@ -13,7 +13,7 @@ export class PopUpMessageComponent {
     @Input() head: string;
     @Input() callback: Function;
     @Input() mode = 'info'; // 'confirm'
-    @Input() buttons: string[][] = [['Weiter', 'green'], ['Abbrechen', 'red']];
+    @Input() button: string[] = ['icon checkmark', 'Weiter', 'green'];
     show = false;
     onTop = false;
     checkBoxText: string[] = [];
@@ -52,10 +52,10 @@ export class PopUpMessageComponent {
     // }
 
     // call after setData
-    setConfirm (buttons?: string[][]): void {
+    setConfirm (button?: string[]): void {
         this.mode = 'confirm';
-        if (buttons) {
-            this.buttons = buttons;
+        if (button) {
+            this.button = button;
         }
     }
 
@@ -89,7 +89,7 @@ export class PopUpMessageComponent {
         this.callback = null;
         this.mode = 'info';
         this.show = false;
-        this.buttons = null;
+        this.button = null;
         this.checkBoxText = null;
         this.checkBoxTextQuery = null;
         this.checkBoxTextApply = null;

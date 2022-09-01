@@ -63,19 +63,13 @@
 
     <br>
     <div class="popup-message-buttons" *ngIf="mode === 'confirm'" style="display: flex; justify-content: center;">
-        <div class="ui animated vertical button popup-message-okay-button"
-             [ngClass]="buttons[0][1]" (click)="msgOk()">
-            <div class="visible content">{{buttons[0][0]}}</div>
-            <div class="hidden content">
-                <i class="icon checkmark"></i>
-            </div>
+        <div class="ui animated vertical button" [ngClass]="button[2]" (click)="msgOk()">
+            <div class="hidden content">{{button[1]}}</div>
+            <div class="visible content"><i class="popup-buttons" [ngClass]="button[0]"></i></div>
         </div>
-        <div class="ui animated vertical button popup-message-okay-button"
-             [ngClass]="buttons[1][1]" (click)="msgCancel()">
-            <div class="visible content">{{buttons[1][0]}}</div>
-            <div class="hidden content">
-                <i class="icon remove"></i>
-            </div>
+        <div class="ui vertical animated basic button" (click)="msgCancel()">
+            <div class="hidden content">Zurück</div>
+            <div class="visible content"><i class="left arrow icon popup-buttons"></i></div>
         </div>
     </div>
 </div>
