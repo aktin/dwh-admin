@@ -26,16 +26,16 @@ export class RequestStatusBarComponent implements OnInit {
     itemsInStatusBar: any = null;
     oldStatus: RequestStatus;
     statusTexts = [
-        'Abfrage eingegangen',
-        'Abfrage prüfen',
+        'Anfrage eingegangen',
+        'Anfrage prüfen',
         'Ausführung geplant',
-        'Abfrage wird ausgeführt',
+        'Anfrage wird ausgeführt',
         'Ergebnisse freigeben',
         'Übermittlung der Ergebnisse',
         'Übermittlung abgeschlossen',
         'Fehlgeschlagen',
-        'Abfrage abgelehnt',
-        'Abfrage geschlossen'
+        'Anfrage abgelehnt',
+        'Anfrage geschlossen'
     ];
 
     calcView () {
