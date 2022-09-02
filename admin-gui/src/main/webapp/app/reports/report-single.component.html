@@ -9,7 +9,6 @@
     <report-single-view [reportData]="report" [single]="true" class="row" *ngIf="report"></report-single-view>
 
     <div class="row" *ngIf="report && report.isSuccess()">
-        <iframe [src]="report.url | safe" style="width: 100%; height: 700px;"></iframe>
+        <iframe [src]="report.url | safe" style="width: 100%; height: 850px;"></iframe>
     </div>
 </div>
-
