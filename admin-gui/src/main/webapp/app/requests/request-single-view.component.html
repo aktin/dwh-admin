@@ -71,12 +71,12 @@
             <div class="ui right floated left labeled button" (click)="toggleHiddenMarker()" title="{{hideMessage}}">
                 <div *ngIf="hidden then archived else unarchived"></div>
                 <ng-template #archived>
-                    <a class="ui green basic label">Anfrage archivieren</a>
-                    <div class="ui green icon button"><i class="undo icon"></i></div>
+                    <a class="ui green basic label">Anfrage wiederherstellen</a>
+                    <div class="ui green icon button"><i class="undo icon" style="padding-top:5px"></i></div>
                 </ng-template>
                 <ng-template #unarchived>
-                    <a class="ui green basic label">Anfrage wiederherstellen</a>
-                    <div class="ui green icon button"><i class="archive icon" style="padding-top:4px"></i></div>
+                    <a class="ui green basic label">Anfrage archivieren</a>
+                    <div class="ui green icon button"><i class="archive icon"></i></div>
                 </ng-template>
             </div>
         </div>

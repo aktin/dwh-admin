@@ -47,7 +47,12 @@
                     <ng-template #unarchived>{{request.query.query.title}}</ng-template>
                 </div>
                 <div class="actions four wide right floated right aligned column">
-                    <a title="Details anzeigen" [routerLink]="['/request', request.requestId]">Details anzeigen</a>
+                    <div class="ui basic compact button" title="Details anzeigen" [routerLink]="['/request', request.requestId]">
+                        <i class="large icons">
+                            <i class="file alternate outline icon"></i>
+                            <i class="bottom right corner search icon"></i>
+                        </i>
+                    </div>
                 </div>
             </div>
             <div class="row">
