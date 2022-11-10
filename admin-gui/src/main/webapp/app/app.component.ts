@@ -142,7 +142,7 @@ export class AppComponent implements OnInit {
 
     openUpdatePopup() {
         if (this._updaterService.isUpdateAgentInstalled) {
-            let buttons = [['Update durchführen', 'green'], ['Abbrechen', 'red']];
+            let buttons = ['Update durchführen', 'green'];
             this.popUpConfirmDwhUpdate.setConfirm(buttons);
             this.popUpConfirmDwhUpdate.onTop = true;
             this.popUpConfirmDwhUpdate.setData(true, 'Update des AKTIN DWH', 'Das AKTIN Data Warehouse soll von der Version ' + this._updaterService.version_installed + ' auf die Version ' + this._updaterService.version_candidate + ' aktualisert werden. Diese Aktualisierung wird einige Zeit in Anspruch nehmen. Anschließend wird das Data Warehouse neugestart.',
