@@ -1,16 +1,13 @@
 <div class="ui basic segment request-single-view grid container" id="request-list-{{request.requestId}}" *ngIf="request">
-    <div class="compact row">
-        <div class="twelve wide column">
-            <h1 class="ui header">{{request.query.query.title}}</h1>
+    <div class="ui equal width row">
+        <div class="left floated left aligned column">
+            <div *ngIf="hidden then archived else unarchived"></div>
+            <ng-template #archived><h1 class="ui header">{{request.query.query.title}} [ARCHIVIERT]</h1></ng-template>
+            <ng-template #unarchived><h1 class="ui header">{{request.query.query.title}}</h1></ng-template>
         </div>
-        <div class="six wide right floated right aligned column">           
-            <div class="ui vertical animated button" [ngClass]="{'basic': !hidden, 'disabled': hiddenLoading }" (click)="toggleHiddenMarker()" title="{{hideMessage}}">
-                <div class="hidden content">{{hidden ? "Wiederherstellen" : "Archivieren"}}</div>
-                <div class="visible content"><i class="archive icon icon-archive-request"></i></div>
-            </div>
-            <div class="ui vertical animated basic button" routerLink="/request" title="Zurück zur Anfragenübersicht">
-                <div class="hidden content">Zurück</div>
-                <div class="visible content"><i class="left arrow icon"></i></div>
+        <div class="two wide right floated right aligned column">           
+            <div class="ui basic button" routerLink="/request" title="Zurück zur Anfragenübersicht" style="margin: 0 -13px;">
+                <i class="left arrow icon" style="margin: 0 -2px;"></i>
             </div>
         </div>
     </div>
@@ -52,13 +49,35 @@
         </div>
     </div>
     <div class="row ui segment" *ngIf="request.hasResultFile()">
-        <div class="twelve wide column middle aligned">
+        <div class="eleven wide column middle aligned center">
             Klicken Sie rechts, um die Abfrageergebnisse herunterzuladen und anzusehen. Im Falle einer Freigabe werden die Abfrageergebnisse exakt in dieser Form übertragen.
         </div>
-        <div class=" three wide column middle aligned centered ui green animated vertical button" [ngClass]="{'disabled': downloadLoading }" (click)="downloadResult()" title="Die Ergebnisse der Abfrage herunterladen">
-            <div class="hidden content" style="margin-top:-14px;">Ergebnisse herunterladen</div>
-            <div class="visible content">
-                <i class="download icon request-result-button-icon"></i>
+        <div class="five wide column">
+            <div class="ui right floated left labeled button" [ngClass]="{'disabled': downloadLoading }" (click)="downloadResult()" title="Die Ergebnisse der Abfrage herunterladen">
+                <a class="ui green basic label">
+                    Ergebnisse herunterladen
+                </a>
+                <div class="ui green icon button">
+                    <i class="download icon" style="padding-top:4px"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row ui segment" *ngIf="request.isFinished()">
+        <div class="eleven wide column middle aligned">
+            Die Abfrage ist abgeschlossen. Sie können bei Bedarf diese Anfrage nun archivieren.
+        </div>
+        <div class="five wide column">
+            <div class="ui right floated left labeled button" (click)="toggleHiddenMarker()" title="{{hideMessage}}">
+                <div *ngIf="hidden then archived else unarchived"></div>
+                <ng-template #archived>
+                    <a class="ui green basic label">Anfrage archivieren</a>
+                    <div class="ui green icon button"><i class="undo icon"></i></div>
+                </ng-template>
+                <ng-template #unarchived>
+                    <a class="ui green basic label">Anfrage wiederherstellen</a>
+                    <div class="ui green icon button"><i class="archive icon" style="padding-top:4px"></i></div>
+                </ng-template>
             </div>
         </div>
     </div>
@@ -214,7 +233,7 @@
             Abfragedefinition:
         </div>
         <div class="eight wide column actions right floated right aligned">
-            <div class="ui basic right labeled icon compact button" (click)="hideSql = !hideSql;">
+            <div class="ui button right labeled icon compact button button-query-requests" (click)="hideSql = !hideSql;">
                 {{hideSql? 'Abfragesyntax einblenden':'Abfragesyntax ausblenden'}}
                 <i class="icon" [ngClass]="hideSql?'eye':'hide'"></i>
             </div>

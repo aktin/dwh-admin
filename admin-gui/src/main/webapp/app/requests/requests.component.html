@@ -42,14 +42,16 @@
         <div class="ui vertical basic segment request-single-view grid container" id="request-list-{{request.requestId}}">
               <div class="sixteen wide column row">
                 <div class="twelve wide left floated column ui header request-single-view-header">
-                    {{request.query.query.title}}
+                    <div *ngIf="request.marker === 1; then archived else unarchived"></div>
+                    <ng-template #archived>{{request.query.query.title}} [ARCHIVIERT]</ng-template>
+                    <ng-template #unarchived>{{request.query.query.title}}</ng-template>
                 </div>
                 <div class="actions four wide right floated right aligned column">
                     <a title="Details anzeigen" [routerLink]="['/request', request.requestId]">Details anzeigen</a>
                 </div>
             </div>
             <div class="row">
-                <div class="eight wide left floated column ui header request-single-view-header" style="margin-top:-20px;">
+                <div class="ten wide left floated column ui header request-single-view-header" style="margin-top:-20px;">
                     <div *ngIf="request.isRecurring(); then query else single"></div>
                     <ng-template #query>
                         <h4 *ngIf="request.query.scheduled != 'Sofort'">Serien-Anfrage {{ getNumRequest(request) }}: Ausführung am {{ request.query.scheduled | date: 'mediumDate' }}</h4>
