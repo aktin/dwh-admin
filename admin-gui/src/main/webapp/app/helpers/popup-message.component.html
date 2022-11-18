@@ -10,56 +10,27 @@
         {{message}}
     </div>
 
-    <div class="ui extra" *ngIf="checkBoxText">
+    <div class="ui extra" *ngIf="firstCheckBox">
         <br/>
-        <label>{{checkBoxText[0]}}</label>
+        <label>{{firstCheckBox[0]}}</label>
         <div class="field">
             <div class="ui checkbox">
-                <input type="checkbox" name="frequency" [(ngModel)]="checked">
-                <label class="fontBlack">{{ checkBoxText[1] }}</label>
+                <input type="checkbox" name="firstCheck" [(ngModel)]="firstChecked">
+                <label class="fontBlack">{{ firstCheckBox[1] }}</label>
             </div>
         </div>
     </div>
 
-    <div class="ui extra" *ngIf="checkBoxTextQuery && checkBoxTextApply">
+    <div class="ui extra" *ngIf="secondCheckBox">
         <br/>
-        <label>{{checkBoxTextQuery[0]}}</label>
+        <label>{{secondCheckBox[0]}}</label>
         <div class="field">
             <div class="ui checkbox">
-                <input type="checkbox" name="query" [(ngModel)]="checkedQuery" (ngModelChange)="checkForJoinedCheck()">
-                <label class="fontBlack">{{ checkBoxTextQuery[1] }}</label>
-            </div>
-        </div>
-        <div class="field">
-            <div class="ui checkbox">
-                <input type="checkbox" name="apply" [(ngModel)]="checkedApply" [disabled]="!checkedQuery">
-                <label class="fontBlack">{{ checkBoxTextApply }}</label>
+                <input type="checkbox" name="secondCheck" [(ngModel)]="secondChecked">
+                <label class="fontBlack">{{ secondCheckBox[1] }}</label>
             </div>
         </div>
     </div>
-
-     <!-- <div class="ui extra" *ngIf="checkBoxTextMail">
-        <div class="field">
-            <div class="ui checkbox">
-                <input type="checkbox" name="mail" [(ngModel)]="checkedMail" [disabled]="!checkedQuery || checkedQuery && !checked">
-                <label>{{ checkBoxTextMail }}</label>
-            </div>
-        </div>
-     </div> -->
-
-     <!-- <div *ngIf="checkedQuery">
-        <br>
-        <ng-container *ngIf="!checked && checkBoxText">
-            Sie erhalten Benachrichtigungen per E-Mail, wenn weitere Aktionen erforderlich sind.
-        </ng-container>
-        <ng-container *ngIf="checked && !checkedMail || !checkBoxText">
-            Sie erhalten keine weiteren Benachrichtigungen für Anfragen aus dieser Serie.
-        </ng-container>
-        <ng-container *ngIf="checked && checkedMail">
-            Sie erhalten Benachrichtigungen per E-Mail, wenn Ergebnisse übermittelt wurden.
-        </ng-container>
-        <br>
-     </div> -->
 
     <br>
     <div class="popup-message-buttons" *ngIf="mode === 'confirm'" style="display: flex; justify-content: center;">

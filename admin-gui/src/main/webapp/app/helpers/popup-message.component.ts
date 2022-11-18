@@ -16,14 +16,10 @@ export class PopUpMessageComponent {
     @Input() button: string[] = ['icon checkmark', 'Weiter', 'green'];
     show = false;
     onTop = false;
-    checkBoxText: string[] = [];
-    checkBoxTextQuery: string[] = [];
-    checkBoxTextApply: string = null;
-    // checkBoxTextMail: string = null;
-    checked = false;
-    checkedQuery = false;
-    checkedApply = false;
-    // checkedMail = false;
+    firstChecked = false;
+    firstCheckBox: string[];
+    secondChecked = false;
+    secondCheckBox: string[];
 
     setData (show: boolean, title: string, message: string, callback?: Function): void {
         this.show = show;
@@ -32,24 +28,15 @@ export class PopUpMessageComponent {
         this.callback = callback;
     }
 
-    setOptIn (texts: string[]): void {
-        this.checked = true;
-        this.checkBoxText = texts;
+    setFirstCheckBox (texts: string[]): void {
+        this.firstChecked = true;
+        this.firstCheckBox = texts;
     }
 
-    setOptQuery (texts: string[]): void {
-        this.checkedQuery = true;
-        this.checkBoxTextQuery = texts;
+    setSecondCheckBox (texts: string[]): void {
+        this.secondChecked = true;
+        this.secondCheckBox = texts;
     }
-
-    setOptApply (text: string): void {
-        this.checkedApply = true;
-        this.checkBoxTextApply = text;
-    }
-
-    // setoptMail (text: string): void {
-    //     this.checkBoxTextMail = text;
-    // }
 
     // call after setData
     setConfirm (button?: string[]): void {
@@ -70,7 +57,7 @@ export class PopUpMessageComponent {
     msgOk (): void {
         this.show = false;
         if (this.callback) {
-            this.callback(true, this.checked, this.checkedQuery, this.checkedApply);
+            this.callback(true, this.firstChecked, this.secondChecked);
         }
         this.clear();
     }
@@ -90,20 +77,10 @@ export class PopUpMessageComponent {
         this.mode = 'info';
         this.show = false;
         this.button = null;
-        this.checkBoxText = null;
-        this.checkBoxTextQuery = null;
-        this.checkBoxTextApply = null;
-        // this.checkBoxTextMail = null;
-        this.checked = false;
-        this.checkedQuery = false;
-        this.checkedApply = false;
-        // this.checkedMail = false;
+        this.firstChecked = false;
+        this.firstCheckBox = null;
+        this.secondChecked = false;
+        this.secondCheckBox = null;
         this.onTop = false;
-    }
-
-    checkForJoinedCheck (): void {
-        if (this.checkedQuery == false) {
-            this.checkedApply = false;
-        }
     }
 }
