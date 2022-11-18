@@ -22,7 +22,6 @@ export class RequestSingleViewComponent {
     @Input() requestDataUnmapped: LocalRequest;
     @Input() queryBundle: QueryBundle;
     @Input() queryDetails: object;
-    @Input() single = false;
     @Input() popUp: PopUpMessageComponent = null;
     hideSql = true;
     hiddenLoading = false;
@@ -82,15 +81,15 @@ export class RequestSingleViewComponent {
      * Sets the next possible status of the given request depending on the current status, whether the request was accepted or rejected and
      * whether auto submit was selected.
      * @param request The request whose status will be set.
-     * @param allow Wheteher the request was accepted or rejected.
-     * @param checkedAuto Optional: Wheteher auto submit was selected.
+     * @param isAccepted Wheteher the request was accepted or rejected.
+     * @param autoTransmission Optional: Wheteher auto submit was selected.
      */
-    setStatus(request: LocalRequest, allow: boolean, checkedAuto?: boolean): RequestStatus {
+    setStatus(request: LocalRequest, isAccepted: boolean, autoTransmission?: boolean): RequestStatus {
         return this._requestService.authorizeRequest(
             request.requestId,
             request.status,
-            allow,
-            checkedAuto,
+            isAccepted,
+            autoTransmission,
         );
     }
 
@@ -98,102 +97,96 @@ export class RequestSingleViewComponent {
      * Apply the selected rule (reject, accept_execute or accept_submit) to all request (including the current one)
      * of the belonging series which don't have a final status yet. After that the query bundle is updated.
      */
-    applyRule(checkedApply: boolean, action: QueryRuleAction) {
-        if (checkedApply) {
-            this._requestService.applyRule(this.request.queryId, action)
-                .subscribe(() => { this._requestSingleComponent.updateQueryBundle() });
-        }
+    applyRule(action: QueryRuleAction) {
+        this._requestService.applyRule(this.request.queryId, action)
+            .subscribe(() => { this._requestSingleComponent.updateQueryBundle() });
     }
 
     /**
      * Set popup content and the callback function depending on the selected options.
-     * @param allow True if request is accepted, false if request is rejected.
+     * @param isAccepted True if request is accepted, false if request is rejected.
      */
-    authorize (allow: boolean) {
+    authorize (isAccepted: boolean) {
+        let title:string
+        let message:string
+        let button:string[]
         if (this.request.isNew()) {
-            let title = allow ? 'Anfrage freigeben' : 'Anfrage ablehnen';
-            let message = allow ? 'Bitte bestätigen Sie, dass diese Anfrage ausgeführt werden darf. '
-                : 'Bitte bestätigen Sie, dass diese Anfrage abgelehnt werden soll. ' +
-                'Dieser Schritt kann nicht rückgängig gemacht werden.';
-            let button = ['checkmark icon', 'Jetzt freigeben', 'green'];
-            if (allow) {    // ACCEPT
-                this.popUp.setOptIn(['Ergebnisprüfung vor der Übermittlung', 'Die Ergebnisse der Abfrage werden nach der Durchführung sofort übertragen.']);
-                    if (this.request.isRecurring()) {
-                        this.popUp.setOptQuery(['Serien-Freigabe', 'Diese und alle zukünftigen Anfragen der Serie freigeben.']);
-                        let numAllow = this.getNumApplyRule();
-                        if (numAllow > 0) {
-                            this.popUp.setOptApply(
-                            'Auch bereits bestehende Anfragen freigeben. Anzahl der hiervon betroffenen Anfragen: ' + numAllow);
-                        }
-                    }
-            } else {    // REJECT
-                button = ['icon remove', 'Jetzt ablehnen', 'red'];
+            if (isAccepted) {
+                title = 'Anfrage freigeben'
+                message = 'Bitte bestätigen Sie, dass diese Anfrage ausgeführt werden darf.'
+                button = ['checkmark icon', 'Jetzt freigeben', 'green']
+                this.popUp.setFirstCheckBox(['Ergebnisprüfung vor der Übermittlung', 'Die Ergebnisse der Abfrage werden nach der Durchführung sofort übertragen.']);
                 if (this.request.isRecurring()) {
-                    this.popUp.setOptQuery(['Serien-Ablehnung', 'Diese und alle zukünftigen Anfragen der Serie ablehnen.']);
-                    let numReject = this.getNumApplyRule();
-                    if (numReject > 0) {
-                        this.popUp.setOptApply(
-                            'Auch bereits bestehende Anfragen ablehnen. Anzahl der hiervon betroffenen Anfragen: ' + numReject);
-                    }
+                    let numAllow = this.getNumApplyRule() + 1;
+                    this.popUp.setSecondCheckBox(['Serien-Freigabe', 'Diese und sämtliche Anfragen der Serie freigeben. Anzahl der betroffenen Anfragen: ' + numAllow]);
+                }
+            } else {
+                title = 'Anfrage ablehnen'
+                message = 'Bitte bestätigen Sie, dass diese Anfrage abgelehnt werden soll. Dieser Schritt kann nicht rückgängig gemacht werden.'
+                button = ['icon remove', 'Jetzt ablehnen', 'red']
+                if (this.request.isRecurring()) {
+                    let numReject = this.getNumApplyRule() + 1;
+                    this.popUp.setSecondCheckBox(['Serien-Ablehnung', 'Diese und sämtliche Anfragen der Serie ablehnen. Anzahl der betroffenen Anfragen: ' + numReject]);
                 }
             }
             this.popUp.setConfirm(button);
             this.popUp.setData(true, title, message,
-                // answer: whether the dialog options are submitted; checkedAuto: whether auto submit is selected; checkedQuery: whether a
-                // rule for the series should be created; checkedApply: whether the rule should be applied to already existing requests
-                (answer: boolean, checkedAuto: boolean, checkedQuery: boolean, checkedApply: boolean) => {
+                // answer: whether the dialog options are submitted; 
+                // autoTransmission: whether auto submit is selected; 
+                // applyQueryRule: whether a rule for the series should be created;
+                (answer: boolean, autoTransmission: boolean, applyQueryRule: boolean) => {
                     if (answer) {
-                        checkedApply = this.request.isRecurring() && checkedQuery && checkedApply;
-                        checkedQuery = this.request.isRecurring() && checkedQuery;
-                        // set status of current request
-                        if (!this.request.isRecurring() || !checkedQuery || !checkedApply) {
-                            this.requestData.status = this.setStatus(this.requestData, allow, checkedAuto);
+                        applyQueryRule = this.request.isRecurring() && applyQueryRule;
+                        // set status of current request -> firstCheckBox (in popup.html)
+                        if (!this.request.isRecurring() || !applyQueryRule) {
+                            this.requestData.status = this.setStatus(this.requestData, isAccepted, autoTransmission);
                         }
-                        // set query rule
-                        if (checkedQuery) {
-                            let newRuleAction: QueryRuleAction;
-                            if (allow && !checkedAuto) {
-                                newRuleAction = QueryRuleAction.ACCEPT_EXECUTE;
-                            } else if (allow && checkedAuto) {
-                                newRuleAction = QueryRuleAction.ACCEPT_SUBMIT;
-                            } else {
-                                newRuleAction = QueryRuleAction.REJECT;
+                        // set query rule -> secondCheckBox (in popup.html)
+                        if (applyQueryRule) {
+                            let newQueryRule: QueryRuleAction;
+                            if (isAccepted && autoTransmission) {
+                                newQueryRule = QueryRuleAction.ACCEPT_SUBMIT;
+                            } else if (isAccepted && !autoTransmission) {
+                                newQueryRule = QueryRuleAction.ACCEPT_EXECUTE;
+                            } else if (!isAccepted) {
+                                newQueryRule = QueryRuleAction.REJECT;
                             }
                             // delete old rule and create new one
-                            if (this.queryRule && <QueryRuleAction> this.queryRule.action !== newRuleAction) {
-                                this._requestService.deleteQueryRule(this.request.queryId).subscribe(resp => {
-                                    this._requestService.setQueryRule(this.request.requestId, newRuleAction)
-                                        .subscribe(res => {
-                                            this.applyRule(checkedApply, newRuleAction);
+                            if (this.queryRule) {
+                                this._requestService.deleteQueryRule(this.request.queryId)
+                                .subscribe(res1 => {
+                                    this._requestService.setQueryRule(this.request.requestId, newQueryRule)
+                                        .subscribe(res2 => {
+                                            this.applyRule(newQueryRule);
                                         });
-                                    });
-                            } else if (!this.queryRule) { // no existing rule, create new one
-                                this._requestService.setQueryRule(this.request.requestId, newRuleAction)
+                                });
+                            // no existing rule, create new one
+                            } else { 
+                                this._requestService.setQueryRule(this.request.requestId, newQueryRule)
                                     .subscribe(res => {
-                                        this.applyRule(checkedApply, newRuleAction);
+                                        this.applyRule(newQueryRule);
                                     });
-                            } else { // rule didn't change, apply rule to existing requests
-                                this.applyRule(checkedApply, newRuleAction);
                             }
                         }
                     }
                 });
-        } else { // accept or reject sending the results to broker
-            let title = allow ? 'Ergebnisse der Anfrage freigeben:' : 'Senden der Ergebnisse ablehnen:';
-            let message = allow ? 'Bitte bestätigen Sie, dass die Ergebnisse der Anfrage an den zentralen Server übertragen werden dürfen.'
-                : 'Bitte bestätigen Sie, dass die Anfrage abgelehnt werden soll. Es werden keine Ergebnisse übermittelt. ' +
-                'Dieser Schritt kann nicht rückgängig gemacht werden.';
-            let button = ['checkmark icon', 'Jetzt freigeben', 'green'];
-            if (!allow) {
-                button = ['icon remove', 'Jetzt ablehnen', 'red'];
+        } else {
+            if (isAccepted) {
+                title = 'Ergebnisse der Anfrage freigeben'
+                message = 'Bitte bestätigen Sie, dass die Ergebnisse der Anfrage an den zentralen Server übertragen werden dürfen.'
+                button = ['checkmark icon', 'Jetzt freigeben', 'green']
+            } else {
+                title = 'Senden der Ergebnisse ablehnen'
+                message = 'Bitte bestätigen Sie, dass die Anfrage abgelehnt werden soll. Es werden keine Ergebnisse übermittelt. Dieser Schritt kann nicht rückgängig gemacht werden.'
+                button = ['icon remove', 'Jetzt ablehnen', 'red']
             }
             this.popUp.setConfirm(button);
             this.popUp.setData(true, title, message,
                 (answer: boolean) => {
                     if (answer) {
-                        this.requestData.status = this.setStatus(this.requestData, allow);
+                        this.requestData.status = this.setStatus(this.requestData, isAccepted);
                     }
-                });
+            });
         }
     }
 
