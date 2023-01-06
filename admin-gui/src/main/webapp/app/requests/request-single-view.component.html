@@ -163,29 +163,29 @@
                 {{requestUnmapped.query.query.schedule.interval | durationQuery }}
             </div>
         </div>
-
-        <div class="row" *ngIf="queryRule && requestUnmapped.isRecurring()">
-            <div class="ui sixteen wide column divider"></div>
-        </div>
-        <div class="row" *ngIf="queryRule && requestUnmapped.isRecurring()">
-            <div class="ui meta grid">
-                <div class="fifteen wide column centered">
-                    Für die Serie liegt folgende Freigabe-Regel vor (erstellt von {{ queryRule.user }} am {{ queryRule.creationDate | date: 'd. MMM y, HH:mm a' }}):<br>
-                </div>
-                <div class="ten wide column centered">
-                    <span *ngIf="queryRule.action === 'REJECT'">Alle Anfragen dieser Serie werden abgelehnt.</span>
-                    <span *ngIf="queryRule.action === 'ACCEPT_SUBMIT'">Alle Anfragen dieser Serie werden freigegeben. Die Ergebnisse werden direkt übertragen.</span>
-                    <span *ngIf="queryRule.action === 'ACCEPT_EXECUTE'">Alle Anfragen dieser Serie werden freigegeben. Die Übermittlung der Ergebnisse muss erneut bestätigt werden.</span>
-                </div>   
-                <div class="four wide right aligned column centered">
-                    <button class="ui button button-delete-rule" (click)="deleteQueryRule()">Regel entfernen</button>
-                </div>   
-            </div>
-        </div>
         <div class="row" *ngIf="requestUnmapped.isRecurring()">
             <div class="ui sixteen wide column divider"></div>
         </div>
 
+        <div class="row" *ngIf="requestUnmapped.isRecurring()">
+            <div class="ui meta grid" style="padding-left: 25px;">
+                <div class="fifteen wide column centered" *ngIf="queryRule then rule else norule"></div>
+                <ng-template #rule>Für diese Serie liegt folgende Freigabe-Regel vor (erstellt von {{ queryRule.user }} am {{ queryRule.creationDate | date: 'd. MMM y, HH:mm a' }}):</ng-template>
+                <ng-template #norule>Für diese Serie liegt keine Freigabe-Regel vor.</ng-template>
+                <div class="ten wide column centered" *ngIf="queryRule" >
+                    <span *ngIf="queryRule.action === 'REJECT'">Alle Anfragen dieser Serie werden abgelehnt.</span>
+                    <span *ngIf="queryRule.action === 'ACCEPT_SUBMIT'">Alle Anfragen dieser Serie werden freigegeben. Die Ergebnisse werden direkt übertragen.</span>
+                    <span *ngIf="queryRule.action === 'ACCEPT_EXECUTE'">Alle Anfragen dieser Serie werden freigegeben. Die Übermittlung der Ergebnisse muss erneut bestätigt werden.</span>
+                </div>   
+                <div class="four wide right aligned column centered" *ngIf="queryRule" >
+                    <button class="ui button button-delete-rule" (click)="deleteQueryRule()">Regel entfernen</button>
+                </div>   
+            </div>
+        </div>
+
+        <div class="row" *ngIf="requestUnmapped.isRecurring()">
+            <div class="ui sixteen wide column divider"></div>
+        </div>
         <div class="row" *ngIf="request.isRecurring()">
             <div class="ui two column centered grid">
                 <div class="one column row">
