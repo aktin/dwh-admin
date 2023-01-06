@@ -1,5 +1,5 @@
-<div style="z-index: -100">
-    <div class="request-status-bar-box" [class.single]="single" style="z-index: -100">
+<div>
+    <div class="request-status-bar-box" [class.single]="single">
         <div class="request-status-line">
             <div class="request-status-line-fill" [ngStyle]="{'width': fillBar }" [ngClass]="{'failed': failed, 'expired': expired, 'rejected': rejected, 'submitted': submitted}"></div>
         </div>
