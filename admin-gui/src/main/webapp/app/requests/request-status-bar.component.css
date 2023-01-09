@@ -1,12 +1,12 @@
 .request-status-bar-box {
     display: inline-block;
     width: 580px;
-    /*width: 100%;*/
     vertical-align: middle;
     position: relative;
     margin-left: 50px;
     margin-bottom: 10px;
 }
+
 .request-status-bar-box.class {
     width: 600px;
 }
@@ -21,20 +21,25 @@
     margin: 6px 5px;
     z-index: -100;
 }
+
 .request-status-line-fill {
-    background-color: #FBBD08;
+    background-color: #21BA45;
     margin: 0;
     height: 6px;
 }
+
 .request-status-line-fill.failed {
     background-color: #DB2828;
 }
+
 .request-status-line-fill.expired {
     background-color: #767676;
 }
+
 .request-status-line-fill.rejected {
     background-color: #2185D0;
 }
+
 .request-status-line-fill.submitted {
     background-color: #21BA45;
 }
@@ -56,11 +61,12 @@
     height: 14px;
     cursor: help;
 }
+
 .request-status-dot.visited {
     margin: 1px;
     width: 12px;
     height: 12px;
-    background-color: #FBBD08;
+    background-color: #21BA45;
     cursor: help;
 }
 
@@ -71,6 +77,7 @@
     border: 5px solid #FBBD08;
     background-color: whitesmoke;
 }
+
 .request-status-icon {
     position: absolute;
     margin: -8px;

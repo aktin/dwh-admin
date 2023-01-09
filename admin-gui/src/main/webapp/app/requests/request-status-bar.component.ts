@@ -33,7 +33,7 @@ export class RequestStatusBarComponent implements OnInit {
         'Ergebnisse freigeben',
         'Übermittlung der Ergebnisse',
         'Übermittlung abgeschlossen',
-        'Fehlgeschlagen',
+        'Anfrage fehlgeschlagen',
         'Anfrage abgelehnt',
         'Anfrage geschlossen'
     ];
@@ -51,7 +51,7 @@ export class RequestStatusBarComponent implements OnInit {
                     dot: false
                 };
                 obj[RequestStatus[this.request.status]] = true;
-                this.itemsInStatusBar[3] = obj;
+                this.itemsInStatusBar[6] = obj;
             } else {
                 this.fillBar = Number(this.request.status) / (this.numberItems - 1) * 100 + '%';
                 for (let n = 0; n < this.numberItems; n ++) {
