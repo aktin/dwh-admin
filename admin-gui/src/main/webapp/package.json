@@ -32,17 +32,18 @@
     "ngx-pagination": "3.1.1",
     "rxjs": "^6.6.7",
     "systemjs": "0.20.19",
-    "zone.js": "~0.10.3"
+    "tslib": "^1.10.0",
+    "zone.js": "~0.10.2"
   },
   "devDependencies": {
     "@types/jquery": "3.2.13",
     "@types/lodash": "4.14.77",
-    "@types/node": "8.0.34",
+    "@types/node": "^12.11.1",
     "@types/semantic-ui": "2.2.5",
     "@types/semantic-ui-form": "2.2.4",
     "@types/underscore": "1.8.3",
     "canonical-path": "0.0.2",
-    "codelyzer": "^5.0.1",
+    "codelyzer": "^5.1.2",
     "concurrently": "3.5.0",
     "jquery": "^3.6.0",
     "lite-server": "^2.6.1",
