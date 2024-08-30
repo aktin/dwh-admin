@@ -1,9 +1,12 @@
+
+import {throwError as observableThrowError, of as observableOf,  Observable } from 'rxjs';
+
+import {catchError, map} from 'rxjs/operators';
 /**
  * Created by Xu on 03.05.2017.
  */
 import { Injectable } from '@angular/core';
-import { Http, RequestOptions, RequestOptionsArgs, Headers, Response, Request }          from '@angular/http';
-import { Observable } from 'rxjs/Observable';
+import { HttpClient, RequestOptions, RequestOptionsArgs, Headers, Response, Request }          from '@angular/http';
 
 import _ = require('underscore');
 
@@ -15,7 +18,7 @@ export class HttpInterceptorService {
     private _dataInterval: 3000;
 
     constructor(
-        private _http: Http,
+        private _http: HttpClient,
         private _store: StorageService,
         private _cleanUp: CleanUpAuthService
     ) {
@@ -58,25 +61,25 @@ export class HttpInterceptorService {
         // console.log('here: ', vlName, value, nullVal, dbTime, url);
         // check whether logged in. if not then nada.
         if (this._store.getValue('user.token') === null) {
-            return Observable.of(nullVal);
+            return observableOf(nullVal);
         }
         if (! dbTime ) {
             dbTime = this._dataInterval;
         }
 
         if (Date.now() - this._store.getTime(vlName) <= dbTime) {
-            return Observable.of(value);
+            return observableOf(value);
         }
 
         this._store.setTime(vlName);
-        return this.get(url).map(res => {
+        return this.get(url).pipe(map(res => {
             this._store.setTime(vlName);
             value = parseResponse(res);
             return value;
-        }).catch(err => {
+        }),catchError(err => {
             err = parseError(err);
             return this.handleError(err);
-        });
+        }),);
     }
 
     handleError (error: Response | any) {
@@ -99,7 +102,7 @@ export class HttpInterceptorService {
         } else {
             errMsg = error.message ? error.message : error.toString();
         }
-        return Observable.throw(errMsg);
+        return observableThrowError(errMsg);
     }
 
     generateHeaderOptions (key?: string, value?: string, options?: RequestOptionsArgs): RequestOptionsArgs {

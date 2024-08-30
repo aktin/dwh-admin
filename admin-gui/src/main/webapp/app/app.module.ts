@@ -8,7 +8,7 @@
 import { NgModule, LOCALE_ID } from '@angular/core';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { HttpModule, JsonpModule } from '@angular/http';
+import { HttpClientModule, JsonpModule } from '@angular/http';
 
 import { MyDatePickerModule } from 'mydatepicker';
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -40,7 +40,7 @@ import { RestrictedComponent } from './restricted/restricted.component';
         BrowserModule,
         AppRoutingModule,
         FormsModule,
-        HttpModule,
+        HttpClientModule,
         JsonpModule,
         MyDatePickerModule,
         NgxPaginationModule,

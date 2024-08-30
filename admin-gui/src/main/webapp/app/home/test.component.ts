@@ -5,7 +5,7 @@
  */
 import { Component } from '@angular/core';
 import { UrlService, HttpInterceptorService } from '../helpers/services/index';
-import { Http, RequestMethod, Response, Request } from '@angular/http';
+import { HttpClient, RequestMethod, Response, Request } from '@angular/http';
 
 @Component({
     templateUrl: './test.component.html',
@@ -41,7 +41,7 @@ export class TestComponent  {
         }
     ];
 
-    constructor (private _http: Http,
+    constructor (private _http: HttpClient,
                 private _urls: UrlService ) { }
 
     test (testObj: any): void {

@@ -1,3 +1,5 @@
+
+import {map} from 'rxjs/operators';
 /**
  * Created by Xu on 15.05.2017.
  */
@@ -24,11 +26,11 @@ export class ReportSingleComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        this._route.params
-            .map((params: Params) => {
+        this._route.params.pipe(
+            map((params: Params) => {
             this.repId = +params['id'];
                 return this._reportService.getReport(+params['id']);
-            }).subscribe(
+            })).subscribe(
                 rep => {
                     this.rep = rep;
                 }

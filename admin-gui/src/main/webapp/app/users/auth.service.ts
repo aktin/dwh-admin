@@ -1,4 +1,8 @@
 
+import {of as observableOf, throwError as observableThrowError,  Observable } from 'rxjs';
+
+import {finalize, catchError, map} from 'rxjs/operators';
+
 /**
  * Created by Xu on 03.05.2017.
  *
@@ -8,13 +12,11 @@ import { Injectable } from '@angular/core';
 import { Response } from '@angular/http';
 import { Router } from '@angular/router';
 
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/observable/throw';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/finally';
-import 'rxjs/add/operator/combineLatest';
+
+
+
+
+
 
 import _ = require('underscore');
 
@@ -54,7 +56,7 @@ export class AuthService {
         return this._http.post(
             this._urls.parse('login'),
             { username: username, password: password }
-        ).map(res => {
+        ).pipe(map(res => {
             let user: User;
             if (res.ok && res.text()) {
                 user = new User(username, res.text());
@@ -65,10 +67,10 @@ export class AuthService {
                 this.setPermissions().subscribe();
                 return user;
             }
-            return Observable.throw('Authentication Error, status code: ' + res.status);
-        }).catch((err) => {
+            return observableThrowError('Authentication Error, status code: ' + res.status);
+        }),catchError((err) => {
             return this._http.handleError(err);
-        });
+        }),);
     }
 
     userLogout(): Observable<boolean> {
@@ -76,17 +78,17 @@ export class AuthService {
             this._urls.parse('logout'),
             this._store.getValue('user.token'),
             this._http.generateHeaderOptions('Content-Type', 'text/plain')
-        ).map(res => {
+        ).pipe(map(res => {
             console.log('token valid for ' + res.text().split('=')[1].split('}')[0] + 'ms');
             this._cleanUp.cleanUpStorage();
             return true;
-        })
+        }),
             // .catch(this._http.handleError)
-            .finally(() => {
+            finalize(() => {
                 sessionStorage.removeItem('permissions');
                 this._cleanUp.cleanUpStorage();
                 this._cleanUp.redirect2Home('');
-            });
+            }),);
     }
 
     authCheck(): Observable<boolean> {
@@ -167,13 +169,13 @@ export class AuthService {
      * @returns {Observable<boolean>}
      */
     userRolesCheck(roles: string[]): Observable<boolean> {
-        return this.userRoles().map(
+        return this.userRoles().pipe(map(
             userRoles => { // at least one role is in userRoles
                 return _.some(roles, function (role) {
                     return _.contains(userRoles, role);
                 });
             }
-        );
+        ));
     }
 
     userRolesCheckFull(roles: string[]): Observable<boolean> {
@@ -189,7 +191,7 @@ export class AuthService {
 
         // roles not working yet ...
         // return this.userRolesCheck(roles);
-        return Observable.of(true);
+        return observableOf(true);
     }
 
     /**
@@ -220,10 +222,10 @@ export class AuthService {
      * Get permissions from server depending on user role and writes them to the sessionStorage.
      */
     setPermissions() {
-        return this._http.get(this._urls.parse('permissions'))
-            .map(res => {
+        return this._http.get(this._urls.parse('permissions')).pipe(
+            map(res => {
                 sessionStorage.setItem('permissions', res.text());
-            });
+            }));
     }
 
     // IMPROVE: better way than using sessionStorage?

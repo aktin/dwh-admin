@@ -1,13 +1,15 @@
 
+import {map, catchError} from 'rxjs/operators';
+
 /**
  * Created by Xu on 08-Jun-17.
  */
 import { Injectable } from '@angular/core';
-import { Response, ResponseContentType, Http, Headers, RequestOptions } from '@angular/http';
+import { Response, ResponseContentType, HttpClient, Headers, RequestOptions } from '@angular/http';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/map';
+import { Observable } from 'rxjs';
+
+
 
 import _ = require('underscore');
 import FileSaver = require('file-saver');
@@ -58,9 +60,9 @@ export class RequestService {
      */
     getRequests(etag: string): Observable<Object> {
         let options = { headers: new Headers({'If-None-Match': etag}),  'observe': 'response' };
-        return this._http.get(this._urls.parse('requestList'), options)
-            .catch(err => { return this._http.handleError(err) })
-            .map(resp => {
+        return this._http.get(this._urls.parse('requestList'), options).pipe(
+            catchError(err => { return this._http.handleError(err) }),
+            map(resp => {
                 let res = {};
                 res['etag'] = resp.headers.get('ETag');
                 res['req'] = _.map(JSON.parse(resp.text()), req => LocalRequest.parseRequest(req));
@@ -68,7 +70,7 @@ export class RequestService {
                     return req1.requestId - req2.requestId;
                 });
                 return res;
-            });
+            }),);
     }
 
      /**
@@ -86,8 +88,8 @@ export class RequestService {
         } else {
             url = 'requestUnmapped';
         }
-        return this._http.get(this._urls.parse(url, {requestId: requestId}), options).catch(err => { return this._http.handleError(err) })
-            .map(resp => {
+        return this._http.get(this._urls.parse(url, {requestId: requestId}), options).pipe(catchError(err => { return this._http.handleError(err) }),
+            map(resp => {
                 let res = {};
                 res['etag'] = resp.headers.get('ETag');
                 res['req'] = LocalRequest.parseRequest(JSON.parse(resp.text()));
@@ -95,7 +97,7 @@ export class RequestService {
                     res['req'].status = this.authorizeRequest(res['req'].requestId, res['req'].status, true);
                 }
                 return res;
-            });
+            }),);
     }
 
      /**
@@ -110,9 +112,9 @@ export class RequestService {
         if (queryId === null) {
             return null;
         }
-        return this._http.get(this._urls.parse('query', {queryId: queryId}), options)
-            .catch(err => { return this._http.handleError(err) })
-            .map(resp => {
+        return this._http.get(this._urls.parse('query', {queryId: queryId}), options).pipe(
+            catchError(err => { return this._http.handleError(err) }),
+            map(resp => {
                 let res = {};
                 res['etag'] = resp.headers.get('ETag');
                 res['bundle'] = JSON.parse(resp.text());
@@ -128,7 +130,7 @@ export class RequestService {
                     res['bundle'].rule.creationDate = new Date(res['bundle'].rule.creationDate);
                 }
                 return res;
-            });
+            }),);
     }
 
     /**
@@ -139,8 +141,8 @@ export class RequestService {
      */
     setQueryRule(requestId: number, action: QueryRuleAction): Observable<Response> {
         return this._http.post(
-            this._urls.parse('setQueryRule', {requestId: requestId, action: QueryRuleAction[action]}), {})
-            .catch(err => { return this._http.handleError(err) });
+            this._urls.parse('setQueryRule', {requestId: requestId, action: QueryRuleAction[action]}), {}).pipe(
+            catchError(err => { return this._http.handleError(err) }));
     }
 
     /**
@@ -149,8 +151,8 @@ export class RequestService {
      * @returns Observable of response
      */
     deleteQueryRule(queryId: number): Observable<Response> {
-        return this._http.delete(this._urls.parse('queryRule', {queryId: queryId}))
-        .catch(err => { return this._http.handleError(err) })
+        return this._http.delete(this._urls.parse('queryRule', {queryId: queryId})).pipe(
+        catchError(err => { return this._http.handleError(err) }))
     }
 
     /**
@@ -162,8 +164,8 @@ export class RequestService {
      */
     applyRule(queryId: number, ruleAction: QueryRuleAction): Observable<Response> {
         return this._http.post(this._urls.parse('applyRule', {queryId: queryId}), JSON.stringify(ruleAction),
-            this._http.generateHeaderOptions('Content-Type', 'application/json'))
-            .catch(err => { return this._http.handleError(err) })
+            this._http.generateHeaderOptions('Content-Type', 'application/json')).pipe(
+            catchError(err => { return this._http.handleError(err) }))
     }
 
     /**
@@ -174,8 +176,8 @@ export class RequestService {
     updateMarker (requestId: number, marker: RequestMarker): void {
         let currentRoute = this._router.url;
         if (marker === null) {
-            this._http.delete(this._urls.parse('updateRequestMarker', {requestId: requestId}))
-                .catch(err => { return this._http.handleError(err); })
+            this._http.delete(this._urls.parse('updateRequestMarker', {requestId: requestId})).pipe(
+                catchError(err => { return this._http.handleError(err); }))
                 .subscribe(() => {
                     // this.updateRequest(requestId, null, null);
                     // this._updateRequests();
@@ -186,8 +188,8 @@ export class RequestService {
             this._http.put(this._urls.parse('updateRequestMarker', {requestId: requestId}),
                     JSON.stringify(RequestMarker[marker]),
                     this._http.generateHeaderOptions('Content-Type', 'application/json')
-                )
-                .catch(err => { return this._http.handleError(err) })
+                ).pipe(
+                catchError(err => { return this._http.handleError(err) }))
                 .subscribe(() => {
                     // this.updateRequest(requestId, null, marker);
                     // this._updateRequests();
@@ -206,8 +208,8 @@ export class RequestService {
      */
     updateStatus (requestId: number, status: RequestStatus, autoSubmit?: boolean): RequestStatus {
         let currentRoute = this._router.url;
-        let setStatusPost = this._http.post(this._urls.parse('setRequestStatus', {requestId: requestId, status: RequestStatus[status]}), {})
-            .catch(err => this._http.handleError(err));
+        let setStatusPost = this._http.post(this._urls.parse('setRequestStatus', {requestId: requestId, status: RequestStatus[status]}), {}).pipe(
+            catchError(err => this._http.handleError(err)));
         let statusCallback = () => {
             // this.updateRequest(requestId, null, marker);
             // this._updateRequests();
@@ -215,8 +217,8 @@ export class RequestService {
             setTimeout(() => this._router.navigate([currentRoute]), 600);
         };
         if (autoSubmit) {
-            this._http.post(this._urls.parse('setRequestAutoSubmit', {requestId: requestId, submit: autoSubmit}), {})
-                .catch(err => { return this._http.handleError(err) })
+            this._http.post(this._urls.parse('setRequestAutoSubmit', {requestId: requestId, submit: autoSubmit}), {}).pipe(
+                catchError(err => { return this._http.handleError(err) }))
                 .subscribe(() => {
                     setStatusPost.subscribe(statusCallback);
                 });

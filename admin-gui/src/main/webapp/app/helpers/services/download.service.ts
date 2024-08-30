@@ -1,3 +1,5 @@
+
+import {map} from 'rxjs/operators';
 /**
  * Created by Xu on 08.08.2017.
  */
@@ -15,7 +17,7 @@ export class DownloadService {
     get (filename: string, type: string, url: string): void {
         let headers = this._http.generateHeaderOptions('Accept', type);
         headers.responseType = ResponseContentType.Blob;
-        this._http.get(url, headers).map(res => res.blob()).subscribe(blob => FileSaver(blob, filename),
+        this._http.get(url, headers).pipe(map(res => res.blob())).subscribe(blob => FileSaver(blob, filename),
             error => {
                 console.log('Error downloading the file.');
                 this._http.handleError(error);

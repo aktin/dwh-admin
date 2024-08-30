@@ -1,3 +1,5 @@
+
+import {map} from 'rxjs/operators';
 /**
  * Created by Xu on 15.05.2017.
  */
@@ -18,10 +20,10 @@ export class UserSingleComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this._route.params
-            .map((params: Params) => {
+        this._route.params.pipe(
+            map((params: Params) => {
                 return this._userService.getUser(params['username']);
-            }).subscribe(
+            })).subscribe(
             u => {
                 if (u) {
                     this.user = u;

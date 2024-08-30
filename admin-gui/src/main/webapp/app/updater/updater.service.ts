@@ -1,3 +1,5 @@
+
+import {catchError} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { Permission } from '../users/index';
 import { AuthService } from '../users/auth.service';
@@ -42,8 +44,8 @@ export class UpdaterService {
     }
 
     checkUpdateAgentInstallation(): void {
-        this._http.get(this._url.parse('updateAgentInstalled'))
-            .catch(err => { return this._http.handleError(err); })
+        this._http.get(this._url.parse('updateAgentInstalled')).pipe(
+            catchError(err => { return this._http.handleError(err); }))
             .subscribe(event => {
                 if (event._body)
                     this.isUpdateAgentInstalled = JSON.parse(event._body);
@@ -66,8 +68,8 @@ export class UpdaterService {
 
     getUpdateInfo(): void {
         if (this.isUpdateAgentInstalled) {
-            this._http.get(this._url.parse('updateDWH'))
-                .catch(err => { return this._http.handleError(err); })
+            this._http.get(this._url.parse('updateDWH')).pipe(
+                catchError(err => { return this._http.handleError(err); }))
                 .subscribe(event => {
                     if (event._body) {
                         let json_info = JSON.parse(event._body);
@@ -82,8 +84,8 @@ export class UpdaterService {
 
     getUpdateLog(): void {
         if (this.isUpdateAgentInstalled) {
-            this._http.get(this._url.parse('getUpdateLog'))
-                .catch(err => { return this._http.handleError(err); })
+            this._http.get(this._url.parse('getUpdateLog')).pipe(
+                catchError(err => { return this._http.handleError(err); }))
                 .subscribe(event => {
                     if (event._body)
                         this.log_update = event._body;
@@ -95,8 +97,8 @@ export class UpdaterService {
 
     checkUpdateSuccess(): void {
         if (this.isUpdateAgentInstalled) {
-            this._http.get(this._url.parse('checkUpdateSuccess'))
-                .catch(err => { return this._http.handleError(err); })
+            this._http.get(this._url.parse('checkUpdateSuccess')).pipe(
+                catchError(err => { return this._http.handleError(err); }))
                 .subscribe(event => {
                     if (event._body)
                         this.wasUpdateSuccessful = JSON.parse(event._body);
@@ -108,8 +110,8 @@ export class UpdaterService {
 
     executeUpdate(): void {
         if (this.checkPermission() && this.isUpdateAgentInstalled) {
-            this._http.post(this._url.parse('updateDWH'), null)
-                .catch(err => { return this._http.handleError(err); })
+            this._http.post(this._url.parse('updateDWH'), null).pipe(
+                catchError(err => { return this._http.handleError(err); }))
                 .subscribe(event => {
                     this.setCookie('AKTIN.showUpdateSummary', 'true');
                     window.location.href = "/aktin/admin/plain/update.html";
@@ -122,8 +124,8 @@ export class UpdaterService {
 
     reloadAptPackages(): void {
         if (this.checkPermission() && this.isUpdateAgentInstalled) {
-            this._http.post(this._url.parse('reloadAptPackages'), null)
-                .catch(err => { return this._http.handleError(err); })
+            this._http.post(this._url.parse('reloadAptPackages'), null).pipe(
+                catchError(err => { return this._http.handleError(err); }))
                 .subscribe(event => {
                     this.isCheckingForUpdates = true;
                     setTimeout(() => { this.isCheckingForUpdates = false; }, 15000);

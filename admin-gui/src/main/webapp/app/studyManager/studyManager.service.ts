@@ -1,9 +1,11 @@
+
+import {catchError, map} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { Response, ResponseContentType, Http, Headers, RequestOptions } from '@angular/http';
-import { Observable } from 'rxjs/Observable';
+import { Response, ResponseContentType, HttpClient, Headers, RequestOptions } from '@angular/http';
+import { Observable } from 'rxjs';
 import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/map';
+
+
 
 import { Entry, Study, Participation } from './entry'
 import { Permission } from './../users/index';
@@ -44,8 +46,8 @@ export class StudyManagerService {
      * @returns Observable of the preferences
      */
     getPreferences() {
-        return this._http.get(this._urls.parse('studyPrefs'))
-            .map(res => { return JSON.parse(res.text()); });
+        return this._http.get(this._urls.parse('studyPrefs')).pipe(
+            map(res => { return JSON.parse(res.text()); }));
     }
 
     /**
@@ -53,16 +55,16 @@ export class StudyManagerService {
      * @returns Observable of Study
      */
     getStudies(): Observable<Study[]> {
-        return this._http.get(this._urls.parse('studies'))
-            .map(resp => {
+        return this._http.get(this._urls.parse('studies')).pipe(
+            map(resp => {
                 let result: Study[] = [];
                 let studies = JSON.parse(resp.text());
                 studies.forEach(function(s: any) {
                     result.push(new Study(s));
                 });
                 return result;
-            })
-            .catch(err => { return this._http.handleError(err); });
+            }),
+            catchError(err => { return this._http.handleError(err); }),);
     }
 
     /**
@@ -71,8 +73,8 @@ export class StudyManagerService {
      * @returns Observable of Entry
      */
     getEntries(studyId: string): Observable<Entry[]> {
-        return this._http.get(this._urls.parse('entries', { studyId: studyId }))
-            .map(resp => {
+        return this._http.get(this._urls.parse('entries', { studyId: studyId })).pipe(
+            map(resp => {
                 let result: Entry[] = [];
                 let entries = JSON.parse(resp.text());
                 entries.forEach(function(e: any) {
@@ -82,8 +84,8 @@ export class StudyManagerService {
                     return b.timestamp - a.timestamp;
                 });
                 return result;
-            })
-            .catch(err => { return this._http.handleError(err); });
+            }),
+            catchError(err => { return this._http.handleError(err); }),);
     }
 
     /**
@@ -102,8 +104,8 @@ export class StudyManagerService {
         ext = encodeURIComponent(ext);
         return this._http.post(this._urls.parse('entry', { studyId: id, reference: ref, root: root, extension: ext }),
                 { 'opt': opt, 'sic': sic, 'comment': comment },
-                this._http.generateHeaderOptions('Content-Type', 'application/json'))
-            .catch(err => { return this._http.handleError(err); });
+                this._http.generateHeaderOptions('Content-Type', 'application/json')).pipe(
+            catchError(err => { return this._http.handleError(err); }));
     }
 
     /**
@@ -117,8 +119,8 @@ export class StudyManagerService {
     deleteEntry(id: string, ref: string, root: string, ext: string) {
         root = encodeURIComponent(root);
         ext = encodeURIComponent(ext);
-        return this._http.delete(this._urls.parse('entry', { studyId: id, reference: ref, root: root, extension: ext }))
-            .catch(err => { return this._http.handleError(err); });
+        return this._http.delete(this._urls.parse('entry', { studyId: id, reference: ref, root: root, extension: ext })).pipe(
+            catchError(err => { return this._http.handleError(err); }));
     }
 
     redirect2Home() {

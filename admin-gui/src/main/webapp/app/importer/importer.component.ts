@@ -1,8 +1,8 @@
 import { Component, ViewChild, forwardRef, ElementRef } from '@angular/core';
 import { Subscription } from 'rxjs';
-import 'rxjs/add/operator/takeUntil';
+
 import 'rxjs/observable/of'
-import 'rxjs/operator/delay';
+
 
 import { PopUpMessageComponent } from './../helpers/popup-message.component';
 

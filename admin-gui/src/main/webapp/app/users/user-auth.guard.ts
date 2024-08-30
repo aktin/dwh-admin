@@ -5,7 +5,7 @@
  */
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import _ = require('underscore');
 
 import { AuthService } from './auth.service';

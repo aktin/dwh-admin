@@ -1,5 +1,7 @@
+
+import {catchError} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 import { Permission } from './../users/index';
 import { AuthService } from './../users/auth.service';
@@ -44,8 +46,8 @@ export class ImporterService {
      * @returns list with uploaded file metadata
      */
     getUploadedFiles(): Observable<any> {
-        return this._http.get(this._urls.parse('uploadFiles'))
-            .catch(err => { return this._http.handleError(err); });
+        return this._http.get(this._urls.parse('uploadFiles')).pipe(
+            catchError(err => { return this._http.handleError(err); }));
     }
 
     /**
@@ -54,8 +56,8 @@ export class ImporterService {
      * @returns requested file metadata
      */
     getUploadedFile(uuid: string): Observable<any> {
-        return this._http.get(this._urls.parse('uploadFile', { uuid: uuid }))
-            .catch(err => { return this._http.handleError(err); });
+        return this._http.get(this._urls.parse('uploadFile', { uuid: uuid })).pipe(
+            catchError(err => { return this._http.handleError(err); }));
     }
 
     /**
@@ -66,8 +68,8 @@ export class ImporterService {
      * @returns 201
      */
     uploadFile(file: File, name_file: string, id_script: string): Observable<any> {
-        return this._http.post(this._urls.parse('uploadFiles'), file, { params: { scriptId: id_script, filename: name_file } })
-            .catch(err => { return this._http.handleError(err); });
+        return this._http.post(this._urls.parse('uploadFiles'), file, { params: { scriptId: id_script, filename: name_file } }).pipe(
+            catchError(err => { return this._http.handleError(err); }));
     }
 
     /**
@@ -76,8 +78,8 @@ export class ImporterService {
      * @returns 200
      */
     deleteFile(uuid: string): Observable<any> {
-        return this._http.delete(this._urls.parse('uploadFile', { uuid: uuid }))
-            .catch(err => { return this._http.handleError(err); });
+        return this._http.delete(this._urls.parse('uploadFile', { uuid: uuid })).pipe(
+            catchError(err => { return this._http.handleError(err); }));
     }
 
     /**
@@ -86,8 +88,8 @@ export class ImporterService {
      * @returns list with script logs (stdError and stdOutput)
      */
     getScriptLogs(uuid: string): Observable<any> {
-        return this._http.get(this._urls.parse('scriptLogs', { uuid: uuid }))
-            .catch(err => { return this._http.handleError(err); });
+        return this._http.get(this._urls.parse('scriptLogs', { uuid: uuid })).pipe(
+            catchError(err => { return this._http.handleError(err); }));
     }
 
     /**
@@ -95,8 +97,8 @@ export class ImporterService {
      * @returns list with uploaded scripts metadata
      */
     getImportScripts(): Observable<any> {
-        return this._http.get(this._urls.parse('importScripts'))
-            .catch(err => { return this._http.handleError(err); });
+        return this._http.get(this._urls.parse('importScripts')).pipe(
+            catchError(err => { return this._http.handleError(err); }));
     }
 
     /**
@@ -105,8 +107,8 @@ export class ImporterService {
      * @returns 202
      */
     verifyFile(uuid: string): Observable<any> {
-        return this._http.post(this._urls.parse('verifyFile', { uuid: uuid }), "")
-            .catch(err => { return this._http.handleError(err); });
+        return this._http.post(this._urls.parse('verifyFile', { uuid: uuid }), "").pipe(
+            catchError(err => { return this._http.handleError(err); }));
     }
 
     /**
@@ -115,8 +117,8 @@ export class ImporterService {
      * @returns 202
      */
     importFile(uuid: string): Observable<any> {
-        return this._http.post(this._urls.parse('importFile', { uuid: uuid }), "")
-            .catch(err => { return this._http.handleError(err); });
+        return this._http.post(this._urls.parse('importFile', { uuid: uuid }), "").pipe(
+            catchError(err => { return this._http.handleError(err); }));
     }
 
     /**
@@ -125,7 +127,7 @@ export class ImporterService {
      * @returns 202
      */
     cancelProcess(uuid: string): Observable<any> {
-        return this._http.post(this._urls.parse('cancelProcess', { uuid: uuid }), "")
-            .catch(err => { return this._http.handleError(err); });
+        return this._http.post(this._urls.parse('cancelProcess', { uuid: uuid }), "").pipe(
+            catchError(err => { return this._http.handleError(err); }));
     }
 }

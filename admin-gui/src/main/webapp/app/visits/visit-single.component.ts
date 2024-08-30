@@ -1,3 +1,5 @@
+
+import {map} from 'rxjs/operators';
 /**
  * Created by Xu on 15.05.2017.
  */
@@ -20,12 +22,12 @@ export class VisitSingleComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this._route.params
-            .map((params: Params) => {
+        this._route.params.pipe(
+            map((params: Params) => {
                 this.patId = params['patId'];
                 this.root = params['root'];
                 return this._visitService.getVisit(params['root'], params['patId']);
-            }).subscribe(
+            })).subscribe(
                 visit => {
                     this.visitData = visit;
                 }

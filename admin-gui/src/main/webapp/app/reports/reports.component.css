@@ -43,6 +43,6 @@
     display: block;
 }
 
-.pagination /deep/ .ngx-pagination {
+.pagination ::ng-deep .ngx-pagination {
     text-align: center;
   }

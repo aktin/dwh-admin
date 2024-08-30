@@ -1,3 +1,5 @@
+
+import {catchError} from 'rxjs/operators';
 /**
  * Created by Xu on 09.05.2017.
  *
@@ -5,10 +7,10 @@
  */
 import { Injectable }   from '@angular/core';
 import { Response }     from '@angular/http';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/map';
+
+
 
 import _ = require('underscore');
 
@@ -111,7 +113,7 @@ export class ReportService {
     }
 
     newReportMonthly (): void {
-        this._http.post(this._urls.parse('newMonthlyReport'), {}).catch(err => {return this._http.handleError(err); })
+        this._http.post(this._urls.parse('newMonthlyReport'), {}).pipe(catchError(err => {return this._http.handleError(err); }))
             .subscribe();
     }
 
@@ -121,7 +123,7 @@ export class ReportService {
             this._urls.parse('newReport', {templateId: template}),
             {'start': fromDate.toISOString(), 'end': toDate.toISOString()},
             this._http.generateHeaderOptions('Content-Type', 'application/json')
-        ).catch(err => {return this._http.handleError(err); })
+        ).pipe(catchError(err => {return this._http.handleError(err); }))
             .subscribe();
     }
 
@@ -140,7 +142,7 @@ export class ReportService {
     }
 
     deleteReportFile(id: number): Observable<any> {
-        return this._http.delete(this._urls.parse('deleteReport', { id: id }))
-            .catch(err => { return this._http.handleError(err); });
+        return this._http.delete(this._urls.parse('deleteReport', { id: id })).pipe(
+            catchError(err => { return this._http.handleError(err); }));
     }
 }

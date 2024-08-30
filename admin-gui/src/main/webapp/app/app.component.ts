@@ -1,3 +1,5 @@
+
+import {mergeMap, map, filter} from 'rxjs/operators';
 /**
  * Created by Xu on 06.04.2017.
  *
@@ -6,8 +8,8 @@
 import { Component, OnInit, ViewChild, forwardRef } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/mergeMap';
+
+
 import _ = require('underscore');
 
 import { UpdaterService } from './updater/updater.service';
@@ -60,17 +62,17 @@ export class AppComponent implements OnInit {
                 context: '.app',
             });
 
-        this._router.events
-            .filter(event => event instanceof NavigationEnd)
-            .map(() => this._route)
-            .map(route => {
+        this._router.events.pipe(
+            filter(event => event instanceof NavigationEnd),
+            map(() => this._route),
+            map(route => {
                 while (route.firstChild) {
                     route = route.firstChild;
                 }
                 return route;
-            })
-            .filter(route => route.outlet === 'primary')
-            .mergeMap(route => route.data)
+            }),
+            filter(route => route.outlet === 'primary'),
+            mergeMap(route => route.data),)
             .subscribe((event) => {
                 let moreTitle = title;
                 if (event['name']) {

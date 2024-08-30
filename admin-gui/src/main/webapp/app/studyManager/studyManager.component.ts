@@ -1,4 +1,6 @@
 
+import {map} from 'rxjs/operators';
+
 import { Component, Input, ViewChild, forwardRef, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
@@ -108,15 +110,15 @@ export class StudyManagerComponent {
     setEntries(filtered: boolean) {
         this.filterActive = filtered;
         let sm = this;
-        return this._managerService.getEntries(this.filterdata.study)
-            .map(res => {
+        return this._managerService.getEntries(this.filterdata.study).pipe(
+            map(res => {
                 this.p = 1;
                 this.entries = res;
                 this.filteredEntries = this.entries;
                 if (this.filterActive) {
                     this.filterEntries();
                 }
-            });
+            }));
     }
 
     resetFilter() {

@@ -31,12 +31,12 @@
     font-weight: bold;
 }
 
-.pagination /deep/ .ngx-pagination {
+.pagination ::ng-deep .ngx-pagination {
     text-align: center;
     margin: 0;
     padding: 0;
 }
 
-.pagination /deep/ .ngx-pagination .current {
+.pagination ::ng-deep .ngx-pagination .current {
     background-color: rgba(33, 186, 69, 1);
 }
