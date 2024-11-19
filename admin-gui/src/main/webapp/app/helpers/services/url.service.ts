@@ -67,7 +67,6 @@ export class UrlService {
         uploadFile: 'file/@uuid@',
         importScripts: 'script',
         scriptLogs: 'file/@uuid@/log',
-        verifyFile: 'script/@uuid@/verify',
         importFile: 'script/@uuid@/import',
         cancelProcess: 'script/@uuid@/cancel',
 

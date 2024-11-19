@@ -53,8 +53,8 @@ export class ReportSingleViewComponent  {
     }
 
     deleteReport() {
-        let buttons = [['Löschen', 'red'], ['Abbrechen', 'orange']];
-        this.popUpDeleteConfirm.setConfirm(buttons);
+        let button = ['icon trash', 'Löschen', 'red'];
+        this.popUpDeleteConfirm.setConfirm(button);
         this.popUpDeleteConfirm.onTop = true;
         this.popUpDeleteConfirm.setData(true, 'Bericht löschen',
         'Wollen Sie diesen Bericht wirklich unwiderruflich löschen?',

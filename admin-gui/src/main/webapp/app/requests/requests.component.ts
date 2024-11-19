@@ -57,7 +57,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
             [ 'Neue Anfragen', 'new', null ],
             [ 'Einzelanfragen', 'single', null ],
             [ 'Serien-Anfragen', 'recurring', null ],
-            [ 'Gelöschte Anfragen', 'hidden',  null ],
+            [ 'Archivierte Anfragen', 'hidden',  null ],
             [ 'Laufende Anfragen' , null,
                 [
                 [ 'Alle laufenden Anfragen', 'inProgress' ],
@@ -95,6 +95,14 @@ export class RequestsComponent implements OnInit, OnDestroy {
 
     get requests(): LocalRequest[] {
         return this.requestsData;
+    }
+
+    /**
+    * Returns the position of the request inside the belonging series (ordered by reference date).
+    * @returns position of request in the belonging series
+    */
+    getNumRequest(request: LocalRequest): number {
+        return this.queryDetails[request.queryId].order.indexOf(request.requestId) + 1;
     }
 
     /**

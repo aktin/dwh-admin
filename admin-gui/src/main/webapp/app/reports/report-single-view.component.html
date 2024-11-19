@@ -11,18 +11,15 @@
     </div>
 
     <div class="actions">
-        <a *ngIf="!single" class="ui circular basic grey icon button" routerLink="/report/{{report.id}}" title="Detailansicht des Berichts">
-            <i class="eye icon"></i>
-        </a>
-        <a *ngIf="report.isSuccess() && single" class="ui circular basic green icon button" [ngClass]="{'disabled': downloadLoading }" (click)="downloadResult()" title="Diesen Bericht herunterladen">
-            <i class="download icon"></i>
-        </a>
-        <button *ngIf="single" class="ui circular basic red icon button" (click)="deleteReport()" title="Bericht löschen">
-            <i class="trash alternate outline icon"></i>
-        </button>
-        <a *ngIf="single" class="ui circular basic green icon button" routerLink="/report" title="Zurück zum Berichtsübersicht">
-            <i class="arrow left icon"></i>
-        </a>
+        <a *ngIf="!single" routerLink="/report/{{report.id}}" title="Detailansicht des Berichts">Detailansicht des Berichts</a>
+        <div *ngIf="single" class="ui vertical animated button red" (click)="deleteReport()">
+            <div class="hidden content">Bericht löschen</div>
+            <div class="visible content"><i class="trash icon button-delete-report"></i></div>
+        </div>
+        <div *ngIf="single" class="ui vertical animated basic button" routerLink="/report" title="Zurück zur Berichtsübersicht">
+            <div class="hidden content">Zurück</div>
+            <div class="visible content"><i class="left arrow icon"></i></div>
+        </div>
     </div>
 
     <div class="ui content grid">

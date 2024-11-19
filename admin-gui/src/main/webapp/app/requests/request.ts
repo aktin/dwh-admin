@@ -38,7 +38,7 @@ export interface Request {
     id: number,
     reference: Date,
     published: Date,
-    scheduled: Date,
+    scheduled: any,
     deadline: Date,
     closed: Date,
     canceled: Date,
@@ -81,6 +81,9 @@ export class LocalRequest {
         rawRequest['reference'] = this.parseDate(rawRequest['reference']);
         rawRequest['published']     = this.parseDate(rawRequest['published']);
         rawRequest['scheduled']     = this.parseDate(rawRequest['scheduled']);
+        if (rawRequest['scheduled'] <= new Date()) {
+            rawRequest['scheduled'] = 'Sofort';
+        }
         rawRequest['deadline']      = this.parseDate(rawRequest['deadline']);
         rawRequest['closed']        = this.parseDate(rawRequest['closed']);
         rawRequest['canceled']      = this.parseDate(rawRequest['canceled']);
@@ -113,7 +116,7 @@ export class LocalRequest {
     }
 
     public isFinished (): boolean {
-        return this.failed() || this.status === RequestStatus.Submitted || this.status === RequestStatus.Expired;
+        return this.failed() || this.rejected() || this.status === RequestStatus.Submitted || this.status === RequestStatus.Expired;
     }
 
     public hasResultFile (): boolean {
@@ -121,7 +124,11 @@ export class LocalRequest {
     }
 
     public failed (): boolean {
-        return ([RequestStatus.Rejected, RequestStatus.Failed].indexOf(this.status) >= 0);
+        return this.status === RequestStatus.Failed;
+    }
+
+    public rejected (): boolean {
+        return this.status === RequestStatus.Rejected;
     }
 
     public isRecurring(): boolean {

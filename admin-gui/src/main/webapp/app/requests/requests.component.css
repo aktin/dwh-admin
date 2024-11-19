@@ -1,16 +1,28 @@
 .request-single-view-header {
     float: left;
-    cursor: pointer;
 }
 
-.request-status-bar-overview {
-    cursor: pointer;
+.status-bar-request {
+    padding-top: 15px;
+    padding-bottom: 15px;
 }
 
-.request-status-bar-active-request {
-    border: 2px solid rgb(253, 221, 132);
-    border-radius: 20px;
-    width: 100%;
+.status-bar-active-request {
+    border: 4px solid rgb(253, 221, 132);
+    border-radius: 16px;
+    margin-left: -10px;
+    margin-right: -10px;
+    margin-top: 20px;
+}
+
+.icon-archive-request {
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.icons-allow-deny-request {
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .container-query-requests {
@@ -34,12 +46,13 @@
     margin-left: 15px;
 }
 .request-result-button-icon {
-    padding-top: 5px;
+    margin-left: 25px;
+    margin-right: 25px;
 }
 
 .button-query-requests {
-    margin: 20px auto 5px auto;
-    width: 250px;
+    margin: auto;
+    width: 300px;
 }
 
 .button-delete-rule {

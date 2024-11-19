@@ -1,43 +1,18 @@
-<div
-        class="ui basic segment request-single-view grid container"
-        id="request-list-{{request.requestId}}"
-        *ngIf="request"
->
-    <div class="compact row">
-        <div class="twelve wide column">
-            <h1 class="ui header">
-                {{request.query.query.title}}
-                <!--<div class="ui red circular label" *ngIf="request.status < 2">neu</div>-->
-            </h1>
+<div class="ui basic segment request-single-view grid container" id="request-list-{{request.requestId}}" *ngIf="request">
+    <div class="ui equal width row">
+        <div class="left floated left aligned column">
+            <div *ngIf="hidden then archived else unarchived"></div>
+            <ng-template #archived><h1 class="ui header">{{request.query.query.title}} [ARCHIVIERT]</h1></ng-template>
+            <ng-template #unarchived><h1 class="ui header">{{request.query.query.title}}</h1></ng-template>
         </div>
-        <div class="actions four wide right floated right aligned column">
-            <a class="ui circular red icon button"
-               [ngClass]="{'basic': !hidden, 'disabled': hiddenLoading }"
-               (click)="toggleHiddenMarker()"
-               title="{{hideMessage}}">
-                <i class="trash alternate outline icon" [class.empty]="!hidden"></i>
-            </a>
-            <a class="ui circular basic green icon button" routerLink="/request" title="Zurück zum Berichtsübersicht">
-                <i class="arrow left icon"></i>
-            </a>
+        <div class="two wide right floated right aligned column">           
+            <div class="ui basic button" routerLink="/request" title="Zurück zur Anfragenübersicht" style="margin: 0 -13px;">
+                <i class="left arrow icon" style="margin: 0 -2px;"></i>
+            </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row" style="padding-bottom: 25px;">
         <request-status-bar [request]="request" [queryDetails]="getQueryDetails()" [single]="true"></request-status-bar>
-    </div>
-    <div class="row ui segment" *ngIf="request.hasResultFile()">
-        <div class="twelve wide column middle aligned">
-            Klicken Sie rechts, um die Abfrageergebnisse herunterzuladen und anzusehen. Im Falle einer Freigabe werden die Abfrageergebnisse exakt in dieser Form übertragen.
-        </div>
-        <div class="four wide column middle aligned">
-            <a class="ui basic green icon button"
-               [ngClass]="{'disabled': downloadLoading }"
-               (click)="downloadResult()"
-               title="Die Ergebnisdatei herunterladen."><i class="download icon request-result-button-icon"></i>
-                <div class="request-result-button-text">Ergebnisse<br/>
-                herunterladen</div>
-            </a>
-        </div>
     </div>
     <div class="row ui warning message" *ngIf="isAuthorized('WRITE_REQUESTS') && request.needAuthorization()">
         <div class="two wide column middle aligned">
@@ -51,21 +26,58 @@
             Die Ergebnisse wurden noch nicht zur Übermittlung freigegeben. Bitte wählen Sie eine Aktion.
         </div>
         <div class="actions right aligned middle aligned six wide column">
-            <div class="ui green animated vertical button request-allow-button"
-                 (click)="authorize(true)"
-            >
-                <div class="visible content">Freigabe</div>
-                <div class="hidden content">
-                    <i class="icon checkmark"></i>
+            <div class="ui green animated vertical button" (click)="authorize(true)" title="Diese Anfrage freigeben">
+                <div class="hidden content">Freigeben</div>
+                <div class="visible content">
+                    <i class="icon checkmark icons-allow-deny-request"></i>
                 </div>
             </div>
-            <div class="ui red animated vertical button request-deny-button"
-                 (click)="authorize(false)"
-            >
-                <div class="visible content">Ablehnen</div>
-                <div class="hidden content">
-                    <i class="icon remove"></i>
+            <div class="medium ui red animated vertical button" (click)="authorize(false)" title="Diese Anfrage ablehnen">
+                <div class="hidden content">Ablehnen</div>
+                <div class="visible content">
+                    <i class="icon remove icons-allow-deny-request"></i>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="row ui error message" *ngIf="request.failed()">
+        <div class="two wide column middle aligned">
+            <i class="huge red warning sign icon"></i>
+        </div>
+        <div class="twelve wide column larger middle aligned">
+            Bei der Durchführung oder Übertragung der Datenanfrage ist ein Fehler aufgetreten. Bitte kontaktieren Sie das <a href="mailto:it-support@aktin.org">AKTIN IT-Team</a>.
+        </div>
+    </div>
+    <div class="row ui segment" *ngIf="request.hasResultFile()">
+        <div class="eleven wide column middle aligned center">
+            Klicken Sie rechts, um die Abfrageergebnisse herunterzuladen und anzusehen. Die Abfrageergebnisse exakt in dieser Form an den AKTIN Broker übertragen.
+        </div>
+        <div class="five wide column">
+            <div class="ui right floated left labeled button" [ngClass]="{'disabled': downloadLoading }" (click)="downloadResult()" title="Die Ergebnisse der Abfrage herunterladen">
+                <a class="ui green basic label">
+                    Ergebnisse herunterladen
+                </a>
+                <div class="ui green icon button">
+                    <i class="download icon" style="padding-top:4px"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row ui segment" *ngIf="request.isFinished()">
+        <div class="eleven wide column middle aligned">
+            Die Abfrage ist abgeschlossen. Sie können bei Bedarf diese Anfrage nun archivieren.
+        </div>
+        <div class="five wide column">
+            <div class="ui right floated left labeled button" (click)="toggleHiddenMarker()" title="{{hideMessage}}">
+                <div *ngIf="hidden then archived else unarchived"></div>
+                <ng-template #archived>
+                    <a class="ui green basic label">Anfrage wiederherstellen</a>
+                    <div class="ui green icon button"><i class="undo icon" style="padding-top:5px"></i></div>
+                </ng-template>
+                <ng-template #unarchived>
+                    <a class="ui green basic label">Anfrage archivieren</a>
+                    <div class="ui green icon button"><i class="archive icon"></i></div>
+                </ng-template>
             </div>
         </div>
     </div>
@@ -103,9 +115,9 @@
             <div class="ui meta five wide column" *ngIf="requestUnmapped.query.scheduled">
                 Datum der (geplanten) Ausführung:
             </div>
-            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.scheduled">
-                {{requestUnmapped.query.scheduled | date: 'mediumDate'}}
-            </div>
+            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.scheduled != 'Sofort'; then later else immediate"></div>
+            <ng-template #later >{{ requestUnmapped.query.scheduled | date: 'mediumDate' }}</ng-template>
+            <ng-template #immediate >{{ requestUnmapped.query.scheduled }}</ng-template>
             <div class="ui meta five wide column" *ngIf="requestUnmapped.query.query.schedule && requestUnmapped.query.query.schedule.duration && !requestUnmapped.isRecurring()">
                 Erhebungszeitraum der Daten:
             </div>
@@ -147,52 +159,73 @@
             <div class="ui meta five wide column" *ngIf="requestUnmapped.query.query.schedule && requestUnmapped.query.query.schedule.interval">
                 Abfrage-Intervall:
             </div>
-            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.query.schedule && requestUnmapped.query.query.schedule.interval">
+            <div class="ui meta three wide column" *ngIf="requestUnmapped.query.query.schedule && requestUnmapped.query.query.schedule.interval" style="margin-left: -14px;">
                 {{requestUnmapped.query.query.schedule.interval | durationQuery }}
             </div>
         </div>
-        <div class="row" *ngIf="queryRule">
-            <div class="ui meta eight wide column">
-                Für die Serie liegt folgende Freigabe-Regel vor:<br>
-                (erstellt von {{ queryRule.user }} am {{ queryRule.creationDate | date: 'd. MMM y, HH:mm a' }}) <br>
-                <button class="ui button button-delete-rule" (click)="deleteQueryRule()">Regel entfernen</button>
+        <div class="row" *ngIf="requestUnmapped.isRecurring()">
+            <div class="ui sixteen wide column divider"></div>
+        </div>
+
+        <div class="row" *ngIf="requestUnmapped.isRecurring()">
+            <div class="ui meta grid" style="padding-left: 25px;">
+                <div class="fifteen wide column centered" *ngIf="queryRule then rule else norule"></div>
+                <ng-template #rule>Für diese Serie liegt folgende Freigabe-Regel vor (erstellt von {{ queryRule.user }} am {{ queryRule.creationDate | date: 'd. MMM y, HH:mm a' }}):</ng-template>
+                <ng-template #norule>Für diese Serie liegt keine Freigabe-Regel vor.</ng-template>
+                <div class="ten wide column centered" *ngIf="queryRule" >
+                    <span *ngIf="queryRule.action === 'REJECT'">Alle Anfragen dieser Serie werden abgelehnt.</span>
+                    <span *ngIf="queryRule.action === 'ACCEPT_SUBMIT'">Alle Anfragen dieser Serie werden freigegeben. Die Ergebnisse werden direkt übertragen.</span>
+                    <span *ngIf="queryRule.action === 'ACCEPT_EXECUTE'">Alle Anfragen dieser Serie werden freigegeben. Die Übermittlung der Ergebnisse muss erneut bestätigt werden.</span>
+                </div>   
+                <div class="four wide right aligned column centered" *ngIf="queryRule" >
+                    <button class="ui button button-delete-rule" (click)="deleteQueryRule()">Regel entfernen</button>
+                </div>   
             </div>
-            <div class="ui meta eight wide column " *ngIf="queryRule">
-                <span *ngIf="queryRule.action === 'REJECT'">Alle Anfragen dieser Serie ablehnen.</span>
-                <div *ngIf="queryRule.action === 'ACCEPT_EXECUTE' || queryRule.action === 'ACCEPT_SUBMIT'">
-                    Alle Anfragen dieser Serie freigeben. <br>
-                    <!--Ergebnisüberprüfung vor der Übermittlung: <br>-->
-                    <span *ngIf="queryRule.action === 'ACCEPT_SUBMIT'">Nach der Berechnung werden die Ergebnisse direkt übertragen.</span>
-                    <span *ngIf="queryRule.action === 'ACCEPT_EXECUTE'">Vor der Übermittlung der Ergebnisse wird erneut nachgefragt.</span>
+        </div>
+
+        <div class="row" *ngIf="requestUnmapped.isRecurring()">
+            <div class="ui sixteen wide column divider"></div>
+        </div>
+        <div class="row" *ngIf="request.isRecurring()">
+            <div class="ui two column centered grid">
+                <div class="one column row">
+                    <div class="ui button right labeled icon compact button button-query-requests" (click)="showQuery = !showQuery">
+                        {{showQuery? 'Alle Anfragen der Serie ausblenden':'Alle Anfragen der Serie anzeigen'}}
+                        <i class="icon" [ngClass]="showQuery?'hide':'eye'"></i>
+                    </div>
+                </div>
+                <div *ngIf="showQuery"  class="one column centered row">
+                    <pagination-controls class="pagination"
+                        (pageChange)="p = $event"
+                        autoHide="true"
+                        previousLabel="Vorherige Seite"
+                        nextLabel="Nächste Seite">
+                    </pagination-controls>
+                    <div *ngFor="let recurr of recurrRequests | paginate: { itemsPerPage: 5, currentPage: p }">
+                        <div class="ui grid status-bar-request" [ngClass]="recurr.requestId === request.requestId?'status-bar-active-request':''">
+                            <div class="two column row">
+                                <div class="left floated column">
+                                <h4 *ngIf="recurr.query.scheduled == 'Sofort'">Anfrage {{ getNumRequest(recurr) }}: Sofortige Ausführung</h4>
+                                <h4 *ngIf="recurr.query.scheduled != 'Sofort'">Anfrage {{ getNumRequest(recurr) }}: Ausführung am {{ request.query.scheduled | date: 'mediumDate' }}</h4>
+                                </div>
+                            </div>
+                            <div class="centered row">
+                                <div class="column" style="z-index: 100;">
+                                    <request-status-bar *ngIf="recurr.requestId === request.requestId" [request]="recurr" [queryDetails]="getQueryDetails()"></request-status-bar>
+                                    <request-status-bar *ngIf="recurr.requestId !== request.requestId" [request]="recurr" [queryDetails]="getQueryDetails()" [routerLink]="['/request', recurr.requestId]"></request-status-bar>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <button class="ui button button-query-requests" (click)="showQuery = !showQuery" *ngIf="request.isRecurring()">
-                Alle Anfragen der Serie
-                <span *ngIf="!showQuery">anzeigen</span>
-                <span *ngIf="showQuery">ausblenden</span>
-        </button>
     </div>
-    <div class="container-query-requests" *ngIf="showQuery">
-        <pagination-controls class="pagination"
-            (pageChange)="p = $event"
-            autoHide="true"
-            previousLabel="Vorherige Seite"
-            nextLabel="Nächste Seite">
-        </pagination-controls>
-        <div *ngFor="let recurr of recurrRequests | paginate: { itemsPerPage: 6, currentPage: p }">
-            <div class="request-status-bar-active-request" *ngIf="recurr.requestId === request.requestId">
-                <request-status-bar [request]="recurr" [queryDetails]="getQueryDetails()"></request-status-bar>
-            </div>
-            <div class="request-status-bar-overview" *ngIf="recurr.requestId !== request.requestId">
-                <request-status-bar [request]="recurr" [queryDetails]="getQueryDetails()" [routerLink]="['/request', recurr.requestId]"></request-status-bar>
-            </div>
-        </div>
-    </div>
-    <div class="row  ui segment">
+
+    <div class="row ui segment">
         <div class="sixteen wide column">
             <b>Beschreibung:</b> <br/>
-            <pre style="overflow-wrap: break-word;  white-space: pre-wrap; word-wrap: break-word;">{{request.query.query.description}}</pre>
+            <pre style="white-space: pre-wrap; word-wrap: break-word;">{{request.query.query.description}}</pre>
         </div>
     </div>
     <div class="row ui segment">
@@ -200,9 +233,7 @@
             Abfragedefinition:
         </div>
         <div class="eight wide column actions right floated right aligned">
-            <div class="ui basic right labeled icon compact button"
-                 (click)="hideSql = !hideSql;"
-            >
+            <div class="ui button right labeled icon compact button button-query-requests" (click)="hideSql = !hideSql;">
                 {{hideSql? 'Abfragesyntax einblenden':'Abfragesyntax ausblenden'}}
                 <i class="icon" [ngClass]="hideSql?'eye':'hide'"></i>
             </div>

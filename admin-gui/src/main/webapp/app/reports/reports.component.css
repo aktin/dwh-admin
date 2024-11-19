@@ -16,7 +16,6 @@
 
 .request-single-view-header {
     float: left;
-    cursor: pointer;
 }
 .report-single-view .actions {
     float: right;
@@ -46,3 +45,13 @@
 .pagination /deep/ .ngx-pagination {
     text-align: center;
   }
+
+.button-new-report {
+    margin-left: 53px;
+    margin-right: 53px;
+}
+
+.button-delete-report {
+    margin-left: 25px;
+    margin-right: 25px;
+}
