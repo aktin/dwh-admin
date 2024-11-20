@@ -71,10 +71,9 @@ export class UrlService {
         cancelProcess: 'script/@uuid@/cancel',
 
         // updateEndpoint
-        updateAgentInstalled: 'update/agent',
+        updateAgentInstalled: 'update/agent/installed',
         updateDWH: 'update',
         getUpdateLog: 'update/log',
-        checkUpdateSuccess: 'update/success',
         reloadAptPackages: 'update/agent/reload',
     };
 
