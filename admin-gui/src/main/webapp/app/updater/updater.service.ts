@@ -52,31 +52,22 @@ export class UpdaterService {
             });
     }
 
-    checkForNewUpdate(): void {
-        if (this.isUpdateAgentInstalled) {
-            this.getUpdateInfo();
-            setTimeout(() => {
-                if (this.version_candidate && this.version_installed)
-                    this.isNewUpdateAvailable = this.version_installed != this.version_candidate;
-                else
-                    this.isNewUpdateAvailable = false;
-            }, 1500);
-        }
-    }
-
-    getUpdateInfo(): void {
+    getUpdateStatus(): void {
         if (this.isUpdateAgentInstalled) {
             this._http.get(this._url.parse('updateDWH'))
-                .catch(err => { return this._http.handleError(err); })
-                .subscribe(event => {
-                    if (event._body) {
-                        let json_info = JSON.parse(event._body);
-                        this.version_installed = json_info['version.installed'];
-                        this.version_candidate = json_info['version.candidate'];
-                    }
-                }, (error: any) => {
-                    console.log(error);
-                });
+            .catch(err => this._http.handleError(err))
+            .subscribe(event => {
+                if (event._body) {
+                    console.log(event._body)
+                    let json_info = JSON.parse(event._body);
+                    this.installedVersion = json_info['installedVersion'];
+                    this.candidateVersion = json_info['candidateVersion'];
+                    this.wasUpdateSuccessful = json_info['success'];
+                    this.isNewUpdateAvailable = this.installedVersion !== this.candidateVersion;
+                }
+            }, error => {
+                console.error(error);
+            });
         }
     }
 
@@ -93,23 +84,14 @@ export class UpdaterService {
         }
     }
 
-    checkUpdateSuccess(): void {
-        if (this.isUpdateAgentInstalled) {
-            this._http.get(this._url.parse('checkUpdateSuccess'))
-                .catch(err => { return this._http.handleError(err); })
-                .subscribe(event => {
-                    if (event._body)
-                        this.wasUpdateSuccessful = JSON.parse(event._body);
-                }, (error: any) => {
-                    console.log(error);
-                });
-        }
-    }
-
     executeUpdate(): void {
         if (this.checkPermission() && this.isUpdateAgentInstalled) {
             this._http.post(this._url.parse('updateDWH'), null)
                 .catch(err => { return this._http.handleError(err); })
+                .finally(() => {
+                    this.getUpdateStatus();
+                    this.getUpdateLog();
+                })
                 .subscribe(event => {
                     this.setCookie('AKTIN.showUpdateSummary', 'true');
                     window.location.href = "/aktin/admin/plain/update.html";
@@ -124,6 +106,7 @@ export class UpdaterService {
         if (this.checkPermission() && this.isUpdateAgentInstalled) {
             this._http.post(this._url.parse('reloadAptPackages'), null)
             .catch(err => this._http.handleError(err))
+            .finally(() => this.getUpdateStatus())
             .subscribe(event => {
                 if (showFeedback) {
                     this.isCheckingForUpdates = true;
