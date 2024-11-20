@@ -26,15 +26,9 @@ export class UpdaterService {
         this.checkUpdateAgentInstallation();
         this.reloadAptPackages(false);
         setTimeout(() => {
+            this.getUpdateStatus();
             this.getUpdateLog();
-            this.checkUpdateSuccess();
-            this.checkForNewUpdate();
-            setInterval(() => {
-                this.getUpdateLog();
-                this.checkUpdateSuccess();
-                this.checkForNewUpdate();
-            }, 5000);
-        }, 1500);
+        }, 2000);
     }
 
     checkPermission(): boolean {
@@ -58,7 +52,6 @@ export class UpdaterService {
             .catch(err => this._http.handleError(err))
             .subscribe(event => {
                 if (event._body) {
-                    console.log(event._body)
                     let json_info = JSON.parse(event._body);
                     this.installedVersion = json_info['installedVersion'];
                     this.candidateVersion = json_info['candidateVersion'];
