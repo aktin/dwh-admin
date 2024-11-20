@@ -6,7 +6,11 @@ public enum UpdateServiceFileKey {
 
     CANDIDATE("version.candidate"),
 
-    SUCCESS("update.success");
+    LAST_CHECK("version.time"),
+
+    SUCCESS("update.success"),
+
+    LAST_UPDATE("update.time");
 
     private final String value;
 
@@ -14,6 +18,7 @@ public enum UpdateServiceFileKey {
         this.value = value;
     }
 
+    @Override
     public String toString() {
         return this.value;
     }
