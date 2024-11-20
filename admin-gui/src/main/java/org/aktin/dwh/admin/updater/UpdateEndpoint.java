@@ -11,7 +11,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.util.Properties;
 
 @Path("update")
 public class UpdateEndpoint {
@@ -22,7 +21,7 @@ public class UpdateEndpoint {
     @Context
     private SecurityContext security;
 
-    @Path("agent")
+    @Path("agent/installed")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public boolean isUpdateAgentInstalled() {
@@ -31,22 +30,21 @@ public class UpdateEndpoint {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Properties getDwhUpdateInfoContent() {
-        return updateManager.getDwhUpdateInfo();
+    public Response getUpdateStatus() {
+        UpdateStatus status = updateManager.getUpdateStatus();
+        return status != null ?
+            Response.ok(status).build() :
+            Response.status(Response.Status.NOT_FOUND).build();
     }
 
     @Path("log")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public String getDwhUpdateLog() {
-        return updateManager.getDwhUpdateLog();
-    }
-
-    @Path("success")
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public Boolean wasDwhUpdateSuccessful() {
-        return updateManager.wasDwhUpdateSuccessful();
+    public Response getUpdateLog() {
+        String log = updateManager.getUpdateLog();
+        return log != null ?
+            Response.ok(log).build() :
+            Response.status(Response.Status.NOT_FOUND).build();
     }
 
     @Path("agent/reload")
@@ -61,5 +59,4 @@ public class UpdateEndpoint {
     public Response executeDwhUpdate() {
         return updateManager.executeDwhUpdate();
     }
-
 }
