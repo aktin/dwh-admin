@@ -37,19 +37,26 @@ public class UpdateManager {
 
     public UpdateStatus getUpdateStatus() {
         UpdateStatus status = new UpdateStatus();
-        try {
-            Properties resultProps = readPropertiesFileFromPath(getResultPath());
-            Properties infoProps = readPropertiesFileFromPath(getInfoPath());
+        boolean hasData = false;
 
-            status.setSuccess(Boolean.parseBoolean(resultProps.getProperty(UpdateServiceFileKey.SUCCESS.toString())));
-            status.setLastUpdateTime(resultProps.getProperty(UpdateServiceFileKey.LAST_UPDATE.toString()));
-            status.setInstalledVersion(infoProps.getProperty(UpdateServiceFileKey.INSTALLED.toString()));
-            status.setCandidateVersion(infoProps.getProperty(UpdateServiceFileKey.CANDIDATE.toString()));
-            status.setLastCheckTime(infoProps.getProperty(UpdateServiceFileKey.LAST_CHECK.toString()));
+        try {
+            if (Files.exists(getResultPath())) {
+                Properties resultProps = readPropertiesFileFromPath(getResultPath());
+                status.setSuccess(Boolean.parseBoolean(resultProps.getProperty(UpdateServiceFileKey.SUCCESS.toString())));
+                status.setLastUpdateTime(resultProps.getProperty(UpdateServiceFileKey.LAST_UPDATE.toString()));
+                hasData = true;
+            }
+            if (Files.exists(getInfoPath())) {
+                Properties infoProps = readPropertiesFileFromPath(getInfoPath());
+                status.setInstalledVersion(infoProps.getProperty(UpdateServiceFileKey.INSTALLED.toString()));
+                status.setCandidateVersion(infoProps.getProperty(UpdateServiceFileKey.CANDIDATE.toString()));
+                status.setLastCheckTime(infoProps.getProperty(UpdateServiceFileKey.LAST_CHECK.toString()));
+                hasData = true;
+            }
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error reading update status", e);
+            LOGGER.log(Level.WARNING, "Error reading update status files", e);
         }
-        return status;
+        return hasData ? status : null;
     }
 
     private Properties readPropertiesFileFromPath(Path path) throws IOException {
@@ -76,7 +83,7 @@ public class UpdateManager {
             Path path = Paths.get(preferences.get(PreferenceKey.updateDataPath), "log");
             return Files.exists(path) ? String.join("\n", Files.readAllLines(path)) : null;
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Could not read update service log", e);
+            LOGGER.log(Level.WARNING, "Could not read update service log");
             return null;
         }
     }
