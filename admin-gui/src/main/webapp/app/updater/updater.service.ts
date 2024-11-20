@@ -25,7 +25,7 @@ export class UpdaterService {
         private _url: UrlService
     ) {
         this.checkUpdateAgentInstallation();
-        this.reloadAptPackagesInBackground();
+        this.reloadAptPackages(false);
         setTimeout(() => {
             this.getUpdateLog();
             this.checkUpdateSuccess();
@@ -121,29 +121,19 @@ export class UpdaterService {
         }
     }
 
-    reloadAptPackages(): void {
+    reloadAptPackages(showFeedback: boolean = true): void {
         if (this.checkPermission() && this.isUpdateAgentInstalled) {
             this._http.post(this._url.parse('reloadAptPackages'), null)
-                .catch(err => { return this._http.handleError(err); })
-                .subscribe(event => {
+            .catch(err => this._http.handleError(err))
+            .subscribe(event => {
+                if (showFeedback) {
                     this.isCheckingForUpdates = true;
                     setTimeout(() => { this.isCheckingForUpdates = false; }, 15000);
-                }, (error: any) => {
-                    console.log(error);
-                    this.showAptUpdateError = true;
-                });
-        }
-    }
-
-    reloadAptPackagesInBackground(): void {
-        if (this.checkPermission() && this.isUpdateAgentInstalled) {
-            this._http.post(this._url.parse('reloadAptPackages'), null)
-                .catch(err => { return this._http.handleError(err); })
-                .subscribe(event => {
-                }, (error: any) => {
-                    console.log(error);
-                    this.showAptUpdateError = true;
-                });
+                }
+            }, error => {
+                console.log(error);
+                this.showAptUpdateError = true;
+            });
         }
     }
 
