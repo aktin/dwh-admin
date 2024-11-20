@@ -7,13 +7,12 @@ import { UrlService, HttpInterceptorService } from '../helpers/index';
 export class UpdaterService {
 
     public isUpdateAgentInstalled: boolean = false;
-
-    public version_installed: string;
-    public version_candidate: string;
+    public installedVersion: string;
+    public candidateVersion: string;
 
     public isNewUpdateAvailable: boolean = false;
     public wasUpdateSuccessful: boolean = false;
-    public log_update: string;
+    public updateLog: string;
 
     public isCheckingForUpdates: boolean = false;
     public showAptUpdateError: boolean = false;
@@ -87,7 +86,7 @@ export class UpdaterService {
                 .catch(err => { return this._http.handleError(err); })
                 .subscribe(event => {
                     if (event._body)
-                        this.log_update = event._body;
+                        this.updateLog = event._body;
                 }, (error: any) => {
                     console.log(error);
                 });
