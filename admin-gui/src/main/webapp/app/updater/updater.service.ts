@@ -82,7 +82,7 @@ export class UpdaterService {
             this._http.post(this._url.parse('updateDWH'), null)
                 .catch(err => { return this._http.handleError(err); })
                 .finally(() => {
-                    this.getUpdateStatus();
+                    this.reloadAptPackages();
                     this.getUpdateLog();
                 })
                 .subscribe(event => {
@@ -113,7 +113,7 @@ export class UpdaterService {
     }
 
     setCookie(name: string, value: string) {
-        document.cookie = name + "=" + (value || "") + "; path=/";
+        document.cookie = name + "=" + (value || "") + "; path=/; SameSite=Lax;";
     }
 
     getCookie(name: string) {
@@ -127,6 +127,6 @@ export class UpdaterService {
     }
 
     deleteCookie(name: string) {
-        document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        document.cookie = name + '=; Path=/; SameSite=Lax; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     }
 }
