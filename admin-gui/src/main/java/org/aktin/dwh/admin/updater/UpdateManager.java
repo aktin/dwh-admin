@@ -14,7 +14,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.core.Response;
 import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
 
@@ -32,7 +31,8 @@ public class UpdateManager {
     private CompletableFuture<Boolean> currentUpdate;
 
     public boolean isUpdateAgentInstalled() {
-        return Files.exists(Paths.get(preferences.get(PreferenceKey.updateDataPath)));
+        Path updatePath = Paths.get(preferences.get(PreferenceKey.updateDataPath));
+        return Files.exists(updatePath);
     }
 
     public UpdateStatus getUpdateStatus() {
@@ -40,14 +40,16 @@ public class UpdateManager {
         boolean hasData = false;
 
         try {
-            if (Files.exists(getResultPath())) {
-                Properties resultProps = readPropertiesFileFromPath(getResultPath());
+            Path resultPath = getResultPath();
+            Path infoPath = getInfoPath();
+            if (Files.exists(resultPath)) {
+                Properties resultProps = readPropertiesFileFromPath(resultPath);
                 status.setSuccess(Boolean.parseBoolean(resultProps.getProperty(UpdateServiceFileKey.SUCCESS.toString())));
                 status.setLastUpdateTime(resultProps.getProperty(UpdateServiceFileKey.LAST_UPDATE.toString()));
                 hasData = true;
             }
-            if (Files.exists(getInfoPath())) {
-                Properties infoProps = readPropertiesFileFromPath(getInfoPath());
+            if (Files.exists(infoPath)) {
+                Properties infoProps = readPropertiesFileFromPath(infoPath);
                 status.setInstalledVersion(infoProps.getProperty(UpdateServiceFileKey.INSTALLED.toString()));
                 status.setCandidateVersion(infoProps.getProperty(UpdateServiceFileKey.CANDIDATE.toString()));
                 status.setLastCheckTime(infoProps.getProperty(UpdateServiceFileKey.LAST_CHECK.toString()));
@@ -88,42 +90,43 @@ public class UpdateManager {
         }
     }
 
-    public Response reloadAptPackageLists() {
-        return executeSocketOperation(APT_UPDATE_PORT, "apt-reload");
+    public boolean reloadAptPackageLists() {
+        if (!isUpdateAgentInstalled()) {
+            return false;
+        }
+        LOGGER.log(Level.INFO, "Started apt-reload service");
+        return executeSocketOperation(APT_UPDATE_PORT);
     }
 
-    private Response executeSocketOperation(int port, String operation) {
+    public boolean executeDwhUpdate() {
+        if (!isUpdateAgentInstalled() || isUpdateInProgress()) {
+            return false;
+        }
+        LOGGER.log(Level.INFO, "Started dwh-update service");
+        try {
+            currentUpdate = CompletableFuture.supplyAsync(() -> executeSocketOperation(DWH_UPDATE_PORT));
+            return true;
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Failed to start update process", e);
+            return false;
+        }
+    }
+
+  public boolean isUpdateInProgress() {
+    return currentUpdate != null && !currentUpdate.isDone();
+  }
+
+    private boolean executeSocketOperation(int port) {
         try (Socket socket = new Socket("localhost", port)) {
             socket.setSoTimeout(SOCKET_TIMEOUT);
-            LOGGER.log(Level.INFO, "Started {0} service", operation);
             Thread.sleep(1000);
-            return Response.accepted().build();
+            return true;
         } catch (IOException | InterruptedException e) {
-            LOGGER.log(Level.WARNING, "Error during connection to " + operation + " service", e);
-            return Response.serverError()
-                .entity("Failed to execute " + operation + ": " + e.getMessage())
-                .build();
+            LOGGER.log(Level.WARNING, "Socket operation failed on port " + port, e);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
+            return false;
         }
-    }
-
-    public Response executeDwhUpdate() {
-        if (currentUpdate != null && !currentUpdate.isDone()) {
-            return Response.status(Response.Status.CONFLICT)
-                .entity("Update already in progress")
-                .build();
-        }
-        try {
-            currentUpdate = CompletableFuture.supplyAsync(this::performUpdate);
-            return Response.accepted().build();
-        } catch (IllegalStateException e) {
-            return Response.status(Response.Status.PRECONDITION_FAILED)
-                .entity(e.getMessage())
-                .build();
-        }
-    }
-
-    private Boolean performUpdate() {
-        Response response = executeSocketOperation(DWH_UPDATE_PORT, "dwh-update");
-        return response.getStatus() == Response.Status.ACCEPTED.getStatusCode();
     }
 }

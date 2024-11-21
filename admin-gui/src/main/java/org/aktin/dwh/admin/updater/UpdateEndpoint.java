@@ -24,13 +24,16 @@ public class UpdateEndpoint {
     @Path("agent/installed")
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public boolean isUpdateAgentInstalled() {
-        return updateManager.isUpdateAgentInstalled();
+    public Response isUpdateAgentInstalled() {
+        return Response.ok(updateManager.isUpdateAgentInstalled()).build();
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUpdateStatus() {
+        if (!updateManager.isUpdateAgentInstalled()) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
         UpdateStatus status = updateManager.getUpdateStatus();
         return status != null ?
             Response.ok(status).build() :
@@ -41,6 +44,9 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response getUpdateLog() {
+        if (!updateManager.isUpdateAgentInstalled()) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
         String log = updateManager.getUpdateLog();
         return log != null ?
             Response.ok(log).build() :
@@ -51,12 +57,27 @@ public class UpdateEndpoint {
     @POST
     @Secured
     public Response reloadAptPackageLists() {
-        return updateManager.reloadAptPackageLists();
+        if (!updateManager.isUpdateAgentInstalled()) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
+        boolean success = updateManager.reloadAptPackageLists();
+        return success ?
+            Response.accepted().build() :
+            Response.serverError().build();
     }
 
     @POST
     @Secured
     public Response executeDwhUpdate() {
-        return updateManager.executeDwhUpdate();
+        if (!updateManager.isUpdateAgentInstalled()) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
+        if (updateManager.isUpdateInProgress()) {
+            return Response.status(Response.Status.CONFLICT).build();
+        }
+        boolean success = updateManager.executeDwhUpdate();
+        return success ?
+            Response.accepted().build() :
+            Response.serverError().build();
     }
 }
