@@ -3,21 +3,44 @@ import { Permission } from '../users/index';
 import { AuthService } from '../users/auth.service';
 import { UrlService, HttpInterceptorService } from '../helpers/index';
 
+/**
+ * Service responsible for managing DWH (Data Warehouse) updates and update-related operations.
+ * This service interacts with the backend update agent to check for updates, manage update status,
+ * and execute update operations. It also handles update-related UI states and error conditions.
+ */
 @Injectable()
 export class UpdaterService {
 
+    /** Flag indicating if the backend update agent is installed and available */
     public isUpdateAgentInstalled: boolean = false;
+    /** Currently installed DWH version */
     public installedVersion: string;
+    /** Available update version (if any) */
     public candidateVersion: string;
 
+    /** Flag indicating if a new version is available for update */
     public isNewUpdateAvailable: boolean = false;
+    /** Flag indicating if the last update operation was successful */
     public wasUpdateSuccessful: boolean = false;
+    /** Content of the update operation log */
     public updateLog: string;
 
+    /** Flag indicating if the service is currently checking for updates */
     public isCheckingForUpdates: boolean = false;
+    /** Flag indicating if an APT update operation failed */
     public showAptUpdateError: boolean = false;
+    /** Flag indicating if a DWH update operation failed */
     public showDwhUpdateError: boolean = false;
 
+    /**
+     * Creates an instance of UpdaterService.
+     * Initializes the service by checking update agent installation,
+     * reloading package information, and fetching initial status.
+     *
+     * @param _auth - Service for authentication and permission checking
+     * @param _http - Service for making HTTP requests
+     * @param _url - Service for URL management
+     */
     constructor(
         private _auth: AuthService,
         private _http: HttpInterceptorService,
@@ -46,6 +69,11 @@ export class UpdaterService {
             });
     }
 
+    /**
+     * Retrieves the current update status from the backend.
+     * Updates version information and status flags based on the response.
+     * Only executes if the update agent is installed.
+     */
     getUpdateStatus(): void {
         if (this.isUpdateAgentInstalled) {
             this._http.get(this._url.parse('updateDWH'))
@@ -64,6 +92,10 @@ export class UpdaterService {
         }
     }
 
+    /**
+     * Retrieves the update operation log from the backend.
+     * Only executes if the update agent is installed.
+     */
     getUpdateLog(): void {
         if (this.isUpdateAgentInstalled) {
             this._http.get(this._url.parse('getUpdateLog'))
@@ -77,6 +109,12 @@ export class UpdaterService {
         }
     }
 
+    /**
+     * Executes a DWH update operation.
+     * Requires UPDATE permission and installed update agent.
+     * Sets a cookie to show update summary and redirects to update page on success.
+     * Updates package information and log after completion.
+     */
     executeUpdate(): void {
         if (this.checkPermission() && this.isUpdateAgentInstalled) {
             this._http.post(this._url.parse('updateDWH'), null)
@@ -95,6 +133,14 @@ export class UpdaterService {
         }
     }
 
+    /**
+     * Reloads APT package information from the backend.
+     * Requires UPDATE permission and installed update agent.
+     * Updates status information after completion.
+     *
+     * @param showFeedback - If true, shows a loading indicator for 15 seconds.
+     *                       Default is true. Set to false for background updates.
+     */
     reloadAptPackages(showFeedback: boolean = true): void {
         if (this.checkPermission() && this.isUpdateAgentInstalled) {
             this._http.post(this._url.parse('reloadAptPackages'), null)
