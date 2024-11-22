@@ -14,6 +14,7 @@ import { LogType } from './enums/LogType';
  */
 export class ListEntry {
 
+    private subscription_verify: Subscription;
     private subscription_import: Subscription;
     private subscription_cancel: Subscription;
     private subscription_delete: Subscription;
@@ -48,6 +49,23 @@ export class ListEntry {
     }
 
     /**
+     * Starts async file verification process via importer.service
+     * Only a request to backend to start file verification of given id
+     */
+    verifyFile() {
+        if (this.isAuthorized('WRITE_P21')) {
+            this.subscription_verify = this._importerService.verifyFile(this.uuid)
+                .subscribe(event => {
+                    this.setOperationState(ImportOperation.verifying, ImportState.queued);
+                    this.subscription_verify.unsubscribe();
+                }, (error: any) => {
+                    this.setOperationState(ImportOperation.verifying, ImportState.failed);
+                    console.log(error);
+                });
+        }
+    }
+
+    /**
      * Starts async file import process via importer.service
      * Only a request to backend to start file import of given id
      */
@@ -72,6 +90,10 @@ export class ListEntry {
             this.subscription_cancel = this._importerService.cancelProcess(this.uuid)
                 .subscribe(event => {
                     switch (this.operationState) {
+                        case ImportOperationState.verifying_queued:
+                        case ImportOperationState.verifying_in_progress:
+                            this.setOperationState(ImportOperation.verifying, ImportState.cancelled);
+                            break;
                         case ImportOperationState.importing_queued:
                         case ImportOperationState.importing_in_progress:
                             this.setOperationState(ImportOperation.importing, ImportState.cancelled);
@@ -169,12 +191,29 @@ export class ListEntry {
     }
 
     /**
+     * Checks if button "verify" should be shown or hidden, is shown during all verifaction operations,
+     * but is hidden after successful verification. Is also shown after successful upload
+     * @returns boolean if button shall be shown or hidden
+     */
+    checkVerifyButtonVisibility(): boolean {
+        if (this.operation === ImportOperation.uploading && this.state === ImportState.successful) {
+            return true;
+        } else if (this.operation === ImportOperation.verifying && this.state === ImportState.successful) {
+            return false;
+        } else if (this.operation === ImportOperation.verifying) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Checks if button "import" should be shown or hidden, is shown during all import operations.
      * Is also shown after successful verification
      * @returns boolean if button shall be shown or hidden
      */
     checkImportButtonVisibility(): boolean {
-        if (this.operation === ImportOperation.uploading && this.state === ImportState.successful) {
+        if (this.operation === ImportOperation.verifying && this.state === ImportState.successful) {
             return true;
         } else if (this.operation === ImportOperation.importing) {
             return true;
@@ -189,6 +228,8 @@ export class ListEntry {
      */
     ngOnDestroy() {
         clearInterval(this.call_interval);
+        if (this.subscription_verify)
+            this.subscription_verify.unsubscribe();
         if (this.subscription_import)
             this.subscription_import.unsubscribe();
         if (this.subscription_cancel)

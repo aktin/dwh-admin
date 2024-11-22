@@ -108,6 +108,12 @@
                     </td>
                     <td>
                         <div class="ui icon five buttons file-buttons">
+                            <button class="compact ui button" (click)="file.verifyFile()"
+                                *ngIf="file.checkVerifyButtonVisibility() && file.perm_write"
+                                [disabled]="file.state === importState.queued || file.state === importState.in_progress"
+                                title="Datei prüfen">
+                                Prüfen
+                            </button>
                             <button class="compact ui button" (click)="file.importFile()"
                                 *ngIf="file.checkImportButtonVisibility() && file.perm_write"
                                 [disabled]="file.state === importState.queued || file.state === importState.in_progress || (file.operation === importOperation.importing && file.state === importState.successful)"
@@ -180,6 +186,5 @@
             </tfoot>
         </table>
     </div>
-</div>
 
-<popup-message></popup-message>
+    <popup-message></popup-message>

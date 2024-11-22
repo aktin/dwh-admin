@@ -100,6 +100,16 @@ export class ImporterService {
     }
 
     /**
+     * POST request to start file verification
+     * @param uuid id of file to verify
+     * @returns 202
+     */
+    verifyFile(uuid: string): Observable<any> {
+        return this._http.post(this._urls.parse('verifyFile', { uuid: uuid }), "")
+            .catch(err => { return this._http.handleError(err); });
+    }
+
+    /**
      * POST request to start file import
      * @param uuid id of file to import
      * @returns 202
@@ -110,7 +120,7 @@ export class ImporterService {
     }
 
     /**
-     * POST request to stop current file import
+     * POST request to stop current file processing (verify or import)
      * @param uuid id of file to stop processing of
      * @returns 202
      */
