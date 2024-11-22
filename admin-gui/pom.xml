@@ -8,12 +8,12 @@
 
     <groupId>org.aktin.dwh</groupId>
     <artifactId>admin-gui</artifactId>
-    <version>0.13-SNAPSHOT</version>
+    <version>0.13rc1</version>
 
     <parent>
         <groupId>org.aktin.dwh</groupId>
         <artifactId>dwh-admin</artifactId>
-        <version>0.13-SNAPSHOT</version>
+        <version>0.13rc1</version>
     </parent>
 
     <dependencies>
