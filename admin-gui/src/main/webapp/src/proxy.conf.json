@@ -1,0 +1,6 @@
+{
+  "/aktin/admin/rest": {
+    "target": "http://localhost:90",
+    "secure": false
+  }
+}

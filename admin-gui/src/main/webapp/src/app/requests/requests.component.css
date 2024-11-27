@@ -1,0 +1,66 @@
+.request-single-view-header {
+    float: left;
+    cursor: pointer;
+}
+
+.request-status-bar-overview {
+    cursor: pointer;
+}
+
+.request-status-bar-active-request {
+    border: 2px solid rgb(253, 221, 132);
+    border-radius: 20px;
+    width: 100%;
+}
+
+.container-query-requests {
+    border: solid lightgray 1px;
+    border-radius: 20px;
+    width: 100%;
+    padding: 0px;
+}
+
+.container-query-requests div {
+    padding: 15px 3px 15px 3px;
+}
+
+.hide-sql {
+    display: none !important;
+}
+
+.request-result-button-text {
+    display: inline-block;
+    float: right;
+    margin-left: 15px;
+}
+.request-result-button-icon {
+    padding-top: 5px;
+}
+
+.button-query-requests {
+    margin: 20px auto 5px auto;
+    width: 250px;
+}
+
+.button-delete-rule {
+    margin: 10px auto 10px auto;
+}
+
+.pagination ::ng-deep .ngx-pagination {
+    text-align: center;
+    padding: 10px 0px 0px 0px;
+    margin: 0;
+  }
+
+.block-margin {
+    display: block;
+    margin-top: 15px;
+}
+
+.filterOptgroup {
+    color: rgb(26, 155, 214);
+}
+
+.filterOption {
+    color: black;
+}

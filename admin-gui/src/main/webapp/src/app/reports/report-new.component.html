@@ -1,0 +1,44 @@
+<div class="ui grid">
+    <div class="row">
+        <div class="ui breadcrumb">
+            <a class="section breadcrumb-header" routerLink="/report">Berichtsübersicht</a>
+            <i class="right angle icon divider"></i>
+            <div class="active section">Neuen Bericht erzeugen</div>
+        </div>
+    </div>
+
+    <div class="ui segment row">
+        <form class="ui form new-report-form sixteen wide column" #newReportForm="ngForm" (ngSubmit)="generateReport()" [ngClass]="newReportFormClasses">
+
+            <div class="field template-select-field">
+                <label>Berichtsart</label>
+                <select name="template" class="ui fluid dropdown template-select" [(ngModel)]="template" title="Bericht Templates">
+                    <!--<option value="" disabled="disabled">bitte Auswählen</option>-->
+                    <option *ngFor="let tem of templates" [value]="tem.id" [selected]="template==tem.id" >{{tem.description}}</option>
+                </select>
+            </div>
+
+            <div class="two fields">
+                <div class="field">
+                    <label>Startdatum</label>
+                    <div class="ui input">
+                        <input angular-mydatepicker style="width: 100%" name="fromDateMDP" [options]="fromDPOptions" [(ngModel)]="fromDateModel" (dateChanged)="onFromDateChanged($event)" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Enddatum</label>
+                    <div class="ui input">
+                        <input angular-mydatepicker style="width: 100%" name="toDateMDP" [options]="toDPOptions" [(ngModel)]="toDateModel" (dateChanged)="onToDateChanged($event)" required>
+                    </div>
+                </div>
+            </div>
+
+            <button class="ui fluid large submit button" type="submit">
+                Erzeugen
+            </button>
+
+        </form>
+    </div>
+</div>
+
+<popup-message></popup-message>
