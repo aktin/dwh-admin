@@ -1,0 +1,80 @@
+<div class="ui grid column">
+    <div class="row">
+        <div class="ui breadcrumb column">
+            <div class="active section breadcrumb-header">Studien-Manager</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <form class="ui form sixteen wide column" ngForm>
+            <div class="ui row studies">
+                <div class="field">
+                    <label>Studie</label>
+                    <drop-down [(ngModel)]="selectedStudy"
+                               [compare]="compareStudies"
+                               name="studies">
+                        @for (study of studies; track study.id) {
+                            <drop-down-option [value]="study">{{ study.title }}</drop-down-option>
+                        }
+                    </drop-down>
+                </div>
+            </div>
+
+            <div class="ui segment row filter">
+                <div class="sixteen fields">
+                    <div class="seven wide field">
+                        <label>Datum</label>
+                        <div (click)="d.open()"
+                             class="ui icon input">
+                            <input
+                                #d="ngbDatepicker"
+                                name="dp"
+                                ngbDatepicker/>
+                            <i class="calendar icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="seven field">
+                        <label>Suche</label>
+                        <input class="visible error ui input focus"
+                               name="search"
+                               ngModel
+                               placeholder=""
+                               type="text">
+                    </div>
+                    <div class="bottom aligned">
+                        <button class="ui labeled icon button">
+                            <i class="filter icon"></i> Filtern
+                        </button>
+                    </div>
+                    <div class="bottom aligned">
+                        <button class="ui labeled icon button">
+                            <i class="close icon"></i> Zurücksetzen
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <!-- TODO: AuditTrail -->
+</div>
+<div class="ui segments row container">
+    <div class="ui segment ui grid buttonbar">
+        <div class="ui sixteen wide column">
+            <div class="row">
+                <button (click)="patientDetailsComponent.open()"
+                        class="ui green right floated labeled icon basic button">
+                    <i class="plus icon"></i>
+                    Erstellen
+                </button>
+            </div>
+        </div>
+    </div>
+    <data-table (onDetailsClick)="selectedEntry = $event; patientViewComponent.open();"
+                [columns]="columns"
+                [data]="entries"></data-table>
+</div>
+
+<patient-creation #patientDetailsComponent [(selectedStudy)]="selectedStudy"></patient-creation>
+<patient-view #patientViewComponent [entry]="selectedEntry"></patient-view>

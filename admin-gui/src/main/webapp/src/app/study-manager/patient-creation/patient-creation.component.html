@@ -1,0 +1,224 @@
+@if (isOpen) {
+    <div id="popup-message-overlay">
+    </div>
+
+    <div id="popup-message-content"
+         class="ui text container very padded segment">
+        <div class="ui header">
+            Neue Patient*in registrieren
+        </div>
+
+        <div class="ui content"
+             style="padding-bottom: 1em">
+            Bitte füllen Sie die folgenden Felder, um eine*n neue*n Patient*in zu registrieren
+        </div>
+
+        <div class="close-action">
+            <a class="ui compact small icon circular button"
+               (click)="close()">
+                <i class="remove icon"></i>
+            </a>
+        </div>
+
+        <form #frm="ngForm"
+              class="ui form sixteen wide column form">
+            <div class="ui row">
+                <div #accordion
+                     class="ui styled accordion">
+                    <div class="active title">
+                        <i class="dropdown icon right"></i>
+                        Studieninformationen
+                    </div>
+                    <div class="active content">
+                        <div class="field">
+                            <label>Studie</label>
+                            <drop-down [(ngModel)]="selectedStudy"
+                                       [compare]="compareStudies"
+                                       name="studies">
+                                @for (study of studies; track study.id) {
+                                    <drop-down-option [value]="study">{{ study.title }}</drop-down-option>
+                                }
+                            </drop-down>
+                        </div>
+
+                        <div class="field">
+                            <label>Teilnahme</label>
+                            <div class="inline fields">
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input type="radio"
+                                               name="opt"
+                                               disabled
+                                               [checked]="selectedStudy?.optIn">
+                                        <label>Ja, hat zugestimmt</label>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input type="radio"
+                                               name="opt"
+                                               disabled
+                                               [checked]="selectedStudy?.optOut">
+                                        <label>Nein, ist ausgeschlossen</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="active title">
+                        <i class="dropdown icon right"></i>
+                        Patienteninformationen
+                    </div>
+                    <div class="active content">
+                        <div class="field">
+                            <label>Studien-ID (SIC) automatisch neu erstellen lassen?</label>
+                            <div class="inline fields">
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input type="radio"
+                                               name="generateSic"
+                                               [disabled]="selectedStudy.sicGeneration === SICGeneration.ManualOnly"
+                                               [value]="true"
+                                               [(ngModel)]="generateSic">
+                                        <label>Ja, neue Studien-ID erstellen</label>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input type="radio"
+                                               name="generateSic"
+                                               [value]="false"
+                                               [(ngModel)]="generateSic">
+                                        <label>Nein, vorhandendene Studien-ID eintragen</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label>Studien-ID (SIC)</label>
+                            @if (!generateSic) {
+                                <input type="text"
+                                       name="sic"
+                                       class="ui input"
+                                       [studyId]="selectedStudy.id"
+                                       uniqueSic
+                                       #sicModel="ngModel"
+                                       required
+                                       [(ngModel)]="newEntry.sic">
+                                <error-message *ngIf="sicModel.errors?.required">Studien-ID ist erforderlich
+                                </error-message>
+                                <error-message *ngIf="sicModel.errors?.sicNotUnique">Studien-ID ist schon vorhanden
+                                </error-message>
+                            } @else {
+                                <input type="text"
+                                       name="sic"
+                                       class="ui input"
+                                       disabled
+                                       value="Wird nach abgeschlossener Registrierung erstellt ..">
+                            }
+                        </div>
+
+
+                        <div class="field">
+                            <label>Patientenreferenz</label>
+                            <drop-down [(ngModel)]="selectedReference"
+                                       name="references">
+                                @for (ref of references; track ref) {
+                                    <drop-down-option [value]="ref">{{ getLabel(ref) }}</drop-down-option>
+                                }
+                            </drop-down>
+                        </div>
+
+                        <div class="field">
+                            <label for="extension">{{ getLabel(selectedReference) }}</label>
+                            <div class="ui action input">
+                                <input type="text"
+                                       name="extension"
+                                       class="ui input"
+                                       required
+                                       id="extension"
+                                       extension
+                                       [(ngModel)]="extension"
+                                       #extModel="ngModel"
+                                       validateMasterData
+                                       [reference]="selectedReference"
+                                       [root]="getRoot(selectedReference)"
+                                       (masterDataChange)="masterData = $event"
+                                       (encountersChange)="encounters = $event">
+                                <button class="ui button"
+                                        type="button"
+                                        (click)="loadEncountersAndMasterData()">
+                                    Suchen
+                                </button>
+                            </div>
+
+                            <error-message *ngIf="extModel.errors?.required">{{ getLabel(selectedReference) }}
+                                erforderlich
+                            </error-message>
+                            <error-message *ngIf="extModel.errors?.slashSep">Maximal ein "/" als Trennzeichen von Root
+                                und {{ getLabel(selectedReference) }} erlaubt
+                            </error-message>
+                            <error-message *ngIf="extModel.errors?.slash">"/" nicht erlaubt</error-message>
+                            <error-message *ngIf="extModel.errors?.separator">Trennzeichen darf nicht an erster Stelle
+                                stehen
+                            </error-message>
+                            <error-message *ngIf="extModel.errors?.period">Root und {{ getLabel(selectedReference) }}
+                                dürfen
+                                nicht aus "." oder ".." bestehen
+                            </error-message>
+                            <error-message *ngIf="extModel.errors?.noMasterData">Keine Stammdaten gefunden
+                            </error-message>
+                            <error-message *ngIf="extModel.errors?.noEncounters">Keine Behandlungsdaten gefunden
+                            </error-message>
+                        </div>
+
+                        <div class="field">
+                            @if (extModel.dirty && !extModel.errors?.noMasterData && !extModel.errors?.noEncounters) {
+                                <patient-master-data [encounters]="encounters"
+                                                     [masterData]="masterData"></patient-master-data>
+                            } @else {
+                                <div>Bitte gültige {{ getLabel(selectedReference) }} eingeben, um Daten zu laden</div>
+                            }
+                        </div>
+
+                        <div class="field">
+                            <label>Kommentar</label>
+                            <div class="inline fields">
+                                <textarea rows="4"
+                                          name="comment"
+                                          [(ngModel)]="newEntry.comment">
+                                </textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="title">
+                        <i class="dropdown icon right"></i>
+                        Technische Informationen
+                    </div>
+                    <div class="content">
+                        <div class="field">
+                            <label>Root</label>
+                            <div class="value-field">{{ getRoot(selectedReference) }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="ui button"
+                        type="button"
+                        (click)="close()">Abbrechen
+                </button>
+                <button class="ui button green"
+                        (click)="create()">Registrieren
+                </button>
+            </div>
+        </form>
+    </div>
+
+
+}

@@ -1,0 +1,49 @@
+<table class="ui sortable selectable celled table segment sixteen wide column" *templateVar="showDetailButtons ? columns.length : columns.length + 1 as colSpan">
+    <thead>
+    <tr>
+        @for (column of columns; track column) {
+            <th sortableTableColumn
+                [identifier]="column.header"
+                (sort)="sort($event)">
+                {{ column.header }}
+            </th>
+        }
+        @if (showDetailButtons) {
+            <th></th>
+        }
+    </tr>
+    </thead>
+    <tbody>
+        @for (row of allData | paginate: {itemsPerPage: 15, currentPage: p}; track determineTrackBy(row)) {
+            <tr>
+                @for (column of columns; track column) {
+                    <td>
+                        {{ resolveField(column.field, row) }}
+                    </td>
+                } @empty {
+                    <td [colSpan]="colSpan">Keine Daten gefunden</td>
+                }
+                @if (showDetailButtons && !!allData?.length) {
+                    <td>
+                        <button class="ui right floated labeled icon button"
+                                style="width: auto"
+                        (click)="onButtonClick(row)">
+                            <i class="search icon"></i>
+                            Details
+                        </button>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+    <th [colSpan]="colSpan">
+        <pagination-controls class="pagination"
+                             (pageChange)="p = $event"
+                             [autoHide]="true"
+                             previousLabel="Vorherige Seite"
+                             nextLabel="Nächste Seite">
+        </pagination-controls>
+    </th>
+    </tfoot>
+</table>

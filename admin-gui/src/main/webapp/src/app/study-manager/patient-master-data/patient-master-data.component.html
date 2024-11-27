@@ -1,0 +1,32 @@
+<div class="ui segment">
+    <div class="ui top attached label">Patienten- und Behandlungsdaten im AKTIN DWH</div>
+    @if (!!masterData) {
+        <div class="ui fifteen wide inline fields">
+            <div class="field">
+                <label>Geburtsdatum</label>
+                <div class="value-field">{{ masterData.birthDate | momentDate:DateFormat.DATE }}</div>
+            </div>
+
+            <div class="field">
+                <label>Geschlecht</label>
+                <div class="value-field">{{ masterData.sex }}</div>
+            </div>
+
+            <div class="field">
+                <label>Postleitzahl</label>
+                <div class="value-field">{{ masterData.zip }}</div>
+            </div>
+        </div>
+    } @else {
+        <div>Keine Stammdaten gefunden</div>
+    }
+
+    @if (!!encounters?.length) {
+        <data-table [columns]="encounterColumns"
+                    [data]="encounters"
+                    [showDetailButtons]="false">
+        </data-table>
+    } @else {
+        <div>Keine Behandlungsdaten gefunden</div>
+    }
+</div>

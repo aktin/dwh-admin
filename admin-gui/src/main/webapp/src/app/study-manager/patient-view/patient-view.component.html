@@ -1,0 +1,157 @@
+@if (isOpen) {
+    <div id="popup-message-overlay">
+    </div>
+
+    <div id="popup-message-content"
+         class="ui text container very padded segment">
+        <div class="ui header">
+            Patientendetails
+        </div>
+
+        <div class="ui content"
+             style="padding-bottom: 1em">
+            Übersicht der Patientendetails
+        </div>
+
+        <div class="close-action">
+            <a class="ui compact small icon circular button"
+               (click)="close()">
+                <i class="remove icon"></i>
+            </a>
+        </div>
+
+        <div class="ui sixteen wide column form">
+            <div class="ui row">
+                <div #accordion
+                     class="ui styled accordion">
+                    <div class="active title">
+                        <i class="dropdown icon right"></i>
+                        Studieninformationen
+                    </div>
+                    <div class="active content">
+                        <div class="field">
+                            <label>Studie</label>
+                            <div class="value-field">{{ entry.study.title }}</div>
+                        </div>
+
+                        <div class="field">
+                            <label>Teilnahme</label>
+                            <div class="value-field">
+                                @switch (entry.participation) {
+                                    @case (Participation.OptIn) {
+                                        Ja, hat zugestimmt
+                                    }
+                                    @case (Participation.OptOut) {
+                                        Nein, ist ausgeschlossen
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="active title">
+                        <i class="dropdown icon right"></i>
+                        Patienteninformationen
+                    </div>
+                    <div class="active content">
+                        <div class="field">
+                            <label>Studien-ID (SIC)</label>
+                            <div class="value-field">{{ entry.sic }}</div>
+                        </div>
+
+                        <div class="field">
+                            <label>Patientenreferenz</label>
+                            <div class="value-field">{{ getLabel(entry.reference) }}</div>
+                        </div>
+
+                        <div class="field">
+                            <label>Einschlussdatum</label>
+                            <div class="value-field">{{ entry.timestamp | momentDate:DateFormat.DATE }}</div>
+                        </div>
+
+                        <div class="field">
+                            <label>{{ getLabel(entry.reference) }}</label>
+                            <div class="value-field">{{ entry.idExt }}</div>
+                        </div>
+
+                        <div class="field">
+                            <patient-master-data [masterData]="masterData"
+                                                 [encounters]="encounters">
+                            </patient-master-data>
+                        </div>
+
+                        <div class="field">
+                            <label>Kommentar</label>
+                            <div class="value-field">
+                                {{ entry.comment }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="title">
+                        <i class="dropdown icon right"></i>
+                        Technische Informationen
+                    </div>
+
+                    <div class="content">
+                        <div class="field">
+                            <label>Root</label>
+                            <div class="value-field">{{ entry.idRoot }}</div>
+                        </div>
+                        <div class="field">
+                            <label>Registriert von</label>
+                            <div class="value-field">{{ entry.user }}</div>
+                        </div>
+                        <div class="field">
+                            <label>Registriert am</label>
+                            <div class="value-field">{{ entry.timestamp | momentDate:DateFormat.DATE }}</div>
+                        </div>
+                        <div class="field">
+                            <label>Studien-ID</label>
+                            <div class="value-field">{{ entry.study.id }}</div>
+                        </div>
+                        <div class="field">
+                            <label>Studientitel</label>
+                            <div class="value-field">{{ entry.study.title }}</div>
+                        </div>
+                        <div class="field">
+                            <label>Studienbeschreibung</label>
+                            <div class="value-field">{{ entry.study.description }}</div>
+                        </div>
+                        <div class="field">
+                            <label>Studie erstellt am</label>
+                            <div class="value-field">{{ entry.study.createdTimestamp | momentDate:DateFormat.DATE }}</div>
+                        </div>
+                        <div class="field">
+                            <label>Studie beendet am</label>
+                            <div class="value-field">{{ entry.study.closedTimestamp | momentDate:DateFormat.DATE }}</div>
+                        </div>
+                        <div class="field">
+                            <label>SIC Generator</label>
+                            <div class="value-field">{{ entry.study.sicGenerator }}</div>
+                        </div>
+                        <div class="field">
+                            <label>SIC State</label>
+                            <div class="value-field">{{ entry.study.sicGeneratorState }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="ui button"
+                        type="button"
+                        (click)="close()">
+                    Schließen
+                </button>
+
+                <button class="ui button"
+                        type="button"
+                        (click)="patientEditComponent.open()">
+                    Bearbeiten
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <patient-edit #patientEditComponent [entry]="entry"></patient-edit>
+}
