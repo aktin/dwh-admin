@@ -2,11 +2,10 @@
  * Created by Xu on 04.05.2017.
  */
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { TimerObservable } from 'rxjs/observable/TimerObservable';
-import { Subscription } from 'rxjs';
 
 import { RequestService } from './request.service';
 import { LocalRequest, RequestMarker, RequestStatus } from './request';
+import {Subscription, timer} from "rxjs";
 
 @Component({
     templateUrl: './requests.component.html',
@@ -29,8 +28,8 @@ export class RequestsComponent implements OnInit, OnDestroy {
     constructor(private _requestService: RequestService) {}
 
     ngOnInit() {
-        let timer = TimerObservable.create(0, this._dataInterval);
-        this._timerSubscription = timer.subscribe(() => {
+        let timer$ = timer(0, this._dataInterval);
+        this._timerSubscription = timer$.subscribe(() => {
             this.updateRequests();
         });
         setTimeout(() => {

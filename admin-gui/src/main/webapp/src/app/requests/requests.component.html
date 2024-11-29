@@ -34,7 +34,7 @@
 <div *ngIf="requests">
     <pagination-controls class="pagination"
         (pageChange)="p = $event"
-        autoHide="true"
+        [autoHide]="true"
         previousLabel="Vorherige Seite"
         nextLabel="Nächste Seite">
     </pagination-controls>

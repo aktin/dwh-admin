@@ -66,16 +66,16 @@ export class ReportService {
     }
 
     private _updateReportTemplates (): void {
-        this._http.debouncedGet<string> (
+        this._http.debouncedGet<any> (
             'reports.templates',
             this._store.getValue('reports.templates'), null,
             this._dataInterval,
             this._urls.parse('reportTemplates'),
             res => res
         ).subscribe(
-            (rep: string) => {
-                if (rep) {
-                    this._store.setValue('reports.templates', rep);
+            (rep: any) => {
+                if (rep && typeof rep === 'object') {
+                    this._store.setValue('reports.templates', JSON.stringify(rep));
                 }
             },
             error => console.log(error)
@@ -107,11 +107,9 @@ export class ReportService {
     }
 
     newReport (template: string, fromDate: Date, toDate: Date): void {
-        // console.log({'from': fromDate.toISOString(), 'to': toDate.toISOString()});
-        this._http.post(
+        this._http.post<ReportTemplate>(
             this._urls.parse('newReport', {templateId: template}),
-            {'start': fromDate.toISOString(), 'end': toDate.toISOString()},
-            {headers: this._http.generateHeaderOptions('Content-Type', 'application/json')}
+            {'start': fromDate.toISOString(), 'end': toDate.toISOString()}
         ).pipe(catchError(err => {return this._http.handleError(err); }))
             .subscribe();
     }

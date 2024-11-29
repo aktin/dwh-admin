@@ -3,13 +3,11 @@
  * Created by Xu on 09-Jun-17.
  */
 import { Component, Input } from '@angular/core';
-import { PaginatePipe, PaginationService } from 'ngx-pagination';
 
 import { LocalRequest, RequestMarker, RequestStatus, Rule, QueryRuleAction, QueryBundle } from './request';
 import { RequestSingleComponent } from './request-single.component';
 import { PopUpMessageComponent } from '../helpers/index';
 import { RequestService } from './request.service';
-import _ = require('underscore');
 
 @Component({
     selector: 'request-single-view',
@@ -28,6 +26,7 @@ export class RequestSingleViewComponent {
     downloadLoading = false;
     options: string[];
     showQuery = false;
+    p: number;
     // improve: avoid direct access to requestSingleComponent
     constructor(private _requestService: RequestService, private _requestSingleComponent: RequestSingleComponent) {
         let tempOpt = Object.keys(RequestStatus);
@@ -272,7 +271,7 @@ export class RequestSingleViewComponent {
         let xml = rawxml.replace(/(>)\s*(<)(\/*)/g, '$1\n$2$3');
         let pad = 0;
         let sql = 0;
-        _.each(xml.split('\n'), function(rawnode, index) {
+        xml.split('\n').forEach((rawnode, index) => {
             let node = rawnode.trim();
             if (node === '') {
                 return;
@@ -336,4 +335,5 @@ export class RequestSingleViewComponent {
         setTimeout(() => { this.downloadLoading = false; }, 500);
     }
 
+    protected readonly QueryRuleAction = QueryRuleAction;
 }

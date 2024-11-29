@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { Permission } from '../users/index';
-import { AuthService } from '../users/auth.service';
-import { UrlService, HttpInterceptorService } from '../helpers/index';
+import {Injectable} from '@angular/core';
+import {AuthService, Permission} from '../users';
+import {HttpService, UrlService} from '../helpers';
+import {catchError, finalize} from "rxjs/operators";
 
 /**
  * Service responsible for managing DWH (Data Warehouse) updates and update-related operations.
@@ -43,7 +43,7 @@ export class UpdaterService {
      */
     constructor(
         private _auth: AuthService,
-        private _http: HttpInterceptorService,
+        private _http: HttpService,
         private _url: UrlService
     ) {
         this.checkUpdateAgentInstallation();
@@ -59,11 +59,11 @@ export class UpdaterService {
     }
 
     checkUpdateAgentInstallation(): void {
-        this._http.get(this._url.parse('updateAgentInstalled'))
-            .catch(err => { return this._http.handleError(err); })
+        this._http.get<string>(this._url.parse('updateAgentInstalled'))
+            .pipe(catchError(err => { return this._http.handleError(err); }))
             .subscribe(event => {
-                if (event._body)
-                    this.isUpdateAgentInstalled = JSON.parse(event._body);
+                if (event)
+                    this.isUpdateAgentInstalled = JSON.parse(event);
             }, (error: any) => {
                 console.log(error);
             });
@@ -76,11 +76,11 @@ export class UpdaterService {
      */
     getUpdateStatus(): void {
         if (this.isUpdateAgentInstalled) {
-            this._http.get(this._url.parse('updateDWH'))
-            .catch(err => this._http.handleError(err))
+            this._http.get<string>(this._url.parse('updateDWH'))
+            .pipe(catchError(err => this._http.handleError(err)))
             .subscribe(event => {
-                if (event._body) {
-                    let json_info = JSON.parse(event._body);
+                if (event) {
+                    let json_info = JSON.parse(event);
                     this.installedVersion = json_info['installedVersion'];
                     this.candidateVersion = json_info['candidateVersion'];
                     this.wasUpdateSuccessful = json_info['success'];
@@ -98,11 +98,11 @@ export class UpdaterService {
      */
     getUpdateLog(): void {
         if (this.isUpdateAgentInstalled) {
-            this._http.get(this._url.parse('getUpdateLog'))
-                .catch(err => { return this._http.handleError(err); })
+            this._http.get<string>(this._url.parse('getUpdateLog'))
+                .pipe(catchError(err => { return this._http.handleError(err); }))
                 .subscribe(event => {
-                    if (event._body)
-                        this.updateLog = event._body;
+                    if (event)
+                        this.updateLog = event;
                 }, (error: any) => {
                     console.log(error);
                 });
@@ -118,11 +118,11 @@ export class UpdaterService {
     executeUpdate(): void {
         if (this.checkPermission() && this.isUpdateAgentInstalled) {
             this._http.post(this._url.parse('updateDWH'), null)
-                .catch(err => { return this._http.handleError(err); })
-                .finally(() => {
-                    this.reloadAptPackages();
-                    this.getUpdateLog();
-                })
+                .pipe(catchError(err => { return this._http.handleError(err); }),
+                    finalize(() => {
+                            this.reloadAptPackages();
+                            this.getUpdateLog();
+                        }))
                 .subscribe(event => {
                     this.setCookie('AKTIN.showUpdateSummary', 'true');
                     window.location.href = "/aktin/admin/plain/update.html";
@@ -144,8 +144,8 @@ export class UpdaterService {
     reloadAptPackages(showFeedback: boolean = true): void {
         if (this.checkPermission() && this.isUpdateAgentInstalled) {
             this._http.post(this._url.parse('reloadAptPackages'), null)
-            .catch(err => this._http.handleError(err))
-            .finally(() => this.getUpdateStatus())
+            .pipe(catchError(err => this._http.handleError(err)),
+                    finalize(() => this.getUpdateStatus()))
             .subscribe(event => {
                 if (showFeedback) {
                     this.isCheckingForUpdates = true;
