@@ -88,6 +88,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.20</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- test with jetty -->
         <!-- test dependencies to run a server for testing -->
@@ -308,7 +314,7 @@
                         </goals>
                         <phase>generate-resources</phase>
                         <configuration>
-                            <nodeVersion>v14.21.1</nodeVersion>
+                            <nodeVersion>v18.19.1</nodeVersion>
                         </configuration>
                     </execution>
 
