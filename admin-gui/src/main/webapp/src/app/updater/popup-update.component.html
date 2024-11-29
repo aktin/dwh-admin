@@ -1,6 +1,19 @@
+<!--
+  Popup Overlay
+  - Full screen semi-transparent overlay that appears behind the popup
+  - Clicking anywhere on the overlay closes the popup
+  - 'on-top' class increases z-index when displaying over other popups
+-->
 <div id="popup-message-overlay" [ngClass]="onTop ? 'on-top' : ''" (click)="closeMessage()" *ngIf="show">
 </div>
 
+<!--
+  Popup Content Container
+  - Main popup window with Semantic UI styling
+  - Uses 'text container' for proper text formatting
+  - 'padded segment' provides spacing and visual separation
+  - 'on-top' class coordinates z-index with overlay
+-->
 <div id="popup-message-content" [ngClass]="onTop ? 'on-top' : ''" class="ui text container very padded segment"
     *ngIf="show">
     <h2>
@@ -10,7 +23,9 @@
         {{message}}
     </h3>
 
+    <!-- Update Log Section -->
     <div class="ui grid">
+        <!-- Log Header Row with Title and Path -->
         <div class="four column row">
             <div class="left floated column">
                 <p><b>Log des Updates:</b></p>
@@ -19,19 +34,39 @@
                 <p><i>/var/lib/aktin/update/log</i></p>
             </div>
         </div>
+        <!--
+          Log Content Area
+          - Scrollable container limited to 300px height
+          - Handles horizontal overflow with scroll
+          - formatMsg class preserves log formatting
+        -->
         <div class="ui content formatMsg" style="overflow-x: auto; max-height:300px;">
-            <p>{{_updaterService.log_update}}</p>
+            <p>{{_updaterService.updateLog}}</p>
         </div>
     </div>
 
+    <!-- Close Button
+      - Positioned absolutely in top-right corner
+      - Uses Semantic UI's circular button styling
+      - Red color indicates destructive/closing action
+    -->
     <div class="close-action">
         <a class="ui compact small icon red circular button" (click)="closeMessage()">
             <i class="remove icon"></i>
         </a>
     </div>
 
+     <!-- Confirmation Button Section
+       - Centered container for the OK button
+       - Uses flex layout for centering
+     -->
     <br>
     <div class="popup-message-buttons" style="display: flex; justify-content: center;">
+        <!-- Animated OK Button
+          - Uses Semantic UI's vertical animation
+          - Color is dynamically set through color_button input
+          - Shows 'Ok' text and animates to checkmark icon
+         -->
         <div class="ui animated vertical button popup-message-okay-button" [ngClass]="color_button"
             (click)="closeMessage()">
             <div class="visible content">Ok</div>

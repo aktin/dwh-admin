@@ -1,15 +1,16 @@
 /**
  * Created by Xu on 02-Jun-17.
  */
-import {Component, ViewChild} from '@angular/core';
-import {Router} from '@angular/router';
+import { Component, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 
-import {PopUpMessageComponent} from '../helpers';
-import {ReportTemplate} from './report';
-import {ReportService} from './report.service';
-import {IAngularMyDpOptions, IMyDateModel} from "gramli-angular-mydatepicker";
+import { IMyDateModel, IMyDpOptions } from 'mydatepicker';
 
-//require('semantic-ui');
+import { ReportTemplate } from './report';
+import { ReportService } from './report.service';
+
+import $ = require('jquery');
+require('semantic-ui');
 
 @Component({
     templateUrl: './report-new.component.html',
@@ -22,23 +23,23 @@ export class ReportNewComponent {
     fromDateModel: any = { date: this.formulateDate4DP(new Date()) };
     toDateModel: any = { date: this.formulateDate4DP(new Date()) };
 
-    fromDPOptions: IAngularMyDpOptions;
-    toDPOptions: IAngularMyDpOptions;
+    fromDPOptions: IMyDpOptions;
+    toDPOptions: IMyDpOptions;
 
-    defaultDPOptions: IAngularMyDpOptions = {
+    showErrorNotification: Boolean = false;
+    errorNotificationText: string = "";
+
+    defaultDPOptions: IMyDpOptions = {
         dayLabels: {su: 'So', mo: 'Mo', tu: 'Di', we: 'Mi', th: 'Do', fr: 'Fr', sa: 'Sa'},
         monthLabels: { 1: 'Jan', 2: 'Feb', 3: 'Mär', 4: 'Apr', 5: 'Mai', 6: 'Jun',
             7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Okt', 11: 'Nov', 12: 'Dez' },
-        // showTodayBtn: false,
-        // editableDateField: false,
+        showTodayBtn: false,
+        editableDateField: false,
         inline: false,
-        // openSelectorOnInputClick: true,
+        openSelectorOnInputClick: true,
         dateFormat: 'dd. mmm yyyy',
         disableSince: this.formulateDate4DP(new Date()),
     };
-
-    @ViewChild(PopUpMessageComponent) popUp: PopUpMessageComponent;
-    newReportFormClasses: string | string[] | Set<string> | { [p: string]: any } | null | undefined;
 
     private formulateDate4DP (d: Date): any {
         return {year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate()};
@@ -67,12 +68,12 @@ export class ReportNewComponent {
     }
 
     onFromDateChanged(event: IMyDateModel) {
-        this.fromDateModel.date = event.singleDate.date;
+        this.fromDateModel.date = event.date;
         // event properties are: event.date, event.jsdate, event.formatted and event.epoc
     }
 
     onToDateChanged(event: IMyDateModel) {
-        this.toDateModel.date = event.singleDate.date;
+        this.toDateModel.date = event.date;
     }
 
     get templates(): ReportTemplate[] {
@@ -94,21 +95,32 @@ export class ReportNewComponent {
     }
 
     generateReport(): void {
-        let from = this.DP2date(this.fromDateModel.date);
-        let to = this.DP2date(this.toDateModel.date);
-
+        let from = null;
+        try {
+            from = this.DP2date(this.fromDateModel.date);
+        } catch(e){
+            this.showErrorNotification = true;
+            this.errorNotificationText = "Bitte wählen Sie ein valides Startdatum aus!"
+            return
+        };
+        let to = null;
+        try {
+            to = this.DP2date(this.toDateModel.date);
+        } catch(e){
+            this.showErrorNotification = true;
+            this.errorNotificationText = "Bitte wählen Sie ein valides Enddatum aus!"
+            return
+        };
         to.setDate(to.getDate() + 1);
         if (from >= to) {
-            this.popUp.setData(true, 'Fehler beim Erzeugen des neuen Berichts',
-                    'Bitte wählen Sie eine passende Zeitspanne von mindestens einem Tag aus!');
             to.setMonth(from.getMonth() + 1);
             to.setDate(to.getDate() - 1);
             this.toDateModel.date = this.formulateDate4DP(to);
+            this.showErrorNotification = true;
+            this.errorNotificationText = "Bitte wählen Sie eine passende Zeitspanne von mindestens einem Tag aus!"
             return;
         }
         this._reportService.newReport(this.template, from, to);
-        this.popUp.setData(true, 'Neuer Bericht wird erstellt',
-                    'Der Bericht "' + this.getDescription() + '" wird erstellt und steht danach in der Berichtsübersicht bereit.',
-                    () => {this._router.navigate(['/report'])} );
+        this._router.navigate(['/report']);
     }
 }

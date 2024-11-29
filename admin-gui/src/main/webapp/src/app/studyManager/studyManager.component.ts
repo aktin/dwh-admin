@@ -237,7 +237,7 @@ export class StudyManagerComponent {
         this.popUpDetail.isNew = isNew; // show 'successfully created' message if the entry is new
         this.popUpDetail.setData((submitDelete: boolean) => {
             if (submitDelete) {
-                let buttons = [['Löschen', 'red'], ['Abbrechen', 'orange']];
+                let buttons = ['trash icon', 'Löschen', 'red'];
                 this.popUpMessage.setConfirm(buttons);
                 this.popUpMessage.onTop = true; // set the delete dialog in front of the detail dialog
                 this.popUpMessage.setData(true, 'Eintrag löschen',
