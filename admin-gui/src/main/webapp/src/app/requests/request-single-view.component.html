@@ -173,9 +173,9 @@
                 <ng-template #rule>Für diese Serie liegt folgende Freigabe-Regel vor (erstellt von {{ queryRule.user }} am {{ queryRule.creationDate | date: 'd. MMM y, HH:mm a' }}):</ng-template>
                 <ng-template #norule>Für diese Serie liegt keine Freigabe-Regel vor.</ng-template>
                 <div class="ten wide column centered" *ngIf="queryRule" >
-                    <span *ngIf="queryRule.action === 'REJECT'">Alle Anfragen dieser Serie werden abgelehnt.</span>
-                    <span *ngIf="queryRule.action === 'ACCEPT_SUBMIT'">Alle Anfragen dieser Serie werden freigegeben. Die Ergebnisse werden direkt übertragen.</span>
-                    <span *ngIf="queryRule.action === 'ACCEPT_EXECUTE'">Alle Anfragen dieser Serie werden freigegeben. Die Übermittlung der Ergebnisse muss erneut bestätigt werden.</span>
+                    <span *ngIf="queryRule.action === QueryRuleAction.REJECT">Alle Anfragen dieser Serie werden abgelehnt.</span>
+                    <span *ngIf="queryRule.action === QueryRuleAction.ACCEPT_SUBMIT">Alle Anfragen dieser Serie werden freigegeben. Die Ergebnisse werden direkt übertragen.</span>
+                    <span *ngIf="queryRule.action === QueryRuleAction.ACCEPT_EXECUTE">Alle Anfragen dieser Serie werden freigegeben. Die Übermittlung der Ergebnisse muss erneut bestätigt werden.</span>
                 </div>   
                 <div class="four wide right aligned column centered" *ngIf="queryRule" >
                     <button class="ui button button-delete-rule" (click)="deleteQueryRule()">Regel entfernen</button>
@@ -197,7 +197,7 @@
                 <div *ngIf="showQuery"  class="one column centered row">
                     <pagination-controls class="pagination"
                         (pageChange)="p = $event"
-                        autoHide="true"
+                        [autoHide]="true"
                         previousLabel="Vorherige Seite"
                         nextLabel="Nächste Seite">
                     </pagination-controls>

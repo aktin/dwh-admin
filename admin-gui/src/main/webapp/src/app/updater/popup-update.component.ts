@@ -49,7 +49,7 @@ export class PopUpUpdateComponent {
      *
      * @param _updaterService - Service for managing DWH updates and related operations
      */
-    constructor(private _updaterService: UpdaterService) {};
+    constructor(protected _updaterService: UpdaterService) {};
 
     /**
      * Sets the data and visibility state of the popup.
