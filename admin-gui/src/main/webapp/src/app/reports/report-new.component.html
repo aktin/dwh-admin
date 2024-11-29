@@ -6,10 +6,8 @@
             <div class="active section">Neuen Bericht erzeugen</div>
         </div>
     </div>
-
     <div class="ui segment row">
-        <form class="ui form new-report-form sixteen wide column" #newReportForm="ngForm" (ngSubmit)="generateReport()" [ngClass]="newReportFormClasses">
-
+        <form class="ui form new-report-form sixteen wide column" #newReportForm="ngForm" (ngSubmit)="generateReport()">
             <div class="field template-select-field">
                 <label>Berichtsart</label>
                 <select name="template" class="ui fluid dropdown template-select" [(ngModel)]="template" title="Bericht Templates">
@@ -22,23 +20,26 @@
                 <div class="field">
                     <label>Startdatum</label>
                     <div class="ui input">
-                        <input angular-mydatepicker style="width: 100%" name="fromDateMDP" [options]="fromDPOptions" [(ngModel)]="fromDateModel" (dateChanged)="onFromDateChanged($event)" required>
+                        <my-date-picker style="width: 100%" name="fromDateMDP" [options]="fromDPOptions" [(ngModel)]="fromDateModel" (dateChanged)="onFromDateChanged($event)" required></my-date-picker>
                     </div>
                 </div>
                 <div class="field">
                     <label>Enddatum</label>
                     <div class="ui input">
-                        <input angular-mydatepicker style="width: 100%" name="toDateMDP" [options]="toDPOptions" [(ngModel)]="toDateModel" (dateChanged)="onToDateChanged($event)" required>
+                        <my-date-picker style="width: 100%" name="toDateMDP" [options]="toDPOptions" [(ngModel)]="toDateModel" (dateChanged)="onToDateChanged($event)" required></my-date-picker>
                     </div>
                 </div>
             </div>
-
-            <button class="ui fluid large submit button" type="submit">
-                Erzeugen
+            <button class="ui fluid green large submit button" type="submit">
+                Jetzt erstellen
             </button>
 
         </form>
     </div>
 </div>
-
-<popup-message></popup-message>
+<br/>
+<div class="ui negative message" *ngIf="this.showErrorNotification">
+    <i class="close icon" (click)="this.showErrorNotification=false;"></i>
+    <div class="header">Fehler!</div>
+    <p>{{errorNotificationText}}</p>
+</div>

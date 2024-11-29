@@ -10,83 +10,36 @@
         {{message}}
     </div>
 
-    <div class="close-action">
-        <a class="ui compact small icon red circular button" (click)="closeMessage()">
-            <i class="remove icon"></i>
-        </a>
-    </div>
-
-    <div class="ui extra" *ngIf="checkBoxText && checkBoxText.length >= 2">
+    <div class="ui extra" *ngIf="firstCheckBox">
         <br/>
-        <label>{{checkBoxText[0]}}</label>
-        <div class="field">
-            <div class="ui slider checkbox">
-                <input type="checkbox" name="frequency" [(ngModel)]="checked">
-                <label class="fontBlack" *ngIf="!checked || checkBoxText.length == 2">{{checkBoxText[1]}}</label>
-                <label class="fontBlack" *ngIf="checked && checkBoxText.length > 2">{{checkBoxText[2]}}</label>
-            </div>
-        </div>
-    </div>
-
-    <div class="ui extra" *ngIf="checkBoxTextQuery && checkBoxTextQuery.length >= 2">
-        <br/>
-        <label>{{checkBoxTextQuery[0]}}</label>
-        <div class="field">
-            <div class="ui slider checkbox">
-                <input type="checkbox" name="query" [(ngModel)]="checkedQuery">
-                <label class="fontBlack" *ngIf="!checkedQuery || checkBoxTextQuery.length == 2">{{checkBoxTextQuery[1]}}</label>
-                <label class="fontBlack" *ngIf="checkedQuery && checkBoxTextQuery.length > 2">{{checkBoxTextQuery[2]}}</label>
-            </div>
-        </div>
-    </div>
-
-    <div class="ui extra" *ngIf="checkBoxTextApply">
-        <br/>
+        <label>{{firstCheckBox[0]}}</label>
         <div class="field">
             <div class="ui checkbox">
-                <input type="checkbox" name="apply" [(ngModel)]="checkedApply" [disabled]="!checkedQuery">
-                <label>{{ checkBoxTextApply }}</label>
+                <input type="checkbox" name="firstCheck" [(ngModel)]="firstChecked">
+                <label class="fontBlack">{{ firstCheckBox[1] }}</label>
             </div>
         </div>
     </div>
-     <!-- <div class="ui extra" *ngIf="checkBoxTextMail">
+
+    <div class="ui extra" *ngIf="secondCheckBox">
+        <br/>
+        <label>{{secondCheckBox[0]}}</label>
         <div class="field">
             <div class="ui checkbox">
-                <input type="checkbox" name="mail" [(ngModel)]="checkedMail" [disabled]="!checkedQuery || checkedQuery && !checked">
-                <label>{{ checkBoxTextMail }}</label>
+                <input type="checkbox" name="secondCheck" [(ngModel)]="secondChecked">
+                <label class="fontBlack">{{ secondCheckBox[1] }}</label>
             </div>
         </div>
-     </div> -->
-
-     <!-- <div *ngIf="checkedQuery">
-        <br>
-        <ng-container *ngIf="!checked && checkBoxText">
-            Sie erhalten Benachrichtigungen per E-Mail, wenn weitere Aktionen erforderlich sind.
-        </ng-container>
-        <ng-container *ngIf="checked && !checkedMail || !checkBoxText">
-            Sie erhalten keine weiteren Benachrichtigungen für Anfragen aus dieser Serie.
-        </ng-container>
-        <ng-container *ngIf="checked && checkedMail">
-            Sie erhalten Benachrichtigungen per E-Mail, wenn Ergebnisse übermittelt wurden.
-        </ng-container>
-        <br>
-     </div> -->
+    </div>
 
     <br>
     <div class="popup-message-buttons" *ngIf="mode === 'confirm'" style="display: flex; justify-content: center;">
-        <div class="ui animated vertical button popup-message-okay-button"
-             [ngClass]="buttons[0][1]" (click)="msgOk()">
-            <div class="visible content">{{buttons[0][0]}}</div>
-            <div class="hidden content">
-                <i class="icon checkmark"></i>
-            </div>
+        <div class="ui animated vertical button" [ngClass]="button[2]" (click)="msgOk()">
+            <div class="hidden content">{{button[1]}}</div>
+            <div class="visible content"><i class="popup-buttons" [ngClass]="button[0]"></i></div>
         </div>
-        <div class="ui animated vertical button popup-message-okay-button"
-             [ngClass]="buttons[1][1]" (click)="msgCancel()">
-            <div class="visible content">{{buttons[1][0]}}</div>
-            <div class="hidden content">
-                <i class="icon remove"></i>
-            </div>
+        <div class="ui basic button" (click)="msgCancel()">
+            <div class="visible content"><i class="left arrow icon popup-buttons"></i></div>
         </div>
     </div>
 </div>

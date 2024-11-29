@@ -1,11 +1,12 @@
 /**
  * Created by Xu on 04.05.2017.
  */
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subscription, timer} from 'rxjs';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { TimerObservable } from 'rxjs/observable/TimerObservable';
+import { Subscription } from 'rxjs';
 
-import {RequestService} from './request.service';
-import {LocalRequest, RequestStatus} from './request';
+import { RequestService } from './request.service';
+import { LocalRequest, RequestMarker, RequestStatus } from './request';
 
 @Component({
     templateUrl: './requests.component.html',
@@ -18,7 +19,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
     etag = '0';
     status: RequestStatus = null;
     stateFilter: RequestStatus | string = 'auth';
-    queryDetails: any = {};
+    queryDetails = {};
     timeoutBool = false;
 
     private _timerSubscription: Subscription;
@@ -28,8 +29,8 @@ export class RequestsComponent implements OnInit, OnDestroy {
     constructor(private _requestService: RequestService) {}
 
     ngOnInit() {
-        let timer$ = timer(0, this._dataInterval);
-        this._timerSubscription = timer$.subscribe(() => {
+        let timer = TimerObservable.create(0, this._dataInterval);
+        this._timerSubscription = timer.subscribe(() => {
             this.updateRequests();
         });
         setTimeout(() => {
@@ -56,7 +57,7 @@ export class RequestsComponent implements OnInit, OnDestroy {
             [ 'Neue Anfragen', 'new', null ],
             [ 'Einzelanfragen', 'single', null ],
             [ 'Serien-Anfragen', 'recurring', null ],
-            [ 'Gelöschte Anfragen', 'hidden',  null ],
+            [ 'Archivierte Anfragen', 'hidden',  null ],
             [ 'Laufende Anfragen' , null,
                 [
                 [ 'Alle laufenden Anfragen', 'inProgress' ],
@@ -94,6 +95,14 @@ export class RequestsComponent implements OnInit, OnDestroy {
 
     get requests(): LocalRequest[] {
         return this.requestsData;
+    }
+
+    /**
+    * Returns the position of the request inside the belonging series (ordered by reference date).
+    * @returns position of request in the belonging series
+    */
+    getNumRequest(request: LocalRequest): number {
+        return this.queryDetails[request.queryId].order.indexOf(request.requestId) + 1;
     }
 
     /**

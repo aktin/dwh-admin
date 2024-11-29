@@ -1,12 +1,12 @@
 /**
  * Created by Xu on 15.05.2017.
  */
-import {Component, Input, ViewChild} from '@angular/core';
-import {Report, ReportStatus} from './report';
-import {ReportService} from './report.service';
-import {PopUpMessageComponent} from './../helpers/popup-message.component';
-import {Router} from '@angular/router';
-import {Subscription} from 'rxjs';
+import { ViewChild, Component, Input } from '@angular/core';
+import { Report, ReportStatus } from './report';
+import { ReportService } from './report.service';
+import { PopUpMessageComponent } from './../helpers/popup-message.component';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'report-single-view',
@@ -53,8 +53,8 @@ export class ReportSingleViewComponent  {
     }
 
     deleteReport() {
-        let buttons = [['Löschen', 'red'], ['Abbrechen', 'orange']];
-        this.popUpDeleteConfirm.setConfirm(buttons);
+        let button = ['icon trash', 'Löschen', 'red'];
+        this.popUpDeleteConfirm.setConfirm(button);
         this.popUpDeleteConfirm.onTop = true;
         this.popUpDeleteConfirm.setData(true, 'Bericht löschen',
         'Wollen Sie diesen Bericht wirklich unwiderruflich löschen?',

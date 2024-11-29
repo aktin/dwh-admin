@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Notaufnahmeregister Data-Warehouse-Manager</title>
+        <!--<base href="/aktin/admin/">-->
+        <base href=".">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <link href="img/favicon_tmp.ico" rel="icon" type="image/x-icon" />
+        <link rel="stylesheet" href="styles.css">
+
+
+        <link rel="stylesheet" type="text/css" href="lib/semantic-ui/semantic.min.css">
+        <link rel="stylesheet" type="text/css" href="lib/loading/loading-spin.css">
+    </head>
+
+    <body>
+        <my-app>Notaufnahmeregister Data-Warehouse-Manager wird geladen ...</my-app>
+
+        <!--<script src="lib/jquery/jquery.js"></script>-->
+        <!--<script src="lib/semantic-ui/semantic.js"></script>-->
+        
+        <!-- Polyfill(s) for older browsers -->
+        <script src="lib/shim.min.js"></script>
+        <!--<script src="lib/core-js/shim.js"></script>-->
+
+        <script src="lib/zone.min.js"></script>
+        <script src="lib/system.src.js"></script>
+
+        <script src="systemjs.config.js"></script>
+        <script>
+            System.import('main.js').catch(function(err){ console.error(err); });
+        </script>
+    </body>
+</html>

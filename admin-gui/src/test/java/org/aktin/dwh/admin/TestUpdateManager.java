@@ -3,6 +3,7 @@ package org.aktin.dwh.admin;
 import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.admin.updater.UpdateManager;
+import org.aktin.dwh.admin.updater.UpdateStatus;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,7 +16,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.nio.file.Paths;
-import java.util.HashMap;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestUpdateManager {
@@ -42,20 +42,22 @@ public class TestUpdateManager {
 
     @Test
     public void checkDwhUpdateResult() {
-        Assert.assertTrue(updateManager.wasDwhUpdateSuccessful());
+        UpdateStatus updateStatus = updateManager.getUpdateStatus();
+        Assert.assertTrue(updateStatus.isSuccess());
     }
 
     @Test
     public void getDwhUpdateLog() {
-        Assert.assertNotNull(updateManager.getDwhUpdateLog());
+        Assert.assertNotNull(updateManager.getUpdateLog());
     }
 
     @Test
     public void getDwhUpdateInfo() {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("version.installed", "V1.0");
-        map.put("version.candidate", "V1.1");
-        Assert.assertEquals(map, updateManager.getDwhUpdateInfo());
+        UpdateStatus updateStatus = updateManager.getUpdateStatus();
+        String installedVersion = updateStatus.getInstalledVersion();
+        String candidateVersion = updateStatus.getCandidateVersion();
+        Assert.assertEquals("V1.0", installedVersion);
+        Assert.assertEquals("V1.1", candidateVersion);
     }
 
     @Test
