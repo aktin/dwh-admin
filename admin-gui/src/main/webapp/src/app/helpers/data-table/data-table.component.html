@@ -1,4 +1,5 @@
-<table class="ui sortable selectable celled table segment sixteen wide column" *templateVar="showDetailButtons ? columns.length : columns.length + 1 as colSpan">
+<table *templateVar="showDetailButtons ? columns.length : columns.length + 1 as colSpan"
+       class="ui sortable selectable celled table segment sixteen wide column">
     <thead>
     <tr>
         @for (column of columns; track column) {
@@ -14,7 +15,7 @@
     </tr>
     </thead>
     <tbody>
-        @for (row of allData | paginate: {itemsPerPage: 15, currentPage: p}; track determineTrackBy(row)) {
+        @for (row of allData | paginate: {itemsPerPage: 15, currentPage: page}; track determineTrackBy(row)) {
             <tr>
                 @for (column of columns; track column) {
                     <td>
@@ -27,7 +28,7 @@
                     <td>
                         <button class="ui right floated labeled icon button"
                                 style="width: auto"
-                        (click)="onButtonClick(row)">
+                                (click)="onButtonClick(row)">
                             <i class="search icon"></i>
                             Details
                         </button>
@@ -38,11 +39,11 @@
     </tbody>
     <tfoot>
     <th [colSpan]="colSpan">
-        <pagination-controls class="pagination"
-                             (pageChange)="p = $event"
+        <pagination-controls (pageChange)="page = $event"
                              [autoHide]="true"
-                             previousLabel="Vorherige Seite"
-                             nextLabel="Nächste Seite">
+                             class="pagination"
+                             nextLabel="Nächste Seite"
+                             previousLabel="Vorherige Seite">
         </pagination-controls>
     </th>
     </tfoot>

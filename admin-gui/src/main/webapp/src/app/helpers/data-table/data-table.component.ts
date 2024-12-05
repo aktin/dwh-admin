@@ -13,11 +13,11 @@ export class DataTableComponent<T = any> {
     public allData: T[];
     @Output()
     public onDetailsClick: EventEmitter<T> = new EventEmitter();
-    @ViewChildren(SortableTableColumnDirective)
-    private sortableColumns: QueryList<SortableTableColumnDirective>;
-
     @Input()
     public showDetailButtons: boolean = true;
+    public page: number;
+    @ViewChildren(SortableTableColumnDirective)
+    private sortableColumns: QueryList<SortableTableColumnDirective>;
 
     @Input()
     public set data(data: T[]) {
@@ -67,15 +67,13 @@ export class DataTableComponent<T = any> {
 
     }
 
-    protected resolveField(field: string | number | symbol | ((obj: any) => string), obj: any): any {
-        return typeof field === "function" ? field(obj) : obj[field];
-    }
-
     public resetSorts(identifierToIgnore?: string): void {
         this.sortableColumns?.filter(c => c.identifier !== identifierToIgnore).forEach(c => c.direction = null);
     }
 
-    public p: number;
+    protected resolveField(field: string | number | symbol | ((obj: any) => string), obj: any): any {
+        return typeof field === "function" ? field(obj) : obj[field];
+    }
 
     protected onButtonClick(row: T): void {
         this.onDetailsClick.emit(row);

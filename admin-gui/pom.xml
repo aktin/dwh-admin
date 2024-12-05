@@ -258,7 +258,16 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <warSourceExcludes>node_modules/**,**/*.ts,**/*.js.map,.idea/**,.vscode/**</warSourceExcludes>
+                    <warSourceExcludes>node_modules/**,.angular/**,*.json,*.md,.browserslistrc,.vscode/**,.idea/**,dist/**,public/**,src/**</warSourceExcludes>
+                    <webResources>
+                        <resource>
+                            <directory>${project.basedir}/src/main/webapp/dist/browser</directory>
+                            <includes>
+                                <include>**/*</include>
+                            </includes>
+                            <targetPath>/</targetPath> <!-- This places the build files at the root of the WAR -->
+                        </resource>
+                    </webResources>
                 </configuration>
             </plugin>
             <plugin>

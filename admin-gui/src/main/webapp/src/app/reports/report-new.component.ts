@@ -1,13 +1,15 @@
 /**
  * Created by Xu on 02-Jun-17.
  */
-import { Component, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import {Component, Inject} from '@angular/core';
+import {Router} from '@angular/router';
 
 
-import { ReportTemplate } from './report';
-import { ReportService } from './report.service';
-import {IMyDateModel, IMyOptions} from "gramli-angular-mydatepicker";
+import {ReportTemplate} from './report';
+import {ReportService} from './report.service';
+import {IMyDate, IMyDateModel, IMyOptions} from "gramli-angular-mydatepicker";
+import moment from "moment";
+import {MY_CALENDAR_DEFAULT_OPTIONS, MY_CALENDAR_OPTIONS} from "../helpers";
 
 
 @Component({
@@ -15,7 +17,6 @@ import {IMyDateModel, IMyOptions} from "gramli-angular-mydatepicker";
     styleUrls: ['./reports.component.css'],
 })
 export class ReportNewComponent {
-
     template: string;
 
     fromDateModel: IMyDateModel;
@@ -25,37 +26,15 @@ export class ReportNewComponent {
     toDPOptions: IMyOptions;
 
     showErrorNotification: Boolean = false;
-    errorNotificationText: string = "";
+    errorNotificationText: string = '';
 
     p: number; // page number
-    today = new Date();
 
-    defaultDPOptions: IMyOptions = {
-        dayLabels: {su: 'So', mo: 'Mo', tu: 'Di', we: 'Mi', th: 'Do', fr: 'Fr', sa: 'Sa'},
-        monthLabels: { 1: 'Jan', 2: 'Feb', 3: 'Mär', 4: 'Apr', 5: 'Mai', 6: 'Jun',
-            7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Okt', 11: 'Nov', 12: 'Dez' },
-        // showTodayBtn: false,
-        // editableDateField: false,
-        inline: false,
-        // openSelectorOnInputClick: true,
-        dateFormat: 'dd. mmm. yyyy',
-        disableSince: {year: this.today.getFullYear(), month: this.today.getMonth() + 1, day: this.today.getDate() + 1},
-    }
-
-
-    constructor(private _reportService: ReportService, private _router: Router) {
-        // let date = new Date();
-        // let to = new Date();
-        //
-        // date.setDate(1);
-        // to.setDate(date.getDate() - 1);
-        // this.toDateModel.date = to;
-        //
-        // date.setMonth(date.getMonth() - 1);
-        // this.fromDateModel.date = date;
-
-        this.fromDPOptions = this.defaultDPOptions;
-        this.toDPOptions = this.defaultDPOptions;
+    constructor(private _reportService: ReportService,
+                private _router: Router,
+                @Inject(MY_CALENDAR_OPTIONS) options: IMyOptions) {
+        this.fromDPOptions = options;
+        this.toDPOptions = options;
     }
 
     get templates(): ReportTemplate[] {
@@ -80,19 +59,19 @@ export class ReportNewComponent {
         let from = null;
         try {
             from = this.fromDateModel.singleDate.jsDate;
-        } catch(e){
+        } catch (e) {
             this.showErrorNotification = true;
             this.errorNotificationText = "Bitte wählen Sie ein valides Startdatum aus!"
             return
-        };
+        }
         let to = null;
         try {
             to = this.toDateModel.singleDate.jsDate;
-        } catch(e){
+        } catch (e) {
             this.showErrorNotification = true;
             this.errorNotificationText = "Bitte wählen Sie ein valides Enddatum aus!"
             return
-        };
+        }
         to.setDate(to.getDate() + 1);
         if (from >= to) {
             // to.setMonth(from.getMonth() + 1);

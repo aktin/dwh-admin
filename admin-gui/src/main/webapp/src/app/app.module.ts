@@ -5,7 +5,7 @@
  *  register components and import additional modules
  */
 
-import {LOCALE_ID, NgModule} from '@angular/core';
+import {InjectionToken, LOCALE_ID, NgModule} from '@angular/core';
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 
@@ -17,19 +17,20 @@ import {AppComponent} from './app.component';
 import {HomeComponent, TestComponent} from './home';
 import {
     CleanUpAuthService,
-    DataTableModule,
-    DropDownModule,
+    DataTableModule, DateFormat,
     DownloadService,
+    DropDownModule,
     DurationDataPipe,
     DurationQueryPipe,
     HttpService,
     LoadingComponent,
-    MomentDatePipe,
+    MomentDatePipe, MY_CALENDAR_DEFAULT_OPTIONS, MY_CALENDAR_OPTIONS,
+    NotificationService,
     OrderByPipe,
     PopUpMessageComponent,
     SafeUrlPipe,
     StorageService,
-    UrlService, TemplateVarDirective, NotificationService
+    UrlService
 } from './helpers';
 import {
     AuthService,
@@ -73,15 +74,15 @@ import localeDe from '@angular/common/locales/de';
 import localeDeExtra from '@angular/common/locales/extra/de';
 import {PatientListComponent} from "./study-manager/patient-list/patient-list.component";
 import {NgbInputDatepicker} from "@ng-bootstrap/ng-bootstrap";
-import {AngularMyDatePickerModule} from "gramli-angular-mydatepicker";
-import { PatientCreationComponent } from './study-manager/patient-creation/patient-creation.component';
-import { UniqueSicValidatorDirective } from './study-manager/patient-creation/unique-sic-validator.directive';
-import { MasterDataValidatorDirective } from './study-manager/patient-creation/master-data-validator.directive';
+import {AngularMyDatePickerModule, IMyOptions} from "gramli-angular-mydatepicker";
+import {PatientCreationComponent} from './study-manager/patient-creation/patient-creation.component';
+import {UniqueSicValidatorDirective} from './study-manager/patient-creation/unique-sic-validator.directive';
+import {MasterDataValidatorDirective} from './study-manager/patient-creation/master-data-validator.directive';
 import {FieldModule} from './helpers/field/field.module';
-import { ExtensionValidatorDirective } from './study-manager/patient-creation/extension-validator.directive';
-import { PatientViewComponent } from './study-manager/patient-view/patient-view.component';
-import { PatientMasterDataComponent } from './study-manager/patient-master-data/patient-master-data.component';
-import { PatientEditComponent } from './study-manager/patient-edit/patient-edit.component';
+import {ExtensionValidatorDirective} from './study-manager/patient-creation/extension-validator.directive';
+import {PatientViewComponent} from './study-manager/patient-view/patient-view.component';
+import {PatientMasterDataComponent} from './study-manager/patient-master-data/patient-master-data.component';
+import {PatientEditComponent} from './study-manager/patient-edit/patient-edit.component';
 
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
@@ -154,6 +155,7 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         {provide: HTTP_INTERCEPTORS, useClass: SetTimeInterceptor, multi: true},
         {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
         {provide: LOCALE_ID, useValue: 'de-DE'},
+        {provide: MY_CALENDAR_OPTIONS, useValue: MY_CALENDAR_DEFAULT_OPTIONS},
         Title,
         UrlService,
         StorageService,

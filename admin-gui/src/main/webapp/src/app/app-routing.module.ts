@@ -106,7 +106,7 @@ const routes: Routes = [// array of routes
     canActivate: [UserAuthGuard],
     component: PatientListComponent,
     data: {
-      name: 'Consent-Manager',
+      name: 'Studien-Manager',
       permissions: [
         Permission.READ_STUDYMANAGER,
         Permission.WRITE_STUDYMANAGER

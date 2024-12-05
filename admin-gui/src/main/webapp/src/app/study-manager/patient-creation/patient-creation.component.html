@@ -2,8 +2,8 @@
     <div id="popup-message-overlay">
     </div>
 
-    <div id="popup-message-content"
-         class="ui text container very padded segment">
+    <div class="ui text container very padded segment"
+         id="popup-message-content">
         <div class="ui header">
             Neue Patient*in registrieren
         </div>
@@ -14,8 +14,8 @@
         </div>
 
         <div class="close-action">
-            <a class="ui compact small icon circular button"
-               (click)="close()">
+            <a (click)="close()"
+               class="ui compact small icon circular button">
                 <i class="remove icon"></i>
             </a>
         </div>
@@ -46,20 +46,20 @@
                             <div class="inline fields">
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio"
-                                               name="opt"
+                                        <input [checked]="selectedStudy?.optIn"
                                                disabled
-                                               [checked]="selectedStudy?.optIn">
+                                               name="opt"
+                                               type="radio">
                                         <label>Ja, hat zugestimmt</label>
                                     </div>
                                 </div>
 
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio"
-                                               name="opt"
+                                        <input [checked]="selectedStudy?.optOut"
                                                disabled
-                                               [checked]="selectedStudy?.optOut">
+                                               name="opt"
+                                               type="radio">
                                         <label>Nein, ist ausgeschlossen</label>
                                     </div>
                                 </div>
@@ -76,21 +76,21 @@
                             <div class="inline fields">
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio"
-                                               name="generateSic"
+                                        <input [(ngModel)]="generateSic"
                                                [disabled]="selectedStudy.sicGeneration === SICGeneration.ManualOnly"
                                                [value]="true"
-                                               [(ngModel)]="generateSic">
+                                               name="generateSic"
+                                               type="radio">
                                         <label>Ja, neue Studien-ID erstellen</label>
                                     </div>
                                 </div>
 
                                 <div class="field">
                                     <div class="ui radio checkbox">
-                                        <input type="radio"
-                                               name="generateSic"
+                                        <input [(ngModel)]="generateSic"
                                                [value]="false"
-                                               [(ngModel)]="generateSic">
+                                               name="generateSic"
+                                               type="radio">
                                         <label>Nein, vorhandendene Studien-ID eintragen</label>
                                     </div>
                                 </div>
@@ -135,22 +135,22 @@
                         <div class="field">
                             <label for="extension">{{ getLabel(selectedReference) }}</label>
                             <div class="ui action input">
-                                <input type="text"
-                                       name="extension"
-                                       class="ui input"
-                                       required
-                                       id="extension"
-                                       extension
+                                <input #extModel="ngModel"
+                                       (encountersChange)="encounters = $event"
+                                       (masterDataChange)="masterData = $event"
                                        [(ngModel)]="extension"
-                                       #extModel="ngModel"
-                                       validateMasterData
                                        [reference]="selectedReference"
                                        [root]="getRoot(selectedReference)"
-                                       (masterDataChange)="masterData = $event"
-                                       (encountersChange)="encounters = $event">
-                                <button class="ui button"
-                                        type="button"
-                                        (click)="loadEncountersAndMasterData()">
+                                       class="ui input"
+                                       extension
+                                       id="extension"
+                                       name="extension"
+                                       required
+                                       type="text"
+                                       validateMasterData>
+                                <button (click)="loadEncountersAndMasterData()"
+                                        class="ui button"
+                                        type="button">
                                     Suchen
                                 </button>
                             </div>
@@ -187,9 +187,9 @@
                         <div class="field">
                             <label>Kommentar</label>
                             <div class="inline fields">
-                                <textarea rows="4"
+                                <textarea [(ngModel)]="newEntry.comment"
                                           name="comment"
-                                          [(ngModel)]="newEntry.comment">
+                                          rows="4">
                                 </textarea>
                             </div>
                         </div>
@@ -209,12 +209,12 @@
             </div>
 
             <div class="actions">
-                <button class="ui button"
-                        type="button"
-                        (click)="close()">Abbrechen
+                <button (click)="close()"
+                        class="ui button"
+                        type="button">Abbrechen
                 </button>
-                <button class="ui button green"
-                        (click)="create()">Registrieren
+                <button (click)="create()"
+                        class="ui button green">Registrieren
                 </button>
             </div>
         </form>
