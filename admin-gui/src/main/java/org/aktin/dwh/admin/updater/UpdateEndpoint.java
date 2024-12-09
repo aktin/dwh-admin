@@ -126,4 +126,10 @@ public class UpdateEndpoint {
             Response.accepted().build() :
             Response.serverError().build();
     }
+
+    @Path("updateProperties")
+    @POST
+    public Response executePropertiesFileUpdate() {
+        return Response.status(Response.Status.FOUND).build();
+    }
 }

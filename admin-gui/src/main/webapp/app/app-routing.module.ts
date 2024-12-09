@@ -151,7 +151,17 @@ const routes: Routes = [// array of routes
     },
     {
         path: 'preferencesEdit',
-        component: PreferencesEditComponent
+        canActivate: [UserAuthGuard],
+        component: PreferencesEditComponent,
+        data: {
+            roles: [
+                'Admin',
+                // 'LOGGEDIN',
+            ],
+            permissions: [
+                Permission.CONFIG
+            ]
+        },
     },
     /*{
         path: 'users',
