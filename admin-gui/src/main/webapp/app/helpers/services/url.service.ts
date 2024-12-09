@@ -7,7 +7,7 @@ import _ = require('underscore');
 @Injectable()
 export class UrlService {
     private _serverUrls = [
-        //'http://localhost:81/aktin/admin/rest/',
+        // 'http://http://192.168.122.49/:81/aktin/admin/rest/',
         '/aktin/admin/rest/',
     ];
     private _serverUrl = this._serverUrls[0];

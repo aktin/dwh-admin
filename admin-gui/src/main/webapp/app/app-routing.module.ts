@@ -23,6 +23,7 @@ import { RequestsComponent, RequestSingleComponent } from './requests/index';
 import { StudyManagerComponent } from './studyManager/index';
 import { StatusComponent } from './status/index';
 import { Permission } from './users/index';
+import {PreferencesEditComponent} from "./preferencesEdit/preferencesEdit.component";
 
 const routes: Routes = [// array of routes
     {
@@ -147,6 +148,10 @@ const routes: Routes = [// array of routes
                 Permission.CONFIG
             ]
         },
+    },
+    {
+        path: 'preferencesEdit',
+        component: PreferencesEditComponent
     },
     /*{
         path: 'users',
