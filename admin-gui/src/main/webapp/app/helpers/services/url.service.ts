@@ -7,8 +7,8 @@ import _ = require('underscore');
 @Injectable()
 export class UrlService {
     private _serverUrls = [
-        // 'http://http://192.168.122.49/:81/aktin/admin/rest/',
-        '/aktin/admin/rest/',
+        'http://192.168.122.49/:81/aktin/admin/rest/',
+        // '/aktin/admin/rest/',
     ];
     private _serverUrl = this._serverUrls[0];
     private _endUrls = {
@@ -76,6 +76,7 @@ export class UrlService {
         updateDWH: 'update',
         getUpdateLog: 'update/log',
         reloadAptPackages: 'update/agent/reload',
+        // sendPreference: 'update/updateProperties',
     };
 
     setServerUrl(serverUrl: string) {
