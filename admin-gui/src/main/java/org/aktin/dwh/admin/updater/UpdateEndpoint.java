@@ -132,9 +132,10 @@ public class UpdateEndpoint {
 //    @Consumes(PageAttributes.MediaType.APPLICATION_JSON)
 //    @Secured TODO check if secured is needed and what authentication would be required
     public Response executePropertiesFileUpdate() {
+        return Response.status(Response.Status.FOUND).build();
 //        PreferencesUpdateService service = new PreferencesUpdateService();
-        return Response.ok("successMessage", MediaType.TEXT_PLAIN)
-                .header("Content-Disposition", "inline")
-                .build();
+//        return Response.ok("successMessage", MediaType.TEXT_PLAIN)
+//                .header("Content-Disposition", "inline")
+//                .build();
     }
 }

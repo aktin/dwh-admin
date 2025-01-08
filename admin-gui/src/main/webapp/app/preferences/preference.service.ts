@@ -15,6 +15,8 @@ import _ = require('underscore');
 
 import { StorageService, UrlService, HttpInterceptorService }                from '../helpers/index';
 import { predefinedPreferenceCategories, predefinedPreferences, PreferenceCategory, Preference } from './preference';
+import { AuthService } from './../users/auth.service';
+import { Permission } from './../users/permission';
 
 /**
  * Service Class for user management and LOGIN
@@ -32,7 +34,8 @@ export class PreferenceService {
     constructor (
         private _http: HttpInterceptorService,
         private _urls: UrlService,
-        private _store: StorageService
+        private _store: StorageService,
+        private _auth: AuthService
     ) {}
 
     updatePreferences (): void {
@@ -90,5 +93,15 @@ export class PreferenceService {
 
     getFileLocation (): string {
         return this._fileLocation;
+    }
+
+    /**
+     * Checks if the user has the given permission.
+     * @param permission The permission that will be checked.
+     * @returns true if user has the permission, false otherwise
+     */
+    checkPermission(): boolean {
+        let perm = Permission.CONFIG;
+        return this._auth.userLocalCheckPermissions([perm]);
     }
 }
