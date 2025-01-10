@@ -76,7 +76,7 @@ export class UrlService {
         updateDWH: 'update',
         getUpdateLog: 'update/log',
         reloadAptPackages: 'update/agent/reload',
-        // sendPreference: 'update/updateProperties',
+        sendPreference: 'update/updateProperties',
     };
 
     setServerUrl(serverUrl: string) {

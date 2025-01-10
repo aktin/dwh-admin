@@ -1,5 +1,4 @@
 <h1>{{ title }}</h1>
-<p>Welcome to the new page!</p>
 <div class="ui container">
     <table class="ui celled structured compact fixed table preferences">
         <thead>
@@ -21,7 +20,7 @@
                         {{pref.key}}
                     </td>
                     <td class="break-word">
-                        <input class="preferenceValue" [value]="pref.value" (blur)="onInputBlur(pref.key)">
+                        <input class="preferenceValue" [value]="pref.value" (blur)="checkInput(pref.key)">
                     </td>
                     <td class="break-word">
                         {{pref.description}}
