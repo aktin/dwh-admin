@@ -20,7 +20,7 @@
                         {{pref.key}}
                     </td>
                     <td class="break-word">
-                        <input class="preferenceValue" [value]="pref.value" (blur)="checkInput(pref.key)">
+                        <input class="preferenceValue" [attr.id]="pref.key" [value]="pref.value" (blur)="checkInput(pref)">
                     </td>
                     <td class="break-word">
                         {{pref.description}}
@@ -31,3 +31,18 @@
         </tbody>
     </table>
 </div>
+<div class="bottom-banner" [attr.id]="bottombanner">
+    <p>Änderungen erkannt</p>
+    <div class="bannerbutton">
+        <a class="ui green label">
+            Anwenden
+        </a>
+    </div>
+    <div class="bannerbutton">
+        <a class="ui green basic label">
+            Verwerfen
+        </a>
+    </div>
+</div>
+
+

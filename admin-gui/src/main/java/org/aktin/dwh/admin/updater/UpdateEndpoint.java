@@ -1,12 +1,14 @@
 package org.aktin.dwh.admin.updater;
 
 import org.aktin.dwh.admin.auth.Secured;
+import org.aktin.dwh.admin.updater.validator.ValidationRequest;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -132,8 +134,9 @@ public class UpdateEndpoint {
     @Path("updateProperties")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
 //    @Secured TODO check if secured is needed and what authentication would be required
-    public boolean executePropertiesFileUpdate() {
+    public boolean executePropertiesFileUpdate(ValidationRequest request) {
         boolean result = false;
         return result;
     }

@@ -13,7 +13,6 @@ export class PreferencesComponent  {
     ) {}
 
     get preferenceCategories (): PreferenceCategory[] {
-        // console.log( this._prefService.getPreferenceCategories());
         return this._prefService.getPreferenceCategories();
     }
 
@@ -23,7 +22,6 @@ export class PreferencesComponent  {
 
     isAuthorized() {
         return this._prefService.checkPermission()
-        // return true;
     }
 
     navigateToEditPage(): void {
