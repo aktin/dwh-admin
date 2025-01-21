@@ -57,7 +57,8 @@ export class UrlService {
         studies: 'optin/studies',
         entries: 'optin/@studyId@',
         sic: 'optin/@studyId@/@sic@',
-        entry: 'optin/@studyId@/@reference@/@root@/@extension@', // get/post/delete
+        multi: 'optin/entries/@studyId@/@reference@/@root@', //put/post
+        entry: 'optin/@studyId@/@reference@/@root@/@extension@', // get/put/post/delete
         masterdata: 'optin/masterdata/@reference@/@root@/@extension@',
         encounter: 'optin/encounter/@reference@/@root@/@extension@',
 

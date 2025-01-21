@@ -23,12 +23,12 @@
 
             <div class="ui segment row filter">
                 <div class="sixteen fields">
-                    <div class="seven wide field">
+                    <div class="sixteen wide wide field">
                         <label>Datum</label>
                         <div class="ui action input">
                             <input #d="angular-mydatepicker"
-                                   [options]="options"
                                    [(ngModel)]="date"
+                                   [options]="options"
                                    angular-mydatepicker
                                    name="dp"/>
                             <button (click)="d.toggleCalendar()"
@@ -36,29 +36,17 @@
                                     type="button">
                                 <i class="calendar icon"></i>
                             </button>
+                            <button (click)="resetFilter()"
+                                    class="ui labeled icon button"
+                                    type="button">
+                                <i class="close icon"></i> Zurücksetzen
+                            </button>
+                            <button (click)="filter()"
+                                    class="ui labeled icon button"
+                                    type="button">
+                                <i class="filter icon"></i> Suchen
+                            </button>
                         </div>
-                    </div>
-
-                    <div class="seven field">
-                        <label>Suche</label>
-                        <input [(ngModel)]="search"
-                               class="visible error ui input focus"
-                               name="search"
-                               type="text">
-                    </div>
-                    <div class="bottom aligned">
-                        <button (click)="resetFilter()"
-                                class="ui labeled icon button"
-                                type="button">
-                            <i class="close icon"></i> Zurücksetzen
-                        </button>
-                    </div>
-                    <div class="bottom aligned">
-                        <button (click)="filter()"
-                                class="ui labeled icon button"
-                                type="button">
-                            <i class="filter icon"></i> Suchen
-                        </button>
                     </div>
                 </div>
             </div>
@@ -71,20 +59,31 @@
     <div class="ui segment ui grid buttonbar">
         <div class="ui sixteen wide column">
             <div class="row">
-                <button (click)="patientDetailsComponent.open()"
+                <button (click)="isPatientCreationComponentOpen = true"
                         class="ui green right floated labeled icon basic button">
                     <i class="plus icon"></i>
-                    Erstellen
+                    Registrieren
+                </button>
+
+                <button (click)="isPatientsCreationComponentOpen = true"
+                        class="ui green right floated labeled icon basic button">
+                    <i class="plus icon"></i>
+                    Multi-registrierung
                 </button>
             </div>
         </div>
     </div>
-    <data-table (onDetailsClick)="selectedEntry = $event; patientViewComponent.open();"
+    <data-table (onDetailsClick)="selectedEntry = $event; isPatientViewComponentOpen = true;"
                 [columns]="columns"
                 [data]="filteredEntries"></data-table>
 </div>
 
-<patient-creation #patientDetailsComponent
+<patients-creation (onClose)="isPatientsCreationComponentOpen = false; loadEntries();"
+                   *ngIf="isPatientsCreationComponentOpen"
+                   [(selectedStudy)]="selectedStudy"></patients-creation>
+<patient-creation (onClose)="isPatientCreationComponentOpen = false; loadEntries();"
+                  *ngIf="isPatientCreationComponentOpen"
                   [(selectedStudy)]="selectedStudy"></patient-creation>
-<patient-view #patientViewComponent
+<patient-view (onClose)="isPatientViewComponentOpen = false; loadEntries();"
+              *ngIf="isPatientViewComponentOpen"
               [entry]="selectedEntry"></patient-view>

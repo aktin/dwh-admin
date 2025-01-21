@@ -4,12 +4,12 @@
 <div class="ui text container very padded segment"
      id="popup-message-content">
     <div class="ui header">
-        Neue Patient*in registrieren
+        Mehrere Patient*innen registrieren
     </div>
 
     <div class="ui content"
          style="padding-bottom: 1em">
-        Bitte füllen Sie die folgenden Felder, um eine*n neue*n Patient*in zu registrieren
+        Bitte füllen Sie die folgenden Felder, um mehrere neue Patient*innen zu registrieren
     </div>
 
     <div class="close-action">
@@ -80,7 +80,7 @@
                                            [value]="true"
                                            name="generateSic"
                                            type="radio">
-                                    <label>Ja, neue Studien-ID erstellen</label>
+                                    <label>Ja (nur {{ selectedReference | patientReferenceToLabel }} eingeben)</label>
                                 </div>
                             </div>
 
@@ -90,36 +90,12 @@
                                            [value]="false"
                                            name="generateSic"
                                            type="radio">
-                                    <label>Nein, vorhandendene Studien-ID eintragen</label>
+                                    <label>Nein ({{ selectedReference | patientReferenceToLabel }} und SIC
+                                        eingeben)</label>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="field">
-                        <label>Studien-ID (SIC)</label>
-                        @if (!generateSic) {
-                            <input type="text"
-                                   name="sic"
-                                   class="ui input"
-                                   [studyId]="selectedStudy.id"
-                                   uniqueSic
-                                   #sicModel="ngModel"
-                                   required
-                                   [(ngModel)]="newEntry.sic">
-                            <error-message *ngIf="sicModel.errors?.required">Studien-ID ist erforderlich
-                            </error-message>
-                            <error-message *ngIf="sicModel.errors?.sicNotUnique">Studien-ID ist schon vorhanden
-                            </error-message>
-                        } @else {
-                            <input type="text"
-                                   name="sic"
-                                   class="ui input"
-                                   disabled
-                                   value="Wird nach abgeschlossener Registrierung erstellt ..">
-                        }
-                    </div>
-
 
                     <div class="field">
                         <label>Patientenreferenz</label>
@@ -130,65 +106,21 @@
                             }
                         </drop-down>
                     </div>
-
                     <div class="field">
-                        <label for="extension">{{ selectedReference | patientReferenceToLabel }}</label>
-                        <div class="ui action input">
-                            <input #extModel="ngModel"
-                                   (encounters)="encounters = $event"
-                                   (masterData)="masterData = $event"
-                                   [(ngModel)]="extension"
-                                   [reference]="selectedReference"
-                                   [root]="selectedReference | patientReferenceToRoot"
-                                   class="ui input"
-                                   extension
-                                   id="extension"
-                                   name="extension"
-                                   required
-                                   type="text">
-                            <button (click)="loadEncountersAndMasterData()"
-                                    class="ui button"
-                                    type="button">
-                                Suchen
-                            </button>
-                        </div>
-
-                        <error-message *ngIf="extModel.errors?.required">{{ selectedReference | patientReferenceToLabel }}
-                            erforderlich
-                        </error-message>
-                        <error-message *ngIf="extModel.errors?.slashSep">Maximal ein "/" als Trennzeichen von Root
-                            und {{ selectedReference | patientReferenceToLabel }} erlaubt
-                        </error-message>
-                        <error-message *ngIf="extModel.errors?.slash">"/" nicht erlaubt</error-message>
-                        <error-message *ngIf="extModel.errors?.separator">Trennzeichen darf nicht an erster Stelle
-                            stehen
-                        </error-message>
-                        <error-message *ngIf="extModel.errors?.period">Root
-                            und {{ selectedReference | patientReferenceToLabel }}
-                            dürfen
-                            nicht aus "." oder ".." bestehen
-                        </error-message>
-                        <error-message *ngIf="extModel.errors?.noMasterData">Keine Stammdaten gefunden
-                        </error-message>
-                        <error-message *ngIf="extModel.errors?.noEncounters">Keine Behandlungsdaten gefunden
-                        </error-message>
-                    </div>
-
-                    <div class="field">
-                        @if (extModel.dirty && !extModel.errors?.noMasterData && !extModel.errors?.noEncounters) {
-                            <patient-master-data [encounters]="encounters"
-                                                 [masterData]="masterData"></patient-master-data>
-                        } @else {
-                            <div>Bitte gültige {{ selectedReference | patientReferenceToLabel }} eingeben, um Daten zu
-                                laden
-                            </div>
-                        }
+                        <patients-text-area [(ngModel)]="entries"
+                                            [reference]="selectedReference"
+                                            [root]="selectedReference | patientReferenceToRoot"
+                                            [studyId]="selectedStudy?.id"
+                                            [generateSic]="generateSic"
+                                            required
+                                            name="patients">
+                        </patients-text-area>
                     </div>
 
                     <div class="field">
                         <label>Kommentar</label>
                         <div class="inline fields">
-                                <textarea [(ngModel)]="newEntry.comment"
+                                <textarea [(ngModel)]="comment"
                                           name="comment"
                                           rows="4">
                                 </textarea>

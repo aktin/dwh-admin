@@ -6,21 +6,25 @@ import {StudyManagerService} from "../study-manager.service";
 import {Participation} from "../participation";
 import {Encounter} from "../encounter";
 import {MasterData} from "../master-data";
+import {PatientReferenceToRootPipe} from "../patient-reference-to-root.pipe";
 
 declare var $: any;
 
 @Component({
     selector: 'patient-view',
     templateUrl: './patient-view.component.html',
-    styleUrls: ['./patient-view.component.css', '../../helpers/popup-message.component.css']
+    styleUrls: ['./patient-view.component.css', '../../helpers/popup-message.component.css'],
+    providers: [PatientReferenceToRootPipe]
 })
 export class PatientViewComponent extends PatientDialogBase implements OnInit {
+    public isPatientEditComponentOpen: boolean = false;
     protected encounters: Encounter[];
     protected masterData: MasterData;
     protected readonly DateFormat = DateFormat;
     protected readonly Participation = Participation;
 
-    constructor(studyManagerService: StudyManagerService,) {
+    constructor(studyManagerService: StudyManagerService,
+                private toRootPipe: PatientReferenceToRootPipe) {
         super(studyManagerService);
     }
 
@@ -35,9 +39,9 @@ export class PatientViewComponent extends PatientDialogBase implements OnInit {
         this._entry = value;
 
         if (!!value) {
-            this.studyManagerService.getEncounters(<any>this.entry.reference, this.getRoot(<any>this.entry.reference), this.entry.idExt)
+            this.studyManagerService.getEncounters(this.entry.reference, this.toRootPipe.transform(this.entry.reference), this.entry.idExt)
                 .subscribe(e => this.encounters = e);
-            this.studyManagerService.getMasterData(<any>this.entry.reference, this.getRoot(<any>this.entry.reference), this.entry.idExt)
+            this.studyManagerService.getMasterData(this.entry.reference, this.toRootPipe.transform(this.entry.reference), this.entry.idExt)
                 .subscribe(m => this.masterData = m);
         }
     }

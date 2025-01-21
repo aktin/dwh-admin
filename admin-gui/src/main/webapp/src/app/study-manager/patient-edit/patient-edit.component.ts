@@ -1,14 +1,12 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {Participation} from "../participation";
-import {DateFormat, NotificationService} from "../../helpers";
-import {PatientDialogBase} from "../patient-dialog-base";
-import {Entry} from "../entry";
-import {PatientReference} from "../patient-reference";
-import {NgForm} from "@angular/forms";
-import {Encounter} from "../encounter";
-import {MasterData} from "../master-data";
-import {forkJoin} from "rxjs";
-import {StudyManagerService} from "../study-manager.service";
+import {Participation} from '../participation';
+import {DateFormat, NotificationService} from '../../helpers';
+import {PatientDialogBase} from '../patient-dialog-base';
+import {Entry} from '../entry';
+import {NgForm} from '@angular/forms';
+import {Encounter} from '../encounter';
+import {MasterData} from '../master-data';
+import {StudyManagerService} from '../study-manager.service';
 
 declare var $: any;
 
@@ -20,7 +18,6 @@ declare var $: any;
 export class PatientEditComponent extends PatientDialogBase implements OnInit {
     @Input()
     public entry: Entry;
-    public references: PatientReference[] = [PatientReference.Patient, PatientReference.Encounter, PatientReference.Billing];
     @ViewChild(NgForm)
     private form: NgForm;
     protected encounters: Encounter[];

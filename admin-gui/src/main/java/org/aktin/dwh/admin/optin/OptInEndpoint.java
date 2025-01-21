@@ -21,7 +21,9 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -115,6 +117,14 @@ public class OptInEndpoint {
 		return study.getPatientBySIC(sic);
 	}
 
+	/**
+	 * Get encounters for a patient
+	 * @param ref patient reference
+	 * @param root root id
+	 * @param ext extension
+	 * @return list of patient encounters
+	 * @throws IOException
+	 */
 	@Path("encounter/{reference}/{root}{p:/?}{extension:.*}")
 	@GET
 	@Produces({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
@@ -124,6 +134,14 @@ public class OptInEndpoint {
 		return sm.loadEncounters(ref, root, ext);
 	}
 
+	/**
+	 * Get master data (zip code, gender, birth date) for a patient
+	 * @param ref patient reference
+	 * @param root root id
+	 * @param ext extension
+	 * @return master data
+	 * @throws IOException
+	 */
 	@Path("masterdata/{reference}/{root}{p:/?}{extension:.*}")
 	@GET
 	@Produces({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
@@ -132,7 +150,9 @@ public class OptInEndpoint {
 										   @PathParam("extension") String ext) throws IOException {
 		return sm.loadMasterData(ref, root, ext);
 	}
-	
+
+
+
 	/**
 	 * Creates an entry under the location of the specified parameters with the data of the given PatientEntryRequest object. 
 	 * @param id: study id
@@ -229,7 +249,140 @@ public class OptInEndpoint {
 		pat.delete(security.getUserPrincipal().getName());
 		return Response.ok().build();
 	}
-	
+
+	/**
+	 * Validates entered entry data for batch registration
+	 * @param id Study id
+	 * @param ref patient reference
+	 * @param root root id
+	 * @param entries Entry data to validate
+	 * @return validation result, master data and encounters for every valid entry
+	 * @throws IOException
+	 */
+	@Secured
+	@Path("entries/{studyId}/{reference}/{root}")
+	@PUT
+	@Consumes({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
+	public ArrayList<PatientEntriesResponse> validateEntries(@PathParam("studyId") String id,
+															 @PathParam("reference") PatientReference ref,
+															 @PathParam("root") String root,
+															 PatientEntriesRequest entries) throws IOException {
+		Study study = this.getStudy(id);
+		val validatedEntries = new ArrayList<PatientEntriesResponse>();
+
+        for (int i = 0; i < entries.extensions.size(); i++) {
+			val extension = entries.extensions.get(i);
+
+			val foundEntry = new PatientEntriesResponse();
+			foundEntry.setExtension(extension);
+			validatedEntries.add(foundEntry);
+
+			if(!entries.generateSic)
+			{
+				val sic = entries.sics.get(i);
+				foundEntry.setSic(sic);
+
+				if(sic == null || sic.isEmpty()) {
+					foundEntry.setEntryValidation(EntryValidation.SicMissing);
+					continue;
+				}
+
+
+				if(entries.sics.stream().filter(s -> Objects.equals(s, sic)).count() > 1) {
+					foundEntry.setEntryValidation(EntryValidation.SicDuplicate);
+					continue;
+				}
+
+				val patientBySIC = study.getPatientBySIC(sic);
+				if (patientBySIC != null) {
+					foundEntry.setEntryValidation(EntryValidation.SicFound);
+					continue;
+				}
+			}
+
+			if(extension == null || extension.isEmpty()) {
+				foundEntry.setEntryValidation(EntryValidation.PatientReferenceMissing);
+				continue;
+			}
+
+			if(entries.extensions.stream().filter(e -> Objects.equals(e, extension)).count() > 1) {
+				foundEntry.setEntryValidation(EntryValidation.PatientReferenceDuplicate);
+				continue;
+			}
+
+			// check if patient exists
+			val patientByID = study.getPatientByID(ref, root, extension);
+			if (patientByID != null) {
+				foundEntry.setEntryValidation(EntryValidation.EntryFound);
+				continue;
+			}
+
+			//check for latest encounter
+			val encounters = sm.loadEncounters(ref, root, extension);
+			if (encounters.isEmpty()) {
+				foundEntry.setEntryValidation(EntryValidation.NoEncountersFound);
+				continue;
+			}
+			encounters.sort(Comparator.comparing(PatientEncounter::getStartDate));
+			foundEntry.setLastEncounter(encounters.get(0));
+
+			//check for master data
+			val masterdata = sm.loadMasterData(ref, root, extension);
+			if (encounters.isEmpty()) {
+				foundEntry.setEntryValidation(EntryValidation.NoMasterdataFound);
+				continue;
+			}
+			foundEntry.setMasterData(masterdata);
+
+			foundEntry.setEntryValidation(EntryValidation.Valid);
+        }
+
+		return validatedEntries;
+	}
+
+	/**
+	 * Batch registration for multiple entries
+	 * @param id Study id
+	 * @param ref patient reference
+	 * @param root root id
+	 * @param entries new entry data
+	 * @return created entries
+	 * @throws IOException
+	 */
+	@Secured
+	@Path("entries/{studyId}/{reference}/{root}")
+	@POST
+	@Consumes({MediaType.APPLICATION_XML,MediaType.APPLICATION_JSON})
+	public Response createEntries(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root,
+								  PatientEntriesRequest entries) throws IOException {
+		Study study = this.getStudy(id);
+
+		for (int i = 0; i < entries.extensions.size(); i++) {
+			val extension = entries.extensions.get(i);
+			val sic = entries.sics.get(i);
+
+			PatientEntry pat = study.getPatientByID(ref, root, extension);
+			if (pat != null) {
+				log.log(Level.WARNING, "Cannot create entry, PatientEntry already exists.");
+				return Response.status(Status.CONFLICT).entity(pat).build();
+			}
+
+			if(entries.generateSic) {
+				pat = study.getPatientBySIC(sic);
+				if (pat != null) {
+					log.log(Level.WARNING, "Cannot create entry, SIC already exists.");
+					return Response.status(Status.CONFLICT).entity(pat).build();
+				}
+
+				entries.sics.set(i, study.generateSIC());
+			}
+		}
+
+		val ret = study.addPatients(ref, root, entries.extensions, entries.sics, entries.opt, entries.comment, security.getUserPrincipal().getName());
+
+		return Response.ok(ret).build();
+	}
+
 	/**
 	 * Builds an JSON object with the preference values that are necessary for client side in context of the study manager.
 	 * @return JSON object with the study relevant preferences

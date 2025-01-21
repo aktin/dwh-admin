@@ -5,7 +5,7 @@
  *  register components and import additional modules
  */
 
-import {InjectionToken, LOCALE_ID, NgModule} from '@angular/core';
+import {LOCALE_ID, NgModule} from '@angular/core';
 import {BrowserModule, Title} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 
@@ -17,14 +17,16 @@ import {AppComponent} from './app.component';
 import {HomeComponent, TestComponent} from './home';
 import {
     CleanUpAuthService,
-    DataTableModule, DateFormat,
+    DataTableModule,
     DownloadService,
     DropDownModule,
     DurationDataPipe,
     DurationQueryPipe,
     HttpService,
     LoadingComponent,
-    MomentDatePipe, MY_CALENDAR_DEFAULT_OPTIONS, MY_CALENDAR_OPTIONS,
+    MomentDatePipe,
+    MY_CALENDAR_DEFAULT_OPTIONS,
+    MY_CALENDAR_OPTIONS,
     NotificationService,
     OrderByPipe,
     PopUpMessageComponent,
@@ -74,7 +76,7 @@ import localeDe from '@angular/common/locales/de';
 import localeDeExtra from '@angular/common/locales/extra/de';
 import {PatientListComponent} from "./study-manager/patient-list/patient-list.component";
 import {NgbInputDatepicker} from "@ng-bootstrap/ng-bootstrap";
-import {AngularMyDatePickerModule, IMyOptions} from "gramli-angular-mydatepicker";
+import {AngularMyDatePickerModule} from "gramli-angular-mydatepicker";
 import {PatientCreationComponent} from './study-manager/patient-creation/patient-creation.component';
 import {UniqueSicValidatorDirective} from './study-manager/patient-creation/unique-sic-validator.directive';
 import {MasterDataValidatorDirective} from './study-manager/patient-creation/master-data-validator.directive';
@@ -83,6 +85,18 @@ import {ExtensionValidatorDirective} from './study-manager/patient-creation/exte
 import {PatientViewComponent} from './study-manager/patient-view/patient-view.component';
 import {PatientMasterDataComponent} from './study-manager/patient-master-data/patient-master-data.component';
 import {PatientEditComponent} from './study-manager/patient-edit/patient-edit.component';
+import {PatientsCreationComponent} from './study-manager/patients-creation/patients-creation.component';
+import {
+    PatientsTextAreaComponent
+} from './study-manager/patients-creation/patients-text-area/patients-text-area.component';
+import {RevoGrid} from "@revolist/angular-datagrid";
+import {AgGridAngular} from "ag-grid-angular";
+import { RemoveRowButtonComponent } from './study-manager/patients-creation/patients-text-area/remove-row-button.component';
+import { PatientReferenceToRootPipe } from './study-manager/patient-reference-to-root.pipe';
+import {PatientReferenceToLabelPipe} from "./study-manager/patient-reference-to-label.pipe";
+import { ReadableEntryValidationPipe } from './study-manager/patients-creation/patients-text-area/readable-entry-validation.pipe';
+import { NoRowsOverlayComponent } from './study-manager/patients-creation/patients-text-area/no-rows-overlay.component';
+import {EncountersValidatorDirective} from './study-manager/patient-creation/encounters-validator.directive';
 
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
@@ -131,6 +145,14 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         PatientViewComponent,
         PatientMasterDataComponent,
         PatientEditComponent,
+        PatientsCreationComponent,
+        PatientsTextAreaComponent,
+        RemoveRowButtonComponent,
+        PatientReferenceToRootPipe,
+        PatientReferenceToLabelPipe,
+        ReadableEntryValidationPipe,
+        NoRowsOverlayComponent,
+        EncountersValidatorDirective
     ],
     bootstrap: [
         AppComponent
@@ -144,7 +166,9 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         DataTableModule,
         DropDownModule,
         NgbInputDatepicker,
-        FieldModule
+        FieldModule,
+        RevoGrid,
+        AgGridAngular
     ],
     exports: [
         SafeUrlPipe,

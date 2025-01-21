@@ -2,41 +2,37 @@ import {catchError, map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 
 
-import {Observable} from 'rxjs';
-import {AuthService, Permission} from '../users';
+import {Observable, tap} from 'rxjs';
 import {HttpService, UrlService} from '../helpers';
 import {Entry} from './entry';
 import {Study} from './study';
 import {PatientReference} from './patient-reference';
 import {MasterData} from './master-data';
 import {Encounter} from './encounter';
+import {GridModel} from './patients-creation/patients-text-area/patients-text-area.component';
 import {Participation} from './participation';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class StudyManagerService {
+    public get preferences(): Map<string, string> {
+        return JSON.parse(sessionStorage.getItem('studyManager.preferences'));
+    };
 
-    constructor(
-        private _auth: AuthService,
-        private _http: HttpService,
-        private _urls: UrlService
-    ) {
-    }
+    private set preferences(preferences: Map<string, string>) {
+        sessionStorage.setItem('studyManager.preferences', JSON.stringify(preferences));
+    };
 
-    /**
-     * Checks if the user has the given permission.
-     * @param permission The permission that will be checked.
-     * @returns true if user has the permission, false otherwise
-     */
-    public checkPermission(permission: Permission): boolean {
-        return this._auth.userLocalCheckPermissions([permission]);
+    constructor(private _http: HttpService,
+                private _urls: UrlService) {
     }
 
     /**
      * Gets the preferences that are relevant for the consent manager.
      * @returns Observable of the preferences
      */
-    public getPreferences(): Observable<string> {
-        return this._http.get<string>(this._urls.parse('studyPrefs'));
+    public getPreferences(): Observable<Map<string, string>> {
+        return this._http.get<Map<string, string>>(this._urls.parse('studyPrefs'))
+                   .pipe(tap(p => this.preferences = p));
     }
 
     /**
@@ -89,6 +85,38 @@ export class StudyManagerService {
             extension: ext
         })).pipe(map(encounters => encounters.map(e => new Encounter(e))),
             catchError(err => this._http.handleError(err)));
+    }
+
+    public validateEntries(studyId: string, ref: PatientReference, root: string, entries: GridModel[], generateSic: boolean): Observable<GridModel[]> {
+        root = encodeURIComponent(root);
+        const extensions = entries.map(e => e.extension);
+        const sics = entries.map(e => e.sic);
+        return this._http.put<GridModel[]>(this._urls.parse('multi', {
+            studyId: studyId,
+            reference: ref,
+            root: root,
+        }), {
+            'sics': sics,
+            'extensions': extensions,
+            'generateSic': generateSic,
+        }).pipe(catchError(err => this._http.handleError(err)));
+    }
+
+    public createEntries(studyId: string, ref: PatientReference, root: string, entries: GridModel[], participation: Participation, comment: string, generateSic: boolean): Observable<GridModel[]> {
+        root = encodeURIComponent(root);
+        const extensions = entries.map(e => e.extension);
+        const sics = entries.map(e => e.sic);
+        return this._http.post<GridModel[]>(this._urls.parse('multi', {
+            studyId: studyId,
+            reference: ref,
+            root: root,
+        }), {
+            'opt': participation,
+            'comment': comment,
+            'sics': sics,
+            'extensions': extensions,
+            'generateSic': generateSic,
+        }).pipe(catchError(err => this._http.handleError(err)));
     }
 
     /**

@@ -1,5 +1,11 @@
 import {Directive, EventEmitter, Input, Output} from '@angular/core';
-import {AbstractControl, AsyncValidator, NG_ASYNC_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors} from '@angular/forms';
+import {
+    AbstractControl,
+    AsyncValidator,
+    NG_ASYNC_VALIDATORS,
+    NG_VALUE_ACCESSOR,
+    ValidationErrors
+} from '@angular/forms';
 import {debounceTime, distinctUntilChanged, first, forkJoin, Observable, switchMap, tap} from 'rxjs';
 import {StudyManagerService} from '../study-manager.service';
 import {PatientReference} from '../patient-reference';
@@ -8,7 +14,7 @@ import {MasterData} from '../master-data';
 import {Encounter} from '../encounter';
 
 @Directive({
-    selector: 'input[validateMasterData]',
+    selector: 'input[masterData]',
     providers: [{
         provide: NG_ASYNC_VALIDATORS,
         useExisting: MasterDataValidatorDirective,
@@ -22,9 +28,7 @@ export class MasterDataValidatorDirective implements AsyncValidator {
     public root: string;
 
     @Output()
-    public masterDataChange: EventEmitter<MasterData> = new EventEmitter<MasterData>();
-    @Output()
-    public encountersChange: EventEmitter<Encounter[]> = new EventEmitter<Encounter[]>();
+    public masterData: EventEmitter<MasterData> = new EventEmitter<MasterData>();
 
     constructor(private consentManagerService: StudyManagerService) {
     }
@@ -33,20 +37,15 @@ export class MasterDataValidatorDirective implements AsyncValidator {
         return control.valueChanges.pipe(filter(_ => !!this.reference && !!this.root),
             debounceTime(400),
             distinctUntilChanged(),
-            switchMap(v => forkJoin([this.consentManagerService.getEncounters(this.reference, this.root, v),
-                this.consentManagerService.getMasterData(this.reference, this.root, v)])),
-            tap(([e, m]) => {
-                this.masterDataChange.emit(m);
-                this.encountersChange.emit(e);
-            }),
-            map(([e, m]) => {
-                if (!!e?.length && !!m) {
+            switchMap(v => this.consentManagerService.getMasterData(this.reference, this.root, v)),
+            tap((m) => this.masterData.emit(m)),
+            map((m) => {
+                if (!!m) {
                     return null;
                 }
 
                 return {
                     'noMasterData': !m,
-                    'noEncounters': !e?.length
                 };
             }),
             first());

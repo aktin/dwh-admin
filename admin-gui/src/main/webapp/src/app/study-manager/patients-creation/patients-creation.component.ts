@@ -1,42 +1,40 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {compareStudies, Study} from '../study';
-import {Entry} from '../entry';
-import {PatientReference} from '../patient-reference';
-import {debounceTime, distinctUntilChanged, first, forkJoin, Observable, switchMap, tap} from 'rxjs';
-import {Participation} from '../participation';
-import {AbstractControl, AsyncValidator, NgForm, ValidationErrors} from '@angular/forms';
-import {SICGeneration} from "../sic-generation";
 import {PatientDialogBase} from "../patient-dialog-base";
+import {compareStudies, Study} from "../study";
+import {PatientReference} from "../patient-reference";
+import {NgForm} from "@angular/forms";
 import {StudyManagerService} from "../study-manager.service";
-import {Encounter} from "../encounter";
-import {MasterData} from "../master-data";
 import {NotificationService} from "../../helpers";
+import {Participation} from "../participation";
+import {SICGeneration} from '../sic-generation';
 import {PatientReferenceToRootPipe} from "../patient-reference-to-root.pipe";
-import {filter, map} from 'rxjs/operators';
+import {GridModel} from "./patients-text-area/patients-text-area.component";
 
 declare var $: any;
 
 @Component({
-    selector: 'patient-creation',
-    templateUrl: './patient-creation.component.html',
-    styleUrls: ['./patient-creation.component.css', '../../helpers/popup-message.component.css'],
+    selector: 'patients-creation',
+    templateUrl: './patients-creation.component.html',
+    styleUrls: ['./patients-creation.component.css', '../../helpers/popup-message.component.css'],
     providers: [PatientReferenceToRootPipe]
 })
-export class PatientCreationComponent extends PatientDialogBase implements OnInit {
+export class PatientsCreationComponent extends PatientDialogBase implements OnInit {
     public studies: Study[] = [];
     @Output()
     public selectedStudyChange: EventEmitter<Study> = new EventEmitter();
-    public newEntry: Entry = new Entry();
     public extension: string;
     public selectedReference: PatientReference = PatientReference.Patient;
     public references: PatientReference[] = [PatientReference.Patient, PatientReference.Encounter, PatientReference.Billing];
     public generateSic: boolean = false;
     protected readonly SICGeneration = SICGeneration;
     protected readonly compareStudies = compareStudies;
-    protected encounters: Encounter[];
-    protected masterData: MasterData;
+
+    public entries: GridModel[];
+
     @ViewChild(NgForm)
     private form: NgForm;
+    public participation: Participation;
+    public comment: string;
 
     constructor(studyManagerService: StudyManagerService,
                 private notificationService: NotificationService,
@@ -54,11 +52,11 @@ export class PatientCreationComponent extends PatientDialogBase implements OnIni
     public set selectedStudy(value: Study) {
         this._selectedStudy = value;
 
-        if(!!value) {
+        if (!!value) {
             if (this._selectedStudy.optOut) {
-                this.newEntry.participation = Participation.OptOut;
+                this.participation = Participation.OptOut;
             } else if (this._selectedStudy.optIn) {
-                this.newEntry.participation = Participation.OptIn;
+                this.participation = Participation.OptIn;
             }
 
             this.generateSic = this._selectedStudy.sicGeneration === SICGeneration.AutoAndManual;
@@ -78,26 +76,24 @@ export class PatientCreationComponent extends PatientDialogBase implements OnIni
         this.studyManagerService.getStudies().subscribe(s => this.studies = s);
     }
 
-    public loadEncountersAndMasterData(): void {
-        forkJoin([this.studyManagerService.getEncounters(this.selectedReference, this.toRootPipe.transform(this.selectedReference), this.extension),
-            this.studyManagerService.getMasterData(this.selectedReference, this.toRootPipe.transform(this.selectedReference), this.extension)])
-            .subscribe(([e, m]) => {
-                this.encounters = e;
-                this.masterData = m;
-            });
-    }
-
     public create(): void {
         if (this.form.valid) {
-            this.studyManagerService.createEntry(this.selectedStudy.id, this.selectedReference, this.toRootPipe.transform(this.selectedReference), this.extension, this.newEntry)
-                .subscribe({next: e => {
-                        this.notificationService.showSuccess("Patient*in registriert");
+            this.studyManagerService.createEntries(this.selectedStudy.id,
+                this.selectedReference,
+                this.toRootPipe.transform(this.selectedReference),
+                this.entries,
+                this.participation,
+                this.comment,
+                this.generateSic)
+                .subscribe({
+                    next: e => {
+                        this.notificationService.showSuccess("Patient*innen registriert");
                         this.close();
                     },
-                error: e => this.notificationService.showError('Patient*in konnte nicht registriert werden')});
+                    error: e => this.notificationService.showError('Patient*innen konnten nicht registriert werden')
+                });
         } else {
-            this.notificationService.showError('Alle Felder müssen gültige Werte haben')
+            this.notificationService.showError('Alle Felder müssen gültige Werte haben');
         }
     }
 }
-

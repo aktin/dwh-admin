@@ -12,6 +12,7 @@ import {DropDownOptionComponent} from "./drop-down-option/drop-down-option.compo
 
 declare var $: any;
 
+// Wrapper for semantic ui drop down
 @Component({
     selector: 'drop-down',
     templateUrl: './drop-down.component.html',
@@ -31,19 +32,17 @@ export class DropDownComponent<T> implements ControlValueAccessor, AfterViewInit
     @Input()
     public compare: (a: T, b: T) => boolean = (a, b) => a === b;
 
-    private isFirstValueSet: boolean = true;
-
     ngAfterViewInit(): void {
         // init semantic / fomantic ui jquery plugin
         $(this.dropdown.nativeElement).dropdown();
+
+        this.options.changes.subscribe(o => this.setOption(this.selected))
     }
 
     writeValue(value: T): void {
         this.selected = value;
-        const i = this.options?.find(o => this.compare(o.value, value))?.i;
-        // need to set the initial selection explicitly in a timeout,
-        // otherwise the dropdown menu will not notice that a value has changed
-        setTimeout(() => $(this.dropdown.nativeElement).dropdown('set selected', i), 100);
+
+        this.setOption(value);
     }
 
     registerOnChange(fn: (value: T) => void): void {
@@ -71,4 +70,11 @@ export class DropDownComponent<T> implements ControlValueAccessor, AfterViewInit
 
     private onTouched: () => void = () => {
     };
+
+    private setOption(value: T): void {
+        const i = this.options?.find(o => this.compare(o.value, value))?.i;
+        // need to set the initial selection explicitly in a timeout,
+        // otherwise the dropdown menu will not notice that a value has changed
+        setTimeout(() => $(this.dropdown.nativeElement).dropdown('set selected', i), 100);
+    }
 }

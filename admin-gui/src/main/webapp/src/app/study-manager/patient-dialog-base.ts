@@ -1,31 +1,17 @@
-import {Encounter} from "./encounter";
-import {MasterData} from "./master-data";
-import {DateFormat, MomentDatePipe, TableColumns} from "../helpers";
-import moment from "moment";
 import {StudyManagerService} from "./study-manager.service";
-import {PatientReference} from "./patient-reference";
+import {Directive, EventEmitter, Output} from "@angular/core";
 
+@Directive({})
 export abstract class PatientDialogBase {
-    public preferences: string;
+    public preferences: Map<string, string>;
 
-    protected isOpen: boolean = false;
+    @Output()
+    public onClose: EventEmitter<void> = new EventEmitter<void>();
 
     protected constructor(protected studyManagerService: StudyManagerService) {
     }
 
-    public getLabel(ref: PatientReference): string {
-        return this.preferences?.[`label${ref}`];
-    }
-
-    public getRoot(ref: PatientReference): string {
-        return this.preferences?.[`root${ref}`];
-    }
-
-    public open(): void {
-        this.isOpen = true;
-    }
-
     public close(): void {
-        this.isOpen = false;
+        this.onClose.emit();
     }
 }

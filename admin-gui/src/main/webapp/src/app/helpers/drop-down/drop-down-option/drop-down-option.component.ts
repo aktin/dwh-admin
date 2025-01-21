@@ -14,6 +14,8 @@ export class DropDownOptionComponent<T = any> {
 
   protected static counter: number = 0;
 
+  // use i as a unique identifier, since semantic ui drop down uses data-value attribute to store primitive data and is
+  // not able to store complex data structures this way
   public i: number = DropDownOptionComponent.counter++;
 
   @HostBinding('attr.data-value')

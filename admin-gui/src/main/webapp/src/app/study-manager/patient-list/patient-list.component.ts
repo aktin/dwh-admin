@@ -46,12 +46,14 @@ export class PatientListComponent implements OnInit {
     protected date: IMyDateModel;
     protected search: string = "";
 
-    constructor(private consentManager: StudyManagerService,
+    constructor(private studyManagerService: StudyManagerService,
                 @Inject(MY_CALENDAR_OPTIONS) protected options: IMyOptions) {
         this.options.dateRange = true;
     }
-S
     private _selectedStudy: Study = null;
+    public isPatientViewComponentOpen: boolean = false;
+    public isPatientsCreationComponentOpen: boolean;
+    public isPatientCreationComponentOpen: boolean;
 
     public get selectedStudy(): Study {
         return this._selectedStudy;
@@ -60,15 +62,12 @@ S
     public set selectedStudy(value: Study) {
         this._selectedStudy = value;
         if (!!value) {
-            this.consentManager.getEntries(value.id).subscribe(e => {
-                this.entries = e;
-                this.resetFilter();
-            });
+            this.loadEntries();
         }
     }
 
     ngOnInit(): void {
-        this.consentManager.getStudies()
+        this.studyManagerService.getStudies()
             .subscribe(studies => {
                 this.studies = studies;
                 this.selectedStudy = this.studies[0];
@@ -88,21 +87,18 @@ S
             }
             this.filteredEntries = this.filteredEntries.filter(filterFunc);
         }
-        if(!!this.search) {
-            this.filteredEntries = this.filteredEntries.filter(e => this.searchEntry(e, this.search));
-        }
-    }
-
-    private searchEntry(entry: Entry, searchTerm: string) {
-        return entry.sic.includes(searchTerm)
-        || entry.comment.includes(searchTerm)
-        || entry.idExt .includes(searchTerm)
-        || entry.idRoot.includes(searchTerm);
     }
 
     public resetFilter(): void {
         this.datePicker.clearDate();
         this.search = '';
         this.filter();
+    }
+
+    public loadEntries(): void {
+        this.studyManagerService.getEntries(this.selectedStudy.id).subscribe(e => {
+            this.entries = e;
+            this.resetFilter();
+        });
     }
 }
