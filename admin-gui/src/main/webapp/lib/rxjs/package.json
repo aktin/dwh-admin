@@ -110,7 +110,7 @@
     "husky": "^0.13.3",
     "lint-staged": "3.2.5",
     "lodash": "^4.15.0",
-    "madge": "^1.4.3",
+    "madge": "^8.0.0",
     "markdown-doctest": "^0.9.1",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
