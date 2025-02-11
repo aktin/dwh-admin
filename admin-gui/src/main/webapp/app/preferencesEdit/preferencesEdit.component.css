@@ -1,13 +1,5 @@
-h1 {
-    color: blue;
-}
-
 .preferences.table {
     font-size: small;
-}
-
-.tiny.text {
-    font-size: tiny;
 }
 
 .break-word {
@@ -22,7 +14,6 @@ h1 {
 
 .bannerbutton {
     float: right;
-    margin-right: 10%;
 }
 
 .invalid-input {

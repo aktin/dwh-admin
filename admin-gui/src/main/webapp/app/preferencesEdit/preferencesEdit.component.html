@@ -1,4 +1,14 @@
-<h1>{{ title }}</h1>
+<div class="ui breadcrumb">
+    <div class="active section breadcrumb-header">{{ title }}</div>
+</div>
+<div class="ui left labeled button" (click)="navigateToPreferencePage()">
+    <a class="ui red label">
+        Abbrechen
+    </a>
+    <div class="ui red icon button">
+        <i class="remove icon"></i>
+    </div>
+</div>
 <div class="ui container">
     <table class="ui celled structured compact fixed table preferences">
         <thead>
@@ -31,14 +41,14 @@
         </tbody>
     </table>
 </div>
-<div class="bottom-banner" [attr.id]="bottombanner">
+<div hidden class="bottom-banner" [attr.id]="bottombanner">
     <p>Änderungen erkannt</p>
-    <div class="bannerbutton">
+    <div class="bannerbutton" (click)="processChanges('apply')">
         <a class="ui green label">
             Anwenden
         </a>
     </div>
-    <div class="bannerbutton">
+    <div class="bannerbutton" (click)="processChanges('revert')">
         <a class="ui green basic label">
             Verwerfen
         </a>

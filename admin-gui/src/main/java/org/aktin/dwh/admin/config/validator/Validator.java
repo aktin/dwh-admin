@@ -1,4 +1,4 @@
-package org.aktin.dwh.admin.updater.validator;
+package org.aktin.dwh.admin.config.validator;
 
 public interface Validator {
     char CODE = '*';

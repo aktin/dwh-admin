@@ -1,10 +1,12 @@
-package org.aktin.dwh.admin.updater.validator;
+package org.aktin.dwh.admin.config.validator;
 
 public class ValidateNumber implements Validator {
     private char CODE = 'n';
+    private String value;
 
     public boolean validate(String desc, String value) {
         if(desc.contains(""+this.CODE)) {
+            this.value = value;
             try {
                 Integer.parseInt(value);
                 return true;
@@ -17,6 +19,6 @@ public class ValidateNumber implements Validator {
     }
 
     public String getErrorMessage() {
-        return "Nummer erwartet";
+        return "Nummer erwartet, \""+this.value+"\" erhalten";
     }
 }

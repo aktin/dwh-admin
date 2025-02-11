@@ -34,6 +34,7 @@ import { StudyManagerComponent, StudyManagerService, PopUpNewEntryComponent, Pop
 import { StatusComponent, StatusService } from './status/index';
 import { RestrictedComponent } from './restricted/restricted.component';
 import {PreferencesEditComponent} from "./preferencesEdit/preferencesEdit.component";
+import {PreferenceEditService} from "./preferencesEdit/preferencesEdit.service";
 
 
 @NgModule({
@@ -103,6 +104,7 @@ import {PreferencesEditComponent} from "./preferencesEdit/preferencesEdit.compon
         VisitService,
         StudyManagerService,
         PreferenceService,
+        PreferenceEditService,
         ImporterService,
         UpdaterService,
         StatusService,

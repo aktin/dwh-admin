@@ -158,8 +158,8 @@
         <dependency>
             <groupId>org.aktin.dwh</groupId>
             <artifactId>dwh-prefs</artifactId>
-            <version>0.12</version>
-            <scope>test</scope>
+            <version>0.13-SNAPSHOT</version>
+<!--            <scope>test</scope>-->
         </dependency>
         <dependency>
             <groupId>org.aktin</groupId>
@@ -233,6 +233,12 @@
             <scope>test</scope>
         </dependency>
         -->
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
