@@ -79,7 +79,6 @@ import {NgbInputDatepicker} from "@ng-bootstrap/ng-bootstrap";
 import {AngularMyDatePickerModule} from "gramli-angular-mydatepicker";
 import {PatientCreationComponent} from './study-manager/patient-creation/patient-creation.component';
 import {UniqueSicValidatorDirective} from './study-manager/patient-creation/unique-sic-validator.directive';
-import {MasterDataValidatorDirective} from './study-manager/patient-creation/master-data-validator.directive';
 import {FieldModule} from './helpers/field/field.module';
 import {ExtensionValidatorDirective} from './study-manager/patient-creation/extension-validator.directive';
 import {PatientViewComponent} from './study-manager/patient-view/patient-view.component';
@@ -96,7 +95,8 @@ import { PatientReferenceToRootPipe } from './study-manager/patient-reference-to
 import {PatientReferenceToLabelPipe} from "./study-manager/patient-reference-to-label.pipe";
 import { ReadableEntryValidationPipe } from './study-manager/patients-creation/patients-text-area/readable-entry-validation.pipe';
 import { NoRowsOverlayComponent } from './study-manager/patients-creation/patients-text-area/no-rows-overlay.component';
-import {EncountersValidatorDirective} from './study-manager/patient-creation/encounters-validator.directive';
+import { PatientReferenceHeaderComponent } from './study-manager/patients-creation/patients-text-area/patient-reference-header.component';
+import { RequiredDirective } from './helpers/directives/required.directive';
 
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
@@ -140,7 +140,6 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         PatientListComponent,
         PatientCreationComponent,
         UniqueSicValidatorDirective,
-        MasterDataValidatorDirective,
         ExtensionValidatorDirective,
         PatientViewComponent,
         PatientMasterDataComponent,
@@ -152,7 +151,8 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         PatientReferenceToLabelPipe,
         ReadableEntryValidationPipe,
         NoRowsOverlayComponent,
-        EncountersValidatorDirective
+        PatientReferenceHeaderComponent,
+        RequiredDirective,
     ],
     bootstrap: [
         AppComponent

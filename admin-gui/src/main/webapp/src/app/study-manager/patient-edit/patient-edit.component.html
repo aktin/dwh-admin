@@ -50,7 +50,7 @@
                     </div>
                     <div class="active title">
                         <i class="dropdown icon right"></i>
-                        Patienteninformationen
+                        Patient*innen-Informationen
                     </div>
                     <div class="active content">
                         <div class="field">
@@ -64,12 +64,11 @@
                         </div>
 
                         <div class="field">
-                            <label>Patientenreferenz</label>
+                            <label>Patient*innen-Referenz</label>
                             <div class="value-field">{{ entry.reference | patientReferenceToLabel }}</div>
                         </div>
 
                         <div class="field">
-
                             <label>{{ entry.reference | patientReferenceToLabel }}</label>
                             <div class="value">{{ entry.idExt }}</div>
                         </div>
@@ -140,12 +139,17 @@
 
             <div class="actions">
                 <button (click)="close()"
-                        class="ui button"
+                        class="ui red button"
                         type="button">
                     Abbrechen
                 </button>
-                <button (click)="save()"
+                <button (click)="popUpMessageComponent.show = true"
                         class="ui button"
+                        type="button">
+                    Löschen
+                </button>
+                <button (click)="save()"
+                        class="ui green button"
                         type="button">
                     Speichern
                 </button>
@@ -153,3 +157,10 @@
         </form>
     </div>
 </div>
+
+<popup-message #popUpMessageComponent
+               (onClose)="delete($event)"
+               head="Eitnrag löschen"
+               message="Möchten Sie den Eintrag löschen?"
+               mode="confirm">
+</popup-message>

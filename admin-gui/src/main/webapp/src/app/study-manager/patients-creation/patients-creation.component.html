@@ -67,7 +67,7 @@
                 </div>
                 <div class="active title">
                     <i class="dropdown icon right"></i>
-                    Patienteninformationen
+                    Patient*innen-Informationen
                 </div>
                 <div class="active content">
                     <div class="field">
@@ -98,7 +98,7 @@
                     </div>
 
                     <div class="field">
-                        <label>Patientenreferenz</label>
+                        <label>Patient*innen-Referenz</label>
                         <drop-down [(ngModel)]="selectedReference"
                                    name="references">
                             @for (ref of references; track ref) {
@@ -143,7 +143,7 @@
 
         <div class="actions">
             <button (click)="close()"
-                    class="ui button"
+                    class="ui red button"
                     type="button">Abbrechen
             </button>
             <button (click)="create()"

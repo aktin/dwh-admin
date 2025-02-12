@@ -8,7 +8,7 @@ import {
     NG_VALUE_ACCESSOR,
     ValidationErrors
 } from '@angular/forms';
-import {ColDef, GridApi, GridReadyEvent, ICellRendererParams, RowClassParams} from 'ag-grid-community';
+import {ColDef, GridApi, GridReadyEvent, ICellRendererParams} from 'ag-grid-community';
 import {distinctUntilChanged, Observable, of, tap} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {EntryValidation} from './entry-validation';
@@ -19,34 +19,38 @@ import {Encounter} from '../../encounter';
 import {DateFormat, MomentDatePipe} from '../../../helpers';
 import {ReadableEntryValidationPipe} from './readable-entry-validation.pipe';
 import {NoRowsOverlayComponent} from './no-rows-overlay.component';
+import {PatientReferenceToLabelPipe} from '../../patient-reference-to-label.pipe';
+import {PatientReferenceHeaderComponent} from './patient-reference-header.component';
 
 @Component({
     selector: 'patients-text-area',
     templateUrl: './patients-text-area.component.html',
-    styleUrl: './patients-text-area.component.css',
+    styleUrl: './patients-text-area.component.scss',
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: PatientsTextAreaComponent, multi: true},
         {provide: NG_ASYNC_VALIDATORS, useExisting: PatientsTextAreaComponent, multi: true},
         ReadableEntryValidationPipe,
-        MomentDatePipe],
+        MomentDatePipe,
+        PatientReferenceToLabelPipe,],
     encapsulation: ViewEncapsulation.None
 })
 export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncValidator {
     public columnDefs: ColDef<GridModel>[] = [
         {
+            headerName: 'Entfernen',
             cellRenderer: RemoveRowButtonComponent,
             cellRendererParams: {onRemove: this.removeRow.bind(this)},
-            tooltipValueGetter: () => 'Zeile entfernen'
         },
         {
-            headerName: 'Patientenreferenz',
+            headerComponent: PatientReferenceHeaderComponent,
+            headerComponentParams: {reference: this.reference},
             field: 'extension',
             editable: true
         },
-        {headerName: 'SIC', field: 'sic', editable: true, initialHide: this.generateSic},
+        {headerName: 'Studien-ID', field: 'sic', editable: true, initialHide: this.generateSic},
         {
             headerName: 'Status',
             field: 'entryValidation',
-            valueFormatter: v => this.readableEntryValidationPipe.transform(v.value)
+            valueFormatter: v => this.readableEntryValidationPipe.transform(v.value, this.reference)
         },
         {
             headerName: 'Geburtstag',
@@ -56,7 +60,7 @@ export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncVal
         {headerName: 'Geschlecht', valueGetter: v => v.data.masterData?.sex},
         {headerName: 'PLZ', valueGetter: v => v.data.masterData?.zip},
         {
-            headerName: 'Letzter Krankenhausbesuch',
+            headerName: 'Letzter Fall',
             valueGetter: v => v.data.lastEncounter?.startDate,
             valueFormatter: v => `${this.momentDatePipe.transform(v.value, DateFormat.DATETIME)} - ${this.momentDatePipe.transform(v.data.lastEncounter?.endDate, DateFormat.DATETIME)}`,
         },
@@ -64,13 +68,12 @@ export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncVal
     @Input()
     public studyId: string;
     @Input()
-    public reference: PatientReference;
-    @Input()
     public root: string;
     protected defaultColDef: ColDef<GridModel> = {
         cellClassRules: {
             'static-cell': params => !params.colDef.editable,
             'error': params => ![EntryValidation.Pending, EntryValidation.Valid].includes(params.node.data.entryValidation),
+            'warn': params => [EntryValidation.NoMasterdataFound, EntryValidation.NoEncountersFound].includes(params.node.data.entryValidation),
             'success': params => params.node.data.entryValidation === EntryValidation.Valid
         }
     };
@@ -80,7 +83,23 @@ export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncVal
 
     constructor(private studyManagerService: StudyManagerService,
                 private readableEntryValidationPipe: ReadableEntryValidationPipe,
-                private momentDatePipe: MomentDatePipe,) {
+                private momentDatePipe: MomentDatePipe) {
+    }
+
+    private _reference: PatientReference;
+
+    public get reference(): PatientReference {
+        return this._reference;
+    }
+
+    @Input()
+    public set reference(value: PatientReference) {
+        this._reference = value;
+
+        const colDef = this.columnDefs.find(c => c.field === 'extension');
+        colDef.headerComponentParams = {reference: this.reference};
+
+        this.gridApi?.setGridOption('columnDefs', this.columnDefs);
     }
 
     private _rowData: GridModel[] = [];
@@ -147,22 +166,15 @@ export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncVal
             return of(null);
         }
 
-        return this.studyManagerService.validateEntries(this.studyId, this.reference, this.root, control.value, this.generateSic)
+        return this.studyManagerService.validateEntries(this.studyId, this._reference, this.root, control.value, this.generateSic)
                    .pipe(distinctUntilChanged(),
                        tap(r => this.rowData = r),
-                       map(result => (result.every(r => r.entryValidation === EntryValidation.Valid) ? null : {entries: result})));
+                       map(result => (result.every(r => [EntryValidation.Valid,
+                           EntryValidation.NoMasterdataFound,
+                           EntryValidation.NoEncountersFound].includes(r.entryValidation))
+                           ? null
+                           : {entries: result})));
     }
-
-    getRowClass = (params: RowClassParams<GridModel>) => {
-        switch (params.data.entryValidation) {
-            case EntryValidation.Valid:
-                return 'success-row';
-            case EntryValidation.Pending:
-                return '';
-            default:// all other cases are errors, no need to check them separately
-                return 'error-row';
-        }
-    };
 
     public invokeValidation(): void {
         // invokes angular validation

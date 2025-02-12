@@ -1,40 +1,40 @@
 import {Pipe, PipeTransform} from '@angular/core';
 import {EntryValidation} from './entry-validation';
+import {PatientReference} from '../../patient-reference';
+import {PatientReferenceToLabelPipe} from '../../patient-reference-to-label.pipe';
 
 @Pipe({
     name: 'readableEntryValidation'
 })
 export class ReadableEntryValidationPipe implements PipeTransform {
+    constructor(private readonly patientReferenceToLabelPipe: PatientReferenceToLabelPipe) {}
 
-    transform(value: EntryValidation): string {
+    transform(value: EntryValidation, reference: PatientReference): string {
         let result;
         switch (value) {
             case EntryValidation.Valid:
-                result = '';
+                result = 'OK';
                 break;
             case EntryValidation.EntryFound:
-                result = 'Patient existiert bereits';
+                result = 'Patient*in existiert bereits';
                 break;
             case EntryValidation.SicFound:
-                result = 'SIC existiert bereits';
-                break;
-            case EntryValidation.PatientReferenceMissing:
-                result = 'Patientenreferenz erforderlich';
+                result = 'Studien-ID existiert bereits';
                 break;
             case EntryValidation.SicMissing:
-                result = 'SIC erforderlich';
+                result = 'Studien-ID erforderlich';
                 break;
             case EntryValidation.NoMasterdataFound:
                 result = 'Keine Stammdaten gefunden';
                 break;
             case EntryValidation.NoEncountersFound:
-                result = 'Keine Aufenthalte gefunden';
+                result = 'Keine Behandlungsfalldaten gefunden';
                 break;
             case EntryValidation.PatientReferenceDuplicate:
-                result = 'Patientenreferenz mehrfach angegeben';
+                result = `${this.patientReferenceToLabelPipe.transform(reference)} mehrfach angegeben`;
                 break;
             case EntryValidation.SicDuplicate:
-                result = 'SIC mehrfach angegeben';
+                result = 'Studien-ID mehrfach angegeben';
                 break;
             case EntryValidation.Pending:
                 result = '';

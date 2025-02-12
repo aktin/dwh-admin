@@ -33,7 +33,8 @@
                         <label>Studie</label>
                         <drop-down [(ngModel)]="selectedStudy"
                                    [compare]="compareStudies"
-                                   name="studies">
+                                   name="studies"
+                                   required>
                             @for (study of studies; track study.id) {
                                 <drop-down-option [value]="study">{{ study.title }}</drop-down-option>
                             }
@@ -67,7 +68,7 @@
                 </div>
                 <div class="active title">
                     <i class="dropdown icon right"></i>
-                    Patienteninformationen
+                    Patient*innen-Informationen
                 </div>
                 <div class="active content">
                     <div class="field">
@@ -105,10 +106,7 @@
                                    [studyId]="selectedStudy.id"
                                    uniqueSic
                                    #sicModel="ngModel"
-                                   required
                                    [(ngModel)]="newEntry.sic">
-                            <error-message *ngIf="sicModel.errors?.required">Studien-ID ist erforderlich
-                            </error-message>
                             <error-message *ngIf="sicModel.errors?.sicNotUnique">Studien-ID ist schon vorhanden
                             </error-message>
                         } @else {
@@ -122,8 +120,9 @@
 
 
                     <div class="field">
-                        <label>Patientenreferenz</label>
+                        <label>Patient*innen-Referenz</label>
                         <drop-down [(ngModel)]="selectedReference"
+                                   required
                                    name="references">
                             @for (ref of references; track ref) {
                                 <drop-down-option [value]="ref">{{ ref | patientReferenceToLabel }}</drop-down-option>
@@ -135,11 +134,8 @@
                         <label for="extension">{{ selectedReference | patientReferenceToLabel }}</label>
                         <div class="ui action input">
                             <input #extModel="ngModel"
-                                   (encounters)="encounters = $event"
-                                   (masterData)="masterData = $event"
+                                   (ngModelChange)="loadEncountersAndMasterData()"
                                    [(ngModel)]="extension"
-                                   [reference]="selectedReference"
-                                   [root]="selectedReference | patientReferenceToRoot"
                                    class="ui input"
                                    extension
                                    id="extension"
@@ -149,33 +145,29 @@
                             <button (click)="loadEncountersAndMasterData()"
                                     class="ui button"
                                     type="button">
-                                Suchen
+                                Fälle anzeigen
                             </button>
                         </div>
 
-                        <error-message *ngIf="extModel.errors?.required">{{ selectedReference | patientReferenceToLabel }}
-                            erforderlich
+                        <error-message *ngIf="extModel.errors?.required">
+                            {{ selectedReference | patientReferenceToLabel }} erforderlich
                         </error-message>
-                        <error-message *ngIf="extModel.errors?.slashSep">Maximal ein "/" als Trennzeichen von Root
+                        <error-message *ngIf="extModel.errors?.slashSep">
+                            Maximal ein "/" als Trennzeichen von Root
                             und {{ selectedReference | patientReferenceToLabel }} erlaubt
                         </error-message>
                         <error-message *ngIf="extModel.errors?.slash">"/" nicht erlaubt</error-message>
-                        <error-message *ngIf="extModel.errors?.separator">Trennzeichen darf nicht an erster Stelle
-                            stehen
+                        <error-message *ngIf="extModel.errors?.separator">
+                            Trennzeichen darf nicht an erster Stelle stehen
                         </error-message>
-                        <error-message *ngIf="extModel.errors?.period">Root
-                            und {{ selectedReference | patientReferenceToLabel }}
-                            dürfen
-                            nicht aus "." oder ".." bestehen
-                        </error-message>
-                        <error-message *ngIf="extModel.errors?.noMasterData">Keine Stammdaten gefunden
-                        </error-message>
-                        <error-message *ngIf="extModel.errors?.noEncounters">Keine Behandlungsdaten gefunden
+                        <error-message *ngIf="extModel.errors?.period">
+                            Root und {{ selectedReference | patientReferenceToLabel }} dürfen nicht aus "." oder ".."
+                            bestehen
                         </error-message>
                     </div>
 
                     <div class="field">
-                        @if (extModel.dirty && !extModel.errors?.noMasterData && !extModel.errors?.noEncounters) {
+                        @if (extModel.dirty) {
                             <patient-master-data [encounters]="encounters"
                                                  [masterData]="masterData"></patient-master-data>
                         } @else {
@@ -211,7 +203,7 @@
 
         <div class="actions">
             <button (click)="close()"
-                    class="ui button"
+                    class="ui red button"
                     type="button">Abbrechen
             </button>
             <button (click)="create()"

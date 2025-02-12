@@ -1,0 +1,35 @@
+.ag-cell {
+  background-color: rgba(255, 255, 255, 1);
+
+  .error {
+    background-color: rgba(255, 0, 0, 0.3);
+
+    &.static-cell {
+      background-color: rgba(255, 0, 0, 0.5);
+    }
+  }
+
+  &.warn {
+    background-color: rgba(252, 186, 112, 1);
+
+    &.static-cell {
+      background-color: rgba(255, 126, 0, 1);
+    }
+  }
+
+  &.success {
+    background-color: rgba(0, 255, 0, 0.3);
+
+    &.static-cell {
+      background-color: rgba(0, 255, 0, 0.7);
+    }
+  }
+
+  &.static-cell {
+    filter: brightness(90%);
+  }
+
+  &:not(.static-cell) {
+    cursor: pointer;
+  }
+}

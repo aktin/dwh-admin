@@ -1,5 +1,5 @@
 <div class="ui segment">
-    <div class="ui top attached label">Patienten- und Behandlungsdaten im AKTIN DWH</div>
+    <div class="ui top attached label">Patient*innen- und Behandlungsfall-Daten im AKTIN DWH</div>
     @if (!!masterData) {
         <div class="ui fifteen wide inline fields">
             <div class="field">
@@ -18,7 +18,7 @@
             </div>
         </div>
     } @else {
-        <div>Keine Stammdaten gefunden</div>
+        <div><span class="ui orange text">Keine Patient*innen-Daten gefunden</span></div>
     }
 
     @if (!!encounters?.length) {
@@ -27,6 +27,6 @@
                     [showDetailButtons]="false">
         </data-table>
     } @else {
-        <div>Keine Behandlungsdaten gefunden</div>
+        <div><span class="ui orange text">Keine Behandlungsfalldaten gefunden</span></div>
     }
 </div>

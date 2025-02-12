@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>generic-file-importer</artifactId>
-            <version>0.19rc1</version>
+            <version>0.19-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -195,7 +195,7 @@
         <dependency>
             <groupId>org.aktin.dwh</groupId>
             <artifactId>dwh-db</artifactId>
-            <version>0.12</version>
+            <version>0.13-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -209,7 +209,7 @@
         <dependency>
             <groupId>org.aktin.dwh</groupId>
             <artifactId>dwh-db</artifactId>
-            <version>0.12</version>
+            <version>0.13-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -227,7 +227,7 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>study-manager</artifactId>
-            <version>0.13</version>
+            <version>0.14-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 

@@ -1,14 +1,14 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {PatientDialogBase} from "../patient-dialog-base";
-import {compareStudies, Study} from "../study";
-import {PatientReference} from "../patient-reference";
-import {NgForm} from "@angular/forms";
-import {StudyManagerService} from "../study-manager.service";
-import {NotificationService} from "../../helpers";
-import {Participation} from "../participation";
+import {PatientDialogBase} from '../patient-dialog-base';
+import {compareStudies, Study} from '../study';
+import {PatientReference} from '../patient-reference';
+import {NgForm} from '@angular/forms';
+import {StudyManagerService} from '../study-manager.service';
+import {NotificationService} from '../../helpers';
+import {Participation} from '../participation';
 import {SICGeneration} from '../sic-generation';
-import {PatientReferenceToRootPipe} from "../patient-reference-to-root.pipe";
-import {GridModel} from "./patients-text-area/patients-text-area.component";
+import {PatientReferenceToRootPipe} from '../patient-reference-to-root.pipe';
+import {GridModel} from './patients-text-area/patients-text-area.component';
 
 declare var $: any;
 
@@ -87,10 +87,10 @@ export class PatientsCreationComponent extends PatientDialogBase implements OnIn
                 this.generateSic)
                 .subscribe({
                     next: e => {
-                        this.notificationService.showSuccess("Patient*innen registriert");
+                        this.notificationService.showSuccess('Patient*innen registriert');
                         this.close();
                     },
-                    error: e => this.notificationService.showError('Patient*innen konnten nicht registriert werden')
+                    error: e => this.notificationService.showError(`Patient*innen konnten nicht registriert werden. ${e}.`)
                 });
         } else {
             this.notificationService.showError('Alle Felder müssen gültige Werte haben');

@@ -3,9 +3,9 @@
         (gridReady)="onGridReady($event)"
         [columnDefs]="columnDefs"
         [defaultColDef]="defaultColDef"
-        [getRowClass]="getRowClass"
         [loading]="false"
         [noRowsOverlayComponent]="NoRowsOverlayComponent"
+        [noRowsOverlayComponentParams]="{reference: reference}"
         class="ag-theme-alpine"
         style="width: 100%; height: 500px;">
 </ag-grid-angular>
@@ -22,6 +22,5 @@
 <button (click)="invokeValidation()"
         class="ui labeled icon button">
     <i class="search icon"></i>
-    Überprüfen
+    Fälle anzeigen
 </button>
-

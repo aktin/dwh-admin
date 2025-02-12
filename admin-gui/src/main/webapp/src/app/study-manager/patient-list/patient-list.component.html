@@ -6,76 +6,86 @@
     </div>
 
     <div class="row">
-        <form class="ui form sixteen wide column"
-              ngForm>
-            <div class="ui row studies">
-                <div class="field">
-                    <label>Studie</label>
-                    <drop-down [(ngModel)]="selectedStudy"
-                               [compare]="compareStudies"
-                               name="studies">
-                        @for (study of studies; track study.id) {
-                            <drop-down-option [value]="study">{{ study.title }}</drop-down-option>
-                        }
-                    </drop-down>
-                </div>
-            </div>
-
-            <div class="ui segment row filter">
-                <div class="sixteen fields">
-                    <div class="sixteen wide wide field">
-                        <label>Datum</label>
-                        <div class="ui action input">
-                            <input #d="angular-mydatepicker"
-                                   [(ngModel)]="date"
-                                   [options]="options"
-                                   angular-mydatepicker
-                                   name="dp"/>
-                            <button (click)="d.toggleCalendar()"
-                                    class="ui icon button"
-                                    type="button">
-                                <i class="calendar icon"></i>
-                            </button>
-                            <button (click)="resetFilter()"
-                                    class="ui labeled icon button"
-                                    type="button">
-                                <i class="close icon"></i> Zurücksetzen
-                            </button>
-                            <button (click)="filter()"
-                                    class="ui labeled icon button"
-                                    type="button">
-                                <i class="filter icon"></i> Suchen
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </form>
-    </div>
-    <!-- TODO: AuditTrail -->
-</div>
-<div class="ui segments row container">
-    <div class="ui segment ui grid buttonbar">
-        <div class="ui sixteen wide column">
-            <div class="row">
-                <button (click)="isPatientCreationComponentOpen = true"
-                        class="ui green right floated labeled icon basic button">
-                    <i class="plus icon"></i>
-                    Registrieren
-                </button>
-
-                <button (click)="isPatientsCreationComponentOpen = true"
-                        class="ui green right floated labeled icon basic button">
-                    <i class="plus icon"></i>
-                    Multi-registrierung
-                </button>
+        <div class="ui column form">
+            <div class="field">
+                <label>Studie</label>
+                <drop-down [(ngModel)]="selectedStudy"
+                           [compare]="compareStudies"
+                           name="studies">
+                    @for (study of studies; track study.id) {
+                        <drop-down-option [value]="study">{{ study.title }}</drop-down-option>
+                    }
+                </drop-down>
             </div>
         </div>
     </div>
-    <data-table (onDetailsClick)="selectedEntry = $event; isPatientViewComponentOpen = true;"
-                [columns]="columns"
-                [data]="filteredEntries"></data-table>
+    <div class="row">
+        <div class="ui column">
+            <div class="ui segment column form">
+                <div class="field">
+                    <label>Zeitraum</label>
+                    <div class="ui action input">
+                        <input #d="angular-mydatepicker"
+                               [(ngModel)]="date"
+                               [options]="options"
+                               angular-mydatepicker
+                               name="dp"/>
+                        <button (click)="d.toggleCalendar()"
+                                class="ui icon button"
+                                type="button">
+                            <i class="calendar icon"></i>
+                        </button>
+                        <button (click)="resetFilter()"
+                                class="ui labeled icon button"
+                                type="button">
+                            <i class="close icon"></i> Zurücksetzen
+                        </button>
+                        <button (click)="filter()"
+                                class="ui labeled icon button"
+                                type="button">
+                            <i class="filter icon"></i> Filtern
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- TODO: AuditTrail -->
+    <div class="row">
+        <div class="ui column">
+            <div class="ui segment">
+                <div class="ui grid">
+                    <div class="row">
+                        <div class="ui column">
+                            <div class="ui green basic right floated buttons">
+                                <div (click)="isPatientCreationComponentOpen = true"
+                                     class="ui button">
+                                    <!--                        <i class="plus icon"></i>-->
+                                    Registrieren
+                                </div>
+                                <div #batchAddDropdown
+                                     class="ui floating dropdown icon button">
+                                    <i class="dropdown icon"></i>
+                                    <div class="menu">
+                                        <div (click)="isPatientsCreationComponentOpen = true"
+                                             class="ui button item">
+                                            Multi-Registrierung
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <data-table (onDetailsClick)="selectedEntry = $event; isPatientViewComponentOpen = true;"
+                                    [columns]="columns"
+                                    [data]="filteredEntries"
+                                    class="ui column"></data-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <patients-creation (onClose)="isPatientsCreationComponentOpen = false; loadEntries();"

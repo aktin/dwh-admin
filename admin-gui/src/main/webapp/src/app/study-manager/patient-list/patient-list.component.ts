@@ -1,59 +1,66 @@
-import {Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {compareStudies, Study} from "../study";
-import {Entry} from "../entry";
-import {MomentDatePipe, MY_CALENDAR_OPTIONS, TableColumns} from "../../helpers";
-import {StudyManagerService} from "../study-manager.service";
-import {AngularMyDatePickerDirective, IMyDateModel, IMyOptions} from "gramli-angular-mydatepicker";
-import moment from "moment";
+import {AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
+import {compareStudies, Study} from '../study';
+import {Entry} from '../entry';
+import {MomentDatePipe, MY_CALENDAR_OPTIONS, TableColumns} from '../../helpers';
+import {StudyManagerService} from '../study-manager.service';
+import {AngularMyDatePickerDirective, IMyDateModel, IMyOptions} from 'gramli-angular-mydatepicker';
+import moment from 'moment';
+import {PatientReference} from '../patient-reference';
+import {PatientReferenceToLabelPipe} from '../patient-reference-to-label.pipe';
+
+declare var $: any;
 
 @Component({
     selector: 'patient-list',
     templateUrl: './patient-list.component.html',
     styleUrl: './patient-list.component.css',
-    providers: [StudyManagerService]
+    providers: [StudyManagerService, PatientReferenceToLabelPipe]
 })
-export class PatientListComponent implements OnInit {
+export class PatientListComponent implements OnInit, AfterViewInit {
     public studies: Study[] = [];
     public entries: Entry[] = [];
     public filteredEntries: Entry[] = [];
     public columns: TableColumns<Entry> = [
         {
             field: e => new MomentDatePipe().transform(e.timestamp, 'DD.MM.YYYY, HH:mm'),
-            header: "Datum"
+            header: 'Datum'
         },
         {
-            field: "sic",
-            header: "SIC"
+            field: 'sic',
+            header: 'Studien-ID'
         },
         {
-            field: e => e.idExt ?? e.idRoot,
-            header: "KIS-ID",
+            field: e => `${e.idExt} (${this.patientReferenceToLabelPipe.transform(e.reference)})`,
+            header: 'Patient*innen-Referenz',
             useToTrack: true
         },
         {
-            field: "participationString",
-            header: "Teilnahme"
+            field: 'participationString',
+            header: 'Teilnahme'
         },
         {
-            field: "comment",
-            header: "Kommentar"
+            field: 'comment',
+            header: 'Kommentar'
         }];
     public selectedEntry: Entry;
-    protected readonly compareStudies = compareStudies;
-
-    @ViewChild(AngularMyDatePickerDirective)
-    private datePicker: AngularMyDatePickerDirective;
-    protected date: IMyDateModel;
-    protected search: string = "";
-
-    constructor(private studyManagerService: StudyManagerService,
-                @Inject(MY_CALENDAR_OPTIONS) protected options: IMyOptions) {
-        this.options.dateRange = true;
-    }
-    private _selectedStudy: Study = null;
     public isPatientViewComponentOpen: boolean = false;
     public isPatientsCreationComponentOpen: boolean;
     public isPatientCreationComponentOpen: boolean;
+    protected readonly compareStudies = compareStudies;
+    protected date: IMyDateModel;
+    protected search: string = '';
+    @ViewChild(AngularMyDatePickerDirective)
+    private datePicker: AngularMyDatePickerDirective;
+    @ViewChild('batchAddDropdown')
+    private batchAddDropdown: ElementRef<HTMLDivElement>;
+
+    constructor(private studyManagerService: StudyManagerService,
+                private patientReferenceToLabelPipe: PatientReferenceToLabelPipe,
+                @Inject(MY_CALENDAR_OPTIONS) protected options: IMyOptions) {
+        this.options.dateRange = true;
+    }
+
+    private _selectedStudy: Study = null;
 
     public get selectedStudy(): Study {
         return this._selectedStudy;
@@ -66,6 +73,10 @@ export class PatientListComponent implements OnInit {
         }
     }
 
+    ngAfterViewInit(): void {
+        $(this.batchAddDropdown.nativeElement).dropdown();
+    }
+
     ngOnInit(): void {
         this.studyManagerService.getStudies()
             .subscribe(studies => {
@@ -76,9 +87,9 @@ export class PatientListComponent implements OnInit {
 
     public filter(): void {
         this.filteredEntries = this.entries;
-        if(!!this.date) {
+        if (!!this.date) {
             let filterFunc: (e: Entry) => boolean;
-            if(this.date.isRange) {
+            if (this.date.isRange) {
                 // '[]' to include begin date and end date
                 // https://momentjscom.readthedocs.io/en/latest/moment/05-query/06-is-between/
                 filterFunc = e => moment.unix(e.timestamp).isBetween(this.date.dateRange.beginJsDate, this.date.dateRange.endJsDate, 'day', '[]');

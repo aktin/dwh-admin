@@ -94,10 +94,9 @@ export class PatientCreationComponent extends PatientDialogBase implements OnIni
                         this.notificationService.showSuccess("Patient*in registriert");
                         this.close();
                     },
-                error: e => this.notificationService.showError('Patient*in konnte nicht registriert werden')});
+                error: e => this.notificationService.showError(`Patient*in konnte nicht registriert werden. ${e}.`)});
         } else {
             this.notificationService.showError('Alle Felder müssen gültige Werte haben')
         }
     }
 }
-

@@ -141,32 +141,26 @@ export class StudyManagerService {
             }).pipe(catchError(err => this._http.handleError(err)));
     }
 
-    //
-    // /**
-    //  * Deletes an entry specified by the given studyId, reference, root and extension.
-    //  * @param id the id of the study
-    //  * @param ref the patient reference
-    //  * @param root the root id
-    //  * @param ext the extension id
-    //  * @returns Observable of response
-    //  */
-    // deleteEntry(id: string, ref: string, root: string, ext: string) {
-    //     root = encodeURIComponent(root);
-    //     ext = encodeURIComponent(ext);
-    //     return this._http.delete(this._urls.parse('entry', {
-    //         studyId: id,
-    //         reference: ref,
-    //         root: root,
-    //         extension: ext
-    //     })).pipe(
-    //         catchError(err => {
-    //             return this._http.handleError(err);
-    //         }));
-    // }
-    //
-    // redirect2Home() {
-    //     return this._auth.redirect2Home();
-    // }
+
+    /**
+     * Deletes an entry specified by the given studyId, reference, root and extension.
+     * @param id the id of the study
+     * @param ref the patient reference
+     * @param root the root id
+     * @param ext the extension id
+     * @returns Observable of response
+     */
+    deleteEntry(id: string, ref: string, root: string, ext: string) {
+        root = encodeURIComponent(root);
+        ext = encodeURIComponent(ext);
+        return this._http.delete(this._urls.parse('entry', {
+            studyId: id,
+            reference: ref,
+            root: root,
+            extension: ext
+        })).pipe(catchError(err => this._http.handleError(err)));
+    }
+
     public updateEntry(studyId: string, reference: PatientReference, root: string, extension: string, entry: Entry): Observable<Entry> {
         root = encodeURIComponent(root);
         extension = encodeURIComponent(extension);

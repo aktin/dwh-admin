@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class PatientEntriesRequest {
+public class PatientEntriesRequestDTO {
 	public Participation opt;
 	public String comment;
 	// should sic be automatically generated or manually inserted

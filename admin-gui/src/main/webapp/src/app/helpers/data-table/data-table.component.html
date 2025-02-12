@@ -10,12 +10,12 @@
             </th>
         }
         @if (showDetailButtons) {
-            <th></th>
+            <th>Details</th>
         }
     </tr>
     </thead>
     <tbody>
-        @for (row of allData | paginate: {itemsPerPage: 15, currentPage: page}; track determineTrackBy(row)) {
+        @for (row of allData | paginate: {itemsPerPage: 15, currentPage: page, id: paginatorId.toString()}; track determineTrackBy(row)) {
             <tr>
                 @for (column of columns; track column) {
                     <td>
@@ -25,12 +25,10 @@
                     <td [colSpan]="colSpan">Keine Daten gefunden</td>
                 }
                 @if (showDetailButtons && !!allData?.length) {
-                    <td>
-                        <button class="ui right floated labeled icon button"
-                                style="width: auto"
+                    <td class="center aligned">
+                        <button class="ui icon button"
                                 (click)="onButtonClick(row)">
                             <i class="search icon"></i>
-                            Details
                         </button>
                     </td>
                 }
@@ -38,9 +36,11 @@
         }
     </tbody>
     <tfoot>
-    <th [colSpan]="colSpan">
+    <th [colSpan]="colSpan"
+        class="center aligned">
         <pagination-controls (pageChange)="page = $event"
-                             [autoHide]="true"
+                             [autoHide]="false"
+                             [id]="paginatorId.toString()"
                              class="pagination"
                              nextLabel="Nächste Seite"
                              previousLabel="Vorherige Seite">

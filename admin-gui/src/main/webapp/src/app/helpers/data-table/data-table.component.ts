@@ -8,6 +8,9 @@ import {SortEvent} from "./sortable-table-column/sort-event";
     styleUrl: './data-table.component.css'
 })
 export class DataTableComponent<T = any> {
+    private static idCounter: number = 0;
+    //the ID ensures that more than one paginator at the same time is supported, if id is not set it might cause unwanted behaviour
+    protected paginatorId: number = DataTableComponent.idCounter++;
     @Input()
     public columns: TableColumns<T>;
     public allData: T[];
@@ -25,6 +28,11 @@ export class DataTableComponent<T = any> {
         this.allData = data;
     }
 
+    /**
+     * Sorts the data based on the specified column and direction provided in the sort event.
+     *
+     * @param {SortEvent} $event - The event containing information about the column to sort and the sorting direction.
+     */
     public sort($event: SortEvent): void {
         this.resetSorts($event.identifier);
 
@@ -71,10 +79,26 @@ export class DataTableComponent<T = any> {
         this.sortableColumns?.filter(c => c.identifier !== identifierToIgnore).forEach(c => c.direction = null);
     }
 
+    /**
+     * Resolves the value of a field from an object based on the provided field descriptor.
+     *
+     * @param {string | number | symbol | ((obj: any) => string)} field - The descriptor for the field to resolve.
+     *        It can be a key (string, number, symbol) or a function that takes the object as input and returns the key.
+     * @param {any} obj - The object from which the field value will be resolved.
+     * @return {any} The resolved value of the field in the provided object. If the field is a function, the result
+     *         of invoking the function with the object is returned. If it is a key, the value corresponding to
+     *         the key in the object is returned.
+     */
     protected resolveField(field: string | number | symbol | ((obj: any) => string), obj: any): any {
         return typeof field === "function" ? field(obj) : obj[field];
     }
 
+    /**
+     * Handles the event triggered when the  is clicked.
+     *
+     * @param row - The row data of type T associated with the button click event.
+     * @return void - This method does not return any value.
+     */
     protected onButtonClick(row: T): void {
         this.onDetailsClick.emit(row);
     }

@@ -8,7 +8,8 @@
 
       "schematics": {
         "@schematics/angular:component": {
-          "standalone": false
+          "standalone": false,
+          "style": "scss"
         },
         "@schematics/angular:directive": {
           "standalone": false
@@ -41,7 +42,8 @@
               "src/styles.css",
               "node_modules/fomantic-ui-css/semantic.min.css",
               "node_modules/ag-grid-community/styles/ag-grid.css",
-              "node_modules/ag-grid-community/styles/ag-theme-alpine.css"
+              "node_modules/ag-grid-community/styles/ag-theme-alpine.css",
+              "src/theme.scss"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",

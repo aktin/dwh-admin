@@ -26,7 +26,6 @@ export class PatientEditComponent extends PatientDialogBase implements OnInit {
     protected readonly Participation = Participation;
     protected readonly DateFormat = DateFormat;
 
-
     @ViewChild('accordion', {static: false})
     private set accordion(value: ElementRef<HTMLDivElement>) {
         if (!!value) {
@@ -52,13 +51,26 @@ export class PatientEditComponent extends PatientDialogBase implements OnInit {
             this.studyManagerService.updateEntry(this.entry.study.id, this.entry.reference, this.entry.idRoot, this.entry.idExt, this.entry)
                 .subscribe({
                     next: e => {
-                        this.notificationService.showSuccess("Änderungen gespeichert");
+                        this.notificationService.showSuccess('Änderungen gespeichert');
                         this.close();
                     },
-                    error: e => this.notificationService.showError('Änderungen konnten nicht gespeichert werden')
+                    error: e => this.notificationService.showError(`Änderungen konnten nicht gespeichert werden. ${e}.`)
                 });
         } else {
             this.notificationService.showError('Alle Felder müssen gültige Werte haben');
+        }
+    }
+
+    public delete(confirmed: boolean): void {
+        if (confirmed) {
+            this.studyManagerService.deleteEntry(this.entry.study.id, this.entry.reference, this.entry.idRoot, this.entry.idExt)
+                .subscribe({
+                    next: () => {
+                        this.notificationService.showSuccess('Eintrag gelöscht');
+                        this.close();
+                    },
+                    error: e => this.notificationService.showError('Eintrag konnte nicht gelöscht werden')
+                });
         }
     }
 }

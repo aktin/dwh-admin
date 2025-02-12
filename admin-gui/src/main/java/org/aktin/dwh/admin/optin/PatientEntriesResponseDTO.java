@@ -6,10 +6,10 @@ import org.aktin.dwh.optinout.PatientEncounter;
 import org.aktin.dwh.optinout.PatientMasterData;
 
 @Getter @Setter
-public class PatientEntriesResponse {
+public class PatientEntriesResponseDTO {
     private String extension;
     private String sic;
-    private EntryValidation entryValidation = EntryValidation.Valid;
+    private EntryValidation entryValidation = EntryValidation.VALID;
     private PatientEncounter lastEncounter;
     private PatientMasterData masterData;
 }
