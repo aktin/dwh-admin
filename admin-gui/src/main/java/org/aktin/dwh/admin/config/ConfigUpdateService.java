@@ -1,4 +1,6 @@
 package org.aktin.dwh.admin.config;
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
+import org.aktin.dwh.admin.config.validator.ValidationRequest;
 import org.aktin.dwh.optinout.PatientReference;
 import org.aktin.dwh.prefs.impl.PropertyFilePreferences;
 
@@ -12,19 +14,19 @@ import java.util.Map;
 
 
 public class ConfigUpdateService {
+    private PropertyFilePreferences prefManager;
 
-    /**
-     * Lets the PropertyFilePreferences class load the current preferences and returns them
-     * @return Wrapper for preferences
-     */
-    public PropertyFilePreferences getPreferences() {
-        try {
-            PropertyFilePreferences propPref = new PropertyFilePreferences();
-            return propPref;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public ConfigUpdateService() throws IOException {
+        this.prefManager = new PropertyFilePreferences();
+    }
+
+    public String updatePreferences(ValidationRequest request) throws IOException, InterruptedException {
+        Process stop = Runtime.getRuntime().exec("service wildfly stop");
+        int exitCodeStop = stop.waitFor();
+        String returnMessage = this.prefManager.updatePropertiesFile(request.getPreferences());
+        Process start = Runtime.getRuntime().exec("service wildfly start");
+        int exitCodeStart = start.waitFor();
+        return "Server status codes:\\n\\tWildfly stopped:"+exitCodeStop+"\\n\\tWildfly started:"+exitCodeStart+"\\nProperties config errors:"+returnMessage;
     }
 
     public Map<String, String> getPrefs(PropertyFilePreferences pref) {

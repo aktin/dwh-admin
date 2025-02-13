@@ -64,7 +64,7 @@ export class PreferencesEditComponent implements AfterViewInit {
             let prefs_json = this._service.scrapPreferenceTable(this._document, this.pref_input_class);
             this._http.post(this._urls.parse('sendPreference'), prefs_json).subscribe(response => {
                 let json = response.json()
-                console.log("received pref status code: ", json)
+                console.log("received pref status code: ", json.message)
             });
         } else if (changeType==="revert") {
             this.navigateToPreferencePage()

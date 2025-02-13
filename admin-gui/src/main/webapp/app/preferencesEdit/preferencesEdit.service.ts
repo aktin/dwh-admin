@@ -23,16 +23,25 @@ export class PreferenceEditService {
      * @param class_name
      */
     scrapPreferenceTable(document: ElementRef, class_name: String) {
-        let prefs_json = {}
-        let preference_list = document.nativeElement.querySelector(`[class="${class_name}"]`)
+        let prefs_json = {preferences:{}}
+        let preference_list = document.nativeElement.querySelectorAll(`[class="${class_name}"]`)
         Array.from(preference_list).forEach((pref: HTMLInputElement) => {
-            let id = pref.getAttribute('id');
-            let value = pref.value;
+            let id = this.escapeJSON(pref.getAttribute('id'));
+            let value = this.escapeJSON(pref.value);
             if (id) {
-                prefs_json[id] = value;
+                prefs_json.preferences[id] = value;
             }
         });
         return prefs_json
+    }
+
+    escapeJSON(jsonString: String) {
+        return jsonString
+            .replace(/\\/g, "\\\\")  // Escape backslashes
+            .replace(/"/g, '\\"')    // Escape double quotes
+            .replace(/\n/g, "\\n")   // Escape newlines
+            .replace(/\r/g, "\\r")   // Escape carriage returns
+            .replace(/\t/g, "\\t");  // Escape tabs
     }
 
     validateInput(value: String, property_name: String) {
