@@ -17,8 +17,6 @@ import {AppComponent} from './app.component';
 import {HomeComponent, TestComponent} from './home';
 import {
     CleanUpAuthService,
-    DataTableModule,
-    DropDownModule,
     DownloadService,
     DurationDataPipe,
     DurationQueryPipe,
@@ -71,17 +69,9 @@ import {SetTimeInterceptor} from './helpers/services/set-time.interceptor';
 import {registerLocaleData} from '@angular/common';
 import localeDe from '@angular/common/locales/de';
 import localeDeExtra from '@angular/common/locales/extra/de';
-import {PatientListComponent} from "./study-manager/patient-list/patient-list.component";
 import {NgbInputDatepicker} from "@ng-bootstrap/ng-bootstrap";
 import {AngularMyDatePickerModule} from "gramli-angular-mydatepicker";
-import { PatientCreationComponent } from './study-manager/patient-creation/patient-creation.component';
-import { UniqueSicValidatorDirective } from './study-manager/patient-creation/unique-sic-validator.directive';
-import { MasterDataValidatorDirective } from './study-manager/patient-creation/master-data-validator.directive';
 import {FieldModule} from './helpers/field/field.module';
-import { ExtensionValidatorDirective } from './study-manager/patient-creation/extension-validator.directive';
-import { PatientViewComponent } from './study-manager/patient-view/patient-view.component';
-import { PatientMasterDataComponent } from './study-manager/patient-master-data/patient-master-data.component';
-import { PatientEditComponent } from './study-manager/patient-edit/patient-edit.component';
 
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
@@ -122,14 +112,6 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         MomentDatePipe,
         SuccessReportsPipe,
         RequestFilterPipe,
-        PatientListComponent,
-        PatientCreationComponent,
-        UniqueSicValidatorDirective,
-        MasterDataValidatorDirective,
-        ExtensionValidatorDirective,
-        PatientViewComponent,
-        PatientMasterDataComponent,
-        PatientEditComponent,
     ],
     bootstrap: [
         AppComponent
@@ -140,8 +122,6 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         // JsonpModule,
         AngularMyDatePickerModule,
         NgxPaginationModule,
-        DataTableModule,
-        DropDownModule,
         NgbInputDatepicker,
         FieldModule
     ],

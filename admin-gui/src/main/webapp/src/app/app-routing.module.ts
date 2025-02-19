@@ -14,10 +14,8 @@ import {ReportNewComponent, ReportsComponent, ReportSingleComponent} from './rep
 import {PreferencesComponent} from './preferences';
 import {ImporterComponent} from './importer';
 import {RequestsComponent, RequestSingleComponent} from './requests';
-import {StudyManagerComponent} from './studyManager';
 import {StatusComponent} from './status';
-import {PatientListComponent} from "./study-manager/patient-list/patient-list.component";
-import {VisitsComponent} from './visits';
+import {StudyManagerComponent} from "./studyManager";
 
 const routes: Routes = [// array of routes
   {
@@ -104,7 +102,7 @@ const routes: Routes = [// array of routes
   {
     path: 'consentManager',
     canActivate: [UserAuthGuard],
-    component: PatientListComponent,
+    component: StudyManagerComponent,
     data: {
       name: 'Consent-Manager',
       permissions: [

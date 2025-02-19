@@ -24,14 +24,3 @@ export * from './pipes/index';
 export * from './loading.component';
 export * from './popup-message.component';
 
-/**
- *  Data table
- */
-export * from './data-table/data-table.module';
-export * from './data-table/data-table.component';
-
-/**
- *  Drop Down with search functionality
- */
-export * from './drop-down/drop-down.module';
-export * from './drop-down/drop-down.component';
