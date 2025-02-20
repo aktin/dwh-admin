@@ -8,19 +8,19 @@
 
     <groupId>org.aktin.dwh</groupId>
     <artifactId>admin-gui</artifactId>
-    <version>0.14-SNAPSHOT</version>
+    <version>0.13-SNAPSHOT</version>
 
     <parent>
         <groupId>org.aktin.dwh</groupId>
         <artifactId>dwh-admin</artifactId>
-        <version>0.14-SNAPSHOT</version>
+        <version>0.13-SNAPSHOT</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>dwh-api</artifactId>
-            <version>0.11-SNAPSHOT</version>
+            <version>0.10</version>
         </dependency>
         <dependency>
             <groupId>de.li2b2.facade</groupId>
@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>generic-file-importer</artifactId>
-            <version>0.19rc1</version>
+            <version>0.18</version>
         </dependency>
 
         <dependency>
@@ -81,19 +81,7 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.11.3</version>
         </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.11.3</version>
-            <scope>provided</scope>
-        </dependency>
 
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
-            <scope>provided</scope>
-        </dependency>
 
         <!-- test with jetty -->
         <!-- test dependencies to run a server for testing -->
