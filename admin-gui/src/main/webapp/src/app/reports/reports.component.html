@@ -1,0 +1,26 @@
+<div class="ui grid">
+    <div class="row">
+        <div class="ui breadcrumb">
+            <div class="active section breadcrumb-header">Berichtsübersicht</div>
+        </div>
+        <div class="five wide right floated column right aligned" *ngIf="isAuthorized('WRITE_REPORTS')">
+            <div class="ui green animated vertical button" routerLink="/report/new">
+                <div class="hidden content">Neuen Bericht erstellen</div>
+                <div class="visible content"><i class="book icon button-new-report"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ui test checkbox reports-filter-checkbox">
+    <input type="checkbox" [checked]="showOnlySuccessful" (change)="showOnlySuccessful=!showOnlySuccessful">
+    <label (click)="showOnlySuccessful=!showOnlySuccessful">Nur erfolgreich erstellte Berichte anzeigen</label>
+</div>
+<div *ngIf="reports" class="ui">
+    <pagination-controls class="pagination"
+        (pageChange)="p = $event"
+        [autoHide]="true"
+        previousLabel="Vorherige Seite"
+        nextLabel="Nächste Seite">
+    </pagination-controls>
+    <report-single-view *ngFor="let report of reports | success:showOnlySuccessful | orderBy: ['-id'] | paginate: { itemsPerPage: 10, currentPage: p }" [reportData]="report" class="ui vertical segment"></report-single-view>
+</div>
