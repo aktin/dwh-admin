@@ -130,8 +130,8 @@ export class RequestSingleViewComponent {
             }
             this.popUp.setConfirm(button);
             this.popUp.setData(true, title, message,
-                // answer: whether the dialog options are submitted; 
-                // autoTransmission: whether auto submit is selected; 
+                // answer: whether the dialog options are submitted;
+                // autoTransmission: whether auto submit is selected;
                 // applyQueryRule: whether a rule for the series should be created;
                 (answer: boolean, autoTransmission: boolean, applyQueryRule: boolean) => {
                     if (answer) {
@@ -160,7 +160,7 @@ export class RequestSingleViewComponent {
                                         });
                                 });
                             // no existing rule, create new one
-                            } else { 
+                            } else {
                                 this._requestService.setQueryRule(this.request.requestId, newQueryRule)
                                     .subscribe(res => {
                                         this.applyRule(newQueryRule);

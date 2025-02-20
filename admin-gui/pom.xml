@@ -8,12 +8,12 @@
 
     <groupId>org.aktin.dwh</groupId>
     <artifactId>admin-gui</artifactId>
-    <version>0.13-SNAPSHOT</version>
+    <version>0.14-SNAPSHOT</version>
 
     <parent>
         <groupId>org.aktin.dwh</groupId>
         <artifactId>dwh-admin</artifactId>
-        <version>0.13-SNAPSHOT</version>
+        <version>0.14-SNAPSHOT</version>
     </parent>
 
     <dependencies>
@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>generic-file-importer</artifactId>
-            <version>0.18</version>
+            <version>0.19rc1</version>
         </dependency>
 
         <dependency>
@@ -88,7 +88,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <version>9.2.14.v20151106</version>
+            <version>9.4.55.v20240627</version>
             <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.eclipse.jetty.websocket/javax-websocket-server-impl -->
