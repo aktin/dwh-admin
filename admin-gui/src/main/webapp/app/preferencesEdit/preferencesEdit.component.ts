@@ -63,9 +63,15 @@ export class PreferencesEditComponent implements AfterViewInit {
         if (changeType==="apply") {
             let prefs_json = this._service.scrapPreferenceTable(this._document, this.pref_input_class);
             this._http.post(this._urls.parse('sendPreference'), prefs_json).subscribe(response => {
-                let json = response.json()
-                console.log("received pref status code: ", json.message)
+                console.log(response)
+                // let json = response.json()
+                // console.log("update response: ", json)
+                // if(json.message.length == 0) {
+                //     console.log("resonse okay, proceed to refresh")
+                //     this.checkWildflyOnline(15);
+                // }
             });
+
         } else if (changeType==="revert") {
             this.navigateToPreferencePage()
         }
@@ -96,6 +102,33 @@ export class PreferencesEditComponent implements AfterViewInit {
 
     navigateToPreferencePage(): void {
         this._router.navigate(['/preferences'])
+    }
+
+    checkWildflyOnline(timeout: number) {
+        let elapsedTime = 0;
+        let intervalSeconds = 3;
+        let reachable = false;
+        const interval = setInterval(() => {
+            console.log(`Checking if url is reachable...`);
+            this._http.get(this._urls.parse('handshake')).subscribe(response => {
+                console.log("server ststus: ", response.json().response)
+                if (response.json().response == "online") {
+                    clearInterval(interval);
+                    console.log("reached")
+                    this.navigateToPreferencePage();
+                } else {
+                    console.log("not reached, retrying...")
+                }
+            });
+
+            elapsedTime += intervalSeconds;
+            if (elapsedTime >= timeout) {
+                clearInterval(interval);
+                console.log("Finished checking.");
+            }
+        }, 1000*intervalSeconds);
+
+        console.log("timeout")
     }
 
 }

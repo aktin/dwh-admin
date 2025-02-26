@@ -79,6 +79,7 @@ export class UrlService {
 
         // configEndpoint
         sendPreference: 'config/updateProperties',
+        handshake: 'config/status',
     };
 
     setServerUrl(serverUrl: string) {
