@@ -12,6 +12,7 @@ import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.aktin.Preferences;
@@ -55,6 +56,11 @@ public class UpdateManager {
 
     private CompletableFuture<Boolean> currentUpdate;
 
+    @PostConstruct
+    private void initialize() {
+        LOGGER.log(Level.INFO, "Initializing UpdateManager and triggering APT package list reload...");
+        reloadAptPackageLists();
+    }
 
     /**
      * Checks if the update agent is installed by verifying the existence
