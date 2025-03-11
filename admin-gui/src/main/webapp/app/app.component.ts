@@ -19,6 +19,7 @@ import { AuthService } from './users/index';
 import { HttpInterceptorService } from './helpers/services/http-interceptor.service';
 import { Response } from '@angular/http';
 import { UrlService } from './helpers/services/url.service';
+import { PreferenceEditService } from "./preferencesEdit/preferencesEdit.service";
 
 import $ = require('jquery');
 require('semantic-ui');
@@ -45,6 +46,7 @@ export class AppComponent implements OnInit {
         private _http: HttpInterceptorService,
         private _url: UrlService,
         private _updaterService: UpdaterService,
+        private _preferences: PreferenceEditService,
     ) { };
 
     ngOnInit(): void {
@@ -83,6 +85,9 @@ export class AppComponent implements OnInit {
         setTimeout(() => {
             this.showDwhUpdateSummary();
         }, 1500);
+
+        // move to config page if preferences have been updated
+        this.showPreferenceUpdate()
     }
 
     get version() {
@@ -136,6 +141,20 @@ export class AppComponent implements OnInit {
             var that = this;
             setTimeout(function () {
                 that.showDwhUpdateSummary();
+            }, 750);
+        }
+    }
+
+    showPreferenceUpdate() {
+        if (this._updaterService.checkPermission()) {
+            if (this._preferences.getCookie('AKTIN.showPrefUpdate')) {
+                this._preferences.navigateToPreferencePage();
+                this._preferences.deleteCookie('AKTIN.showPrefUpdate');
+            }
+        } else {
+            var that = this;
+            setTimeout(function () {
+                that.showPreferenceUpdate();
             }, 750);
         }
     }

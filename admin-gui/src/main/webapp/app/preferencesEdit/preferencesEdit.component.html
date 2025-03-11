@@ -30,7 +30,7 @@
                         {{pref.key}}
                     </td>
                     <td class="break-word">
-                        <input class="preferenceValue" [attr.id]="pref.key" [value]="pref.value" (blur)="checkInput(pref)">
+                        <input class="preferenceValue" [attr.id]="pref.key" [value]="pref.value" (input)="checkInput(pref)">
                     </td>
                     <td class="break-word">
                         {{pref.description}}

@@ -1,8 +1,9 @@
-import { AfterViewInit, Component, ElementRef, Renderer2, ViewChild, ViewEncapsulation} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, forwardRef, Renderer2, ViewChild } from '@angular/core';
 import { PreferenceService } from '../preferences/preference.service';
 import { Preference, PreferenceCategory } from "../preferences/preference";
-import { HttpInterceptorService, UrlService } from '../helpers/index';
+import {HttpInterceptorService, UrlService} from '../helpers/index';
 import { PreferenceEditService } from "./preferencesEdit.service";
+import { LoadingComponent } from "../helpers/loading.component";
 import { Router } from "@angular/router";
 
 
@@ -15,6 +16,8 @@ export class PreferencesEditComponent implements AfterViewInit {
     title = 'Konfigurationen Anpassen';
     bottombanner = "bottombanner";
     pref_input_class = "preferenceValue";
+    @ViewChild(forwardRef(() => LoadingComponent))
+    loadingComponent: LoadingComponent;
 
 
     constructor (
@@ -54,7 +57,6 @@ export class PreferencesEditComponent implements AfterViewInit {
     checkInput(pref: Preference) {
         let key = pref.key
         let value = pref.value
-        // this.markInputAsInvalid(pref.key)
         this.createBanner()
     }
 
@@ -62,15 +64,15 @@ export class PreferencesEditComponent implements AfterViewInit {
         this.hideBanner()
         if (changeType==="apply") {
             let prefs_json = this._service.scrapPreferenceTable(this._document, this.pref_input_class);
+            this._service.setCookie('AKTIN.showPrefUpdate', 'true');
+            window.location.href = "/aktin/admin/plain/update.html";
             this._http.post(this._urls.parse('sendPreference'), prefs_json).subscribe(response => {
-                console.log(response)
-                // let json = response.json()
-                // console.log("update response: ", json)
-                // if(json.message.length == 0) {
-                //     console.log("resonse okay, proceed to refresh")
-                //     this.checkWildflyOnline(15);
-                // }
-            });
+                    console.log(response)
+            }
+            , error => {
+                console.log(error)
+            }
+            );
 
         } else if (changeType==="revert") {
             this.navigateToPreferencePage()
@@ -101,34 +103,7 @@ export class PreferencesEditComponent implements AfterViewInit {
     }
 
     navigateToPreferencePage(): void {
-        this._router.navigate(['/preferences'])
-    }
-
-    checkWildflyOnline(timeout: number) {
-        let elapsedTime = 0;
-        let intervalSeconds = 3;
-        let reachable = false;
-        const interval = setInterval(() => {
-            console.log(`Checking if url is reachable...`);
-            this._http.get(this._urls.parse('handshake')).subscribe(response => {
-                console.log("server ststus: ", response.json().response)
-                if (response.json().response == "online") {
-                    clearInterval(interval);
-                    console.log("reached")
-                    this.navigateToPreferencePage();
-                } else {
-                    console.log("not reached, retrying...")
-                }
-            });
-
-            elapsedTime += intervalSeconds;
-            if (elapsedTime >= timeout) {
-                clearInterval(interval);
-                console.log("Finished checking.");
-            }
-        }, 1000*intervalSeconds);
-
-        console.log("timeout")
+        this._service.navigateToPreferencePage()
     }
 
 }
