@@ -36,6 +36,15 @@ pre {
   overflow-wrap: break-word;
 }
 
+.ui.modal > * {
+  display: flex;
+  justify-content: center;
+}
+
+.ui.modal:not(.fullscreen) {
+  max-width: 700px;
+}
+
 @borderRadius: 0.25rem;
 // ngx-paginator
 .ngx-pagination {

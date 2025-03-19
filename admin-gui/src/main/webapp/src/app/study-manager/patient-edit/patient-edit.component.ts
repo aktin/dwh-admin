@@ -1,12 +1,15 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Inject, Input, OnInit, ViewChild} from '@angular/core';
 import {Participation} from '../participation';
-import {DateFormat, NotificationService} from '../../helpers';
+import {DateFormat, NotificationService, PopUpMessageComponent} from '../../helpers';
 import {PatientDialogBase} from '../patient-dialog-base';
 import {Entry} from '../entry';
 import {NgForm} from '@angular/forms';
 import {Encounter} from '../encounter';
 import {MasterData} from '../master-data';
 import {StudyManagerService} from '../study-manager.service';
+import {IModalConfig, MODAL_CONFIG, ModalService} from '../../helpers/modal/modal.service';
+import {ModalRef} from '../../helpers/modal/modal-ref.component';
+import {iif, of, switchMap, tap} from 'rxjs';
 
 declare var $: any;
 
@@ -34,8 +37,12 @@ export class PatientEditComponent extends PatientDialogBase implements OnInit {
     }
 
     constructor(studyManagerService: StudyManagerService,
-                private notificationService: NotificationService,) {
+                private notificationService: NotificationService,
+                private modalService: ModalService,
+                private modalRef: ModalRef<PatientEditComponent>,
+                @Inject(MODAL_CONFIG) config: IModalConfig<Entry>) {
         super(studyManagerService);
+        this.entry = config.data;
     }
 
     ngOnInit(): void {
@@ -61,16 +68,32 @@ export class PatientEditComponent extends PatientDialogBase implements OnInit {
         }
     }
 
-    public delete(confirmed: boolean): void {
-        if (confirmed) {
-            this.studyManagerService.deleteEntry(this.entry.study.id, this.entry.reference, this.entry.idRoot, this.entry.idExt)
-                .subscribe({
-                    next: () => {
+    public confirmDelete(): void {
+        this.modalService.open(PopUpMessageComponent)
+            .pipe(tap(ref => {
+                    // ref.instance.onClose.subscribe(r => ref.close(r));
+                    ref.instance.button = ['user minus icon icon', 'Löschen', 'primary'];
+                    ref.instance.head = 'Eintrag löschen';
+                    ref.instance.message = 'Möchten Sie den Eintrag unwideruflich löschen?';
+                    ref.instance.mode = 'confirm';
+                    ref.instance.show = true;
+                }), switchMap(ref => ref.closed$),
+                switchMap(shouldDelete => iif(() => shouldDelete,
+                    this.studyManagerService.deleteEntry(this.entry.study.id, this.entry.reference, this.entry.idRoot, this.entry.idExt),
+                    of(false)
+                )))
+            .subscribe({
+                next: wasDeleted => {
+                    //explicit false check because deleteEntry returns null
+                    if (wasDeleted !== false) {
                         this.notificationService.showSuccess('Eintrag gelöscht');
                         this.close();
-                    },
-                    error: e => this.notificationService.showError('Eintrag konnte nicht gelöscht werden')
-                });
-        }
+                    }
+                }, error: e => this.notificationService.showError('Eintrag konnte nicht gelöscht werden')
+            });
+    }
+
+    public close(): void {
+        this.modalRef.close();
     }
 }

@@ -1,18 +1,19 @@
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Inject, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {compareStudies, Study} from '../study';
 import {Entry} from '../entry';
 import {PatientReference} from '../patient-reference';
-import {debounceTime, distinctUntilChanged, first, forkJoin, Observable, switchMap, tap} from 'rxjs';
+import {forkJoin} from 'rxjs';
 import {Participation} from '../participation';
-import {AbstractControl, AsyncValidator, NgForm, ValidationErrors} from '@angular/forms';
-import {SICGeneration} from "../sic-generation";
-import {PatientDialogBase} from "../patient-dialog-base";
-import {StudyManagerService} from "../study-manager.service";
-import {Encounter} from "../encounter";
-import {MasterData} from "../master-data";
-import {NotificationService} from "../../helpers";
-import {PatientReferenceToRootPipe} from "../patient-reference-to-root.pipe";
-import {filter, map} from 'rxjs/operators';
+import {NgForm} from '@angular/forms';
+import {SICGeneration} from '../sic-generation';
+import {PatientDialogBase} from '../patient-dialog-base';
+import {StudyManagerService} from '../study-manager.service';
+import {Encounter} from '../encounter';
+import {MasterData} from '../master-data';
+import {NotificationService} from '../../helpers';
+import {PatientReferenceToRootPipe} from '../patient-reference-to-root.pipe';
+import {IModalConfig, MODAL_CONFIG} from '../../helpers/modal/modal.service';
+import {ModalRef} from '../../helpers/modal/modal-ref.component';
 
 declare var $: any;
 
@@ -40,8 +41,11 @@ export class PatientCreationComponent extends PatientDialogBase implements OnIni
 
     constructor(studyManagerService: StudyManagerService,
                 private notificationService: NotificationService,
-                private toRootPipe: PatientReferenceToRootPipe) {
+                private toRootPipe: PatientReferenceToRootPipe,
+                @Inject(MODAL_CONFIG) config: IModalConfig<Study>,
+                private modalRef: ModalRef<PatientCreationComponent>,) {
         super(studyManagerService);
+        this.selectedStudy = config.data;
     }
 
     private _selectedStudy: Study;
@@ -79,7 +83,8 @@ export class PatientCreationComponent extends PatientDialogBase implements OnIni
     }
 
     public loadEncountersAndMasterData(): void {
-        forkJoin([this.studyManagerService.getEncounters(this.selectedReference, this.toRootPipe.transform(this.selectedReference), this.extension),
+        const root = this.toRootPipe.transform(this.selectedReference);
+        forkJoin([this.studyManagerService.getEncounters(this.selectedReference, root, this.extension),
             this.studyManagerService.getMasterData(this.selectedReference, this.toRootPipe.transform(this.selectedReference), this.extension)])
             .subscribe(([e, m]) => {
                 this.encounters = e;
@@ -98,5 +103,9 @@ export class PatientCreationComponent extends PatientDialogBase implements OnIni
         } else {
             this.notificationService.showError('Alle Felder müssen gültige Werte haben')
         }
+    }
+
+    public close(): void {
+        this.modalRef.close(this.selectedStudy);
     }
 }

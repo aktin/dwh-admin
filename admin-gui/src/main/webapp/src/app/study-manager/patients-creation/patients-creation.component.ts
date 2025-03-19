@@ -1,4 +1,4 @@
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Inject, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {PatientDialogBase} from '../patient-dialog-base';
 import {compareStudies, Study} from '../study';
 import {PatientReference} from '../patient-reference';
@@ -9,6 +9,8 @@ import {Participation} from '../participation';
 import {SICGeneration} from '../sic-generation';
 import {PatientReferenceToRootPipe} from '../patient-reference-to-root.pipe';
 import {GridModel} from './patients-text-area/patients-text-area.component';
+import {ModalRef} from '../../helpers/modal/modal-ref.component';
+import {IModalConfig, MODAL_CONFIG} from '../../helpers/modal/modal.service';
 
 declare var $: any;
 
@@ -38,8 +40,11 @@ export class PatientsCreationComponent extends PatientDialogBase implements OnIn
 
     constructor(studyManagerService: StudyManagerService,
                 private notificationService: NotificationService,
-                private toRootPipe: PatientReferenceToRootPipe) {
+                private toRootPipe: PatientReferenceToRootPipe,
+                private modalRef: ModalRef<PatientsCreationComponent>,
+                @Inject(MODAL_CONFIG)config: IModalConfig<Study>,) {
         super(studyManagerService);
+        this.selectedStudy = config.data;
     }
 
     private _selectedStudy: Study;
@@ -74,6 +79,10 @@ export class PatientsCreationComponent extends PatientDialogBase implements OnIn
     ngOnInit(): void {
         this.studyManagerService.getPreferences().subscribe(p => this.preferences = p);
         this.studyManagerService.getStudies().subscribe(s => this.studies = s);
+    }
+
+    public close() {
+        this.modalRef.close(this.selectedStudy);
     }
 
     public create(): void {

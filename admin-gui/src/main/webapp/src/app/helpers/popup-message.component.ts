@@ -1,19 +1,19 @@
 /**
  * Created by Xu on 16.05.2017.
  */
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Optional, Output} from '@angular/core';
+import {ModalRef} from './modal/modal-ref.component';
 
 @Component({
     selector: 'popup-message',
     templateUrl: './popup-message.component.html',
-    styleUrls : ['./popup-message.component.css'],
+    styleUrls: ['./popup-message.component.css'],
 })
 export class PopUpMessageComponent {
     @Input() message: string;
     @Input() head: string;
     @Input() callback: Function;
-    @Output() onClose: EventEmitter<boolean> = new EventEmitter();
-    @Input() mode = 'info'; // 'confirm'
+    @Input() mode: 'info' | 'confirm' = 'info'; // 'confirm'
     @Input() button: string[] = ['icon checkmark', 'Weiter', 'green'];
     show = false;
     onTop = false;
@@ -22,59 +22,65 @@ export class PopUpMessageComponent {
     secondChecked = false;
     secondCheckBox: string[];
 
-    setData (show: boolean, title: string, message: string, callback?: Function): void {
+    constructor(@Optional() private modalRef: ModalRef<PopUpMessageComponent>,) {
+    }
+
+    setData(show: boolean, title: string, message: string, callback?: Function): void {
         this.show = show;
         this.head = title;
         this.message = message;
         this.callback = callback;
     }
 
-    setFirstCheckBox (texts: string[]): void {
+    setFirstCheckBox(texts: string[]): void {
         this.firstChecked = true;
         this.firstCheckBox = texts;
     }
 
-    setSecondCheckBox (texts: string[]): void {
+    setSecondCheckBox(texts: string[]): void {
         this.secondChecked = true;
         this.secondCheckBox = texts;
     }
 
     // call after setData
-    setConfirm (button?: string[]): void {
+    setConfirm(button?: string[]): void {
         this.mode = 'confirm';
         if (button) {
             this.button = button;
         }
     }
 
-    closeMessage (): void {
+    closeMessage(): void {
         this.show = false;
         if (this.callback) {
             this.callback(false);
         }
-        this.onClose.emit(false);
+
+        this.modalRef?.close(false);
         this.clear();
     }
 
-    msgOk (): void {
+    msgOk(): void {
         this.show = false;
         if (this.callback) {
             this.callback(true, this.firstChecked, this.secondChecked);
         }
-        this.onClose.emit(true);
+
+        this.modalRef?.close(true);
         this.clear();
     }
 
-    msgCancel (): void {
+    msgCancel(): void {
         this.show = false;
         if (this.callback) {
             this.callback(false);
         }
-        this.onClose.emit(false);
+
+        this.modalRef?.close(false);
         this.clear();
     }
 
-    clear (): void {
+    clear(): void {
         this.message = null;
         this.head = null;
         this.callback = null;

@@ -5,8 +5,12 @@ import {MomentDatePipe, MY_CALENDAR_OPTIONS, TableColumns} from '../../helpers';
 import {StudyManagerService} from '../study-manager.service';
 import {AngularMyDatePickerDirective, IMyDateModel, IMyOptions} from 'gramli-angular-mydatepicker';
 import moment from 'moment';
-import {PatientReference} from '../patient-reference';
 import {PatientReferenceToLabelPipe} from '../patient-reference-to-label.pipe';
+import {ModalService} from '../../helpers/modal/modal.service';
+import {PatientCreationComponent} from '../patient-creation/patient-creation.component';
+import {switchMap} from 'rxjs';
+import {PatientsCreationComponent} from '../patients-creation/patients-creation.component';
+import {PatientViewComponent} from '../patient-view/patient-view.component';
 
 declare var $: any;
 
@@ -45,7 +49,6 @@ export class PatientListComponent implements OnInit, AfterViewInit {
     public selectedEntry: Entry;
     public isPatientViewComponentOpen: boolean = false;
     public isPatientsCreationComponentOpen: boolean;
-    public isPatientCreationComponentOpen: boolean;
     protected readonly compareStudies = compareStudies;
     protected date: IMyDateModel;
     protected search: string = '';
@@ -56,6 +59,7 @@ export class PatientListComponent implements OnInit, AfterViewInit {
 
     constructor(private studyManagerService: StudyManagerService,
                 private patientReferenceToLabelPipe: PatientReferenceToLabelPipe,
+                public modalService: ModalService,
                 @Inject(MY_CALENDAR_OPTIONS) protected options: IMyOptions) {
         this.options.dateRange = true;
     }
@@ -75,6 +79,7 @@ export class PatientListComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit(): void {
         $(this.batchAddDropdown.nativeElement).dropdown();
+        this.resetFilter();
     }
 
     ngOnInit(): void {
@@ -83,6 +88,8 @@ export class PatientListComponent implements OnInit, AfterViewInit {
                 this.studies = studies;
                 this.selectedStudy = this.studies[0];
             });
+
+        this.modalService.modalClosed$.subscribe(() => this.loadEntries());
     }
 
     public filter(): void {
@@ -109,7 +116,24 @@ export class PatientListComponent implements OnInit, AfterViewInit {
     public loadEntries(): void {
         this.studyManagerService.getEntries(this.selectedStudy.id).subscribe(e => {
             this.entries = e;
-            this.resetFilter();
+            this.filter();
         });
+    }
+
+    public openPatientCreationModal(): void {
+        this.modalService.open(PatientCreationComponent, {data: this.selectedStudy})
+            .pipe(switchMap(ref => ref.closed$))
+            .subscribe(r => this.selectedStudy = <Study>r);
+    }
+
+    public openPatientsCreationModal(): void {
+        this.modalService.open(PatientsCreationComponent, {data: this.selectedStudy})
+            .pipe(switchMap(ref => ref.closed$))
+            .subscribe(r => this.selectedStudy = <Study>r);
+    }
+
+    public openPatientViewModal(entry: Entry): void {
+        this.modalService.open(PatientViewComponent, {data: entry})
+            .subscribe();
     }
 }

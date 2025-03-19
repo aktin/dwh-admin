@@ -57,27 +57,28 @@
                 <div class="ui grid">
                     <div class="row">
                         <div class="ui column">
-                            <div class="ui green basic right floated buttons">
-                                <div (click)="isPatientCreationComponentOpen = true"
-                                     class="ui button">
-                                    <!--                        <i class="plus icon"></i>-->
+                            <div class="ui primary basic right floated buttons">
+                                <button (click)="openPatientCreationModal()"
+                                     class="ui labeled icon button">
+                                    <i class="user plus icon"></i>
                                     Registrieren
-                                </div>
+                                </button>
                                 <div #batchAddDropdown
                                      class="ui floating dropdown icon button">
                                     <i class="dropdown icon"></i>
                                     <div class="menu">
-                                        <div (click)="isPatientsCreationComponentOpen = true"
-                                             class="ui button item">
+                                        <button (click)="openPatientsCreationModal()"
+                                             class="ui labeled icon button item">
+                                            <i class="users icon"></i>
                                             Multi-Registrierung
-                                        </div>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <data-table (onDetailsClick)="selectedEntry = $event; isPatientViewComponentOpen = true;"
+                        <data-table (onDetailsClick)="openPatientViewModal($event)"
                                     [columns]="columns"
                                     [data]="filteredEntries"
                                     class="ui column"></data-table>
@@ -87,13 +88,3 @@
         </div>
     </div>
 </div>
-
-<patients-creation (onClose)="isPatientsCreationComponentOpen = false; loadEntries();"
-                   *ngIf="isPatientsCreationComponentOpen"
-                   [(selectedStudy)]="selectedStudy"></patients-creation>
-<patient-creation (onClose)="isPatientCreationComponentOpen = false; loadEntries();"
-                  *ngIf="isPatientCreationComponentOpen"
-                  [(selectedStudy)]="selectedStudy"></patient-creation>
-<patient-view (onClose)="isPatientViewComponentOpen = false; loadEntries();"
-              *ngIf="isPatientViewComponentOpen"
-              [entry]="selectedEntry"></patient-view>

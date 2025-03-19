@@ -23,7 +23,7 @@ import {ImportOperationState} from './enums/ImportOperationState';
 export class ImporterComponent {
 
     @ViewChild(forwardRef(() => PopUpMessageComponent))
-    popUpDeleteConfirm: PopUpMessageComponent = new PopUpMessageComponent();
+    popUpDeleteConfirm: PopUpMessageComponent;
 
     private subscription_upload: Subscription;
     private subscription_files: Subscription;

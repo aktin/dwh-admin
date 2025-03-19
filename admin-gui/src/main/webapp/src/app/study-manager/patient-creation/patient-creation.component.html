@@ -1,24 +1,23 @@
-<div id="popup-message-overlay">
-</div>
+<div class="ui text container very padded segment popup-message-content">
+    <div class="popup-header">
+        <div>
+            <div class="ui header">
+                Neue Patient*in registrieren
+            </div>
 
-<div class="ui text container very padded segment"
-     id="popup-message-content">
-    <div class="ui header">
-        Neue Patient*in registrieren
+            <div class="ui content"
+                 style="padding-bottom: 1em">
+                Bitte füllen Sie die folgenden Felder, um eine*n neue*n Patient*in zu registrieren
+            </div>
+        </div>
+
+        <div>
+            <a (click)="close()"
+               class="ui compact small icon circular button">
+                <i class="remove icon"></i>
+            </a>
+        </div>
     </div>
-
-    <div class="ui content"
-         style="padding-bottom: 1em">
-        Bitte füllen Sie die folgenden Felder, um eine*n neue*n Patient*in zu registrieren
-    </div>
-
-    <div class="close-action">
-        <a (click)="close()"
-           class="ui compact small icon circular button">
-            <i class="remove icon"></i>
-        </a>
-    </div>
-
     <form #frm="ngForm"
           class="ui form sixteen wide column form">
         <div class="ui row">
@@ -122,8 +121,8 @@
                     <div class="field">
                         <label>Patient*innen-Referenz</label>
                         <drop-down [(ngModel)]="selectedReference"
-                                   required
-                                   name="references">
+                                   name="references"
+                                   required>
                             @for (ref of references; track ref) {
                                 <drop-down-option [value]="ref">{{ ref | patientReferenceToLabel }}</drop-down-option>
                             }
@@ -134,8 +133,8 @@
                         <label for="extension">{{ selectedReference | patientReferenceToLabel }}</label>
                         <div class="ui action input">
                             <input #extModel="ngModel"
-                                   (ngModelChange)="loadEncountersAndMasterData()"
-                                   [(ngModel)]="extension"
+                                   (ngModelChange)="extension = $event; loadEncountersAndMasterData();"
+                                   [ngModel]="extension"
                                    class="ui input"
                                    extension
                                    id="extension"
@@ -203,11 +202,16 @@
 
         <div class="actions">
             <button (click)="close()"
-                    class="ui red button"
-                    type="button">Abbrechen
+                    class="ui labeled icon secondary button"
+                    type="button">
+                <i class="times icon"></i>
+                Abbrechen
             </button>
+
             <button (click)="create()"
-                    class="ui button green">Registrieren
+                    class="ui labeled icon primary button">
+                <i class="plus icon"></i>
+                Registrieren
             </button>
         </div>
     </form>

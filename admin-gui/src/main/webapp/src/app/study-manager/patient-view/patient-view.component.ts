@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Inject, Input, OnInit, ViewChild} from '@angular/core';
 import {Entry} from "../entry";
 import {PatientDialogBase} from "../patient-dialog-base";
 import {DateFormat} from "../../helpers";
@@ -7,6 +7,9 @@ import {Participation} from "../participation";
 import {Encounter} from "../encounter";
 import {MasterData} from "../master-data";
 import {PatientReferenceToRootPipe} from "../patient-reference-to-root.pipe";
+import {ModalRef} from '../../helpers/modal/modal-ref.component';
+import {IModalConfig, MODAL_CONFIG, ModalService} from '../../helpers/modal/modal.service';
+import {PatientEditComponent} from '../patient-edit/patient-edit.component';
 
 declare var $: any;
 
@@ -17,15 +20,18 @@ declare var $: any;
     providers: [PatientReferenceToRootPipe]
 })
 export class PatientViewComponent extends PatientDialogBase implements OnInit {
-    public isPatientEditComponentOpen: boolean = false;
     protected encounters: Encounter[];
     protected masterData: MasterData;
     protected readonly DateFormat = DateFormat;
     protected readonly Participation = Participation;
 
     constructor(studyManagerService: StudyManagerService,
-                private toRootPipe: PatientReferenceToRootPipe) {
+                private toRootPipe: PatientReferenceToRootPipe,
+                private modalService: ModalService,
+                private modalRef: ModalRef<PatientViewComponent>,
+                @Inject(MODAL_CONFIG) config: IModalConfig<Entry>) {
         super(studyManagerService);
+        this.entry = config.data;
     }
 
     private _entry: Entry;
@@ -55,5 +61,14 @@ export class PatientViewComponent extends PatientDialogBase implements OnInit {
 
     ngOnInit(): void {
         this.studyManagerService.getPreferences().subscribe(p => this.preferences = p);
+    }
+
+    public openPatientEditModal(): void {
+        this.modalService.open(PatientEditComponent, {data: this.entry})
+            .subscribe(() => this.modalRef.close());
+    }
+
+    public close(): void {
+        this.modalRef.close();
     }
 }

@@ -1,22 +1,22 @@
-<div id="popup-message-overlay">
-</div>
+<div class="ui text container very padded segment popup-message-content">
+    <div class="popup-header">
+        <div>
+            <div class="ui header">
+                Patientendaten bearbeiten
+            </div>
 
-<div class="ui text container very padded segment"
-     id="popup-message-content">
-    <div class="ui header">
-        Patientendaten bearbeiten
-    </div>
+            <div class="ui content"
+                 style="padding-bottom: 1em">
+                Bitte bearbeiten Sie die Felder, die Sie ändern möchten und speichern dann diese
+            </div>
+        </div>
 
-    <div class="ui content"
-         style="padding-bottom: 1em">
-        Bitte bearbeiten Sie die Felder, die Sie ändern möchten und speichern dann diese
-    </div>
-
-    <div class="close-action">
-        <a (click)="close()"
-           class="ui compact small icon circular button">
-            <i class="remove icon"></i>
-        </a>
+        <div>
+            <a (click)="close()"
+               class="ui compact small icon circular button">
+                <i class="remove icon"></i>
+            </a>
+        </div>
     </div>
 
     <div class="ui sixteen wide column form">
@@ -106,7 +106,7 @@
                             <div class="value-field">{{ entry.timestamp | momentDate:DateFormat.DATE }}</div>
                         </div>
                         <div class="field">
-                            <label>Studien-ID</label>
+                            <label>Studien-interne ID</label>
                             <div class="value-field">{{ entry.study.id }}</div>
                         </div>
                         <div class="field">
@@ -139,18 +139,21 @@
 
             <div class="actions">
                 <button (click)="close()"
-                        class="ui red button"
+                        class="ui labeled icon secondary button"
                         type="button">
+                    <i class="times icon"></i>
                     Abbrechen
                 </button>
-                <button (click)="popUpMessageComponent.show = true"
-                        class="ui button"
+                <button (click)="confirmDelete()"
+                        class="ui labeled icon primary button"
                         type="button">
+                    <i class="user minus icon"></i>
                     Löschen
                 </button>
                 <button (click)="save()"
-                        class="ui green button"
+                        class="ui labeled icon primary button"
                         type="button">
+                    <i class="save icon"></i>
                     Speichern
                 </button>
             </div>
@@ -158,9 +161,3 @@
     </div>
 </div>
 
-<popup-message #popUpMessageComponent
-               (onClose)="delete($event)"
-               head="Eitnrag löschen"
-               message="Möchten Sie den Eintrag löschen?"
-               mode="confirm">
-</popup-message>

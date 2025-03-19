@@ -74,9 +74,7 @@ import {SetTimeInterceptor} from './helpers/services/set-time.interceptor';
 import {registerLocaleData} from '@angular/common';
 import localeDe from '@angular/common/locales/de';
 import localeDeExtra from '@angular/common/locales/extra/de';
-import {PatientListComponent} from "./study-manager/patient-list/patient-list.component";
-import {NgbInputDatepicker} from "@ng-bootstrap/ng-bootstrap";
-import {AngularMyDatePickerModule} from "gramli-angular-mydatepicker";
+import {PatientListComponent} from './study-manager/patient-list/patient-list.component';
 import {PatientCreationComponent} from './study-manager/patient-creation/patient-creation.component';
 import {UniqueSicValidatorDirective} from './study-manager/patient-creation/unique-sic-validator.directive';
 import {FieldModule} from './helpers/field/field.module';
@@ -88,15 +86,24 @@ import {PatientsCreationComponent} from './study-manager/patients-creation/patie
 import {
     PatientsTextAreaComponent
 } from './study-manager/patients-creation/patients-text-area/patients-text-area.component';
-import {RevoGrid} from "@revolist/angular-datagrid";
-import {AgGridAngular} from "ag-grid-angular";
-import { RemoveRowButtonComponent } from './study-manager/patients-creation/patients-text-area/remove-row-button.component';
-import { PatientReferenceToRootPipe } from './study-manager/patient-reference-to-root.pipe';
-import {PatientReferenceToLabelPipe} from "./study-manager/patient-reference-to-label.pipe";
-import { ReadableEntryValidationPipe } from './study-manager/patients-creation/patients-text-area/readable-entry-validation.pipe';
-import { NoRowsOverlayComponent } from './study-manager/patients-creation/patients-text-area/no-rows-overlay.component';
-import { PatientReferenceHeaderComponent } from './study-manager/patients-creation/patients-text-area/patient-reference-header.component';
-import { RequiredDirective } from './helpers/directives/required.directive';
+import {RevoGrid} from '@revolist/angular-datagrid';
+import {AgGridAngular} from 'ag-grid-angular';
+import {
+    RemoveRowButtonComponent
+} from './study-manager/patients-creation/patients-text-area/remove-row-button.component';
+import {PatientReferenceToRootPipe} from './study-manager/patient-reference-to-root.pipe';
+import {PatientReferenceToLabelPipe} from './study-manager/patient-reference-to-label.pipe';
+import {
+    ReadableEntryValidationPipe
+} from './study-manager/patients-creation/patients-text-area/readable-entry-validation.pipe';
+import {NoRowsOverlayComponent} from './study-manager/patients-creation/patients-text-area/no-rows-overlay.component';
+import {
+    PatientReferenceHeaderComponent
+} from './study-manager/patients-creation/patients-text-area/patient-reference-header.component';
+import {RequiredDirective} from './helpers/directives/required.directive';
+import {ModalRef} from './helpers/modal/modal-ref.component';
+import {ModalComponent} from './helpers/modal/modal.component';
+import {AngularMyDatePickerModule} from 'gramli-angular-mydatepicker';
 
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
@@ -153,6 +160,8 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         NoRowsOverlayComponent,
         PatientReferenceHeaderComponent,
         RequiredDirective,
+        ModalRef,
+        ModalComponent,
     ],
     bootstrap: [
         AppComponent
@@ -168,7 +177,7 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         NgbInputDatepicker,
         FieldModule,
         RevoGrid,
-        AgGridAngular
+        AgGridAngular,
     ],
     exports: [
         SafeUrlPipe,
