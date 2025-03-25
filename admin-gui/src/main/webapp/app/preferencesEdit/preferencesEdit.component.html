@@ -1,6 +1,9 @@
 <div class="ui breadcrumb">
     <div class="active section breadcrumb-header">{{ title }}</div>
 </div>
+<!--<div class="stick">-->
+<!--    test-->
+<!--</div>-->
 <div class="ui left labeled button" (click)="navigateToPreferencePage()">
     <a class="ui red label">
         Abbrechen
@@ -9,8 +12,16 @@
         <i class="remove icon"></i>
     </div>
 </div>
+<div class="ui left labeled button" (click)="processChanges('apply')">
+    <a class="ui green label">
+        Anwenden
+    </a>
+    <div class="ui green icon button">
+        <i class="check icon"></i>
+    </div>
+</div>
 <div class="ui container">
-    <table class="ui celled structured compact fixed table preferences">
+    <table id="preference-table" class="ui celled structured compact fixed table preferences">
         <thead>
         <tr>
             <th width="15%" class="center aligned">Kategorie</th>
@@ -30,7 +41,7 @@
                         {{pref.key}}
                     </td>
                     <td class="break-word">
-                        <input class="preferenceValue" [attr.id]="pref.key" [value]="pref.value" (input)="checkInput(pref)">
+                        <input class="preferenceValue" [attr.id]="pref.key" [value]="pref.value" (input)="validateInput(pref, $event, 2000)"> <!--(load)="validateInput(pref, 0)"-->
                     </td>
                     <td class="break-word">
                         {{pref.description}}
@@ -41,18 +52,22 @@
         </tbody>
     </table>
 </div>
-<div hidden class="bottom-banner" [attr.id]="bottombanner">
-    <p>Änderungen erkannt</p>
-    <div class="bannerbutton" (click)="processChanges('apply')">
-        <a class="ui green label">
-            Anwenden
-        </a>
-    </div>
-    <div class="bannerbutton" (click)="processChanges('revert')">
-        <a class="ui green basic label">
-            Verwerfen
-        </a>
+<div class="ui white icon button scroll-down-btn" (scroll)="scrolledToEnd($event)">
+    <i class="angle double down icon"></i>
+</div>
+<div class="ui left labeled button" (click)="navigateToPreferencePage()">
+    <a class="ui red label">
+        Abbrechen
+    </a>
+    <div class="ui red icon button">
+        <i class="remove icon"></i>
     </div>
 </div>
-
-
+<div class="ui left labeled button" (click)="processChanges('apply')">
+    <a class="ui green label">
+        Anwenden
+    </a>
+    <div class="ui green icon button">
+        <i class="check icon"></i>
+    </div>
+</div>

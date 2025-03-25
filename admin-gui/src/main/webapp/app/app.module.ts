@@ -108,7 +108,6 @@ import {PreferenceEditService} from "./preferencesEdit/preferencesEdit.service";
         ImporterService,
         UpdaterService,
         StatusService,
-        // {provide: Window, useValue: window },
     ]
 })
 export class AppModule { }

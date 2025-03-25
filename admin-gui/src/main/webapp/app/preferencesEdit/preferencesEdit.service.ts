@@ -2,24 +2,39 @@
  * Created by Wiliam Hoy on 14.01.2025.
  * Property service
  */
-import {ElementRef, Injectable} from '@angular/core';
-import { Router } from "@angular/router";
+import {ElementRef, Injectable, Renderer2} from '@angular/core';
+import {Router} from "@angular/router";
+import {FormControl, Validators} from "@angular/forms";
 
 /**
  * Service Class for input validation
  */
 @Injectable()
 export class PreferenceEditService {
-    public regex_name   = "^[A-Za-z\\.]+([\\s][A-Za-z\\.]*)*";
-    public regex_number = "^[0-9]+";
-    public regex_url    = "^([htps\\:\\/]*)?[0-9]{1,3}([.][0-9]{1,3}){3}[.]*";
-    public regex_email  = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";  // match emails containing alphanumerical characters and '-' and '_'
-    public regex_path   = "^(\\/$)|(([\\/][\\w-]+)+[\\/]?$)";   // match empty urls "/" and urls containing only alphanumerical characters and '-' and '_'
-    public regex_boolean = "^(true|false)$\\i"
+    private regex_name   = "^[A-Za-z\\.]+([\\s|-][A-Za-z\\.]*)*$";
+    private regex_number = "^[0-9]+$";
+    private regex_url    = "^([htps\\:\\/]*)?(.*(\\.[a-z]{2,3})|(localhost))";
+    private regex_email  = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";  // match emails containing alphanumerical characters and '-' and '_'
+    private regex_path   = "^(\\/$)|(([\\/][\\w-]+)+[\\/]?$)";   // match empty urls "/" and urls containing only alphanumerical characters and '-' and '_'
+    private regex_boolean = "^(true|false)$\\i"
 
-    constructor(
-        private _router: Router,
-    ) {}
+    private names = ["local.l", "local.ou", "local.cn", "local.o", "local.c", "local.s", ]
+    private bools = ["rscript.debug", "mail.smtp.starttls.enable", "mail.smtp.auth", "report.debug.keeptempfiles"]
+    private numbers = ["rscript.timeout", "import.script.timeout", "mail.smtp.timeout", "mail.smtp.port"]
+    private urls = ["rscript.binary", "local.server.url", "wildfly.management.url", "mail.smtp.host", "i2b2.service.pm", "broker.uris"]
+    private emails= ["local.email", "mail.x.replyto"]
+    private paths = ["import.script.path", "import.cda.debug.dir", "import.data.path", "update.data.path", "broker.data.path", "broker.archive.path", "report.data.path", "report.temp.path", "report.archive.path"]
+    private validation_spaces = {}
+    // local.tz
+    // import.cda.debug.level
+
+    constructor() {
+        this.validation_spaces["paths"] = this.paths
+        this.validation_spaces["urls"] = this.urls
+        this.validation_spaces["emails"] = this.emails
+        this.validation_spaces["numbers"] = this.numbers
+        this.validation_spaces["bools"] = this.bools
+    }
 
     /**
      * Searches all input fields and generates a JSON with preference names and new values
@@ -48,8 +63,8 @@ export class PreferenceEditService {
             .replace(/\t/g, "\\t");  // Escape tabs
     }
 
-    navigateToPreferencePage(): void {
-        this._router.navigate(['/preferences'])
+    navigateToPreferencePage(router: Router): void {
+        router.navigate(['/preferences'])
     }
 
     setCookie(name: string, value: string) {
@@ -70,13 +85,35 @@ export class PreferenceEditService {
         document.cookie = name + '=; Path=/; SameSite=Lax; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     }
 
-    validateInput(value: String, property_name: String) {
+    isValid(property_name: String, value: String) {
+        let validator = null;
+        console.log("validate: ",property_name, "props: ", this.numbers, " contains ", this.validation_spaces["numbers"].includes(property_name))
+        switch (true) {
+            case this.validation_spaces["urls"].includes(property_name):
+                validator = Validators.pattern(this.regex_url);
+                break;
 
+            case this.validation_spaces["paths"].includes(property_name):
+                validator = Validators.pattern(this.regex_path);
+                break;
+
+            case this.validation_spaces["numbers"].includes(property_name):
+                console.log("check number: ",value," for property: ",property_name," insider array: ",this.numbers)
+                validator = Validators.pattern(this.regex_number);
+                break;
+
+            case this.validation_spaces["bools"].includes(property_name):
+                validator = Validators.pattern(this.regex_boolean);
+                break;
+
+            case this.validation_spaces["emails"].includes(property_name):
+                validator = Validators.email;
+                break;
+            default:
+                //TODO
+                break;
+        }
+        return new FormControl(value, validator)    // validate value with regex
     }
-
-    getValidationTypeForProperty(property_name: String) {
-
-    }
-
 
 }

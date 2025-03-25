@@ -148,7 +148,7 @@ export class AppComponent implements OnInit {
     showPreferenceUpdate() {
         if (this._updaterService.checkPermission()) {
             if (this._preferences.getCookie('AKTIN.showPrefUpdate')) {
-                this._preferences.navigateToPreferencePage();
+                this._preferences.navigateToPreferencePage(this._router);
                 this._preferences.deleteCookie('AKTIN.showPrefUpdate');
             }
         } else {
