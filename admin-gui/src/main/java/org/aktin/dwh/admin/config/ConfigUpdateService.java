@@ -13,7 +13,7 @@ public class ConfigUpdateService {
         this.prefManager = new PropertyFilePreferences();
     }
 
-    public String updatePreferences(ValidationRequest request) throws IOException, InterruptedException, TimeoutException {
+    public String updatePreferences(ValidationRequest request) throws IOException, InterruptedException {
         // update preference file
         String updateMessage = this.prefManager.updatePropertiesFile(request.getPreferences());
         if (updateMessage.isEmpty()) {
@@ -21,6 +21,10 @@ public class ConfigUpdateService {
         } else {
             return "Properties config status:"+updateMessage;
         }
+    }
+
+    public String loadBackupFile() {
+        return this.prefManager.loadBackupFile();
     }
 
 }

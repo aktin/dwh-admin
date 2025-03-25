@@ -19,4 +19,14 @@ public class ConfigEndpoint {
         ConfigUpdateService service = new ConfigUpdateService();
         return service.updatePreferences(request);
     }
+
+    @Path("rollbackProperties")
+    @POST
+    @Produces(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String restoreOldPropertiesFromBackup(ValidationRequest request) throws IOException {
+        ConfigUpdateService service = new ConfigUpdateService();
+        return service.loadBackupFile();
+    }
+
 }
