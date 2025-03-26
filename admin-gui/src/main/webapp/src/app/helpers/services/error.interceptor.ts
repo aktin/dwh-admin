@@ -19,7 +19,9 @@ export class ErrorInterceptor implements HttpInterceptor {
 
     intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(request).pipe(catchError(response => {
-            // In a real world app, you might use a remote logging infrastructure
+            // Angular handles 304 (or even all non-2XX http status codes) as error
+            // return response instead of throwing an error
+            if(response.status === HttpStatusCode.NotModified) return of(response);
             if (response.status === HttpStatusCode.Unauthorized) {
                 this.logout();
                 throw "Sitzung abgelaufen";
@@ -39,7 +41,7 @@ export class ErrorInterceptor implements HttpInterceptor {
     private getError(response: any) {
         let error = '';
         if (typeof response.error === 'object') {
-            error = JSON.stringify(response.error.json());
+            error = response.error;
         } else if (typeof response.error === 'string') {
             error = response.error;
         }
