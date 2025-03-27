@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, ElementRef, Inject, LOCALE_ID, OnInit, ViewChild} from '@angular/core';
 import {compareStudies, Study} from '../models/study';
 import {Patient} from '../models/patient';
-import {MomentDatePipe, MY_CALENDAR_OPTIONS, TableColumns} from '../../helpers';
+import {MomentDatePipe, MY_CALENDAR_RANGE_OPTIONS, TableColumns} from '../../helpers';
 import {StudyManagerService} from '../services/study-manager.service';
 import {AngularMyDatePickerDirective, IMyDateModel, IMyOptions} from 'gramli-angular-mydatepicker';
 import moment from 'moment';
@@ -62,8 +62,7 @@ export class PatientListComponent implements OnInit, AfterViewInit {
     constructor(private studyManagerService: StudyManagerService,
                 private patientReferenceToLabelPipe: PatientReferenceToLabelPipe,
                 private modalService: ModalService,
-                @Inject(MY_CALENDAR_OPTIONS) protected options: IMyOptions) {
-        this.options.dateRange = true;
+                @Inject(MY_CALENDAR_RANGE_OPTIONS) protected options: IMyOptions) {
     }
 
     private _selectedStudy: Study = null;
