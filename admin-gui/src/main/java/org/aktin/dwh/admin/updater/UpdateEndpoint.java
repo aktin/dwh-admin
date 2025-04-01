@@ -126,4 +126,5 @@ public class UpdateEndpoint {
             Response.accepted().build() :
             Response.serverError().build();
     }
+
 }

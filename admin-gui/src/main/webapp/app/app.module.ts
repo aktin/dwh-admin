@@ -33,6 +33,8 @@ import { RequestsComponent, RequestSingleViewComponent, RequestSingleComponent, 
 import { StudyManagerComponent, StudyManagerService, PopUpNewEntryComponent, PopUpDetailComponent } from './studyManager/index';
 import { StatusComponent, StatusService } from './status/index';
 import { RestrictedComponent } from './restricted/restricted.component';
+import {PreferencesEditComponent} from "./preferencesEdit/preferencesEdit.component";
+import {PreferenceEditService} from "./preferencesEdit/preferencesEdit.service";
 
 
 @NgModule({
@@ -59,6 +61,7 @@ import { RestrictedComponent } from './restricted/restricted.component';
         ReportSingleComponent,
         ReportNewComponent,
         PreferencesComponent,
+        PreferencesEditComponent,
         ImporterComponent,
         RequestsComponent,
         RequestSingleViewComponent,
@@ -101,10 +104,10 @@ import { RestrictedComponent } from './restricted/restricted.component';
         VisitService,
         StudyManagerService,
         PreferenceService,
+        PreferenceEditService,
         ImporterService,
         UpdaterService,
         StatusService,
-        // {provide: Window, useValue: window },
     ]
 })
 export class AppModule { }

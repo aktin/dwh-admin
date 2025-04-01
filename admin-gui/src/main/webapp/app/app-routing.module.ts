@@ -23,6 +23,7 @@ import { RequestsComponent, RequestSingleComponent } from './requests/index';
 import { StudyManagerComponent } from './studyManager/index';
 import { StatusComponent } from './status/index';
 import { Permission } from './users/index';
+import {PreferencesEditComponent} from "./preferencesEdit/preferencesEdit.component";
 
 const routes: Routes = [// array of routes
     {
@@ -142,6 +143,20 @@ const routes: Routes = [// array of routes
             roles: [
                 // 'Admin',
                 'LOGGEDIN',
+            ],
+            permissions: [
+                Permission.CONFIG
+            ]
+        },
+    },
+    {
+        path: 'preferencesEdit',
+        canActivate: [UserAuthGuard],
+        component: PreferencesEditComponent,
+        data: {
+            roles: [
+                'Admin',
+                // 'LOGGEDIN',
             ],
             permissions: [
                 Permission.CONFIG

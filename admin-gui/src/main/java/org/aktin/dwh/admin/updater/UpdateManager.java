@@ -12,6 +12,7 @@ import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.aktin.Preferences;
@@ -55,6 +56,11 @@ public class UpdateManager {
 
     private CompletableFuture<Boolean> currentUpdate;
 
+    @PostConstruct
+    private void initialize() {
+        LOGGER.log(Level.INFO, "Initializing UpdateManager and triggering APT package list reload...");
+        reloadAptPackageLists();
+    }
 
     /**
      * Checks if the update agent is installed by verifying the existence
@@ -201,12 +207,14 @@ public class UpdateManager {
         try (Socket socket = new Socket("localhost", port)) {
             socket.setSoTimeout(SOCKET_TIMEOUT);
             Thread.sleep(1000);
+            LOGGER.log(Level.INFO, "Socket operation completed on port: " + port);
             return true;
-        } catch (IOException | InterruptedException e) {
-            LOGGER.log(Level.WARNING, "Socket operation failed on port " + port, e);
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (InterruptedException e) {
+            LOGGER.log(Level.WARNING, "Thread interrupted during socket operation on port: " + port, e);
+            Thread.currentThread().interrupt();
+            return false;
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "I/O error during socket operation on port: " + port, e);
             return false;
         }
     }
