@@ -2,6 +2,7 @@ package org.aktin.dwh.admin.config;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
@@ -22,11 +23,21 @@ public class ConfigEndpoint {
 
     @Path("rollbackProperties")
     @POST
-    @Produces(MediaType.TEXT_PLAIN)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public String restoreOldPropertiesFromBackup(ValidationRequest request) throws IOException {
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response restoreLastPropertiesFromBackup() throws IOException {
         ConfigUpdateService service = new ConfigUpdateService();
-        return service.loadBackupFile();
+        service.loadBackupFile();
+        return Response.ok("{\"message\": \"Backup restored successfully\"}").build();
+    }
+
+    @Path("rollbackVersionedProperties")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.TEXT_PLAIN)
+    public Response restoreSpecificPropertiesFromBackup(String path) throws IOException {
+        ConfigUpdateService service = new ConfigUpdateService();
+        service.loadBackupFile(path);
+        return Response.ok("{\"message\": \"Backup restored successfully\"}").build();
     }
 
 }

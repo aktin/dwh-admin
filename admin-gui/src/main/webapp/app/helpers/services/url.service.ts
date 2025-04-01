@@ -79,7 +79,8 @@ export class UrlService {
 
         // configEndpoint
         sendPreference: 'config/updateProperties',
-        handshake: 'config/status',
+        rollbackLast: 'config/rollbackProperties',
+        rollbackVersion: 'config/rollbackVersionedProperties'
     };
 
     setServerUrl(serverUrl: string) {
