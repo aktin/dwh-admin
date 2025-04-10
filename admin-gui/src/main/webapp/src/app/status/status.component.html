@@ -1,0 +1,85 @@
+<div class="ui grid" *ngIf="status">
+    <div class="row">
+        <div class="ui breadcrumb">
+            <div class="active section breadcrumb-header">Status der CDA Import-Schnittstelle</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="six wide column">
+            Start (letzter Serverneustart):
+        </div>
+        <div class="six wide column">
+            {{status.start | date: 'medium'}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="six wide column">
+            Letzter erfolreicher Import:
+        </div>
+        <div class="six wide column">
+            {{status.lastWrite | date: 'medium'}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="six wide column">
+            Letzter fehlgeschlagener Import:
+        </div>
+        <div class="six wide column">
+            {{status.lastReject | date: 'medium'}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="three wide column">
+            Importiert:
+        </div>
+        <div class="three wide column">
+            {{status.imported}}
+        </div>
+        <div class="three wide column">
+            Aktualisiert:
+        </div>
+        <div class="three wide column">
+            {{status.updated}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="three wide column">
+            Ungültig:
+        </div>
+        <div class="three wide column">
+            {{status.invalid}}
+        </div>
+        <div class="three wide column">
+            Fehlgeschlagen:
+        </div>
+        <div class="three wide column">
+            {{status.failed}}
+        </div>
+    </div>
+    <ng-container *ngIf="status.error && status.error.length > 0">
+        <div class="row">
+            <div class="four wide column">
+                Fehlermeldungen:
+            </div>
+        </div>
+        <div class="ui segments sixteen wide column">
+            <div class="ui segment grid" *ngFor="let err of status.error">
+                <div class="three wide column">
+                    Letzter Fehler:
+                </div>
+                <div class="six wide column">
+                    {{err.timestamp | date: 'medium'}}
+                </div>
+                <div class="two wide column">
+                    Anzahl:
+                </div>
+                <div class="one wide column">
+                    {{err.repeats}}
+                </div>
+                <div class="sixteen wide column">
+                    <pre style="overflow-x:auto;">{{err.value}}</pre>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</div>
