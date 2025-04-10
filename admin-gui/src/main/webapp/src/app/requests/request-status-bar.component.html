@@ -1,0 +1,30 @@
+<div>
+    <div class="request-status-bar-box" [class.single]="single">
+        <div class="request-status-line">
+            <div class="request-status-line-fill" [ngStyle]="{'width': fillBar }" [ngClass]="{'failed': failed, 'expired': expired, 'rejected': rejected, 'submitted': submitted}"></div>
+        </div>
+        <div class="request-status-bar-item"
+            *ngFor="let item of items; let i = index"
+            [ngStyle]="(i > 0)?{'margin-left': 'calc((100% - 70px) / 6)'}:{}"
+            [class.spaced]="i > 0">
+            <div class="request-status-dot"
+                *ngIf="item.dot"
+                [ngClass]="{'visited': item.visited, 'active': item.active}"
+                title="{{item.title}}"
+            ></div>
+            <i class="circular yellow inverted pencil icon request-status-icon"
+            *ngIf="item.interaction" title={{item.title}}></i>
+            <i class="circular green inverted hourglass end icon request-status-icon"
+            *ngIf="item.waiting" title={{item.title}}></i>
+            <i class="circular blue inverted hand paper icon request-status-icon Rejected"
+            *ngIf="item.Rejected" title={{item.title}}></i>
+            <i class="circular red inverted warning icon request-status-icon Failed"
+            *ngIf="item.Failed" title={{item.title}}></i>
+            <i class="circular grey inverted lock end icon request-status-icon Expired"
+            *ngIf="item.Expired" title={{item.title}}></i>
+            <i class="circular green inverted check icon request-status-icon Submitted"
+            *ngIf="item.Submitted" title={{item.title}}></i>
+            <div class="request-status-text" *ngIf="item.active">{{ item.title }}</div>
+        </div>
+    </div>
+</div>
