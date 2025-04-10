@@ -1,0 +1,39 @@
+h1 {
+  color: #369;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 250%;
+}
+
+.breadcrumb-header {
+  font-size: 20px;
+}
+
+
+/*Semantic UI changes*/
+.ui.grid .row.compact {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.bottom.aligned {
+  align-content: flex-end;
+}
+
+.ui.grid[class*='space between'] {
+  justify-content: space-between;
+}
+
+.ui.grid[class*='space around'] {
+  justify-content: space-around;
+}
+
+pre {
+  /*white-space: pre-wrap;*/
+  overflow-wrap: break-word;
+}
+
+
+pre {
+  /*white-space: pre-wrap;*/
+  overflow-wrap: break-word;
+}

@@ -1,0 +1,122 @@
+<div class="ui grid">
+    <div class="row">
+        <div class="ui breadcrumb">
+            <div class="active section breadcrumb-header">Fallsuche</div>
+        </div>
+    </div>
+
+<!--            Radiobuttons
+            Patientenid,
+            Aufnahmedatum/zeitpunkt (Datum picker mit eingabe fÃ¼r uhrzeit (bei leer alles vom tag oder stunde etc))
+            Fallid (abrechnungsfall oder besuch)
+
+            eventuell noch grund der suche-->
+
+            <!--<div class="field">
+                <label>Patientenid</label>
+                <div class="ui input">
+                    <input name="patientId" type="text" placeholder="Patientenid" [(ngModel)]="formdata['patientId']" required>
+                </div>
+            </div>-->
+    <div class="ui segment row">
+        <form ngNativeValidate class="ui form search-visit-form sixteen wide column" #searchVisitForm="ngForm" (ngSubmit)="search()">
+            <p>Bitte geben Sie an nach welchem Kriterium die Suche stattfinden soll.</p>
+            <div class="ui divider margin-top-bottom"></div>
+                <div class="inline fields">
+                    <div class="three wide field ui radio checkbox">
+                        <input type="radio" name="visitSearchOption" value="optionPatient" [(ngModel)]="visitOption" checked="checked">
+                        <label>Patienten-ID:</label>
+                    </div>
+                    <div class="thirteen wide field">
+                        <input type="text" class="ui input focus" name="patientId" placeholder="Geben Sie eine Patienten-ID ein." [(ngModel)]="formdata['patientId']" [required]="visitOption==='optionPatient'">
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <div class="three wide field"></div>
+                    <div class="seven wide field">
+                        <label>Root:</label>
+                        <input type="text" name="patientRoot" class="ui input focus" placeholder="Root" [(ngModel)]="formdata['patientRoot']">
+                    </div>
+                    <div class="six wide field">
+                        <label>Extension:</label>
+                        <input type="text" name="patientEncounterId" class="ui input focus" placeholder="Extension" [(ngModel)]="formdata['patientEncounterId']">
+                    </div>
+                </div>
+                <div class="ui divider margin-top-bottom"></div>
+                <div class="inline fields">
+                    <div class="three wide field ui radio checkbox">
+                        <input type="radio" name="visitSearchOption" value="optionCasenumber" [(ngModel)]="visitOption">
+                        <label>Fallnummer:</label>
+                    </div>
+                    <div class="thirteen wide field">
+                        <input type="text" name="case" class="ui input focus" placeholder="Geben Sie eine Fallnummer ein." [(ngModel)]="formdata['casenumber']">
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <div class="three wide field"></div>
+                    <div class="seven wide field">
+                        <label>Root:</label>
+                        <input type="text" name="casenRoot" class="ui input focus" placeholder="Root" [(ngModel)]="formdata['caseRoot']">
+                    </div>
+                    <div class="six wide field">
+                        <label>Extension:</label>
+                        <div class="ui input">
+                            <input name="caseEncounterId" type="text" placeholder="Extension" [(ngModel)]="formdata['caseEncounterId']">
+                        </div>
+                    </div>
+                </div>
+                <div class="ui divider margin-top-bottom"></div>
+                <div class="inline fields">
+                    <div class="four wide field ui radio checkbox">
+                        <input type="radio" name="visitSearchOption" value="optionDate" [(ngModel)]="visitOption">
+                        <label>Aufnahmezeitraum:</label>
+                    </div>
+                    <div class="twelve wide field">
+                        <div class="eight wide field">
+                            <label>Start:</label>
+                            <div class="tooltip">
+                                <input angular-mydatepicker style="width: 100%" class="ui input" name="startDateVisits" [options]="startDPOptions" [(ngModel)]="formdata.startDate" (dateChanged)="onStartDateChanged($event)">
+                                <span *ngIf="startDateRequired" class="tooltiptext">Bitte wählen Sie ein Datum aus.</span>
+                            </div>
+                        </div>
+                        <div class="four wide field">
+                            <input type="time" class="margin-bottom ui input focus" name="startTime" [(ngModel)]="formdata['startTime']" placeholder="HH:mm"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <div class="four wide field"></div>
+                        <div class="twelve wide field">
+                            <div class="eight wide field">
+                                <label>Ende:</label>
+                                <div class="tooltip">
+                                    <input angular-mydatepicker style="width: 100%" class="ui input" name="endDateVisits" [options]="endDPOptions" [(ngModel)]="formdata.endDate" (dateChanged)="onEndDateChanged($event)">
+                                    <span *ngIf="endDateRequired" class="tooltiptext">Bitte wählen Sie ein Datum aus.</span>
+                                </div>
+                            </div>
+                            <div class="four wide field">
+                                <input type="time" class="margin-bottom ui input focus" name="endTime" [(ngModel)]="formdata['endTime']" placeholder="HH:mm"/>
+                            </div>
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <div class="one wide field"></div>
+                        <div class="field">
+                            Hinweis: <br>
+                            Wenn Sie keine Uhrzeit angeben, wird die Suche für den ganzen angegebenen Tag durchgeführt.
+                            Möchten Sie die Suche nur für einen Tag durchführen, kann die Angabe eines Enddatums ausgelassen werden.
+                        </div>
+                    </div>
+                <div class="ui divider margin-top-bottom"></div>
+            <button class="ui fluid large submit button" type="submit">
+                Aufenthalte suchen
+            </button>
+        </form>
+    </div>
+    <div class="ui row" *ngIf="waiting && !visit">
+        waiting
+    </div>
+
+    <visit-single-view [visitData]="visit" class="ui vertical segment"></visit-single-view>
+</div>
+

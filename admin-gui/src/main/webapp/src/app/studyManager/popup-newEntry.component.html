@@ -1,0 +1,93 @@
+<div id="popup-message-overlay" (click)="closeMessage()" *ngIf="show">
+</div>
+
+<div id="popup-message-content" class="ui text container very padded segment" *ngIf="show">
+    <div class="ui header">
+        {{head}}
+    </div>
+
+    <div class="ui content">
+        <p>{{message}}</p><br>
+    </div>
+    
+    <div class="close-action">
+        <a class="ui compact  small icon red circular button" (click)="closeMessage()">
+            <i class="remove icon"></i>
+        </a>
+    </div>
+
+    <div class="ui extra">
+        <form ngNativeValidate #form="ngForm" id="ngForm" class="ui form sixteen wide column form" (submit)="validate()">
+            <div class="inline fields">
+                <div class="three wide field"><label>Studie:</label></div>
+                <!-- <select class="seven wide field ui dropdown" name="study" [(ngModel)]="formdata.study" (change)="setStudy()" required> -->
+                        <select class="seven wide field ui dropdown" name="study" [(ngModel)]="formdata.study" (change)="setStudy()" required>
+                    <option *ngFor="let option of studies" [ngValue]="option.id">
+                        {{ option.title }}
+                    </option>
+                </select>
+            </div>
+            <div class="inline fields">
+                <div class="three wide field"><label> {{ extLabel }}: </label></div>
+                <div class="thirteen wide field">
+                    <input id="extField" type="text" name="ext" [ngClass]="true ? 'visible error' : ''" class="ui input focus" placeholder="" [(ngModel)]="formdata.ext">
+                </div>
+            </div>
+            <div *ngIf="!extValid" class="inline fields">
+                <div class="three wide field"></div>
+                <div class="thirteen wide field">
+                    <div class="ui visible error message">
+                        <ul class="list">
+                            <li *ngIf="!valid.required"> Bitte füllen Sie dieses Feld aus. </li>
+                            <li *ngIf="!valid.slashSep"> Maximal ein / als Trennzeichen von Root und {{extLabel}} erlaubt. </li>
+                            <li *ngIf="!valid.slash"> Kein / erlaubt. </li>
+                            <li *ngIf="!valid.separator"> Trennzeichen darf nicht an erster Stelle stehen. </li>
+                            <li *ngIf="!valid.point"> Root und {{extLabel}} dürfen nicht aus . oder .. bestehen. </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="inline fields">
+                <div class="three wide field"><label>Teilnahme:</label></div>
+                <!-- Buttons are disabled by css pointer-event property because ngDisabled is somehow not working with semanticUI. -->
+                <div class="ui radio checkbox" [ngClass]="optIn ? '' : 'disabledButton'">
+                    <input type="radio" name="optInOut" [value]="participationOptIn" [(ngModel)]="formdata.optInOut">
+                    <label>Ja (Einschluss)</label>
+                </div>
+                <div class="one wide field"></div>
+                <div class="ui radio checkbox" [ngClass]="optOut ? '' : 'disabledButton'">
+                    <input type="radio" name="optInOut" [value]="participationOptOut" [(ngModel)]="formdata.optInOut">
+                    <label>Nein (Ausschluss)</label>
+                </div>
+            </div>
+            <div class="inline fields" *ngIf="manualSic">
+                <div class="three wide field"><label> SIC: </label></div>
+                <div class="thirteen wide field">
+                    <input type=text class="ui input focus" name="sic" placeholder="" [(ngModel)]="formdata.sic" [disabled]="optOut">
+                </div>
+            </div>
+            <div class="inline fields">
+                <div class="three wide field"><label >Kommentar:</label></div>
+                <textarea rows="4" class="ui input focus thirteen wide field min-rows" name="comment" [(ngModel)]="formdata.comment"></textarea>
+            </div>
+            <br>
+            <div class="popup-message-buttons" style="display: flex; justify-content: center;">
+                <button type="Submit" form="ngForm" class="ui animated vertical button popup-message-okay-button"
+                    [ngClass]="buttons[0][1]">
+                    <div class="visible content">{{buttons[0][0]}}</div>
+                    <div class="hidden content">
+                        <i class="icon checkmark"></i>
+                    </div>
+                </button>
+
+                <div class="ui animated vertical button popup-message-okay-button"
+                    [ngClass]="buttons[1][1]" (click)="msgCancel()">
+                    <div class="visible content">{{buttons[1][0]}}</div>
+                    <div class="hidden content">
+                        <i class="icon remove"></i>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
