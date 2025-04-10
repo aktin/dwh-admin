@@ -1,0 +1,39 @@
+<popup-message></popup-message>
+<div class="ui divider"></div>
+<div
+    class="ui basic segment report-single-view container"
+    id="report-list-{{report.id}}"
+    [ngClass]="reportClass"
+    *ngIf="report"
+>
+    <div class="ui header request-single-view-header" [class.small]="!report.isSuccess()" routerLink="/report/{{report.id}}">
+        {{report.name}}
+    </div>
+
+    <div class="actions">
+        <a *ngIf="!single" routerLink="/report/{{report.id}}" title="Detailansicht des Berichts">Detailansicht des Berichts</a>
+        <div *ngIf="single" class="ui vertical animated button red" (click)="deleteReport()">
+            <div class="hidden content">Bericht löschen</div>
+            <div class="visible content"><i class="trash icon button-delete-report"></i></div>
+        </div>
+        <div *ngIf="single" class="ui vertical animated basic button" routerLink="/report" title="Zurück zur Berichtsübersicht">
+            <div class="hidden content">Zurück</div>
+            <div class="visible content"><i class="left arrow icon"></i></div>
+        </div>
+    </div>
+
+    <div class="ui content grid">
+        <div *ngIf="!report.isSuccess()" class="ui compact row report-status">
+            <div class="three wide column">Status:</div>
+            <div class="eight wide column"><b>{{report.getDeStatus()}}</b></div>
+        </div>
+        <div *ngIf="report.isSuccess()" class="ui compact row report-genDate">
+            <div class="three wide column">Erstelldatum:</div>
+            <div class="eight wide column">{{report.generationDate | date: 'mediumDate'}}</div>
+        </div>
+        <div class="ui compact row report-timespan">
+            <div class="three wide column">Zeitraum:</div>
+            <div class="eight wide column">{{report.timespan[0] | date: 'shortDate'}} bis {{endDate | date: 'shortDate'}}</div>
+        </div>
+    </div>
+</div>
