@@ -1,10 +1,10 @@
-import { AfterViewInit, Component, ElementRef, forwardRef, Renderer2, ViewChild, OnInit } from '@angular/core';
-import { PreferenceService } from '../preferences/preference.service';
-import { Preference, PreferenceCategory } from "../preferences/preference";
-import { HttpInterceptorService, UrlService } from '../helpers/index';
-import { PreferenceEditService } from "./preferencesEdit.service";
-import { LoadingComponent } from '../helpers/loading.component';
-import { Router } from "@angular/router";
+import {AfterViewInit, Component, ElementRef, forwardRef, HostListener, Renderer2, ViewChild} from '@angular/core';
+import {PreferenceService} from '../preferences/preference.service';
+import {Preference, PreferenceCategory} from "../preferences/preference";
+import {HttpInterceptorService, UrlService} from '../helpers/index';
+import {PreferenceEditService} from "./preferencesEdit.service";
+import {LoadingComponent} from '../helpers/loading.component';
+import {Router} from "@angular/router";
 import Timer = NodeJS.Timer;
 
 
@@ -20,6 +20,9 @@ export class PreferencesEditComponent implements AfterViewInit {
     @ViewChild(forwardRef(() => LoadingComponent))
     loadingComponent: LoadingComponent;
     validationTimeout: Timer; // used to determine when validation will happen after change, expands when in mean time another change happened
+    srollDownBtnVisible: boolean = true;       // true if button for "scrolling to end" should be displayed
+    selectedAction: any;    //
+    backups: String[];
 
     constructor (
         private _prefService: PreferenceService,
@@ -48,8 +51,27 @@ export class PreferencesEditComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {}
 
-    get preferenceCategories (): PreferenceCategory[] {
+    ngOnInit(): void {
+        this.updateBackupHistory();
+    }
+
+    /**
+     * Returns a data object consisting of a list of {@link PreferenceCategory} objects. This data object should store all
+     * currently existing property keys from the "aktin.properties" configuration file, and their respective values
+     */
+    get preferenceCategories(): PreferenceCategory[] {
         return this._prefService.getPreferenceCategories();
+    }
+
+    updateBackupHistory() {
+        this._http.get(this._urls.parse('getBackups')).subscribe((response) => {
+            try {
+                this.backups = response.json()
+            } catch (error) {
+                console.error('Invalid JSON body:', error);
+            }
+
+        });
     }
 
     /**
@@ -83,66 +105,77 @@ export class PreferencesEditComponent implements AfterViewInit {
                 this.createBanner();
             } else {
                 this._renderer.setAttribute(input, "className", "preferenceValue invalid-input");
-                this.hideBanner();
+                // this.hideBanner();
             }
         }, timeout);
     }
 
-    processChanges(changeType: String) {
-        this.hideBanner()
-        if (changeType==="apply") {
-            let prefs_json = this._service.scrapPreferenceTable(this._document, this.pref_input_class);
-            this._service.setCookie('AKTIN.showPrefUpdate', 'true');
-            window.location.href = "/aktin/admin/plain/update.html";
-            this._http.post(this._urls.parse('sendPreference'), prefs_json).subscribe(response => {
-                    console.log(response)
-            }
-            , error => {
-                console.log(error)
-            }
-            );
-
-        } else if (changeType==="revert") {
-            this.navigateToPreferencePage()
+    processChanges() {
+        // this.hideBanner()
+        let prefs_json = this._service.scrapPreferenceTable(this._document, this.pref_input_class);
+        this._service.setCookie('AKTIN.showPrefUpdate', 'true');
+        window.location.href = "/aktin/admin/plain/update.html";
+        this._http.post(this._urls.parse('sendPreference'), prefs_json).subscribe(response => {
+                console.log(response)
         }
+        , error => {
+            console.log(error)
+        }
+        );
+    }
+
+    onActionChange(value: String) {
+        console.log(value)
+        this.selectedAction = value
     }
 
     createBanner() {
         let banner = this._document.nativeElement.querySelector(`[id="${this.bottombanner}"]`);
         if (banner) {
-            this.unhideBanner()
+            // this.unhideBanner()
         } else {
             console.error('Element with id: \"' + this.bottombanner + '\" not found');
         }
     }
 
-    hideBanner() {
-        let banner = this._document.nativeElement.querySelector(`[id="${this.bottombanner}"]`);
-        if (banner) {
-            this._renderer.setAttribute(banner, 'hidden', '');
-        }
-    }
+    // hideBanner() {
+    //     let banner = this._document.nativeElement.querySelector(`[id="${this.bottombanner}"]`);
+    //     if (banner) {
+    //         this._renderer.setAttribute(banner, 'hidden', '');
+    //     }
+    // }
 
-    unhideBanner() {
-        let banner = this._document.nativeElement.querySelector(`[id="${this.bottombanner}"]`);
-        if (banner) {
-            this._renderer.removeAttribute(banner, 'hidden')
-        }
-    }
+    // unhideBanner() {
+    //     let banner = this._document.nativeElement.querySelector(`[id="${this.bottombanner}"]`);
+    //     if (banner) {
+    //         this._renderer.removeAttribute(banner, 'hidden')
+    //     }
+    // }
 
     navigateToPreferencePage(): void {
         this._service.navigateToPreferencePage(this._router)
     }
 
-    scrolledToEnd(event: any) {
-        // visible height + pixel scrolled >= total height
-        console.log("scrolled")
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-            console.log("End");
-        }
-        if (event.target.offsetHeight + event.target.scrollTop >= event.target.scrollHeight) {
-            console.log("End");
+    // Listen to the window's scroll event
+    @HostListener('window:scroll', [])
+    onScroll() {
+        const scrollPosition = window.scrollY; // Current scroll position
+        const scrollHeight = document.documentElement.scrollHeight; // Total document height
+        const clientHeight = document.documentElement.clientHeight; // Visible height
+
+        // Condition to show/hide the button
+        if (scrollPosition < scrollHeight - clientHeight) {
+            this.srollDownBtnVisible = true;
+        } else {
+            this.srollDownBtnVisible = false;
         }
     }
 
+    // Scroll to the end when the div is clicked
+    scrollToEnd() {
+        window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
 }

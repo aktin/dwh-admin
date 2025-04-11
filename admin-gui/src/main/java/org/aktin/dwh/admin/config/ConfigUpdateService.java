@@ -1,6 +1,10 @@
 package org.aktin.dwh.admin.config;
 import org.aktin.dwh.prefs.impl.PropertyFilePreferences;
 
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import java.io.IOException;
 import java.nio.file.Paths;
 
@@ -10,6 +14,18 @@ public class ConfigUpdateService {
 
     public ConfigUpdateService() throws IOException {
         this.prefManager = new PropertyFilePreferences();
+    }
+
+    public JsonObject parseStringArrayToJson(String[] arr) {
+        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        for (String path : arr) {
+            arrayBuilder.add(path);
+        }
+
+        // Wrap in JSON object
+        JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+        objectBuilder.add("body", arrayBuilder);
+        return objectBuilder.build();
     }
 
     public String updatePreferences(ValidationRequest request) throws IOException {
@@ -28,6 +44,10 @@ public class ConfigUpdateService {
 
     public void loadBackupFile(String path) throws IOException {
         this.prefManager.loadBackupFile(Paths.get(path));
+    }
+
+    public String[] getBackups() {
+        return this.prefManager.getBackupPaths();
     }
 
 }

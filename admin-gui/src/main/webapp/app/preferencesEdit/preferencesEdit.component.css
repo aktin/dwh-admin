@@ -2,13 +2,30 @@
     font-size: small;
 }
 
+.ui.breadcrumb {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+
 .break-word {
     word-wrap:break-word;
 }
 
-.table {
+#preference-table {
     width: 160%;
     margin-left: -30%;
+    table-layout: fixed;
+}
+
+#configuration-version-table {
+    width: 100%;
     table-layout: fixed;
 }
 

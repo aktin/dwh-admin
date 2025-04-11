@@ -79,6 +79,7 @@ export class UrlService {
 
         // configEndpoint
         sendPreference: 'config/updateProperties',
+        getBackups: 'config/backups',
         rollbackLast: 'config/rollbackProperties',
         rollbackVersion: 'config/rollbackVersionedProperties'
     };

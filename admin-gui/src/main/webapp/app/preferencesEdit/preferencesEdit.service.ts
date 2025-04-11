@@ -2,9 +2,14 @@
  * Created by Wiliam Hoy on 14.01.2025.
  * Property service
  */
-import {ElementRef, Injectable, Renderer2} from '@angular/core';
+import {ElementRef, Injectable} from '@angular/core';
 import {Router} from "@angular/router";
 import {FormControl, Validators} from "@angular/forms";
+import {HttpInterceptorService, UrlService} from "../helpers";
+import {Subscription} from "rxjs";
+import {Observable} from "rxjs/Observable";
+import {Response} from "@angular/http";
+
 
 /**
  * Service Class for input validation
@@ -25,8 +30,7 @@ export class PreferenceEditService {
     private emails= ["local.email", "mail.x.replyto"]
     private paths = ["import.script.path", "import.cda.debug.dir", "import.data.path", "update.data.path", "broker.data.path", "broker.archive.path", "report.data.path", "report.temp.path", "report.archive.path"]
     private validation_spaces = {}
-    // local.tz
-    // import.cda.debug.level
+    private _dataInterval: 3000;
 
     constructor() {
         this.validation_spaces["paths"] = this.paths

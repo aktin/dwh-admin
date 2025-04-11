@@ -15,3 +15,9 @@
     margin-left: -30%;
     table-layout: fixed;
 }
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}

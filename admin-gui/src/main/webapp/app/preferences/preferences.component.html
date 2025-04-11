@@ -1,12 +1,22 @@
 <div class="ui breadcrumb">
     <div class="active section breadcrumb-header">Konfigurationen</div>
 </div>
-<div class="ui left labeled button" *ngIf="isAuthorized()" (click)="navigateToEditPage()">
-    <a class="ui green basic label">
-        Bearbeiten
-    </a>
-    <div class="ui green icon button">
-        <i class="plus icon"></i>
+<div class="button-group">
+    <div class="ui left labeled button" *ngIf="isAuthorized()" (click)="navigateToEditPage()">
+        <a class="ui green basic label">
+            Bearbeiten
+        </a>
+        <div class="ui green icon button">
+            <i class="plus icon"></i>
+        </div>
+    </div>
+    <div class="ui left labeled button" *ngIf="isAuthorized()" (click)="navigateToEditPage()">
+        <a class="ui green basic label">
+            Alte Konfiguration laden
+        </a>
+        <div class="ui green icon button">
+            <i class="undo icon"></i>
+        </div>
     </div>
 </div>
 <div class="ui container">
