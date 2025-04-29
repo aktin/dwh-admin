@@ -32,12 +32,14 @@
     <div *ngIf="timeoutBool"> Es liegen keine Anfragen vor </div>
 </div>
 <div *ngIf="requests">
-    <pagination-controls class="pagination"
-        (pageChange)="p = $event"
-        [autoHide]="true"
-        previousLabel="Vorherige Seite"
-        nextLabel="Nächste Seite">
-    </pagination-controls>
+    <div class="pagination">
+        <pagination-controls
+            (pageChange)="p = $event"
+            [autoHide]="true"
+            previousLabel="Vorherige Seite"
+            nextLabel="Nächste Seite">
+        </pagination-controls>
+    </div>
     <div class="ui vertical segment" *ngFor="let request of requests | requestFilter:stateFilter | orderBy: ['-requestId'] | paginate: { itemsPerPage: 12, currentPage: p }">
         <div class="ui vertical basic segment request-single-view grid container" id="request-list-{{request.requestId}}">
               <div class="sixteen wide column row">
