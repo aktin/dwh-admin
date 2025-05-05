@@ -5,6 +5,4 @@ npm-debug.log
 debug.log
 *.js
 *.js.map
-# ignore built fomantic ui sources except customisations
 semantic
-!semantic/src/site/globals/site.variables
