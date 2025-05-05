@@ -1,7 +1,7 @@
 /*******************************
      User Global Variables
 *******************************/
-@primaryColor   : @olive;
+@primaryColor   : @blue;
 @secondaryColor : @darkred;
 @red            : #e3000f;
 @darkred        : #6c1023;
