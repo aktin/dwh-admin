@@ -17,7 +17,7 @@
   },
   "fileName": "semantic",
   "permission": false,
-  "autoInstall": false,
+  "autoInstall": true,
   "rtl": false,
   "version": "2.9.4"
 }

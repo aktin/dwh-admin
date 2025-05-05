@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "postinstall": "npx gulp --gulpfile node_modules/fomantic-ui/gulpfile.js install --noPrompt && cd semantic && gulp build"
   },
   "private": true,
   "dependencies": {
