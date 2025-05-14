@@ -4,6 +4,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { LocalRequest, RequestStatus } from './request';
 
+<<<<<<<< HEAD:admin-gui/src/main/webapp/src/app/requests/request-status-bar.component.ts
+========
+import _ = require('underscore');
+
+>>>>>>>> theming:admin-gui/src/main/webapp/app/requests/request-status-bar.component.ts
 @Component({
     selector: 'request-status-bar',
     templateUrl: './request-status-bar.component.html',

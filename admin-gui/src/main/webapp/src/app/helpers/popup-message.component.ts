@@ -1,7 +1,11 @@
 /**
  * Created by Xu on 16.05.2017.
  */
+<<<<<<<< HEAD:admin-gui/src/main/webapp/src/app/helpers/popup-message.component.ts
 import {Component, EventEmitter, Input, Output} from '@angular/core';
+========
+import { Component, Input } from '@angular/core';
+>>>>>>>> theming:admin-gui/src/main/webapp/app/helpers/popup-message.component.ts
 
 @Component({
     selector: 'popup-message',
@@ -12,9 +16,14 @@ export class PopUpMessageComponent {
     @Input() message: string;
     @Input() head: string;
     @Input() callback: Function;
+<<<<<<<< HEAD:admin-gui/src/main/webapp/src/app/helpers/popup-message.component.ts
     @Input() mode: "info" | "confirm" = 'info'; // 'confirm'
     @Input() button: string[] = ['icon checkmark', 'Weiter', 'green'];
     @Output() onClose: EventEmitter<boolean> = new EventEmitter();
+========
+    @Input() mode = 'info'; // 'confirm'
+    @Input() button: string[] = ['icon checkmark', 'Weiter', 'green'];
+>>>>>>>> theming:admin-gui/src/main/webapp/app/helpers/popup-message.component.ts
     show = false;
     onTop = false;
     firstChecked = false;
@@ -52,7 +61,10 @@ export class PopUpMessageComponent {
         if (this.callback) {
             this.callback(false);
         }
+<<<<<<<< HEAD:admin-gui/src/main/webapp/src/app/helpers/popup-message.component.ts
         this.onClose.emit(false);
+========
+>>>>>>>> theming:admin-gui/src/main/webapp/app/helpers/popup-message.component.ts
         this.clear();
     }
 
@@ -61,7 +73,10 @@ export class PopUpMessageComponent {
         if (this.callback) {
             this.callback(true, this.firstChecked, this.secondChecked);
         }
+<<<<<<<< HEAD:admin-gui/src/main/webapp/src/app/helpers/popup-message.component.ts
         this.onClose.emit(true);
+========
+>>>>>>>> theming:admin-gui/src/main/webapp/app/helpers/popup-message.component.ts
         this.clear();
     }
 
@@ -70,7 +85,10 @@ export class PopUpMessageComponent {
         if (this.callback) {
             this.callback(false);
         }
+<<<<<<<< HEAD:admin-gui/src/main/webapp/src/app/helpers/popup-message.component.ts
         this.onClose.emit(false);
+========
+>>>>>>>> theming:admin-gui/src/main/webapp/app/helpers/popup-message.component.ts
         this.clear();
     }
 
