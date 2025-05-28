@@ -1,11 +1,14 @@
 package org.aktin.dwh.admin.config;
 
+import org.aktin.dwh.prefs.impl.PropertyFilePreferences;
+
 import javax.json.JsonObject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * Data warehouse configuration endpoint. Manages updating aktin.properties

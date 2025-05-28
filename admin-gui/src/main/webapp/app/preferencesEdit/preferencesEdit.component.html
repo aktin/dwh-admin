@@ -1,6 +1,7 @@
 <div class="ui breadcrumb">
     <div class="active section breadcrumb-header">{{ title }}</div>
 </div>
+
 <div class="button-group">
     <div class="ui left labeled button" (click)="navigateToPreferencePage()">
         <a class="ui red label">
@@ -20,91 +21,43 @@
     </div>
 </div>
 
-<div *ngIf="selectedAction === 'manuel'">
-    <div class="ui breadcrumb">
-        <div class="active section breadcrumb-header">Manuell Bearbeiten</div>
-    </div>
-    <div *ngIf="srollDownBtnVisible" class="ui white icon button scroll-down-btn"  (click)="scrollToEnd()">
-        <i class="angle double down icon"></i>
-    </div>
-    <div class="button-group">
-        <div class="ui left labeled button" (click)="navigateToPreferencePage()">
-            <a class="ui red label">
-                Abbrechen
-            </a>
-            <div class="ui red icon button">
-                <i class="remove icon"></i>
-            </div>
-        </div>
-        <div class="ui left labeled button" (click)="processChanges()">
-            <a class="ui green label">
-                Anwenden
-            </a>
-            <div class="ui green icon button">
-                <i class="check icon"></i>
-            </div>
-        </div>
-    </div>
-    <div class="ui container">
-        <table id="preference-table" class="ui celled structured compact fixed table preferences">
-            <thead>
-            <tr>
-                <th width="15%" class="center aligned">Kategorie</th>
-                <th width="17%" class="center aligned">Einstellung</th>
-                <th width="30%" class="center aligned">Wert</th>
-                <th width="38%" class="center aligned">Beschreibung</th>
-            </tr>
-            </thead>
-            <tbody>
-            <ng-container *ngFor="let cat of preferenceCategories">
-                <ng-container *ngFor="let pref of cat.preferences; let i = index">
-                    <tr>
-                        <td *ngIf="i === 0"  [attr.rowspan]="cat.preferences.length" class="break-word">
-                            {{cat.description}}
-                        </td>
-                        <td class="break-word">
-                            {{pref.key}}
-                        </td>
-                        <td class="break-word">
-                            <input class="preferenceValue" [attr.id]="pref.key" [value]="pref.value" (input)="validateInput(pref, $event, 2000)"> <!--(load)="validateInput(pref, 0)"-->
-                        </td>
-                        <td class="break-word">
-                            {{pref.description}}
-                        </td>
-                    </tr>
-                </ng-container>
-            </ng-container>
-            </tbody>
-        </table>
-    </div>
+<div *ngIf="srollDownBtnVisible" class="ui white icon button scroll-down-btn"  (click)="scrollToEnd()">
+    <i class="angle double down icon"></i>
 </div>
 
-<div *ngIf="selectedAction === 'restore'">
-    <div class="ui container">
-        <table id="configuration-version-table" class="ui celled structured compact fixed table preferences">
-            <thead>
-            <tr>
-                <th width="90%" class="center aligned">Backup</th>
-                <th width="10%" class="center aligned"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <ng-container *ngFor="let back of backups">
+<div class="ui container">
+    <table id="preference-table" class="ui celled structured compact fixed table preferences">
+        <thead>
+        <tr>
+            <th width="15%" class="center aligned">Kategorie</th>
+            <th width="17%" class="center aligned">Einstellung</th>
+            <th width="30%" class="center aligned">Wert</th>
+            <th width="38%" class="center aligned">Beschreibung</th>
+        </tr>
+        </thead>
+        <tbody>
+        <ng-container *ngFor="let cat of preferenceCategories">
+            <ng-container *ngFor="let pref of cat.preferences; let i = index">
                 <tr>
-                    <td class="backup-path">
-                        {{back}}
+                    <td *ngIf="i === 0"  [attr.rowspan]="cat.preferences.length" class="break-word">
+                        {{cat.description}}
                     </td>
-                    <td>
-                        <div class="ui green icon button">
-                            <i class="undo icon"></i>
-                        </div>
+                    <td class="break-word">
+                        {{pref.key}}
+                    </td>
+                    <td class="break-word">
+                        <input class="preferenceValue" [attr.id]="pref.key" [value]="pref.value" (input)="validateInput(pref, $event, 2000)"> <!--(load)="validateInput(pref, 0)"-->
+                    </td>
+                    <td class="break-word">
+                        {{pref.description}}
                     </td>
                 </tr>
             </ng-container>
-            </tbody>
-        </table>
-    </div>
+        </ng-container>
+        </tbody>
+    </table>
 </div>
+
 
 <div class="button-group">
     <div class="ui left labeled button" (click)="navigateToPreferencePage()">
