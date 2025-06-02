@@ -1,7 +1,7 @@
 /**
  * Created by Xu on 16.05.2017.
  */
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
     selector: 'popup-message',
@@ -12,6 +12,7 @@ export class PopUpMessageComponent {
     @Input() message: string;
     @Input() head: string;
     @Input() callback: Function;
+    @Output() onClose: EventEmitter<boolean> = new EventEmitter();
     @Input() mode = 'info'; // 'confirm'
     @Input() button: string[] = ['icon checkmark', 'Weiter', 'green'];
     show = false;
@@ -51,6 +52,7 @@ export class PopUpMessageComponent {
         if (this.callback) {
             this.callback(false);
         }
+        this.onClose.emit(false);
         this.clear();
     }
 
@@ -59,6 +61,7 @@ export class PopUpMessageComponent {
         if (this.callback) {
             this.callback(true, this.firstChecked, this.secondChecked);
         }
+        this.onClose.emit(true);
         this.clear();
     }
 
@@ -67,6 +70,7 @@ export class PopUpMessageComponent {
         if (this.callback) {
             this.callback(false);
         }
+        this.onClose.emit(false);
         this.clear();
     }
 
