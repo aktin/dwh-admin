@@ -12,8 +12,8 @@ export class DownloadService {
     }
 
     get(filename: string, type: string, url: string): void {
-        this._http.get<Blob>(url, {headers: this._http.generateHeaderOptions('Accept', type)}).subscribe({
-            next: blob => FileSaver(blob, filename),
+        this._http.get(url, {headers: this._http.generateHeaderOptions('Accept', type), responseType: 'blob'}).subscribe({
+            next: blob => FileSaver.saveAs(blob, filename),
             error: error => {
                 console.log('Error downloading the file.');
                 return error;
