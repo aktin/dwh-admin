@@ -3,7 +3,6 @@
  */
 import { Component, Input, OnInit } from '@angular/core';
 import { LocalRequest, RequestStatus } from './request';
-
 @Component({
     selector: 'request-status-bar',
     templateUrl: './request-status-bar.component.html',

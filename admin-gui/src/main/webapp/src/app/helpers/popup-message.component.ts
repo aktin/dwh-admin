@@ -12,7 +12,7 @@ export class PopUpMessageComponent {
     @Input() message: string;
     @Input() head: string;
     @Input() callback: Function;
-    @Input() mode: "info" | "confirm" = 'info'; // 'confirm'
+    @Input() mode = 'info'; // 'confirm'
     @Input() button: string[] = ['icon checkmark', 'Weiter', 'green'];
     @Output() onClose: EventEmitter<boolean> = new EventEmitter();
     show = false;

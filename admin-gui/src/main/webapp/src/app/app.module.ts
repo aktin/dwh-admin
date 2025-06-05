@@ -32,7 +32,7 @@ import {
     PopUpMessageComponent,
     SafeUrlPipe,
     StorageService,
-    UrlService
+    UrlService, TemplateVarDirective
 } from './helpers';
 import {
     AuthService,
