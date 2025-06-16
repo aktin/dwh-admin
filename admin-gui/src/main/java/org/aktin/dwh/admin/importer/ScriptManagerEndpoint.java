@@ -42,17 +42,6 @@ public class ScriptManagerEndpoint {
         return scriptOperationManager.getScripts();
     }
 
-    /**
-     * POST request to start file verification using corresponding script
-     *
-     * @param uuid universally unique id of file to verify
-     */
-    @Secured
-    @Path("{uuid}/verify")
-    @POST
-    public void queueFileVerification(@NotNull @PathParam("uuid") String uuid) {
-        pythonScriptExecutor.addTask(uuid);
-    }
 
     /**
      * POST request to start file import using corresponding script
