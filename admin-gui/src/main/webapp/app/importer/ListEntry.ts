@@ -1,12 +1,12 @@
-import { Subscription } from 'rxjs';
+import {Subscription} from 'rxjs';
 
-import { ImporterService } from './importer.service';
+import {ImporterService} from './importer.service';
 
-import { ImportState } from './enums/ImportState';
-import { ImportOperation } from './enums/ImportOperation';
-import { ImportOperationState } from './enums/ImportOperationState';
-import { PropertiesKey } from './enums/PropertiesKey';
-import { LogType } from './enums/LogType';
+import {ImportState} from './enums/ImportState';
+import {ImportOperation} from './enums/ImportOperation';
+import {ImportOperationState} from './enums/ImportOperationState';
+import {PropertiesKey} from './enums/PropertiesKey';
+import {LogType} from './enums/LogType';
 
 /**
  * Displays uploaded files in view and manages file operations for corresponding file
@@ -172,13 +172,13 @@ export class ListEntry {
 
     /**
      * Checks if button "import" should be shown or hidden, is shown during all import operations.
-     * Is also shown after successful verification
+     * Is also shown after failed import
      * @returns boolean if button shall be shown or hidden
      */
     checkImportButtonVisibility(): boolean {
-        if (this.operation === ImportOperation.uploading && this.state === ImportState.successful) {
+        if (this.operation === ImportOperation.uploading) {
             return true;
-        } else if (this.operation === ImportOperation.importing) {
+        } else if (this.operation === ImportOperation.importing && this.state !== ImportState.successful) {
             return true;
         } else {
             return false;
