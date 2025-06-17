@@ -2,7 +2,6 @@ package org.aktin.dwh.admin.importer;
 
 import org.aktin.dwh.admin.auth.Secured;
 import org.aktin.importer.ScriptOperationManager;
-import org.aktin.importer.enums.ScriptOperation;
 import org.aktin.importer.executor.PythonScriptExecutor;
 import org.aktin.importer.pojos.ScriptFile;
 
@@ -43,17 +42,6 @@ public class ScriptManagerEndpoint {
         return scriptOperationManager.getScripts();
     }
 
-    /**
-     * POST request to start file verification using corresponding script
-     *
-     * @param uuid universally unique id of file to verify
-     */
-    @Secured
-    @Path("{uuid}/verify")
-    @POST
-    public void queueFileVerification(@NotNull @PathParam("uuid") String uuid) {
-        pythonScriptExecutor.addTask(uuid, ScriptOperation.verify_file);
-    }
 
     /**
      * POST request to start file import using corresponding script
@@ -64,7 +52,7 @@ public class ScriptManagerEndpoint {
     @Path("{uuid}/import")
     @POST
     public void queueFileImport(@NotNull @PathParam("uuid") String uuid) {
-        pythonScriptExecutor.addTask(uuid, ScriptOperation.import_file);
+        pythonScriptExecutor.addTask(uuid);
     }
 
     /**
