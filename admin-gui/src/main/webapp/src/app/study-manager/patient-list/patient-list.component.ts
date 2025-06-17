@@ -46,9 +46,6 @@ export class PatientListComponent implements OnInit, AfterViewInit {
             field: 'comment',
             header: 'Kommentar'
         }];
-    public selectedEntry: Entry;
-    public isPatientViewComponentOpen: boolean = false;
-    public isPatientsCreationComponentOpen: boolean;
     protected readonly compareStudies = compareStudies;
     protected date: IMyDateModel;
     protected search: string = '';
