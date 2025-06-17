@@ -27,7 +27,7 @@ export class ErrorInterceptor implements HttpInterceptor {
                 throw "Sitzung abgelaufen";
             }
             const err = this.getError(response);
-            console.error(`${response.status} - ${response.statusText || ''} ${err}`);
+            console.error(`${response.status} - ${response.statusText || ''}`, err);
             throw err;
         }));
     }
