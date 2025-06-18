@@ -174,7 +174,6 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         NgxPaginationModule,
         DataTableModule,
         DropDownModule,
-        NgbInputDatepicker,
         FieldModule,
         RevoGrid,
         AgGridAngular,
