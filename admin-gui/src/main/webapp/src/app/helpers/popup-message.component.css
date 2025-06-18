@@ -1,4 +1,4 @@
-#popup-message-overlay {
+.popup-message-overlay {
     position: fixed;
     width: 100%;
     height: 100%;
@@ -8,66 +8,34 @@
     top: 0;
 }
 
-#popup-message-content {
+.popup-message-content {
     position: absolute;
     top: 150px;
     z-index: 110;
     min-height: 150px;
 }
 
-.popup-message-content {
-    position: absolute;
-    min-height: 150px;
-}
-
-#popup-message-content .close-action {
-    position: absolute;
-    right: -15px;
-    top: -11px;
-}
-
-.popup-buttons {
-    margin-left: 24px;
-    margin-right: 24px;
-}
-
-.fontBlack {
-    color: black !important;
-}
-
 .formatMsg {
     white-space: pre-line
 }
 
-.on-top#popup-message-overlay {
+.on-top.popup-message-overlay {
     z-index: 120;
 }
 
-.on-top#popup-message-content {
+.on-top.popup-message-content {
     z-index: 130;
     top: 280px ;
-}
-
-.close-action {
-    padding-top: 15px;
-    padding-right: 15px;
 }
 
 .actions {
     display: flex;
     justify-content: flex-end;
-    padding-top: 6px;
-}
-
-.popup-message-buttons {
-    display: flex;
-    justify-content: flex-start;
-    padding-top: 6px;
+    padding-top: 1em;
 }
 
 .popup-header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    /*width: 100%;*/
 }

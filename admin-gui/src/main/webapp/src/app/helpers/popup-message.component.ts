@@ -25,6 +25,16 @@ export class PopUpMessageComponent {
     constructor(@Optional() private modalRef: ModalRef<PopUpMessageComponent>,) {
     }
 
+    /**
+     * PopUpMessageComponent can be called either by using ModalService or by using <popup-message> in a template
+     * Depending on the call method, css classes may apply or not
+     * Will be removed, when migration to ModalService has been completed
+     * @protected
+     */
+    protected get hasModalRef(): boolean {
+        return !!this.modalRef;
+    }
+
     setData(show: boolean, title: string, message: string, callback?: Function): void {
         this.show = show;
         this.head = title;
