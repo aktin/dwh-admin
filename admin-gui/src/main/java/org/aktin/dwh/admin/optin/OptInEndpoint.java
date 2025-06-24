@@ -432,7 +432,7 @@ public class OptInEndpoint {
             if (pat != null) {
                 log.log(Level.WARNING, "Cannot create entry, PatientEntry already exists.");
                 return Response.status(Status.CONFLICT)
-                        .entity(MessageFormat.format("Patient*in {0} existiert bereits", pat.getIdExt()))
+                        .entity(MessageFormat.format("Patient*in {0} bereits registiert", pat.getIdExt()))
                         .build();
             }
 

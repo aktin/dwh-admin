@@ -16,7 +16,7 @@ export class ReadableEntryValidationPipe implements PipeTransform {
                 result = 'OK';
                 break;
             case EntryValidation.EntryFound:
-                result = 'Patient*in existiert bereits';
+                result = 'Patient*in bereits registriert';
                 break;
             case EntryValidation.SicFound:
                 result = 'Studien-ID existiert bereits';
