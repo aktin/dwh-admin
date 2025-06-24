@@ -273,7 +273,10 @@ public class OptInEndpoint {
     @Path("entries/{studyId}/{reference}/{root}")
     @PUT
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public ArrayList<PatientEntriesResponseDTO> validateEntries(String id, PatientReference ref, String root, PatientEntriesRequestDTO entries) throws IOException {
+    public ArrayList<PatientEntriesResponseDTO> validateEntries(@PathParam("studyId") String id,
+                                                                @PathParam("reference") PatientReference ref,
+                                                                @PathParam("root") String root,
+                                                                PatientEntriesRequestDTO entries) throws IOException {
         Study study = this.getStudy(id);
         val validatedEntries = new ArrayList<PatientEntriesResponseDTO>();
 
