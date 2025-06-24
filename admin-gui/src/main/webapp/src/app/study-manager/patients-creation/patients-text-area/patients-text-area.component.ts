@@ -25,7 +25,7 @@ import {PatientReferenceHeaderComponent} from './patient-reference-header.compon
 @Component({
     selector: 'patients-text-area',
     templateUrl: './patients-text-area.component.html',
-    styleUrl: './patients-text-area.component.scss',
+    styleUrl: './patients-text-area.component.less',
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: PatientsTextAreaComponent, multi: true},
         {provide: NG_ASYNC_VALIDATORS, useExisting: PatientsTextAreaComponent, multi: true},
         ReadableEntryValidationPipe,
