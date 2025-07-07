@@ -10,11 +10,13 @@ import {
 import {Observable, of, switchMap, throwError} from 'rxjs';
 import {CleanUpAuthService} from './clean-up-auth.service';
 import {catchError, map} from 'rxjs/operators';
+import {ModalService} from '../modal/modal.service';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
 
-    constructor(private _cleanUp: CleanUpAuthService) {
+    constructor(private _cleanUp: CleanUpAuthService,
+                private _modalService: ModalService,) {
     }
 
     intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -33,6 +35,7 @@ export class ErrorInterceptor implements HttpInterceptor {
     }
 
     private logout(): void {
+        this._modalService.closeAll();
         sessionStorage.removeItem('permissions');
         this._cleanUp.cleanUpStorage('Sitzung abgelaufen. Bitte erneut anmelden.');
         this._cleanUp.redirect2Home();

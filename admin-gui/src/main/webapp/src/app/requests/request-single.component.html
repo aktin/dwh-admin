@@ -1,11 +1,38 @@
-<div class="ui grid">
-    <div class="row">
-        <div class="ui breadcrumb">
-            <a class="section breadcrumb-header" routerLink="/request">Anfragenübersicht</a>
-            <i class="right angle icon divider"></i>
-            <div class="active section" *ngIf="request">{{request.query.query.title}}</div>
+<div *ngIf="request && dataLoaded"
+     class="ui text container very padded segment">
+    <div class="popup-header">
+        <div>
+            <div class="ui header">
+                Anfrage
+                {{ request.query.query.title }}
+                @if (request.marker === RequestMarker.HIDDEN) {
+                    [ARCHIVIERT]
+                }
+            </div>
+
+            <div class="ui content">
+            </div>
+        </div>
+
+        <div>
+            <a (click)="close()"
+               class="ui compact small icon circular button">
+                <i class="remove icon"></i>
+            </a>
         </div>
     </div>
-    <request-single-view [requestDataUnmapped]="requestUnmapped" [requestData]="request" [queryBundle]="request.isRecurring() ? queryBundle : null" [queryDetails]="request.isRecurring() ? queryDetails : null" class="row" [popUp]="popUp" *ngIf="request && dataLoaded"></request-single-view>
+
+    <request-single-view (onDetailsClick)="loadRequests($event)"
+                         [queryBundle]="request.isRecurring() ? queryBundle : null"
+                         [queryDetails]="request.isRecurring() ? queryDetails : null"
+                         [requestDataUnmapped]="requestUnmapped"
+                         [requestData]="request"></request-single-view>
+    <div class="actions">
+        <button (click)="close()"
+                class="ui labeled icon secondary button"
+                type="button">
+            <i class="times icon"></i>
+            Schließen
+        </button>
+    </div>
 </div>
-<popup-message></popup-message>

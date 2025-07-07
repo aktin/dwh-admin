@@ -1,0 +1,130 @@
+@import "semantic/src/site/globals/site.variables";
+
+@line: request-status-line;
+@line-fill: request-status-line-fill;
+
+.request-status-bar-box {
+    display: inline-block;
+    width: 100%;
+    vertical-align: middle;
+    position: relative;
+    margin-bottom: 2em;
+}
+
+.@{line} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: lightgray;
+    height: 6px;
+    width: calc(100% - 10px);
+    margin: 6px 5px;
+}
+
+.@{line-fill} {
+    background-color: @green;
+    margin: 0;
+    height: 6px;
+
+    &.failed {
+        background-color: @red;
+    }
+
+    &.expired {
+        background-color: @grey;
+    }
+
+    &.rejected {
+        background-color: @blue;
+    }
+
+    &.submitted {
+        background-color: @green;
+    }
+}
+
+.request-status-bar-item {
+    position: relative;
+    display: inline-block;
+    float: left;
+    width: 10px;
+    height: 10px;
+    margin: 2px 0;
+
+    &:not(.first) {
+        margin-left: calc((100% - 70px) / 6)
+    }
+
+    .request-status-text {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 15px;
+        margin-top: 8px;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    &.first .request-status-text {
+        left: 0;
+        transform: none;
+    }
+
+    &.last i {
+        right: 10px;
+    }
+
+    &.last .request-status-text {
+        right: 0;
+        left: auto;
+        transform: none
+    }
+}
+
+.request-status-dot {
+    margin: 0;
+    background-color: lightgray;
+    border-radius: 60%;
+    width: 14px;
+    height: 14px;
+    cursor: help;
+
+    &.visited {
+        margin: 1px;
+        width: 12px;
+        height: 12px;
+        background-color: @green;
+        cursor: help;
+    }
+
+    &.active {
+        margin: -2px;
+        width: 18px;
+        height: 18px;
+        border: 5px solid @yellow;
+        background-color: #ffffff;
+    }
+
+    &.failed {
+        background-color: @red;
+    }
+
+    &.expired {
+        background-color: @grey;
+    }
+
+    &.rejected {
+        background-color: @blue;
+    }
+
+    &.submitted {
+        background-color: @green;
+    }
+}
+
+.request-status-icon {
+    position: absolute;
+    margin: -8px;
+    cursor: help;
+}
+

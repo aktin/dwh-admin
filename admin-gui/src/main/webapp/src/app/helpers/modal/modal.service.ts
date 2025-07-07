@@ -12,7 +12,7 @@ export const MODAL_CONFIG = new InjectionToken<IModalConfig>('MODAL_CONFIG');
 })
 export class ModalService {
     private viewContainerRef!: ViewContainerRef;
-    private modals: ComponentRef<any>[] = [];
+    private modalRefs: ModalRef<any>[] = [];
 
     // event after any modal gets closed
     public modalClosed$ = new Subject<void>();
@@ -33,11 +33,11 @@ export class ModalService {
 
         // instantiate modal
         const componentRef = this.viewContainerRef.createComponent(ModalRef<T>);
-        this.modals.push(componentRef);
 
         // wait for afterViewInit, so the @ViewChild properties of ModalRef are loaded and modal content can be set
         const obs$ = componentRef.instance.afterViewInitFinished$
-                                 .pipe(map(() => componentRef.instance.setContent(componentType, config)));
+                                 .pipe(map(() => componentRef.instance.setContent(componentType, config)),
+                                     tap(ref => this.modalRefs.push(ref)));
 
         obs$.subscribe(() => componentRef.instance.open());
 
@@ -52,16 +52,21 @@ export class ModalService {
     }
 
     private destroyComponent<T>(modalRef: ComponentRef<ModalRef<T>>): void {
-        this.modals = this.modals.filter(m => m !== modalRef);
+        this.modalRefs = this.modalRefs.filter(m => m !== modalRef.instance);
         modalRef.destroy();
 
         // ensure all modals are properly closed
-        if (!this.modals?.length) {
+        if (!this.modalRefs?.length) {
             $('.ui.modal').modal('hide all');
         }
+    }
+
+    public closeAll(): void {
+        this.modalRefs.forEach(m => m.close());
     }
 }
 
 export interface IModalConfig<TData = any> {
     data?: TData;
+    className?: string;
 }

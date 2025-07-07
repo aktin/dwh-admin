@@ -1,0 +1,36 @@
+<div class="ui grid">
+    <div class="row">
+        <div class="twelve wide column ui header">
+            <div>
+                {{ request.query.query.title }}
+                @if (request.marker === RequestMarker.HIDDEN) {
+                    [ARCHIVIERT]
+                }
+            </div>
+        </div>
+        <div class="actions four wide right aligned column">
+            <button class="ui icon button"
+                    title="Details anzeigen"
+                    (click)="onDetailsClick.emit(request)">
+                <i class="search icon"></i>
+            </button>
+        </div>
+    </div>
+    <div class="row" *ngIf="!compact">
+        <div class="ten wide left floated column ui header request-single-view-header">
+            <h4>
+                @if (request.isRecurring()) {
+                    Serien-Anfrage {{ numInSeries }} von {{requestSeries?.length}}:
+                }
+                @if (request.query.scheduled == 'Sofort') {
+                    Sofortige Ausführung
+                } @else {
+                    Ausführung am {{ request.query.scheduled | date: 'mediumDate' }}
+                }
+            </h4>
+        </div>
+    </div>
+    <div class="row">
+        <request-status-bar class="ui column status-bar" [request]="request"></request-status-bar>
+    </div>
+</div>

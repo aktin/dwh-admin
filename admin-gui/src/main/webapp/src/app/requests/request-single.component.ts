@@ -1,81 +1,51 @@
 /**
  * Created by Xu on 14-Jun-17.
  */
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute, Params} from '@angular/router';
-import {Subscription, timer} from 'rxjs';
+import {Component, Inject, OnInit} from '@angular/core';
+import {forkJoin, of, switchMap, tap, timer} from 'rxjs';
 
-import {PopUpMessageComponent} from '../helpers/index';
 import {RequestService} from './request.service';
-import {LocalRequest, QueryBundle, RequestStatus} from './request';
+import {LocalRequest, QueryBundle, RequestMarker, RequestStatus} from './request';
+import {ModalRef} from '../helpers/modal/modal-ref.component';
+import {IModalConfig, MODAL_CONFIG} from '../helpers/modal/modal.service';
+import {Location} from '@angular/common';
 
 @Component({
+    selector: 'request-single',
     templateUrl: './request-single.component.html',
-    styleUrls: ['./requests.component.css'],
+    styleUrls: ['./requests.component.less', '../helpers/popup-message.component.css'],
 })
-export class RequestSingleComponent implements OnInit, OnDestroy {
+export class RequestSingleComponent implements OnInit {
     request: LocalRequest;
     requestUnmapped: LocalRequest;
-    reqId: number;
     requestEtag = '0';
     queryBundle: QueryBundle;
     bundleEtag = '0';
     queryDetails: any = {};
     bundleLoaded = false;
     requestLoaded = false;
-    @ViewChild(PopUpMessageComponent) popUp: PopUpMessageComponent;
-
+    protected readonly RequestMarker = RequestMarker;
     private _dataInterval = 5000;
-    private _timerSubscription: Subscription;
 
     constructor(
-        private _route: ActivatedRoute,
         private _requestService: RequestService,
-    ) {}
-
-    ngOnInit(): void {
-        this._route.params
-            .subscribe((params: Params) => {
-                this.reqId = +params['id'];
-                // set request and belonging etag
-                this._requestService.getRequest(this.reqId, this.requestEtag, true)
-                    .subscribe(res => {
-                        this.request = res['req'];
-                        this.requestEtag = res['etag'];
-                        this.requestLoaded = true;
-                        if (!this.request.isRecurring()) {
-                            this.bundleLoaded = true;
-                        } else {
-                            // set query bundle and belonging etag
-                            this._requestService.getQueryBundle(this.request.queryId, this.bundleEtag)
-                                .subscribe(bundle => {
-                                    this.queryBundle = bundle['bundle'];
-                                    this.bundleEtag = bundle['etag'];
-                                    this.updateQueryDetails();
-                                    this.bundleLoaded = true;
-                                });
-                        }
-                    });
-                    this._requestService.getRequest(this.reqId, this.requestEtag, false)
-                        .subscribe(unmapped => {
-                            this.requestUnmapped = unmapped['req'];
-                    });
-            });
-        // set timer to update request and query bundle in the given interval in case the etag changed (hence request was modified)
-        let timer$ = timer(0, this._dataInterval);
-        this._timerSubscription = timer$.subscribe(() => {
-            if (this.request) {
-                this.updateRequest();
-                if (this.request.isRecurring()) {
-                    this.updateQueryBundle();
-                }
-            }
-        });
+        private _modalRef: ModalRef<RequestSingleComponent>,
+        private _location: Location,
+        @Inject(MODAL_CONFIG) modalConfig: IModalConfig,
+    ) {
+        this.reqId = modalConfig.data.reqId;
     }
 
-    ngOnDestroy(): void {
-        console.log('unsubscribe timer');
-        this._timerSubscription.unsubscribe();
+    private _reqId: number;
+
+    get reqId(): number {
+        return this._reqId;
+    }
+
+    set reqId(value: number) {
+        this._reqId = value;
+        //reflect any request id changes in the url without reloading the component
+        this._location.go(`/request/${this.reqId}`);
     }
 
     /**
@@ -88,6 +58,47 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
             return true;
         }
         return false;
+    }
+
+    ngOnInit(): void {
+        this.loadRequests(this.reqId);
+    }
+
+    public loadRequests(reqId: number): void {
+        this.reqId = reqId;
+        // set request and belonging etag
+        forkJoin([this._requestService.getRequest(this.reqId, this.requestEtag, true),
+            this._requestService.getRequest(this.reqId, this.requestEtag, false)])
+            .pipe(switchMap(([request, unmappedRequest]) => {
+                this.request = request['req'] as LocalRequest;
+                this.requestEtag = request['etag'];
+                this.requestUnmapped = unmappedRequest['req'];
+                if (this.request.isRecurring()) {
+                    // set query bundle and belonging etag
+                    return this._requestService.getQueryBundle(this.request.queryId, this.bundleEtag)
+                               .pipe(tap(bundle => {
+                                   this.queryBundle = bundle['bundle'];
+                                   this.bundleEtag = bundle['etag'];
+                                   this.updateQueryDetails();
+                                   this.bundleLoaded = true;
+                               }));
+                } else {
+                    return of(null);
+                }
+            })).subscribe(() => {
+            this.bundleLoaded = true;
+            this.requestLoaded = true;
+        });
+        // set timer to update request and query bundle in the given interval in case the etag changed (hence request was modified)
+        let timer$ = timer(0, this._dataInterval);
+        timer$.subscribe(() => {
+            if (this.request) {
+                this.updateRequest();
+                if (this.request.isRecurring()) {
+                    this.updateQueryBundle();
+                }
+            }
+        });
     }
 
     /**
@@ -127,10 +138,19 @@ export class RequestSingleComponent implements OnInit, OnDestroy {
         let rejected = query.filter(
             req => req.status === RequestStatus.Rejected).length;
         let accepted = query.filter(
-            req => req.status !== RequestStatus.Retrieved &&  req.status !== RequestStatus.Seen
-                &&  req.status !== RequestStatus.Rejected).length;
+            req => req.status !== RequestStatus.Retrieved && req.status !== RequestStatus.Seen
+                && req.status !== RequestStatus.Rejected).length;
         let submitted = query.filter(
             req => req.status === RequestStatus.Submitted).length;
-        this.queryDetails[this.request.queryId] = { 'order': order, 'rejected': rejected, 'accepted': accepted, 'submitted': submitted };
+        this.queryDetails[this.request.queryId] = {
+            'order': order,
+            'rejected': rejected,
+            'accepted': accepted,
+            'submitted': submitted
+        };
+    }
+
+    public close(): void {
+        this._modalRef.close();
     }
 }

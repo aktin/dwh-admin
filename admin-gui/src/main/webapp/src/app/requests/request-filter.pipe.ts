@@ -23,6 +23,10 @@ export class RequestFilterPipe implements PipeTransform {
      * @returns {LocalRequest[]}
      */
     transform( requests: LocalRequest[], status: RequestStatus | string/*, marker: RequestMarker */): LocalRequest[] {
+        if(!requests?.length) {
+            return [];
+        }
+
         let output = requests;
 
         switch (status) {
@@ -75,10 +79,6 @@ export class RequestFilterPipe implements PipeTransform {
             }
             case 'sending': {
                 output = output.filter(req => req.status === RequestStatus.Sending);
-                break;
-            }
-            case 'seen': {
-                output = output.filter(req => req.status === RequestStatus.Seen);
                 break;
             }
             case 'submitted' : {

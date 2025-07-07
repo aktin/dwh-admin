@@ -1,75 +1,109 @@
 <div class="ui grid">
-    <div class="ui breadcrumb eight wide column">
-        <div class="active section breadcrumb-header">Anfragenübersicht</div>
-    </div>
-    <div class="ui form right aligned eight wide column">
-        <div class="inline field">
-            <label>Nach Status filtern:</label>
-            <select class="ui inline dropdown" (change)="stateFilter=$event.target['value']; p=1">
-            <ng-container *ngFor="let filter of stateFilterArray">
-                <ng-container *ngIf="filter[1] === null">
-                    <optgroup label = "{{filter[0]}}" class="filterOptgroup">
-                            <ng-container *ngFor="let opt of filter[2]">
-                                <option value="{{opt[1]}}" [selected]="stateFilter === opt[1]" class="filterOption">
-                                    {{ opt[0] }}
-                                </option>
-                            </ng-container>
-                    </optgroup>
-                </ng-container>
-                <ng-container *ngIf="filter[1] !== null">
-                    <option value="{{filter[1]}}" [selected]="stateFilter === filter[1]" class="filterOption">
-                        {{filter[0]}}
-                    </option>
-                </ng-container>
-            </ng-container>
-            </select>
+    <div class="row">
+        <div class="ui breadcrumb column">
+            <div class="active section breadcrumb-header">Anfragenübersicht</div>
         </div>
     </div>
-</div>
-<div class="ui divider"></div>
-<div *ngIf="!requests">
-    <div *ngIf="!timeoutBool" class="ui active indeterminate text loader"> Lade Anfragen </div>
-    <div *ngIf="timeoutBool"> Es liegen keine Anfragen vor </div>
-</div>
-<div *ngIf="requests">
-    <pagination-controls class="pagination"
-        (pageChange)="p = $event"
-        [autoHide]="true"
-        previousLabel="Vorherige Seite"
-        nextLabel="Nächste Seite">
-    </pagination-controls>
-    <div class="ui vertical segment" *ngFor="let request of requests | requestFilter:stateFilter | orderBy: ['-requestId'] | paginate: { itemsPerPage: 12, currentPage: p }">
-        <div class="ui vertical basic segment request-single-view grid container" id="request-list-{{request.requestId}}">
-              <div class="sixteen wide column row">
-                <div class="twelve wide left floated column ui header request-single-view-header">
-                    <div *ngIf="request.marker === 1; then archived else unarchived"></div>
-                    <ng-template #archived>{{request.query.query.title}} [ARCHIVIERT]</ng-template>
-                    <ng-template #unarchived>{{request.query.query.title}}</ng-template>
-                </div>
-                <div class="actions four wide right floated right aligned column">
-                    <div class="ui basic compact button" title="Details anzeigen" [routerLink]="['/request', request.requestId]">
-                        <i class="large icons">
-                            <i class="file alternate outline icon"></i>
-                            <i class="bottom right corner search icon"></i>
-                        </i>
+    <div class="row">
+        <div class="ui column">
+            <div class="ui segment column form">
+                <div class="field">
+                    <label>Nach Status filtern</label>
+                    <div class="ui input action">
+                        <drop-down [ngModel]="stateFilter"
+                                   (ngModelChange)="filterRequests($event)"
+                                   name="filter">
+                            @for (filter of stateFilterArray; track filter.label) {
+                                @if (!!filter.optGroups?.length) {
+                                    <drop-down-option-group>{{ filter.label }}</drop-down-option-group>
+                                    @for (opt of filter.optGroups; track opt.label) {
+                                        <drop-down-option [value]="opt.value">{{ opt.label }}</drop-down-option>
+                                    }
+                                } @else {
+                                    <drop-down-option [value]="filter.value">{{ filter.label }}</drop-down-option>
+                                }
+                            }
+                        </drop-down>
+                        <button (click)="loadRequests()"
+                                class="ui labeled icon button"
+                                type="button">
+                            <i class="filter icon"></i> Filtern
+                        </button>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="ten wide left floated column ui header request-single-view-header" style="margin-top:-20px;">
-                    <div *ngIf="request.isRecurring(); then query else single"></div>
-                    <ng-template #query>
-                        <h4 *ngIf="request.query.scheduled != 'Sofort'">Serien-Anfrage {{ getNumRequest(request) }}: Ausführung am {{ request.query.scheduled | date: 'mediumDate' }}</h4>
-                        <h4 *ngIf="request.query.scheduled == 'Sofort'">Serien-Anfrage {{ getNumRequest(request) }}: Sofortige Ausführung</h4>
-                    </ng-template>
-                    <ng-template #single>
-                        <h4 *ngIf="request.query.scheduled != 'Sofort'">Ausführung am {{ request.query.scheduled | date: 'mediumDate' }}</h4>
-                        <h4 *ngIf="request.query.scheduled == 'Sofort'">Sofortige Ausführung</h4>
-                    </ng-template>
-                </div>
-            </div>
-            <request-status-bar [request]="request" [queryDetails]="queryDetails"></request-status-bar>
         </div>
     </div>
-    <div padding-bottom="50px;">&nbsp;</div>
+
+    <div class="row">
+        <div class="ui column">
+            <div class="ui segment">
+                @if (!!groupedRequests?.length) {
+                    <ng-template #paginationTemplate>
+                        <pagination-controls id="series-pagination"
+                                             class="pagination"
+                                             (pageChange)="p = $event"
+                                             [autoHide]="true"
+                                             previousLabel="Vorherige Seite"
+                                             nextLabel="Nächste Seite">
+                        </pagination-controls>
+                    </ng-template>
+
+                    <ng-container *ngTemplateOutlet="paginationTemplate"></ng-container>
+                    <div class="ui relaxed divided list">
+                        @for (group of groupedRequests | paginate:{itemsPerPage: 5, currentPage: p, id: 'series-pagination'}; track group.requestId) {
+                            <div class="item">
+                                <div class="content ui container">
+                                    <div class="row">
+                                        <request-overview [request]="group.latestRequest"
+                                                          [requestSeries]="group.sortedRequests"
+                                                          (onDetailsClick)="openRequestView($event.requestId);"
+                                                          class="column">
+                                        </request-overview>
+                                    </div>
+                                    <div class="row">
+                                        <div class="ui styled fluid accordion column"
+                                             *ngIf="group.latestRequest.isRecurring() && !!group.previousRequests?.length">
+                                            <div class="title">
+                                                <i class="dropdown icon"></i>
+                                                Vohergehende Anfragen der Serie
+                                            </div>
+                                            <div class="content ui relaxed divided list">
+                                                <pagination-controls class="pagination"
+                                                                     [autoHide]="true"
+                                                                     (pageChange)="group.changePage($event)"
+                                                                     [id]="'request-pagination' + group.requestId"
+                                                                     previousLabel="Vorherige Seite"
+                                                                     nextLabel="Nächste Seite">
+                                                </pagination-controls>
+                                                @for (request of group.previousRequests | paginate: {
+                                                    itemsPerPage: 5,
+                                                    currentPage: group.page,
+                                                    id: 'request-pagination' + group.requestId
+                                                }; track request.requestId) {
+                                                    <div class="item">
+                                                        <request-overview [request]="request"
+                                                                          [requestSeries]="group.sortedRequests"
+                                                                          (onDetailsClick)="openRequestView($event.requestId);"
+                                                                          class="status-bar-request content">
+                                                        </request-overview>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <ng-container *ngTemplateOutlet="paginationTemplate"></ng-container>
+                } @else if (!timeoutBool) {
+                    <div class="ui active indeterminate inline centered text loader">Lade Anfragen</div>
+                } @else {
+                    Es liegen keine Anfragen vor
+                }
+            </div>
+        </div>
+    </div>
 </div>

@@ -156,8 +156,7 @@ export class RequestService {
      * @returns Observable of response
      */
     applyRule(queryId: number, ruleAction: QueryRuleAction): Observable<any> {
-        return this._http.post(this._urls.parse('applyRule', {queryId: queryId}), JSON.stringify(ruleAction),
-            {headers: this._http.generateHeaderOptions('Content-Type', 'application/json')});
+        return this._http.post(this._urls.parse('applyRule', {queryId: queryId}), ruleAction);
     }
 
     /**
@@ -167,28 +166,18 @@ export class RequestService {
      */
     updateMarker(requestId: number, marker: RequestMarker): void {
         let currentRoute = this._router.url;
+        let obs$;
         if (marker === null) {
-            this._http.delete(this._urls.parse('updateRequestMarker', {requestId: requestId})).pipe(
-                catchError(err => {
-                    return this._http.handleError(err);
-                }))
-                .subscribe(() => {
-                    // this.updateRequest(requestId, null, null);
-                    // this._updateRequests();
-                    // console.log(currentRoute);
-                    setTimeout(() => this._router.navigate([currentRoute]), 600);
-                });
+            obs$ = this._http.delete(this._urls.parse('updateRequestMarker', {requestId: requestId}))
         } else {
-            this._http.put(this._urls.parse('updateRequestMarker', {requestId: requestId}),
-                JSON.stringify(RequestMarker[marker]),
-                {headers: this._http.generateHeaderOptions('Content-Type', 'application/json')}
-            ).subscribe(() => {
-                // this.updateRequest(requestId, null, marker);
-                // this._updateRequests();
-                // console.log(currentRoute);
-                setTimeout(() => this._router.navigate([currentRoute]), 600);
-            });
+            obs$ = this._http.put(this._urls.parse('updateRequestMarker', {requestId: requestId}),
+                marker
+            );
         }
+
+        obs$.subscribe(() => {
+            setTimeout(() => this._router.navigate([currentRoute]), 600);
+        })
     }
 
     /**

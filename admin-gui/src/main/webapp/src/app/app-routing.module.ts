@@ -50,7 +50,7 @@ const routes: Routes = [// array of routes
       },
       {
         path: ':id',
-        component: RequestSingleComponent,
+        component: RequestsComponent,
       },
     ],
   },

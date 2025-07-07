@@ -5,118 +5,177 @@ import {Component, OnInit} from '@angular/core';
 
 import {RequestService} from './request.service';
 import {LocalRequest, RequestStatus} from './request';
-import {race, Subject, switchMap, takeUntil, timer} from 'rxjs';
+import {BehaviorSubject, race, Subject, switchMap, takeUntil, tap, timer} from 'rxjs';
 import {finalize} from 'rxjs/operators';
+import {RequestFilterPipe} from './request-filter.pipe';
+import {ModalService} from '../helpers/modal/modal.service';
+import {RequestSingleComponent} from './request-single.component';
+import {ActivatedRoute} from '@angular/router';
+import {Location} from '@angular/common';
+import {ModalRef} from '../helpers/modal/modal-ref.component';
 
 @Component({
     templateUrl: './requests.component.html',
-    styleUrls: ['./requests.component.css'],
+    styleUrls: ['./requests.component.less'],
+    providers: [RequestFilterPipe]
 })
-
 export class RequestsComponent implements OnInit {
     p: number;
-    requestsData: LocalRequest[];
     etag = '0';
     status: RequestStatus = null;
     stateFilter: RequestStatus | string = 'auth';
-    queryDetails = {};
     timeoutBool = false;
-
+    /**
+     * array of arrays which have the following values: the shown text, the belonging state
+     * and substates of the same form (or null if no substates are available)
+     */
+    public readonly stateFilterArray: FilterOptions[] = [
+        {label: 'Alle anzeigen', value: 'all'},
+        {label: 'Aktion erforderlich', value: 'auth'},
+        {label: 'Neue Anfragen', value: 'new'},
+        {label: 'Einzelanfragen', value: 'single'},
+        {label: 'Serien-Anfragen', value: 'recurring'},
+        {label: 'Archivierte Anfragen', value: 'hidden'},
+        {
+            label: 'Laufende Anfragen', optGroups: [
+                {label: 'Alle laufenden Anfragen', value: 'inProgress'},
+                {label: 'Eingegangen (neue Anfragen)', value: 'retrieved'},
+                {label: 'Freigabe der Abfrage', value: 'seen'},
+                {label: 'Ausführung geplant', value: 'queued'},
+                {label: 'Ausführung läuft', value: 'processing'},
+                {label: 'Freigabe der Ergebnisse', value: 'completed'},
+            ]
+        }, {
+            label: 'Abgeschlossene Anfragen', optGroups: [
+                {label: 'Alle abgeschlossenen Anfragen', value: 'done'},
+                {label: 'Übermittlung abgeschlossen', value: 'submitted'},
+                {label: 'Abgelehnt', value: 'rejected'},
+                {label: 'Fehlgeschlagen', value: 'failed'},
+                {label: 'Geschlossen', value: 'expired'},
+            ]
+        }
+    ];
+    public filteredRequests: LocalRequest[] = [];
+    public groupedRequests: GroupedRequests[] = [];
     private _dataInterval = 5000;
     private _dataTimeout = 30000;
     private _foundRequests$: Subject<void> = new Subject<void>();
+    private modal$: BehaviorSubject<ModalRef<RequestSingleComponent>> = new BehaviorSubject<ModalRef<RequestSingleComponent>>(null);
 
-    constructor(private _requestService: RequestService) {}
+    constructor(private _requestService: RequestService,
+                private _requestFilterPipe: RequestFilterPipe,
+                private _modalService: ModalService,
+                private _location: Location,
+                private _activatedRoute: ActivatedRoute,) {
+    }
+
+    private _requests: LocalRequest[];
+
+    public get requests(): LocalRequest[] {
+        return this._requests;
+    }
+
+    public set requests(value: LocalRequest[]) {
+        this._requests = value;
+
+        this.groupRequests();
+    }
 
     ngOnInit() {
+        const reqId = this._activatedRoute.snapshot.params['id'];
+        if (!!reqId) {
+            this.openRequestView(reqId);
+        }
+        this.loadRequests();
+    }
+
+    public loadRequests() {
+        this.timeoutBool = false;
         // get requests every {this._dataInterval} ms until either {this._dateTimeout} runs out or getRequests returns a non-empty array
         timer(0, this._dataInterval)
             .pipe(switchMap(() => this._requestService.getRequests(this.etag)),
                 takeUntil(race(timer(this._dataTimeout), this._foundRequests$)),
                 finalize(() => this.timeoutBool = true),)
             .subscribe(res => {
-                this.requestsData = res['req'];
+                this.requests = res['req'];
                 this.etag = res['etag'];
-
-                this.updateQueryDetails();
-
-                if(!!this.requestsData?.length) {
+                if (!!this.requests?.length) {
                     this._foundRequests$.next();
                 }
             });
     }
 
-    /**
-     * Returns requests filter.
-     * @returns array of arrays which have the following values: the shown text, the belonging state
-     * and substates of the same form (or null if no substates are available)
-     */
-    get stateFilterArray(): [string, RequestStatus|string, any][] {
-        return [
-            [ 'Alle anzeigen', 'all', null ],
-            [ 'Aktion erforderlich', 'auth', null ],
-            [ 'Neue Anfragen', 'new', null ],
-            [ 'Einzelanfragen', 'single', null ],
-            [ 'Serien-Anfragen', 'recurring', null ],
-            [ 'Archivierte Anfragen', 'hidden',  null ],
-            [ 'Laufende Anfragen' , null,
-                [
-                [ 'Alle laufenden Anfragen', 'inProgress' ],
-                [ 'Eingegangen (neue Anfragen)', 'retrieved' ],
-                [ 'Freigabe der Abfrage', 'seen' ],
-                [ 'Ausführung geplant', 'queued' ],
-                [ 'Ausführung läuft', 'processing' ],
-                [ 'Freigabe der Ergebnisse', 'completed' ],
-                ]
-            ],
-            [ 'Abgeschlossene Anfragen' , null,
-                [
-                [ 'Alle abgeschlossenen Anfragen', 'done' ],
-                [ 'Übermittlung abgeschlossen', 'submitted' ],
-                [ 'Abgelehnt', 'rejected' ],
-                [ 'Fehlgeschlagen', 'failed' ],
-                [ 'Geschlossen', 'expired' ]
-                ]
-            ]
-        ];
+    public setRoute(reqId?: number): void {
+        const route = reqId ? `/request/${reqId}` : '/request';
+        this._location.go(route);
     }
 
-    get requests(): LocalRequest[] {
-        return this.requestsData;
+    public openRequestView(reqId: number): void {
+        this.setRoute(reqId);
+
+        this._modalService.open(RequestSingleComponent, {data: {reqId: reqId}})
+            .pipe(tap(ref => this.modal$.next(ref)),
+                switchMap(ref => ref.closed$),)
+            .subscribe(() => {
+                this.setRoute();
+            });
     }
 
-    /**
-    * Returns the position of the request inside the belonging series (ordered by reference date).
-    * @returns position of request in the belonging series
-    */
-    getNumRequest(request: LocalRequest): number {
-        return this.queryDetails[request.queryId].order.indexOf(request.requestId) + 1;
+    public filterRequests(filter: RequestStatus | string): void {
+        this.stateFilter = filter;
+        this.filteredRequests = this._requestFilterPipe.transform(this._requests, this.stateFilter);
+
+        this.groupRequests();
     }
 
-    /**
-     * Updates the query details of every series by calculating all values new using the requests of the belonging query bundle as base.
-     */
-    updateQueryDetails() {
-        for (let i = 0; i < this.requestsData.length; i++) {
-            let currReq = this.requestsData[i];
-            if (currReq.isRecurring()) {
-                let query = this.requestsData.filter(function(req) {
-                    return req.queryId === currReq.queryId;
-                });
-                let order: number[] = [];
-                query.forEach(request => {
-                    order.push(request.requestId);
-                });
-                let rejected = query.filter(
-                    req => req.status === RequestStatus.Rejected).length;
-                let accepted = query.filter(
-                    req => req.status !== RequestStatus.Retrieved &&  req.status !== RequestStatus.Seen
-                        &&  req.status !== RequestStatus.Rejected).length;
-                let submitted = query.filter(
-                    req => req.status === RequestStatus.Submitted).length;
-                this.queryDetails[currReq.queryId] = { 'order': order, 'rejected': rejected, 'accepted': accepted, 'submitted': submitted };
+    public groupRequests(): void {
+        this.groupedRequests = this.filteredRequests.reduce((acc, curr) => {
+            let group = null;
+            if (curr.isRecurring()) {
+                group = acc.find(g => g.queryId === curr.queryId);
             }
-        }
+
+            if (!group) {
+                group = new GroupedRequests(curr.queryId, [curr]);
+                acc.push(group);
+            } else {
+                group.requests.push(curr);
+            }
+
+            return acc;
+        }, [] as GroupedRequests[]).sort((a, b) => b.requestId - a.requestId);
+    }
+}
+
+class GroupedRequests {
+    public page: number = 0;
+
+    constructor(public queryId: number, public requests: LocalRequest[]) {
     }
 
+    public get sortedRequests(): LocalRequest[] {
+        return this.requests.sort((a, b) => b.requestId - a.requestId);
+    }
+
+    public get latestRequest(): LocalRequest {
+        return this.sortedRequests[0];
+    }
+
+    public get previousRequests(): LocalRequest[] {
+        return this.sortedRequests.slice(1);
+    }
+
+    public get requestId(): number {
+        return this.latestRequest.requestId;
+    }
+
+    changePage($event: number) {
+        this.page = $event;
+    }
+}
+
+interface FilterOptions {
+    label: string;
+    value?: RequestStatus | string;
+    optGroups?: FilterOptions[];
 }

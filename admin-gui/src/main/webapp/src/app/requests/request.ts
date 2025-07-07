@@ -145,50 +145,50 @@ export enum RequestStatus {
     /** Request was retrieved from the broker.
      * This is the first status in the data warehouse.
      */
-    Retrieved,
-        /** A user has opened the request to review it. */
-    Seen,
-        /** Request was queued for processing. It is waiting for access to resources. Further
-         * processing is done automatically.
-         */
-    Queued,
-        /** Request is currently being processed. */
-    Processing,
-        /** Processing has completed without errors and the results were stored.
-         * User interaction may occur at this point to review/verify the results
-         * before submission. */
-    Completed,
-        /** Results are being transferred to the aggregator / remote endpoint. */
-    Sending,
-        /** Request results have been submitted.
-         * This is a terminal status which should not be changed. */
-    Submitted,
-        /** Unexpected failure occurred at some point during processing or transfer. */
-    Failed,
-        /** The request has been rejected (manually or automatically by a rule).
-         * No further processing is performed. A rejection can follow either after {@link #Seen}
-         * or manually after {@link #Completed}.
-         */
-    Rejected,
-        /** The request was closed by the broker or deleted from it. */
-    Expired
+    Retrieved = 'Retrieved',
+    /** A user has opened the request to review it. */
+    Seen = 'Seen',
+    /** Request was queued for processing. It is waiting for access to resources. Further
+     * processing is done automatically.
+     */
+    Queued = 'Queued',
+    /** Request is currently being processed. */
+    Processing = 'Processing',
+    /** Processing has completed without errors and the results were stored.
+     * User interaction may occur at this point to review/verify the results
+     * before submission. */
+    Completed = 'Completed',
+    /** Results are being transferred to the aggregator / remote endpoint. */
+    Sending = 'Sending',
+    /** Request results have been submitted.
+     * This is a terminal status which should not be changed. */
+    Submitted = 'Submitted',
+    /** Unexpected failure occurred at some point during processing or transfer. */
+    Failed = 'Failed',
+    /** The request has been rejected (manually or automatically by a rule).
+     * No further processing is performed. A rejection can follow either after {@link #Seen}
+     * or manually after {@link #Completed}.
+     */
+    Rejected = 'Rejected',
+    /** The request was closed by the broker or deleted from it. */
+    Expired = 'Expired',
 }
 
 export enum QueryRuleAction {
     /**
 	 * reject matching queries
 	 */
-    REJECT,
+    REJECT = 'REJECT',
     /**
 	 * accept execution of matching queries,
 	 * but require interaction before results are submitted
 	 */
-    ACCEPT_EXECUTE,
+    ACCEPT_EXECUTE = 'ACCEPT_EXECUTE',
     /**
 	 * accept execution of matching queries and automatically
 	 * submit the result data.
 	 */
-    ACCEPT_SUBMIT
+    ACCEPT_SUBMIT = 'ACCEPT_SUBMIT'
 }
 
 /*
