@@ -100,6 +100,7 @@ export class RequestsComponent implements OnInit {
                 this.requests = res['req'];
                 this.etag = res['etag'];
                 if (!!this.requests?.length) {
+                    this.filterRequests(this.stateFilter);
                     this._foundRequests$.next();
                 }
             });
