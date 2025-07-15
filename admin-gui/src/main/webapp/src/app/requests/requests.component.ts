@@ -146,6 +146,10 @@ export class RequestsComponent implements OnInit {
             return acc;
         }, [] as GroupedRequests[]).sort((a, b) => b.requestId - a.requestId);
     }
+
+    public resetEtag(): void {
+        this.etag = '0';
+    }
 }
 
 class GroupedRequests {
