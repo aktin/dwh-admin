@@ -119,6 +119,8 @@ export class RequestsComponent implements OnInit {
                 switchMap(ref => ref.closed$),)
             .subscribe(() => {
                 this.setRoute();
+                this.resetEtag();
+                this.loadRequests();
             });
     }
 
