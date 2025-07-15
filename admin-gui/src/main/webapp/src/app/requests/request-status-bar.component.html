@@ -21,13 +21,13 @@
             *ngIf="item.interaction" [title]="item.title"></i>
             <i class="circular green inverted hourglass end icon request-status-icon"
             *ngIf="item.waiting" [title]="item.title"></i>
-            <i class="circular blue inverted hand paper icon request-status-icon Rejected"
+            <i class="circular inverted hand paper icon request-status-icon rejected"
             *ngIf="item.Rejected" [title]="item.title"></i>
-            <i class="circular red inverted warning icon request-status-icon Failed"
+            <i class="circular inverted warning icon request-status-icon failed"
             *ngIf="item.Failed" [title]="item.title"></i>
-            <i class="circular grey inverted lock end icon request-status-icon Expired"
+            <i class="circular inverted lock end icon request-status-icon expired"
             *ngIf="item.Expired" [title]="item.title"></i>
-            <i class="circular green inverted check icon request-status-icon Submitted"
+            <i class="circular inverted check icon request-status-icon submitted"
             *ngIf="item.Submitted" [title]="item.title"></i>
             <div class="request-status-text" *ngIf="item.active">{{ item.title }}</div>
         </div>

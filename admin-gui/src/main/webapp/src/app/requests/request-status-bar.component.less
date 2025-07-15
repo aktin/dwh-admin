@@ -25,22 +25,6 @@
     background-color: @green;
     margin: 0;
     height: 6px;
-
-    &.failed {
-        background-color: @red;
-    }
-
-    &.expired {
-        background-color: @grey;
-    }
-
-    &.rejected {
-        background-color: @blue;
-    }
-
-    &.submitted {
-        background-color: @green;
-    }
 }
 
 .request-status-bar-item {
@@ -104,22 +88,6 @@
         border: 5px solid @yellow;
         background-color: #ffffff;
     }
-
-    &.failed {
-        background-color: @red;
-    }
-
-    &.expired {
-        background-color: @grey;
-    }
-
-    &.rejected {
-        background-color: @blue;
-    }
-
-    &.submitted {
-        background-color: @green;
-    }
 }
 
 .request-status-icon {
@@ -128,3 +96,18 @@
     cursor: help;
 }
 
+.failed {
+    background-color: @red !important;
+}
+
+.expired {
+    background-color: @grey !important;
+}
+
+.rejected {
+    background-color: @darkred !important;
+}
+
+.submitted {
+    background-color: @green !important;
+}
