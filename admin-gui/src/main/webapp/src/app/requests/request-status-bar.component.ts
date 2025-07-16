@@ -10,7 +10,7 @@ import {LocalRequest, RequestStatus} from './request';
     styleUrls: ['./request-status-bar.component.less'],
 })
 
-export class RequestStatusBarComponent implements OnInit {
+export class RequestStatusBarComponent {
     @Input() interaction: boolean;
     failed: boolean;
     expired: boolean;
@@ -55,6 +55,7 @@ export class RequestStatusBarComponent implements OnInit {
     set request(value: LocalRequest) {
         this._request = value;
         this.calcView();
+        this.setStates();
     }
 
     get items() {
@@ -120,7 +121,7 @@ export class RequestStatusBarComponent implements OnInit {
         }
     }
 
-    ngOnInit() {
+    private setStates() {
         this.failed = this.request.status === RequestStatus.Failed;
         this.expired = this.request.status === RequestStatus.Expired;
         this.submitted = this.request.status === RequestStatus.Submitted;
