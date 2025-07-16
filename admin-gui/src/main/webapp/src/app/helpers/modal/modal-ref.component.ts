@@ -46,7 +46,7 @@ export class ModalRef<T> implements AfterViewInit, OnDestroy {
     ngAfterViewInit() {
         $(this.modalRef.nativeElement).modal({
             observeChanges: true,
-            closable: false,
+            closable: true,
             allowMultiple: true,
         });
 
