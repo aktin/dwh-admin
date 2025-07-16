@@ -172,8 +172,8 @@
                     </button>
                 </div>
             </div>
-            <div class="ui segment" *ngIf="request.isRecurring()">
-                <div class="ui compact accordion status-bar-accordion">
+            <div *ngIf="request.isRecurring()"
+                 class="ui segment styled fluid accordion request-accordion">
                     <div class="title">
                         <i class="dropdown icon"></i>
                         Alle Anfragen der Serie
@@ -204,6 +204,7 @@
 <!--                            <div class="ui divider"></div>-->
 <!--                            <ng-container *ngTemplateOutlet="pagination"></ng-container>-->
                     </div>
+<!--                    </div>-->
                 </div>
             </div>
         </div>
