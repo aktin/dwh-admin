@@ -122,7 +122,7 @@ export class RequestSingleViewComponent {
                         if (isAccepted) {
                             title = 'Anfrage freigeben';
                             message = 'Bitte bestätigen Sie, dass diese Anfrage ausgeführt werden darf.';
-                            button = ['checkmark icon', 'Jetzt freigeben', 'primary'];
+                            button = ['checkmark icon', 'Freigeben', 'primary'];
                             popUp.instance.setFirstCheckBox(['Ergebnisprüfung vor der Übermittlung', 'Die Ergebnisse der Abfrage werden nach der Durchführung sofort übertragen.']);
                             if (this.request.isRecurring()) {
                                 let numAllow = this.getNumApplyRule() + 1;
@@ -131,7 +131,7 @@ export class RequestSingleViewComponent {
                         } else {
                             title = 'Anfrage ablehnen';
                             message = 'Bitte bestätigen Sie, dass diese Anfrage abgelehnt werden soll. Dieser Schritt kann nicht rückgängig gemacht werden.';
-                            button = ['icon remove', 'Jetzt ablehnen', 'secondary'];
+                            button = ['icon remove', 'Ablehnen', 'primary'];
                             if (this.request.isRecurring()) {
                                 let numReject = this.getNumApplyRule() + 1;
                                 popUp.instance.setSecondCheckBox(['Serien-Ablehnung', 'Diese und sämtliche Anfragen der Serie ablehnen. Anzahl der betroffenen Anfragen: ' + numReject]);
@@ -182,11 +182,11 @@ export class RequestSingleViewComponent {
                         if (isAccepted) {
                             title = 'Ergebnisse der Anfrage freigeben';
                             message = 'Bitte bestätigen Sie, dass die Ergebnisse der Anfrage an den zentralen Server übertragen werden dürfen.';
-                            button = ['checkmark icon', 'Jetzt freigeben', 'primary'];
+                            button = ['checkmark icon', 'Freigeben', 'primary'];
                         } else {
                             title = 'Senden der Ergebnisse ablehnen';
                             message = 'Bitte bestätigen Sie, dass die Anfrage abgelehnt werden soll. Es werden keine Ergebnisse übermittelt. Dieser Schritt kann nicht rückgängig gemacht werden.';
-                            button = ['icon remove', 'Jetzt ablehnen', 'secondary'];
+                            button = ['icon remove', 'Ablehnen', 'primary'];
                         }
                         popUp.instance.setConfirm(button);
                         popUp.instance.setData(true, title, message,
