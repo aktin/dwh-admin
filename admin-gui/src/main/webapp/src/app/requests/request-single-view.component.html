@@ -48,7 +48,11 @@
     </div>
     <div class="row ui segment" *ngIf="request.isFinished()">
         <div class="ten wide column middle aligned">
-            Die Abfrage ist abgeschlossen. Sie können bei Bedarf diese Anfrage nun archivieren.
+            @if (hidden) {
+                Die Abfrage ist archiviert und wird ausgeblendet, außer Sie setzen den entsprechenden Filter. Sie können bei Bedarf diese Anfrage wiederherstellen.
+            } @else {
+                Die Abfrage ist abgeschlossen. Sie können bei Bedarf diese Anfrage archivieren.
+            }
         </div>
         <div class="six wide column right aligned middle aligned">
             <button (click)="toggleHiddenMarker()"
