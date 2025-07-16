@@ -219,16 +219,14 @@
             <pre style="white-space: pre-wrap; word-wrap: break-word;">{{request.query.query.description}}</pre>
         </div>
     </div>
-    <div class="row ui segment ">
-        <div class="column">
-            <div class="ui compact accordion query-accordion">
-                <div class="title">
-                    <i class="dropdown icon"></i>
-                    Abfragedefinition
-                </div>
-                <div class="content">
-                    <pre style="overflow-x: auto">{{formatXml(request.query.query.extensions[0])}}</pre>
-                </div>
+    <div class="row">
+        <div class="ui segment ui styled accordion request-accordion">
+            <div class="title">
+                <i class="dropdown icon"></i>
+                Abfragedefinition
+            </div>
+            <div class="content">
+                <pre style="overflow-x: auto">{{ formatXml(request.query.query.extensions[0]) }}</pre>
             </div>
         </div>
     </div>
