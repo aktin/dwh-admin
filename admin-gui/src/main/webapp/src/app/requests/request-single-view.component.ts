@@ -123,7 +123,7 @@ export class RequestSingleViewComponent {
                             title = 'Anfrage freigeben';
                             message = 'Bitte bestätigen Sie, dass diese Anfrage ausgeführt werden darf.';
                             button = ['checkmark icon', 'Freigeben', 'primary'];
-                            popUp.instance.setFirstCheckBox(['Ergebnisprüfung vor der Übermittlung', 'Die Ergebnisse der Abfrage werden nach der Durchführung sofort übertragen.']);
+                            popUp.instance.setFirstCheckBox(['Automatische Übermittlung der Ergebnisse', 'Die Ergebnisse der Abfrage werden nach der Durchführung sofort übertragen.']);
                             if (this.request.isRecurring()) {
                                 let numAllow = this.getNumApplyRule() + 1;
                                 popUp.instance.setSecondCheckBox(['Serien-Freigabe', 'Diese und sämtliche Anfragen der Serie freigeben. Anzahl der betroffenen Anfragen: ' + numAllow]);
