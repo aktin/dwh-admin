@@ -153,4 +153,10 @@ export class RequestSingleComponent implements OnInit {
     public close(): void {
         this._modalRef.close();
     }
+
+    public get numInSeries(): number {
+        const reverted = this.queryBundle.requests.slice().reverse();
+        const index = reverted.findIndex(req => req.requestId === this.request.requestId) ?? 0;
+        return this.queryBundle?.requests?.length - index;
+    }
 }

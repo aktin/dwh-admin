@@ -183,33 +183,25 @@
                         <i class="dropdown icon"></i>
                         Alle Anfragen der Serie
                     </div>
-                    <div class="content ui relaxed divided list">
-                        <ng-template #pagination>
-                            <pagination-controls class="pagination"
-                                                 (pageChange)="p = $event"
-                                                 [autoHide]="true"
-                                                 previousLabel="Vorherige Seite"
-                                                 nextLabel="Nächste Seite">
-                            </pagination-controls>
-                        </ng-template>
-
-                        <ng-container *ngTemplateOutlet="pagination"></ng-container>
-                        <div *ngFor="let recurr of recurrRequests | paginate: { itemsPerPage: 5, currentPage: p }"
-                             [class.status-bar-active-request]="recurr.requestId === request.requestId"
-                             class="item">
-                            <div class="content status-bar-request-bar-wrapper">
-                                <request-overview [request]="recurr"
-                                                  [requestSeries]="recurrRequests"
-                                                  [compact]="true"
-                                                  (onDetailsClick)="onDetailsClick.emit($event.requestId)">
-                                </request-overview>
+                    <div class="content">
+                        <pagination-controls (pageChange)="p = $event"
+                                             [autoHide]="true"
+                                             class="pagination"
+                                             nextLabel="Nächste Seite"
+                                             previousLabel="Vorherige Seite">
+                        </pagination-controls>
+                        <div class="ui relaxed divided list">
+                            <div *ngFor="let recurr of recurrRequests | paginate: { itemsPerPage: 5, currentPage: p }"
+                                 [class.status-bar-active-request]="recurr.requestId === request.requestId"
+                                 class="item">
+                                <div class="content status-bar-request-bar-wrapper">
+                                    <request-overview (onDetailsClick)="onDetailsClick.emit($event.requestId)"
+                                                      [requestSeries]="recurrRequests"
+                                                      [request]="recurr">
+                                    </request-overview>
+                                </div>
                             </div>
                         </div>
-
-<!--                            <div class="ui divider"></div>-->
-<!--                            <ng-container *ngTemplateOutlet="pagination"></ng-container>-->
-                    </div>
-<!--                    </div>-->
                 </div>
             </div>
         </div>

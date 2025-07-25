@@ -16,9 +16,8 @@
             </button>
         </div>
     </div>
-    <div class="row" *ngIf="!compact">
-        <div class="ten wide left floated column ui header request-single-view-header">
-            <h4>
+    <div class="row">
+        <div class="ten wide left floated column request-single-view-header">
                 @if (request.isRecurring()) {
                     Serien-Anfrage {{ numInSeries }} von {{requestSeries?.length}}:
                 }
@@ -27,7 +26,6 @@
                 } @else {
                     Ausführung am {{ request.query.scheduled | date: 'mediumDate' }}
                 }
-            </h4>
         </div>
     </div>
     <div class="row">

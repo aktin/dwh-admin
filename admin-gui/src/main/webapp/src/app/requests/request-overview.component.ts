@@ -13,8 +13,6 @@ export class RequestOverviewComponent {
     @Input()
     public requestSeries: LocalRequest[];
 
-    @Input()
-    public compact: boolean = false;
     @Output()
     public onDetailsClick: EventEmitter<LocalRequest> = new EventEmitter<LocalRequest>();
     protected readonly RequestMarker = RequestMarker;

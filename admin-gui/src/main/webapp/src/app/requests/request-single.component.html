@@ -3,7 +3,11 @@
     <div class="popup-header">
         <div>
             <div class="ui header">
-                Anfrage
+                @if (request.isRecurring()) {
+                    Serien-Anfrage {{ numInSeries }} von {{queryBundle.requests?.length}}:
+                } @else {
+                    Einzelanfrage:
+                }
                 {{ request.query.query.title }}
                 @if (request.marker === RequestMarker.HIDDEN) {
                     [ARCHIVIERT]
