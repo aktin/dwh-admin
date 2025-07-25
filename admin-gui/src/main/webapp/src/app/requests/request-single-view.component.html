@@ -74,13 +74,13 @@
             <div class="ui segment">
                 Auftraggeber*in: <b>{{request.query.query.principal.name}}</b>
                 @if(request.query.query.principal.organisation) {
-                    , {{ request.query.query.principal.organisation }}
+                    <span>, {{ request.query.query.principal.organisation }}</span>
                 }
                 @if(request.query.query.principal.phone) {
-                    , {{ request.query.query.principal.phone }}
+                    <span>, {{ request.query.query.principal.phone }}</span>
                 }
                 @if(request.query.query.principal.email) {
-                    , {{ request.query.query.principal.email }}
+                    <span>, {{ request.query.query.principal.email }}</span>
                 }
             </div>
             <div class="ui segment grid">
