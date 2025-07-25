@@ -10,8 +10,8 @@
                 <div class="field">
                     <label>Nach Status filtern</label>
                     <div class="ui input action">
-                        <drop-down [ngModel]="stateFilter"
-                                   (ngModelChange)="filterRequests($event)"
+                        <drop-down (ngModelChange)="filterRequests($event)"
+                                   [ngModel]="stateFilter"
                                    name="filter">
                             @for (filter of stateFilterArray; track filter.label) {
                                 @if (!!filter.optGroups?.length) {
@@ -51,7 +51,11 @@
 
                     <ng-container *ngTemplateOutlet="paginationTemplate"></ng-container>
                     <div class="ui relaxed divided list">
-                        @for (group of groupedRequests | paginate:{itemsPerPage: 5, currentPage: p, id: 'series-pagination'}; track group.requestId) {
+                        @for (group of groupedRequests | paginate:{
+                            itemsPerPage: 5,
+                            currentPage: p,
+                            id: 'series-pagination'
+                        }; track group.requestId) {
                             <div class="item">
                                 <div class="content ui container">
                                     <div class="row">
@@ -68,7 +72,8 @@
                                                 <i class="dropdown icon"></i>
                                                 Vohergehende Anfragen der Serie
                                             </div>
-                                            <div class="content ui relaxed divided list">
+
+                                            <div class="content">
                                                 <pagination-controls class="pagination"
                                                                      [autoHide]="true"
                                                                      (pageChange)="group.changePage($event)"
@@ -76,19 +81,21 @@
                                                                      previousLabel="Vorherige Seite"
                                                                      nextLabel="Nächste Seite">
                                                 </pagination-controls>
-                                                @for (request of group.previousRequests | paginate: {
-                                                    itemsPerPage: 5,
-                                                    currentPage: group.page,
-                                                    id: 'request-pagination' + group.requestId
-                                                }; track request.requestId) {
-                                                    <div class="item">
-                                                        <request-overview [request]="request"
-                                                                          [requestSeries]="group.sortedRequests"
-                                                                          (onDetailsClick)="openRequestView($event.requestId);"
-                                                                          class="status-bar-request content">
-                                                        </request-overview>
-                                                    </div>
-                                                }
+                                                <div class="ui relaxed divided list">
+                                                    @for (request of group.previousRequests | paginate: {
+                                                        itemsPerPage: 5,
+                                                        currentPage: group.page,
+                                                        id: 'request-pagination' + group.requestId
+                                                    }; track request.requestId) {
+                                                        <div class="item">
+                                                            <request-overview [request]="request"
+                                                                              [requestSeries]="group.sortedRequests"
+                                                                              (onDetailsClick)="openRequestView($event.requestId);"
+                                                                              class="status-bar-request content">
+                                                            </request-overview>
+                                                        </div>
+                                                    }
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

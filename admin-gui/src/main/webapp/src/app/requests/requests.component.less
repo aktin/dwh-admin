@@ -6,11 +6,6 @@
     background: rgba(0, 0,0,0.05);
 }
 
-.status-bar-request-bar-wrapper {
-    margin: auto;
-    padding: 1em;
-}
-
 .icon-archive-request {
     margin-left: 30px;
     margin-right: 30px;
@@ -74,6 +69,18 @@
     color: black;
 }
 
+.ui.relaxed.list:not(.horizontal) > .item:not(:last-child) {
+    padding-bottom: 1em;
+}
+
+.ui.relaxed.list:not(.horizontal) > .item:not(:first-child) {
+    padding-top: 1em;
+}
+
+.ui.divided.list .list > .item:not(:first-child) {
+    border-top: 1px solid rgba(55, 94, 133, 0.15);
+}
+
 .actions {
     display: flex;
     justify-content: flex-end;
@@ -88,4 +95,8 @@
             margin-top: 0.75em;
         }
     }
+}
+
+.request-accordion {
+    padding: 0;
 }
