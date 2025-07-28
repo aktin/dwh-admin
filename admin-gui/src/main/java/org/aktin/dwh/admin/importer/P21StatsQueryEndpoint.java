@@ -23,10 +23,6 @@ public class P21StatsQueryEndpoint {
   @Context
   private SecurityContext security;
 
-  public P21StatsQueryEndpoint() {
-
-  }
-
   @Secured
   @GET
   @Path("p21/stats")
