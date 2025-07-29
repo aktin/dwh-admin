@@ -7,7 +7,7 @@ import _ = require('underscore');
 @Injectable()
 export class UrlService {
     private _serverUrls = [
-        //'http://localhost:81/aktin/admin/rest/',
+        //'http://localhost:80/aktin/admin/rest/',
         '/aktin/admin/rest/',
     ];
     private _serverUrl = this._serverUrls[0];
@@ -67,7 +67,6 @@ export class UrlService {
         uploadFile: 'file/@uuid@',
         importScripts: 'script',
         scriptLogs: 'file/@uuid@/log',
-        verifyFile: 'script/@uuid@/verify',
         importFile: 'script/@uuid@/import',
         cancelProcess: 'script/@uuid@/cancel',
 
@@ -76,6 +75,9 @@ export class UrlService {
         updateDWH: 'update',
         getUpdateLog: 'update/log',
         reloadAptPackages: 'update/agent/reload',
+
+        // p21StatsQueryEndpoint
+        getStats: 'get/stats',
     };
 
     setServerUrl(serverUrl: string) {
