@@ -11,6 +11,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import org.aktin.dwh.admin.auth.Secured;
 import org.aktin.generic.imports.manager.P21ImportStats;
 import org.aktin.generic.imports.manager.P21StatsQueryManagerService;
 
@@ -32,7 +33,7 @@ public class P21StatsEndpoint {
    *
    * @throws SQLException if a database access error occurs
    */
-  // @Secured
+  @Secured
   @GET
   @Path("stats")
   @Produces(MediaType.APPLICATION_JSON)
