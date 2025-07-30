@@ -33,7 +33,7 @@ public class P21StatsEndpoint {
    *
    * @throws SQLException if a database access error occurs
    */
-  //@Secured
+  @Secured
   @GET
   @Path("stats")
   @Produces(MediaType.APPLICATION_JSON)
