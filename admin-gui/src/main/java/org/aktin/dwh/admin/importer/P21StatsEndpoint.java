@@ -33,15 +33,12 @@ public class P21StatsEndpoint {
    *
    * @throws SQLException if a database access error occurs
    */
-  @Secured
+  //@Secured
   @GET
   @Path("stats")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getStats() throws SQLException {
     List<P21ImportStats> stats = manager.fetchAllP21Stats();
-    if (stats == null || stats.isEmpty()) {
-      return Response.status(Response.Status.NOT_FOUND).build();
-    }
     return Response.ok(stats).build();
   }
 }
