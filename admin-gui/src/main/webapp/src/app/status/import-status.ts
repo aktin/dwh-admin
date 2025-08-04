@@ -26,6 +26,7 @@ export class ImportStatus {
             obj['updated'],
             obj['invalid'],
             obj['failed'],
+            obj['encounters'] || [],
             ImportStatus.parseError(obj['error']),
         );
     }
@@ -59,6 +60,7 @@ export class ImportStatus {
         public updated: number,
         public invalid: number,
         public failed: number,
+        public encounters: {year: number, source: string, count: number}[],
         public error: ImportStatusError[],
     ) {}
 }
