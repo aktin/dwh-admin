@@ -57,7 +57,7 @@
         {{ status.failed }}
       </div>
     </div>
-    <div class="row" *ngIf="status?.encounters?.length">
+    <div class="row" *ngIf="status.encounters?.length">
       <div class="sixteen wide column">
         <app-encounter-table [encounters]="status.encounters"></app-encounter-table>
       </div>
