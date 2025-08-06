@@ -1,6 +1,6 @@
-import {Observable, of as observableOf} from 'rxjs';
+import {forkJoin, Observable, of as observableOf} from 'rxjs';
 
-import {catchError, finalize, map} from 'rxjs/operators';
+import {finalize, map, switchMap} from 'rxjs/operators';
 
 /**
  * Created by Xu on 03.05.2017.
@@ -38,29 +38,25 @@ export class AuthService {
     }
 
     redirect2Route() {
-        return this._cleanUp.redirect2Route();
+        this._cleanUp.redirect2Route();
     }
 
-    userLogin(username: string, password: string): Observable<User> {
+    userLogin(username: string, password: string): Observable<any> {
         this._cleanUp.cleanUpStorage();
         return this._http.post(
             this._urls.parse('login'),
             {username: username, password: password},
             {responseType: 'text'}
-        ).pipe(map(token => {
+        ).pipe(switchMap(token => {
             if (!!token) {
                 const user = new User(username, token);
                 this._store.setValue('user.auth.time', String(Date.now()));
                 this._store.setValue('user.name', user.username);
                 this._store.setValue('user.token', user.token);
-                this.adminCheck().subscribe();
-                this.setPermissions().subscribe();
-                return user;
+                return forkJoin([this.adminCheck(), this.setPermissions()]);
             }
-            throw new Error('Authentication Error');//, status code: ' + res.status);
-        }), catchError((err) => {
-            return this._http.handleError(err);
-        }),);
+            throw new Error('Authentication Error');
+        }));
     }
 
     userLogout(): Observable<boolean> {
@@ -216,10 +212,10 @@ export class AuthService {
      * Check permissions by comparing the given values with the values in the sessionStorage.
      */
     userLocalCheckPermissions(checkPermissions: Permission[]): boolean {
-        if (!checkPermissions || checkPermissions.length === 0) {
+        if (!checkPermissions?.length) {
             return true;
         }
-        if (sessionStorage.getItem('permissions') === null) {
+        if (!sessionStorage.getItem('permissions')) {
             return false;
         }
         let perm: Permission[] = [];
