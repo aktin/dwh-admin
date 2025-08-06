@@ -1,11 +1,12 @@
 /**
  * Created by Xu on 02.05.2017.
  */
-import {Component, Input} from '@angular/core';
+import {Component, Input, ViewChild} from '@angular/core';
 
 import {AuthService} from './auth.service';
 import {StorageService, UrlService} from '../helpers/index';
 import $ from "jquery";
+import {NgForm} from '@angular/forms';
 
 //require('semantic-ui');
 
@@ -20,10 +21,11 @@ export class UserLoginComponent {
     password: string; // = 'demouser';
 
     serverUrl: string;
-    loggingInState: string;
-    private _hideSelect = true;
-    private _messages: string[] = [];
+    errorMessages: string[] = [];
     authMessages: string;
+
+    @ViewChild(NgForm)
+    private frm: NgForm;
 
     constructor (private _authService: AuthService,
                  private _url: UrlService,
@@ -35,67 +37,17 @@ export class UserLoginComponent {
         }
     }
 
-
     userLogin (): void {
-        this._messages.length = 0;
-        if (!this.username) {
-            this._messages.push('Bitte Nutzername angeben');
-            this.loggingInState = 'error';
+        if(this.frm.valid) {
+            this._authService.userLogin(this.username, this.password).subscribe({
+                next: () => this._authService.redirect2Route(),
+                error: () => this.errorMessages.push('Bitte überprüfen Sie Ihren Usernamen oder Passwort')
+            });
         }
-        if (!this.password) {
-            this._messages.push('Bitte Passwort angeben');
-            this.loggingInState = 'error';
-        }
-        if (this._messages.length > 0) {
-            return;
-        }
-
-        this.loggingInState = 'loading';
-
-        this._authService.userLogin(this.username, this.password).subscribe(
-            ( /*user*/ ) => {
-                this.loggingInState = 'success';
-                this._hideSelect = true;
-                this._authService.redirect2Route();
-            },
-            error => {
-                console.error('error? ', error);
-                // this._messages.push('Authentifizierungsfehler: ' + error);
-                this._messages.push('Authentifizierungsfehler! Bitte überprüfen Sie Ihre Eingaben!');
-                this.loggingInState = 'error';
-            }
-        );
     }
 
     userLogout (): void {
-        this._authService.userLogout().subscribe(
-            ( /*user*/ ) => {
-            },
-            ( /*error*/ ) => {
-                // console.error(error.message)
-            },
-        );
-    }
-
-    serverChange() {
-        // console.log(this.serverUrl, s)
-        this._url.setServerUrl(this.serverUrl);
-    }
-
-    toggleServerSelector() {
-        let dropDown = <any>$('.server-select.ui.dropdown');
-        if (dropDown[0] && dropDown[0].localName === 'select') {
-            // first time init
-            dropDown.dropdown({
-                allowAdditions: true,
-                fullTextSearch: true,
-                // onChange: function (value, text, $choice){console.log(value, text, $choice)}
-            });
-            // console.log('dropdown init',this.serverUrl);
-        }
-        // console.log('toggling select');
-        this._hideSelect = !this._hideSelect;
-
+        this._authService.userLogout().subscribe();
     }
 
     get user() {
@@ -104,23 +56,5 @@ export class UserLoginComponent {
 
     get hasUser () {
         return this._authService.userLocalCheck();
-    }
-
-    get logInFormClasses() {
-        let classes: any = {};
-        classes[this.loggingInState] = this.loggingInState;
-        return classes;
-    }
-
-    get messages () {
-        return this._messages;
-    }
-
-    get serverUrls () {
-        return this._url.serverUrls;
-    }
-
-    get hideSelect () {
-        return this._hideSelect;
     }
 }

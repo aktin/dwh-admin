@@ -1,37 +1,60 @@
 <div *ngIf="menu && hasUser">
     <i class="large user circle outline icon"></i>
-    {{user.username}} &nbsp;
-    <button class="ui submit button" type="submit" (click)="userLogout()">Logout</button>
+    {{ user.username }} &nbsp;
+    <button (click)="userLogout()"
+            class="ui submit button"
+            type="submit">Logout
+    </button>
 </div>
-<div *ngIf="!menu && ! hasUser" class="ui segment">
-    <div class="ui warning message" *ngIf="authMessages">
-        <div class="header">{{authMessages}}</div>
+<div *ngIf="!menu && ! hasUser"
+     class="ui segment">
+    <div *ngIf="authMessages"
+         class="ui warning message">
+        <div class="header">{{ authMessages }}</div>
     </div>
-    <form class="ui form login-form" #loginForm="ngForm" (ngSubmit)="userLogin()" [ngClass]="logInFormClasses">
+    <form #frm="ngForm"
+          [class.error]="!!errorMessages?.length"
+          class="ui form login-form"
+          ngForm>
         <div class="ui error message">
-            <div class="header">Log In fehlgeschlagen</div>
+            <div class="header">Anmelden fehlgeschlagen</div>
             <ul class="list">
-                <li *ngFor="let msg of messages">{{msg}}</li>
+                <li *ngFor="let msg of errorMessages">{{ msg }}</li>
             </ul>
         </div>
+
         <div class="field">
             <label>Username</label>
             <div class="ui left icon input">
                 <i class="user icon"></i>
-                <input type="text" name="username" placeholder="Username" [(ngModel)]="username">
+                <input #userNameModel="ngModel"
+                       [(ngModel)]="username"
+                       name="username"
+                       placeholder="Username"
+                       required
+                       type="text">
             </div>
+            <error-message *ngIf="frm.submitted && userNameModel.errors?.required">Username erforderlich</error-message>
         </div>
         <div class="field">
             <label>Passwort</label>
             <div class="ui left icon input">
                 <i class="lock icon"></i>
-                <input type="password" name="password" placeholder="Passwort" [(ngModel)]="password">
+                <input #passwordModel="ngModel"
+                       [(ngModel)]="password"
+                       name="password"
+                       placeholder="Passwort"
+                       required
+                       type="password">
             </div>
+            <error-message *ngIf="frm.submitted && passwordModel.errors?.required">Passwort erforderlich</error-message>
         </div>
 
         <div class="ui fields fluid large buttons">
-            <button class="ui field fluid large submit button primary" type="submit">
-                Login
+            <button class="ui field fluid large submit button primary"
+                    (click)="userLogin()"
+                    type="submit">
+                Anmelden
             </button>
         </div>
     </form>
