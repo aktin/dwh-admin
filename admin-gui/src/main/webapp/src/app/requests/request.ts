@@ -69,35 +69,24 @@ export class LocalRequest {
         return RequestStatus.Rejected;
     }
 
-    public static parseRequest (data: any): LocalRequest {
-        data['query'] = data['query'] || {};
+    public static parseRequest(data: LocalRequest): LocalRequest {
+        data.query = data['query'] ?? null;
         if (isNaN(data['marker'])) {
-            data['marker'] = RequestMarker[data['marker']];
+            data.marker = <RequestMarker>data['marker'];
         }
-        if (isNaN(data['status'])) {
-            data['status'] = RequestStatus[data['status']];
+        if (isNaN(<any>data['status'])) {
+            data['status'] = <RequestStatus> data['status'];
         }
         let rawRequest = data['query'];
-        rawRequest['reference'] = this.parseDate(rawRequest['reference']);
-        rawRequest['published']     = this.parseDate(rawRequest['published']);
-        rawRequest['scheduled']     = this.parseDate(rawRequest['scheduled']);
-        if (rawRequest['scheduled'] <= new Date()) {
-            rawRequest['scheduled'] = 'Sofort';
-        }
-        rawRequest['deadline']      = this.parseDate(rawRequest['deadline']);
-        rawRequest['closed']        = this.parseDate(rawRequest['closed']);
-        rawRequest['canceled']      = this.parseDate(rawRequest['canceled']);
-        rawRequest['query'] = rawRequest['query'] || {};
+        rawRequest['query'] = rawRequest['query'];
         let rawQuery = rawRequest['query'];
-        rawQuery['schedule'] = rawQuery['schedule'] || {};
-        rawQuery['schedule']['reference'] = this.parseDate(rawQuery['schedule']['reference']);
-        // rawQuery['schedule']['duration'] = rawQuery['schedule']['duration'];
+        rawQuery['schedule'] = rawQuery['schedule'];
 
         Object.setPrototypeOf(data, LocalRequest.prototype);
         return data;
     }
 
-    constructor (
+    constructor(
         public requestId: number,
         public queryId: number,
         public marker: RequestMarker,

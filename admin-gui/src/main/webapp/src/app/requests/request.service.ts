@@ -87,7 +87,7 @@ export class RequestService {
                    .pipe(map(resp => {
                        let res: any = {};
                        res['etag'] = resp.headers.get('ETag');
-                       res['req'] = LocalRequest.parseRequest(resp.body);
+                       res['req'] = LocalRequest.parseRequest(<any>resp.body);
                        if (res['req'].status === RequestStatus.Retrieved) {
                            res['req'].status = this.authorizeRequest(res['req'].requestId, res['req'].status, true);
                        }
@@ -115,10 +115,10 @@ export class RequestService {
                            res['bundle'].requests = res['bundle']
                                .requests.map((req: any) => LocalRequest.parseRequest(req))
                                .sort((req1: LocalRequest, req2: LocalRequest) => {
-                                   if (+new Date(req1.query.reference) === +new Date(req2.query.reference)) {
+                                   if (+new Date(req1.query.referenceTimestamp) === +new Date(req2.query.referenceTimestamp)) {
                                        return req1.requestId - req2.requestId;
                                    } else {
-                                       return +new Date(req1.query.reference) - +new Date(req2.query.reference);
+                                       return +new Date(req1.query.referenceTimestamp) - +new Date(req2.query.referenceTimestamp);
                                    }
                                });
                            if (res['bundle'].rule) {

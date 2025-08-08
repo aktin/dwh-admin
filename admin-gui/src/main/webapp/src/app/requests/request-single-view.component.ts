@@ -1,15 +1,15 @@
- /**
+/**
  * Created by Xu on 09-Jun-17.
  */
-import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
-import {LocalRequest, RequestMarker, RequestStatus, Rule, QueryRuleAction, QueryBundle} from './request';
+import {LocalRequest, QueryBundle, QueryRuleAction, RequestMarker, RequestStatus} from './request';
 import {RequestSingleComponent} from './request-single.component';
 import {PopUpMessageComponent} from '../helpers';
 import {RequestService} from './request.service';
- import {ModalRef} from '../helpers/modal/modal-ref.component';
- import {iif, of, switchMap, tap} from 'rxjs';
- import {ModalService} from '../helpers/modal/modal.service';
+import {tap} from 'rxjs';
+import {ModalService} from '../helpers/modal/modal.service';
+import moment from 'moment';
 
 declare var $: any;
 
@@ -354,4 +354,5 @@ export class RequestSingleViewComponent {
 
     protected readonly QueryRuleAction = QueryRuleAction;
     @Output() onDetailsClick = new EventEmitter<number>();
+    protected readonly now: number = moment().unix();
 }

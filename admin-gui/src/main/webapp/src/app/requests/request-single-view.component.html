@@ -88,22 +88,22 @@
                     Datum der Beauftragung:
                 </div>
                 <div class="ui three wide column" *ngIf="requestUnmapped.query.published">
-                    {{requestUnmapped.query.published | date: 'mediumDate'}}
+                    {{requestUnmapped.query.published | momentDate: 'DD.MM.YYYY'}}
                 </div>
-                <div class="ui five wide column" *ngIf="requestUnmapped.query.reference">
+                <div class="ui five wide column" *ngIf="requestUnmapped.query.referenceTimestamp">
                     Referenzdatum der Daten:
                 </div>
-                <div class="ui three wide column" *ngIf="requestUnmapped.query.reference">
-                    {{requestUnmapped.query.reference | date: 'mediumDate'}}
+                <div class="ui three wide column" *ngIf="requestUnmapped.query.referenceTimestamp">
+                    {{requestUnmapped.query.referenceTimestamp | momentDate: 'DD.MM.YYYY'}}
                 </div>
-                <div class="ui five wide column" *ngIf="requestUnmapped.query.scheduled">
+                <div class="ui five wide column" *ngIf="requestUnmapped.query.scheduledTimestamp">
                     Datum der (geplanten) Ausführung:
                 </div>
-                <div class="ui three wide column" *ngIf="requestUnmapped.query.scheduled">
-                    @if(requestUnmapped.query.scheduled == 'Sofort') {
-                        {{ requestUnmapped.query.scheduled }}
+                <div class="ui three wide column" *ngIf="requestUnmapped.query.scheduledTimestamp">
+                    @if(requestUnmapped.query.scheduledTimestamp <= now) {
+                        Sofort
                     } @else {
-                        {{ requestUnmapped.query.scheduled | date: 'mediumDate' }}
+                        {{ requestUnmapped.query.scheduledTimestamp | momentDate: 'DD.MM.YYYY' }}
                     }
                 </div>
                 <div class="ui five wide column" *ngIf="requestUnmapped.query.query.schedule && requestUnmapped.query.query.schedule.duration && !requestUnmapped.isRecurring()">
@@ -116,19 +116,19 @@
                     Deadline:
                 </div>
                 <div class="ui three wide column" *ngIf="requestUnmapped.query.deadline">
-                    {{requestUnmapped.query.deadline | date: 'mediumDate'}}
+                    {{requestUnmapped.query.deadline | momentDate: 'DD.MM.YYYY'}}
                 </div>
                 <div class="ui five wide column" *ngIf="requestUnmapped.query.closed">
                     Beendet am:
                 </div>
                 <div class="ui three wide column" *ngIf="requestUnmapped.query.closed">
-                    {{requestUnmapped.query.closed | date: 'mediumDate'}}
+                    {{requestUnmapped.query.closed | momentDate: 'DD.MM.YYYY'}}
                 </div>
                 <div class="ui five wide column" *ngIf="requestUnmapped.query.canceled">
                     Vom Broker abgebrochen am:
                 </div>
                 <div class="ui three wide column" *ngIf="requestUnmapped.query.canceled">
-                    {{requestUnmapped.query.canceled | date: 'mediumDate'}}
+                    {{requestUnmapped.query.canceled | momentDate: 'DD.MM.YYYY'}}
                 </div>
             </div>
             <div class="ui segment grid" *ngIf="requestUnmapped.isRecurring()">

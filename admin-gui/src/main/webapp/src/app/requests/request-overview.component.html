@@ -21,10 +21,10 @@
                 @if (request.isRecurring()) {
                     Serien-Anfrage {{ numInSeries }} von {{requestSeries?.length}}:
                 }
-                @if (request.query.scheduled == 'Sofort') {
+                @if (request.query.scheduledTimestamp <= now) {
                     Sofortige Ausführung
                 } @else {
-                    Ausführung am {{ request.query.scheduled | date: 'mediumDate' }}
+                    Ausführung am {{ request.query.scheduledTimestamp | momentDate: 'DD.MM.YYYY' }}
                 }
         </div>
     </div>

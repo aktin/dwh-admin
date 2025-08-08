@@ -43,7 +43,7 @@ import org.aktin.dwh.admin.filter.NoCache;
 @Path("request")
 public class RequestEndpoint {
 	private static final Logger log = Logger.getLogger(RequestEndpoint.class.getName());
-	private static final ObjectMapper mapper = new ObjectMapper();
+
 
 	@Inject
 	RequestManager manager;
@@ -107,7 +107,7 @@ public class RequestEndpoint {
 		if (b != null) {
 			return b.build();
 		}
-		return Response.ok(mapper.writeValueAsString(wrap(req)))
+		return Response.ok(wrap(req))
 				.tag(etag)
 				.header("Access-Control-Expose-Headers", "ETag")
 				.build();

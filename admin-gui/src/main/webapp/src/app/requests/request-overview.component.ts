@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {LocalRequest, RequestMarker} from './request';
+import moment from 'moment';
 
 @Component({
     selector: 'request-overview',
@@ -15,7 +16,9 @@ export class RequestOverviewComponent {
 
     @Output()
     public onDetailsClick: EventEmitter<LocalRequest> = new EventEmitter<LocalRequest>();
+
     protected readonly RequestMarker = RequestMarker;
+    protected readonly now: number = moment().unix();
 
     public get numInSeries(): number {
         const index = this.requestSeries?.findIndex(req => req.requestId === this.request.requestId) ?? 0;
