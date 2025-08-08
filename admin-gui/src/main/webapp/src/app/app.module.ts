@@ -104,6 +104,8 @@ import {RequiredDirective} from './helpers/directives/required.directive';
 import {ModalRef} from './helpers/modal/modal-ref.component';
 import {ModalComponent} from './helpers/modal/modal.component';
 import {AngularMyDatePickerModule} from 'gramli-angular-mydatepicker';
+import {RequestOverviewComponent} from './requests/request-overview.component';
+import {FomanticAccordionDirective} from './helpers/directives/fomantic-accordion.directive';
 
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
@@ -162,6 +164,8 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         RequiredDirective,
         ModalRef,
         ModalComponent,
+        RequestOverviewComponent,
+        FomanticAccordionDirective
     ],
     bootstrap: [
         AppComponent
