@@ -100,7 +100,7 @@ public class RequestEndpoint {
 	public Response getRequest(@PathParam("id") int id, @Context javax.ws.rs.core.Request request) throws IOException{
 		RetrievedRequest req = manager.getRequest(id);
 		if( req == null ){
-			throw new NotFoundException();
+			return Response.ok(null).build();
 		}
 		EntityTag etag = new EntityTag(Long.toString(req.getLastActionTimestamp()));
 		ResponseBuilder b = request.evaluatePreconditions(etag);
@@ -126,7 +126,7 @@ public class RequestEndpoint {
 	public Response getUnmappedRequest(@PathParam("id") int id, @Context javax.ws.rs.core.Request request) throws IOException{
 		RetrievedRequest req = manager.getRequest(id);
 		if( req == null ){
-			throw new NotFoundException();
+			return Response.ok(null).build();
 		}
 		EntityTag etag = new EntityTag(Long.toString(req.getLastActionTimestamp()));
 		ResponseBuilder b = request.evaluatePreconditions(etag);

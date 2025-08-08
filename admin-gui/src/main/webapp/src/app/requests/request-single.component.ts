@@ -2,13 +2,14 @@
  * Created by Xu on 14-Jun-17.
  */
 import {Component, Inject, OnInit} from '@angular/core';
-import {forkJoin, of, switchMap, tap, timer} from 'rxjs';
+import {forkJoin, of, switchMap, tap, throwError, timer} from 'rxjs';
 
 import {RequestService} from './request.service';
 import {LocalRequest, QueryBundle, RequestMarker, RequestStatus} from './request';
 import {ModalRef} from '../helpers/modal/modal-ref.component';
 import {IModalConfig, MODAL_CONFIG} from '../helpers/modal/modal.service';
 import {Location} from '@angular/common';
+import {NotificationService} from '../helpers';
 
 @Component({
     selector: 'request-single',
@@ -31,6 +32,7 @@ export class RequestSingleComponent implements OnInit {
         private _requestService: RequestService,
         private _modalRef: ModalRef<RequestSingleComponent>,
         private _location: Location,
+        private notificationService: NotificationService,
         @Inject(MODAL_CONFIG) modalConfig: IModalConfig,
     ) {
         this.reqId = modalConfig.data.reqId;
@@ -70,6 +72,10 @@ export class RequestSingleComponent implements OnInit {
         forkJoin([this._requestService.getRequest(this.reqId, this.requestEtag, true),
             this._requestService.getRequest(this.reqId, this.requestEtag, false)])
             .pipe(switchMap(([request, unmappedRequest]) => {
+                if(!request['req']){
+                    return throwError(() => new Error('Request not found'));
+                }
+
                 this.request = request['req'] as LocalRequest;
                 this.requestEtag = request['etag'];
                 this.requestUnmapped = unmappedRequest['req'];
@@ -85,9 +91,14 @@ export class RequestSingleComponent implements OnInit {
                 } else {
                     return of(null);
                 }
-            })).subscribe(() => {
-            this.bundleLoaded = true;
-            this.requestLoaded = true;
+            })).subscribe({
+            next: () => {
+                this.bundleLoaded = true;
+                this.requestLoaded = true;
+            }, error: (err) => {
+                this.notificationService.showError(`Anfrage wurde nicht gefunden`);
+                this.close();
+            }
         });
         // set timer to update request and query bundle in the given interval in case the etag changed (hence request was modified)
         let timer$ = timer(0, this._dataInterval);
