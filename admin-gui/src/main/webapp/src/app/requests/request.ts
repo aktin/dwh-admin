@@ -1,4 +1,3 @@
-
 /**
  * Created by Xu on 08-Jun-17.
  */
@@ -36,24 +35,19 @@ export interface Rule {
 
 export interface Request {
     id: number,
-    reference: Date,
-    published: Date,
-    scheduled: any,
-    deadline: Date,
-    closed: Date,
-    canceled: Date,
+    referenceTimestamp: number,
+    published: number,
+    scheduledTimestamp: number,
+    deadline: number,
+    closed: number,
+    canceled: number,
     query: Query,
     // later signature: string
 }
 
 export class LocalRequest {
-    private static parseDate (date: string) {
-        if (date) {
-            return new Date(date);
-        } return null;
-    }
 
-    public static nextStatus (status: RequestStatus, allow: boolean): RequestStatus {
+    public static nextStatus(status: RequestStatus, allow: boolean): RequestStatus {
         if (allow) {
             if (status === RequestStatus.Retrieved) {
                 return RequestStatus.Seen;
@@ -94,29 +88,30 @@ export class LocalRequest {
         public autoSubmit: boolean,
         public query: Request,
         public result: string,
-    ) {}
+    ) {
+    }
 
-    public needAuthorization (): boolean {
+    public needAuthorization(): boolean {
         return this.isNew() || this.status === RequestStatus.Completed;
     }
 
-    public isNew (): boolean {
+    public isNew(): boolean {
         return ([RequestStatus.Retrieved, RequestStatus.Seen].indexOf(this.status) >= 0);
     }
 
-    public isFinished (): boolean {
+    public isFinished(): boolean {
         return this.failed() || this.rejected() || this.status === RequestStatus.Submitted || this.status === RequestStatus.Expired;
     }
 
-    public hasResultFile (): boolean {
+    public hasResultFile(): boolean {
         return this.result !== null;
     }
 
-    public failed (): boolean {
+    public failed(): boolean {
         return this.status === RequestStatus.Failed;
     }
 
-    public rejected (): boolean {
+    public rejected(): boolean {
         return this.status === RequestStatus.Rejected;
     }
 
@@ -165,18 +160,18 @@ export enum RequestStatus {
 
 export enum QueryRuleAction {
     /**
-	 * reject matching queries
-	 */
+     * reject matching queries
+     */
     REJECT = 'REJECT',
     /**
-	 * accept execution of matching queries,
-	 * but require interaction before results are submitted
-	 */
+     * accept execution of matching queries,
+     * but require interaction before results are submitted
+     */
     ACCEPT_EXECUTE = 'ACCEPT_EXECUTE',
     /**
-	 * accept execution of matching queries and automatically
-	 * submit the result data.
-	 */
+     * accept execution of matching queries and automatically
+     * submit the result data.
+     */
     ACCEPT_SUBMIT = 'ACCEPT_SUBMIT'
 }
 
