@@ -1,11 +1,7 @@
 /**
  * Created by Xu on 16.05.2017.
  */
-<<<<<<<< HEAD:admin-gui/src/main/webapp/src/app/helpers/popup-message.component.ts
 import {Component, Input} from '@angular/core';
-========
-import { Component, Input } from '@angular/core';
->>>>>>>> c6594eb (Upgrade to Angular 18 (#43)):admin-gui/src/main/webapp/app/helpers/popup-message.component.ts
 
 @Component({
     selector: 'popup-message',

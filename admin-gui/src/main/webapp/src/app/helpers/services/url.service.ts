@@ -6,7 +6,7 @@ import {Injectable} from '@angular/core';
 @Injectable()
 export class UrlService {
     private _serverUrls = [
-        //'http://localhost:80/aktin/admin/rest/',
+        //'http://localhost:81/aktin/admin/rest/',
         '/aktin/admin/rest/',
     ];
     private _serverUrl = this._serverUrls[0];
