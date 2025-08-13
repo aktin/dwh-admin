@@ -34,7 +34,7 @@
                        required
                        type="text">
             </div>
-            <error-message *ngIf="frm.submitted && userNameModel.errors?.required">Username erforderlich</error-message>
+            <error-message *ngIf="userNameModel.errors?.required">Username erforderlich</error-message>
         </div>
         <div class="field">
             <label>Passwort</label>
@@ -47,7 +47,7 @@
                        required
                        type="password">
             </div>
-            <error-message *ngIf="frm.submitted && passwordModel.errors?.required">Passwort erforderlich</error-message>
+            <error-message *ngIf="passwordModel.errors?.required">Passwort erforderlich</error-message>
         </div>
 
         <div class="ui fields fluid large buttons">
