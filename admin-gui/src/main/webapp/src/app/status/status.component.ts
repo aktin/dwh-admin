@@ -1,22 +1,17 @@
 /**
  * Created by Xu on 31-May-17.
  */
-
-import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { ImportStatus } from './import-status';
-import { StatusService } from './status.service';
+import {Component} from '@angular/core';
+import {ImportStatus} from './import-status';
+import {StatusService} from './status.service';
 
 @Component({
-    templateUrl: './status.component.html',
+  templateUrl: './status.component.html',
 })
-export class StatusComponent implements OnInit {
-    status$: Observable<ImportStatus>;
+export class StatusComponent  {
+  constructor (private _statusService: StatusService) {}
 
-    constructor(private _statusService: StatusService) {}
-
-    ngOnInit(): void {
-        this.status$ = this._statusService.status$;
-        this._statusService.fetchStatus(); // ✅ manually trigger fetch
-    }
+  get status (): ImportStatus {
+    return this._statusService.getImportStatus();
+  }
 }
