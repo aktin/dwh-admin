@@ -53,10 +53,6 @@ export class RequestFilterPipe implements PipeTransform {
                 output = output.filter(req => !req.isFinished());
                 break;
             }
-            case 'seen': {
-                output = output.filter(req => req.status === RequestStatus.Seen);
-                break;
-            }
             case 'retrieved' : {
                 output = output.filter(req => req.status === RequestStatus.Retrieved);
                 break;

@@ -42,7 +42,7 @@
     display: block;
 }
 
-.pagination /deep/ .ngx-pagination {
+::ng-deep .pagination .ngx-pagination {
     text-align: center;
   }
 
