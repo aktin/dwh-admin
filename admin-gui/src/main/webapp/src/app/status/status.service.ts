@@ -2,9 +2,16 @@
  * Created by Xu on 31-May-17.
  */
 import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
 
 import {HttpService, StorageService, UrlService} from '../helpers/index';
 import {ImportStatus} from './import-status';
+
+interface StatsData {
+  year: number;
+  count: number;
+  source: string;
+}
 
 @Injectable()
 export class StatusService {
@@ -35,5 +42,9 @@ export class StatusService {
   getImportStatus (): ImportStatus {
     this._updateStatus();
     return ImportStatus.parseStr(this._store.getValue('status.import'));
+  }
+
+  getStats(): Observable<StatsData[]> {
+    return this._http.get<StatsData[]>(this._urls.parse('script/stats/p21'));
   }
 }

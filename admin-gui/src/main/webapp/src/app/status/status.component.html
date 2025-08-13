@@ -56,6 +56,11 @@
       {{status.failed}}
     </div>
   </div>
+  <div class="row">
+    <div class="sixteen wide column">
+      <app-stats-table></app-stats-table>
+    </div>
+  </div>
   <ng-container *ngIf="status.error && status.error.length > 0">
     <div class="row">
       <div class="four wide column">

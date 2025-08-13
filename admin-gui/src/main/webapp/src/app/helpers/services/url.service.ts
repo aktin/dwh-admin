@@ -78,8 +78,8 @@ export class UrlService {
         getUpdateLog: 'update/log',
         reloadAptPackages: 'update/agent/reload',
 
-        // p21StatsQueryEndpoint
-        getStats: 'p21/stats',
+        // ImportScriptStatsEndpoint
+        getStats: 'script/stats/p21',
     };
 
     setServerUrl(serverUrl: string) {

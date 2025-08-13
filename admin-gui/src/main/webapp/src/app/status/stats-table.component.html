@@ -1,0 +1,56 @@
+<div class="ui segment">
+  <h3 class="ui header">
+    <i class="chart bar outline icon"></i>
+    <div class="content">
+      Statistiken
+      <div class="sub header">Übersicht der Import-Statistiken nach Jahr und Quelle</div>
+    </div>
+  </h3>
+
+  <div *ngIf="isLoadingStats" class="ui active centered inline loader">
+    Lade Statistiken...
+  </div>
+
+  <table *ngIf="!isLoadingStats && !hasError && statsTable.length > 0" class="ui celled structured table">
+    <thead>
+    <tr>
+      <th class="center aligned">Jahr</th>
+      <th class="center aligned">FALL</th>
+      <th class="center aligned">FAB</th>
+      <th class="center aligned">ICD</th>
+      <th class="center aligned">OPS</th>
+      <th class="center aligned">Gesamt</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let row of statsTable">
+      <td class="center aligned"><strong>{{row.year}}</strong></td>
+      <td class="right aligned">{{row.FALL | number}}</td>
+      <td class="right aligned">{{row.FAB | number}}</td>
+      <td class="right aligned">{{row.ICD | number}}</td>
+      <td class="right aligned">{{row.OPS | number}}</td>
+      <td class="right aligned"><strong>{{row.FALL + row.FAB + row.ICD + row.OPS | number}}</strong></td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!isLoadingStats && !hasError && statsTable.length === 0" class="ui icon message">
+    <i class="info circle icon"></i>
+    <div class="content">
+      <div class="header">Keine Statistikdaten verfügbar</div>
+      <p>Es konnten keine Statistikdaten gefunden werden.</p>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoadingStats && hasError" class="ui negative icon message">
+    <i class="exclamation triangle icon"></i>
+    <div class="content">
+      <div class="header">Fehler beim Laden der Statistiken</div>
+      <p>Die Statistikdaten konnten nicht geladen werden.</p>
+      <button class="ui button primary" (click)="retry()">
+        <i class="refresh icon"></i>
+        Erneut versuchen
+      </button>
+    </div>
+  </div>
+</div>
