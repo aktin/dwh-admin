@@ -2,8 +2,8 @@
   <h3 class="ui header">
     <i class="chart bar outline icon"></i>
     <div class="content">
-      Statistiken
-      <div class="sub header">Übersicht der Import-Statistiken nach Jahr und Quelle</div>
+      P21 Statistiken
+      <div class="sub header">Übersicht der P21 Fälle nach Jahr und CSV-Quelle</div>
     </div>
   </h3>
 
@@ -11,25 +11,25 @@
     Lade Statistiken...
   </div>
 
-  <table *ngIf="!isLoadingStats && !hasError && statsTable.length > 0" class="ui celled structured table">
+  <table *ngIf="!isLoadingStats && !hasError && statsTable.length > 0" class="ui celled centered structured table">
     <thead>
     <tr>
-      <th class="center aligned">Jahr</th>
-      <th class="center aligned">FALL</th>
-      <th class="center aligned">FAB</th>
-      <th class="center aligned">ICD</th>
-      <th class="center aligned">OPS</th>
-      <th class="center aligned">Gesamt</th>
+      <th class="row">Jahr</th>
+      <th class="row">FALL</th>
+      <th class="row">FAB</th>
+      <th class="row">ICD</th>
+      <th class="row">OPS</th>
+      <th class="row">Gesamt</th>
     </tr>
     </thead>
     <tbody>
     <tr *ngFor="let row of statsTable">
-      <td class="center aligned"><strong>{{row.year}}</strong></td>
-      <td class="right aligned">{{row.FALL | number}}</td>
-      <td class="right aligned">{{row.FAB | number}}</td>
-      <td class="right aligned">{{row.ICD | number}}</td>
-      <td class="right aligned">{{row.OPS | number}}</td>
-      <td class="right aligned"><strong>{{row.FALL + row.FAB + row.ICD + row.OPS | number}}</strong></td>
+      <td class="row"><strong>{{row.year}}</strong></td>
+      <td class="row">{{row.FALL | number}}</td>
+      <td class="row">{{row.FAB | number}}</td>
+      <td class="row">{{row.ICD | number}}</td>
+      <td class="row">{{row.OPS | number}}</td>
+      <td class="row"><strong>{{row.FALL + row.FAB + row.ICD + row.OPS | number}}</strong></td>
     </tr>
     </tbody>
   </table>
