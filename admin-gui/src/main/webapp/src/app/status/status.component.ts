@@ -6,12 +6,12 @@ import {ImportStatus} from './import-status';
 import {StatusService} from './status.service';
 
 @Component({
-  templateUrl: './status.component.html',
+    templateUrl: './status.component.html',
 })
 export class StatusComponent  {
-  constructor (private _statusService: StatusService) {}
+    constructor (private _statusService: StatusService) {}
 
-  get status (): ImportStatus {
-    return this._statusService.getImportStatus();
-  }
+    get status (): ImportStatus {
+        return this._statusService.getImportStatus();
+    }
 }
