@@ -72,6 +72,7 @@ import localeDeExtra from '@angular/common/locales/extra/de';
 import {NgbInputDatepicker} from "@ng-bootstrap/ng-bootstrap";
 import {AngularMyDatePickerModule} from "gramli-angular-mydatepicker";
 import {FieldModule} from './helpers/field/field.module';
+import {StatsTableComponent} from "./status/stats-table.component";
 
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
@@ -112,6 +113,7 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         MomentDatePipe,
         SuccessReportsPipe,
         RequestFilterPipe,
+        StatsTableComponent,
     ],
     bootstrap: [
         AppComponent

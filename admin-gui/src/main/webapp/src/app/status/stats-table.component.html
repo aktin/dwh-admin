@@ -1,0 +1,56 @@
+<div class="ui segment">
+  <h3 class="ui header">
+    <i class="chart bar outline icon"></i>
+    <div class="content">
+      P21 Statistiken
+      <div class="sub header">Übersicht der P21 Fälle nach Jahr und CSV-Quelle</div>
+    </div>
+  </h3>
+
+  <div *ngIf="isLoadingStats" class="ui active centered inline loader">
+    Lade Statistiken...
+  </div>
+
+  <table *ngIf="!isLoadingStats && !hasError && statsTable.length > 0" class="ui celled centered structured table">
+    <thead>
+    <tr>
+      <th class="row">Jahr</th>
+      <th class="row">FALL</th>
+      <th class="row">FAB</th>
+      <th class="row">ICD</th>
+      <th class="row">OPS</th>
+      <th class="row">Gesamt</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let row of statsTable">
+      <td class="row"><strong>{{row.year}}</strong></td>
+      <td class="row">{{row.FALL | number}}</td>
+      <td class="row">{{row.FAB | number}}</td>
+      <td class="row">{{row.ICD | number}}</td>
+      <td class="row">{{row.OPS | number}}</td>
+      <td class="row"><strong>{{row.FALL + row.FAB + row.ICD + row.OPS | number}}</strong></td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!isLoadingStats && !hasError && statsTable.length === 0" class="ui icon message">
+    <i class="info circle icon"></i>
+    <div class="content">
+      <div class="header">Keine Statistikdaten verfügbar</div>
+      <p>Es konnten keine Statistikdaten gefunden werden.</p>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoadingStats && hasError" class="ui negative icon message">
+    <i class="exclamation triangle icon"></i>
+    <div class="content">
+      <div class="header">Fehler beim Laden der Statistiken</div>
+      <p>Die Statistikdaten konnten nicht geladen werden.</p>
+      <button class="ui button primary" (click)="retry()">
+        <i class="refresh icon"></i>
+        Erneut versuchen
+      </button>
+    </div>
+  </div>
+</div>
