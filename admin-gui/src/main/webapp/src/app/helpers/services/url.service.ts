@@ -77,6 +77,9 @@ export class UrlService {
         updateDWH: 'update',
         getUpdateLog: 'update/log',
         reloadAptPackages: 'update/agent/reload',
+
+        // ImportScriptStatsEndpoint
+        getStats: 'script/stats/p21',
     };
 
     setServerUrl(serverUrl: string) {
