@@ -111,6 +111,7 @@ public class QueryEndpoint {
 			case Submitted:
 			case Failed:
 			case Sending:
+			case Expired:
 				continue;
 			case Retrieved:
 			case Seen:
