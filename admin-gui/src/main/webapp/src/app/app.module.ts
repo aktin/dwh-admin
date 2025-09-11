@@ -106,6 +106,7 @@ import {ModalComponent} from './helpers/modal/modal.component';
 import {AngularMyDatePickerModule} from 'gramli-angular-mydatepicker';
 import {RequestOverviewComponent} from './requests/request-overview.component';
 import {FomanticAccordionDirective} from './helpers/directives/fomantic-accordion.directive';
+import {StatsTableComponent} from "./status/stats-table.component";
 
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
@@ -146,6 +147,7 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         MomentDatePipe,
         SuccessReportsPipe,
         RequestFilterPipe,
+        StatsTableComponent,
         PatientListComponent,
         PatientCreationComponent,
         UniqueSicValidatorDirective,
