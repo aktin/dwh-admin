@@ -8,3 +8,4 @@ dwh-mail/
 .idea
 *.iml
 .vscode
+.flattened-pom.xml
