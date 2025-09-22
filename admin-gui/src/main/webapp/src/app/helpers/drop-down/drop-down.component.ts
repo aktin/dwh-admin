@@ -33,9 +33,6 @@ export class DropDownComponent<T> implements ControlValueAccessor, AfterViewInit
     public compare: (a: T, b: T) => boolean = (a, b) => a === b;
 
     ngAfterViewInit(): void {
-        // init semantic / fomantic ui jquery plugin
-        $(this.dropdown.nativeElement).dropdown();
-
         this.options.changes.subscribe(o => this.setOption(this.selected))
     }
 

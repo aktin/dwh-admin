@@ -2,6 +2,9 @@ import {Directive, ElementRef, OnDestroy, OnInit} from '@angular/core';
 
 declare const $: any;
 
+/**
+ * Creation and destruction of fomantic ui accordion
+ */
 @Directive({
     selector: '.ui.accordion'
 })

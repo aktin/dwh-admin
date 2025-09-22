@@ -1,62 +1,84 @@
-import {Component, forwardRef, ViewChild} from '@angular/core';
-import {Subscription} from 'rxjs';
-
-
-import {PopUpMessageComponent} from './../helpers/popup-message.component';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import {ImporterService} from './importer.service';
-import {ListEntry} from './ListEntry';
+import {UploadedFile} from './ListEntry';
 
 import {ImportState} from './enums/ImportState';
 import {ImportOperation} from './enums/ImportOperation';
-import {PropertiesKey} from './enums/PropertiesKey';
-import {ScriptKey} from './enums/ScriptKey';
+import {ImportScript} from './enums/ScriptKey';
 import {ImportOperationState} from './enums/ImportOperationState';
-
-//require('semantic-ui');
+import {NotificationService, PopUpMessageComponent, TableColumns} from '../helpers';
+import {ImportOperationStatePipe} from './enums/import-operation-state.pipe';
+import {LogType} from './enums/LogType';
+import {iif, interval, of, Subscription, switchMap, take, tap} from 'rxjs';
+import {ModalService} from '../helpers/modal/modal.service';
+import {filter, finalize, map} from 'rxjs/operators';
 
 @Component({
     templateUrl: './importer.component.html',
     styleUrls: ['./importer.component.css'],
+    providers: [ImportOperationStatePipe]
 })
+export class ImporterComponent implements OnInit, OnDestroy {
+    public columns: TableColumns<UploadedFile> = [
+        {header: 'Name', field: 'name_file'},
+        {header: 'Größe', field: f => this.formatBytes(f.size_file)},
+        {header: 'Skript', field: f => this.scripts.find(s => s.id === f.id_script)?.viewname},
+        {header: 'Status', field: f => this._operationStatePipe.transform(f.operationState)},
+    ];
 
-export class ImporterComponent {
-
-    @ViewChild(forwardRef(() => PopUpMessageComponent))
-    popUpDeleteConfirm: PopUpMessageComponent;
-
-    private subscription_upload: Subscription;
-    private subscription_files: Subscription;
-    private subscription_scripts: Subscription;
-
-    // hashmap for uploaded scripts by <ScriptId:DisplayName>
-    public script_selected: string;
-    protected list_scripts: Map<string, string> = new Map<string, string>();
+    public selectedScript: ImportScript;
+    protected scripts: ImportScript[];
 
     // lists for uploaded files
-    protected list_files_upload: ListEntry[] = [];
-
-    // table sorting
-    protected sortAttribute = 'name_file';
-    protected reverse = true; // sort order ascending/descending
-    protected sorted = false;
+    protected uploadedFiles: UploadedFile[] = [];
 
     // browsed file to upload
-    protected currentFile: any = null;
-    protected currentFile_name = '';
-    protected currentFile_OperationState: ImportOperationState;
+    protected fileToUpload: File = null;
+    protected fileToUploadOperationState: ImportOperationState;
 
     // initialization of enum classes
     // used to access enums in html
-    public importState: typeof ImportState = ImportState;
-    public importOperation: typeof ImportOperation = ImportOperation;
-    public importOperationState: typeof ImportOperationState = ImportOperationState;
+    public ImportState: typeof ImportState = ImportState;
+    public ImportOperation: typeof ImportOperation = ImportOperation;
+    public ImportOperationState: typeof ImportOperationState = ImportOperationState;
 
-    protected perm_write: boolean = false;
+    protected hasWritePermission: boolean = false;
     public page: number;
 
+    private readonly refreshInterval: number = 1000;
+    private sub: Subscription;
+
+
     /**
-     * Constructor for importer.component with two GET requests
+     *
+     * @param _importerService injected service to perform requests and check permissions
+     * @param _operationStatePipe
+     * @param _notificationService
+     * @param _modalService
+     */
+    constructor(private _importerService: ImporterService,
+                private _operationStatePipe: ImportOperationStatePipe,
+                private _notificationService: NotificationService,
+                private _modalService: ModalService,) {
+    }
+
+    ngOnInit(): void {
+        //keep refreshing file table if any file is waiting for an import to finish
+        this.sub = interval(this.refreshInterval)
+            .pipe(filter(() => this.uploadedFiles?.some(f => [ImportState.Queued, ImportState.InProgress].includes(f.state))))
+            .subscribe(() => this.reload());
+
+
+        this.reload();
+        this.hasWritePermission = this.isAuthorized('WRITE_P21');
+    }
+
+    ngOnDestroy(): void {
+        this.sub?.unsubscribe();
+    }
+
+    /**
      * First GET: Requests uploaded script metadata from backend. Gets a json list of
      * uploaded scripts and converts it to a list of string maps with <ID, name+version>
      * (for example. <"script1.py", "importer V1.0">). List is used to view and select
@@ -64,57 +86,29 @@ export class ImporterComponent {
      * Second GET: Requests uploaded file metadata from backend. Gets a json list of
      * uploaded files and converts it to a list of ListEntry(s). List is used to
      * view uploaded files in table and select file operations
-     * @param _importerService: injected service to perform requests and check permissions
      */
-    constructor(private _importerService: ImporterService) {
-        this.subscription_scripts = this._importerService.getImportScripts()
-            .subscribe(event => {
-                if (event._body) {
-                    let list_json = JSON.parse(event._body);
-                    list_json.forEach((json: any) => {
-                        this.list_scripts.set(json[ScriptKey.id], [json[ScriptKey.viewname], " ", "V", json[ScriptKey.version]].join(""));
-                    });
-                    this.script_selected = Array.from(this.list_scripts)[0][0];
+    public reload(): void {
+        this._importerService.getImportScripts()
+            .subscribe(scripts => {
+                this.scripts = scripts;
+                if (!!this.scripts?.length) {
+                    this.selectedScript = this.scripts[0];
                 }
-                this.subscription_scripts.unsubscribe();
-            }, (error: any) => {
-                console.log(error);
             });
-        this.subscription_files = this._importerService.getUploadedFiles()
-            .subscribe(event => {
-                if (event._body) {
-                    let list_json = JSON.parse(event._body);
-                    list_json.forEach((json: any) => {
-                        this.list_files_upload.push(
-                            new ListEntry(
-                                this._importerService,
-                                json[PropertiesKey.script],
-                                json[PropertiesKey.filename],
-                                json[PropertiesKey.size],
-                                json[PropertiesKey.id],
-                                ImportOperation[json[PropertiesKey.operation] as keyof typeof ImportOperation],
-                                ImportState[json[PropertiesKey.state] as keyof typeof ImportState]));
-                    });
-                }
-                this.subscription_files.unsubscribe();
-            }, (error: any) => {
-                console.log(error);
-            });
-        this.perm_write = this.isAuthorized('WRITE_P21');
+        this._importerService.getUploadedFiles()
+            .subscribe(files => this.uploadedFiles = files);
     }
 
     /**
      * Handler for file browser button
      * Opens file browser in view and allows selection of file to upload.
      * Selected file is held in a variable and allows uploading of it
-     * @param files: list of binaries to upload
+     * @param files list of binaries to upload
      */
-    onFileBrowse(files: any[]) {
-        if (this.isAuthorized('WRITE_P21')) {
-            this.currentFile = files[0];
-            this.currentFile_name = this.currentFile.name;
-            this.currentFile_OperationState = ImportOperationState.uploading_ready;
-            $('#file').val(''); // delete held item of file browser
+    onFileBrowse(files: FileList) {
+        if (this.hasWritePermission) {
+            this.fileToUpload = files[0];
+            this.fileToUploadOperationState = ImportOperationState.UploadingReady;
         }
     }
 
@@ -123,41 +117,40 @@ export class ImporterComponent {
      * Clears the variable and operationState
      */
     deleteHoldingFile() {
-        if (this.isAuthorized('WRITE_P21')) {
-            this.currentFile = null;
-            this.currentFile_name = '';
-            this.currentFile_OperationState = null;
+        if (this.hasWritePermission) {
+            this.fileToUpload = null;
+            this.fileToUploadOperationState = null;
         }
     }
 
     /**
-    * Upload currently held file via importer.service
-    * Process is done via subscription (can be cancelled using .takeUntil)
-    * Metadata of file is converted to a ListEntry object after succesful
-    * upload and added to list_files_upload, binary file itself is deleted
-    * from cache after success
-    * Lock_script and Lock_file are used as temporary variables, as
-    * script and files could be reselected during long uploads
-    */
+     * Upload currently held file via importer.service
+     * Process is done via subscription (can be cancelled using .takeUntil)
+     * Metadata of file is converted to a ListEntry object after succesful
+     * upload and added to list_files_upload, binary file itself is deleted
+     * from cache after success
+     * Lock_script and Lock_file are used as temporary variables, as
+     * script and files could be reselected during long uploads
+     */
     uploadHoldingFile() {
-        if (this.isAuthorized('WRITE_P21') && this.currentFile !== null) {
-            this.currentFile_OperationState = ImportOperationState.uploading_in_progress;
-            let lock_script = this.script_selected;
-            let lock_file = this.currentFile;
-            this.subscription_upload = this._importerService.uploadFile(lock_file, lock_file.name, lock_script)
-                .subscribe(event => {
-                    this.list_files_upload.push(new ListEntry(
-                        this._importerService,
-                        lock_script,
-                        lock_file.name,
-                        lock_file.size,
-                        event._body
-                    ));
-                    this.deleteHoldingFile();
-                    this.subscription_upload.unsubscribe();
-                }, (error: any) => {
-                    this.currentFile_OperationState = ImportOperationState.uploading_failed;
-                    console.log(error);
+        if (this.hasWritePermission && this.fileToUpload !== null) {
+            this.fileToUploadOperationState = ImportOperationState.UploadingInProgress;
+            let lock_script = this.selectedScript;
+            let lock_file = this.fileToUpload;
+            this._importerService.uploadFile(lock_file, lock_file.name, lock_script.id)
+                .pipe(finalize(() => this.reload()))
+                .subscribe({
+                    next: event => {
+                        this.uploadedFiles.push(new UploadedFile(
+                            lock_script.id,
+                            lock_file.name,
+                            lock_file.size,
+                            event
+                        ));
+                        this.deleteHoldingFile();
+                    }, error: (error: any) => {
+                        this.fileToUploadOperationState = ImportOperationState.UploadingFailed;
+                    }
                 });
         }
     }
@@ -167,9 +160,9 @@ export class ImporterComponent {
      * (GET subscriptions are only called once during view initialization)
      */
     cancelHoldingFileUpload() {
-        if (this.isAuthorized('WRITE_P21') && this.currentFile !== null) {
-            this.subscription_upload.unsubscribe();
-            this.currentFile_OperationState = ImportOperationState.uploading_cancelled;
+        if (this.isAuthorized('WRITE_P21') && this.fileToUpload !== null) {
+            this._importerService.cancelUpload();
+            this.fileToUploadOperationState = ImportOperationState.UploadingCancelled;
         }
     }
 
@@ -177,79 +170,76 @@ export class ImporterComponent {
      * Delete request for entries in table
      * Opens delete confirmation popup when called. If confirmed, delete request is sent to backend and entry
      * is deleted from list_files_upload
-     * @param listEntry: ListEntry object to delete/remove from list_files_upload
+     * @param file ListEntry object to delete/remove from list_files_upload
      */
-    confirmDelete(listEntry: ListEntry) {
-        if (this.isAuthorized('WRITE_P21')) {
-            let buttons = ['trash icon', 'Löschen', 'red'];
-            this.popUpDeleteConfirm.setConfirm(buttons);
-            this.popUpDeleteConfirm.onTop = true;
-            this.popUpDeleteConfirm.setData(true, 'Datei löschen',
-                'Wollen Sie diese Datei wirklich unwiderruflich löschen?\nAlle importierten Daten werden ebenso gelöscht!',
-                (submit: boolean) => {
-                    if (submit) {
-                        listEntry.deleteFile();
-                        this.list_files_upload = this.list_files_upload.filter(entry => entry !== listEntry);
-                    }
-                }
-            );
+    confirmDelete(file: UploadedFile) {
+        if (this.hasWritePermission) {
+            this._modalService.open(PopUpMessageComponent)
+                .pipe(
+                    tap(ref => {
+                        ref.instance.button = ['user minus icon icon', 'Löschen', 'primary'];
+                        ref.instance.head = 'Datei löschen';
+                        ref.instance.message = 'Möchten Sie die hochgeladene Datei unwideruflich löschen?';
+                        ref.instance.mode = 'confirm';
+                        ref.instance.show = true;
+                    }), switchMap(ref => ref.closed$),
+                    switchMap(shouldDelete => iif(() => shouldDelete,
+                        this._importerService.deleteFile(file.getUUID()),
+                        of(false)
+                    )),
+                    take(1), // making sure the observable completes
+                    finalize(() => this.reload()))
+                .subscribe({
+                    next: wasDeleted => {
+                        //explicit false check because deleteEntry returns null
+                        if (wasDeleted !== false) {
+                            this._notificationService.showSuccess('Datei gelöscht');
+                        }
+                    }, error: e => this._notificationService.showError('Datei konnte nicht gelöscht werden'),
+                });
         }
+    }
+
+    public showErrorLog(file: UploadedFile): void {
+        this._importerService.getScriptLogs(file.getUUID())
+            .pipe(map(logs => logs.find(l => l.type === LogType.stdError)))
+                         .subscribe(log => this.showLog(LogType.stdError, log?.text));
+    }
+
+    public showStdLog(file: UploadedFile): void {
+        this._importerService.getScriptLogs(file.getUUID())
+            .pipe(map(logs => logs.find(l => l.type === LogType.stdOutput)))
+            .subscribe(log => this.showLog(LogType.stdOutput, log?.text));
+    }
+
+    private showLog(type: LogType, log: string): void {
+        if(!log?.length) {
+            this._notificationService.showInfo("Keine Ausgabe vorhanden");
+            return;
+        }
+
+        const head = type === LogType.stdOutput ? 'Konsolenausgabe' : 'Fehlerausgabe';
+        this._modalService.open(PopUpMessageComponent)
+            .pipe(tap(ref => {
+                ref.instance.head = head;
+                ref.instance.message = log;
+                ref.instance.mode = 'info';
+                ref.instance.show = true;
+            }), switchMap(ref => ref.closed$),
+                take(1),
+                finalize(() => this.reload()))
+            .subscribe();
     }
 
     /**
      * Formats binary file size for view
-     * @param bytes: file size in bytes
+     * @param bytes file size in bytes
      * @returns input bytes converted to corresponding measurement
      */
-    formatBytes(bytes: number) {
+    public formatBytes(bytes: number): string {
         let sizes = ['Bytes', 'KB', 'MB', 'GB'];
         let i = Math.floor(Math.log(bytes) / Math.log(1024));
         return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-
-    /**
-     * Sorts table in view after giving attribute (table header). Switches sorting type (ascending <-> descending),
-     * if same attribute is selected again.
-     * @param attr: table header
-     */
-    setSortAttribute(attr: string) {
-        if (this.sortAttribute === attr) {
-            this.reverse = !this.reverse;
-        }
-        this.sortAttribute = attr;
-    }
-
-    /**
-     * @returns current sorted table header with sorting type (ascending/descending)
-     */
-    getSortAttribute() {
-        if (this.reverse) {
-            return '-' + this.sortAttribute;
-        } else {
-            return '+' + this.sortAttribute;
-        }
-    }
-
-    /**
-     * PreDestroy method call
-     * Clears list of script metadata and list of file metadata and unsubscribes from all ongoing
-     * subscriptions (including subscriptions of ListEntry objects)
-     */
-    ngOnDestroy() {
-        this.list_scripts.forEach((value, index) => {
-            // @ts-ignore
-            delete this.list_scripts[index];
-        })
-        this.list_files_upload.forEach((value, index) => {
-            this.list_files_upload[index].ngOnDestroy();
-            delete this.list_files_upload[index];
-        });
-        if (this.subscription_scripts)
-            this.subscription_scripts.unsubscribe();
-        if (this.subscription_files)
-            this.subscription_files.unsubscribe();
-        if (this.subscription_upload)
-            this.subscription_upload.unsubscribe();
     }
 
     /**
@@ -259,5 +249,47 @@ export class ImporterComponent {
      */
     isAuthorized(permission: string) {
         return this._importerService.checkPermission(permission);
+    }
+
+    protected compareScripts: (a: any, b: any) => boolean = (a: ImportScript, b: ImportScript) => !!a && !!b && a.id === b.id;
+
+    /**
+     * Starts async file import process via importer.service
+     * Only a request to backend to start file import of given id
+     * @param file file to import
+     */
+    public importFile(file: UploadedFile): void {
+        if (this.hasWritePermission) {
+            this._importerService.importFile(file.getUUID())
+                .pipe(finalize(() => this.reload()))
+                .subscribe({
+                    next: () => {
+                        this._notificationService.showSuccess('Import eingereiht');
+                        file.setOperationState(ImportOperation.Importing, ImportState.Queued);
+                    },
+                    error: () => {
+                        this._notificationService.showError('Import fehlgeschlagen');
+                        file.setOperationState(ImportOperation.Importing, ImportState.Failed);
+                    },
+                });
+        }
+    }
+
+    /**
+     * Requests backend to cancel current file processing of given file id
+     */
+    public cancelProcess(file: UploadedFile): void {
+        if (this.hasWritePermission) {
+            this._importerService.cancelProcess(file.getUUID())
+                .pipe(finalize(() => this.reload()))
+                .subscribe({
+                    next: () => {
+                        this._notificationService.showSuccess('Import abgebrochen');
+                        if ([ImportOperationState.ImportingQueued, ImportOperationState.ImportingInProgress].includes(file.operationState)) {
+                            file.setOperationState(ImportOperation.Importing, ImportState.Cancelled);
+                        }
+                    }, error: e => this._notificationService.showError('Import abbrechen fehlgeschlagen'),
+                });
+        }
     }
 }

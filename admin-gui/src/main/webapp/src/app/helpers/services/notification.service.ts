@@ -10,7 +10,7 @@ export class NotificationService {
     public showInfo(message: string): void {
         $.toast({
             position: 'bottom center',
-            class: 'info',
+            class: 'white',
             message: message,
         });
     }

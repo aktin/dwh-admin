@@ -1,5 +1,5 @@
-<table *templateVar="showDetailButtons ? columns.length : columns.length + 1 as colSpan"
-       class="ui sortable selectable celled table segment sixteen wide column">
+@let colSpan = columns.length + (!!extraColumn ? 1 : 0);
+<table class="ui sortable selectable celled table segment sixteen wide column">
     <thead>
     <tr>
         @for (column of columns; track column) {
@@ -9,29 +9,36 @@
                 {{ column.header }}
             </th>
         }
-        @if (showDetailButtons) {
-            <th>Details</th>
+        @if (!!extraColumnHeader) {
+            <th>
+                <ng-container *ngTemplateOutlet="extraColumnHeader"></ng-container>
+            </th>
+        } @else if (!!extraColumn) {
+            <th></th>
         }
     </tr>
     </thead>
     <tbody>
-        @for (row of allData | paginate: {itemsPerPage: 15, currentPage: page, id: paginatorId.toString()}; track determineTrackBy(row)) {
+        @for (row of allData | paginate: {
+            itemsPerPage: 10,
+            currentPage: page,
+            id: paginatorId.toString()
+        }; track determineTrackBy(row, $index)) {
             <tr>
                 @for (column of columns; track column) {
                     <td>
                         {{ resolveField(column.field, row) }}
                     </td>
-                } @empty {
-                    <td [colSpan]="colSpan">Keine Daten gefunden</td>
                 }
-                @if (showDetailButtons && !!allData?.length) {
-                    <td class="center aligned">
-                        <button class="ui icon button"
-                                (click)="onButtonClick(row)">
-                            <i class="search icon"></i>
-                        </button>
+                @if (!!extraColumn) {
+                    <td>
+                        <ng-container *ngTemplateOutlet="extraColumn; context: {$implicit: row}"></ng-container>
                     </td>
                 }
+            </tr>
+        } @empty {
+            <tr>
+                <td [colSpan]="colSpan">Keine Daten gefunden</td>
             </tr>
         }
     </tbody>
@@ -39,7 +46,6 @@
     <th [colSpan]="colSpan"
         class="center aligned">
         <pagination-controls (pageChange)="page = $event"
-                             [autoHide]="false"
                              [id]="paginatorId.toString()"
                              class="pagination"
                              nextLabel="Nächste Seite"

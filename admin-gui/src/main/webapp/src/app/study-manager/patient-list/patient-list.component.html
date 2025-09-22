@@ -78,10 +78,22 @@
                         </div>
                     </div>
                     <div class="row">
-                        <data-table (onDetailsClick)="openPatientViewModal($event)"
-                                    [columns]="columns"
+                        <data-table [columns]="columns"
                                     [data]="filteredEntries"
-                                    class="ui column"></data-table>
+                                    [extraColumnHeader]="headerTemplate"
+                                    [extraColumn]="cellTemplate"
+                                    class="ui column">
+                        </data-table>
+
+
+                        <ng-template #headerTemplate>Details</ng-template>
+                        <ng-template #cellTemplate
+                                     let-entry>
+                            <button class="ui icon button"
+                                    (click)="openPatientViewModal(entry)">
+                                <i class="search icon"></i>
+                            </button>
+                        </ng-template>
                     </div>
                 </div>
             </div>

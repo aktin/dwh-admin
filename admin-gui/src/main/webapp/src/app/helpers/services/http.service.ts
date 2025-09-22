@@ -1,10 +1,10 @@
 import {Observable, of, throwError} from 'rxjs';
 
 import {catchError, map} from 'rxjs/operators';
-import {HttpClient, HttpHandler, HttpHeaders} from '@angular/common/http';
 import {StorageService} from './storage.service';
 import {CleanUpAuthService} from './clean-up-auth.service';
 import {Injectable} from '@angular/core';
+import {HttpClient, HttpHandler, HttpHeaders} from '@angular/common/http';
 /**
  * Created by Xu on 03.05.2017.
  */
@@ -106,9 +106,7 @@ export class HttpService extends HttpClient {
         if (options == null) {
             options = new HttpHeaders();
         }
-        // if (options.) {
-        //     options.headers = new Headers();
-        // }
+
         if (key) {
             options.set(key, value);
         }

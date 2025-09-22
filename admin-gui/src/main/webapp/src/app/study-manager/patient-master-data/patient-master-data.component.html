@@ -23,8 +23,7 @@
 
     @if (!!encounters?.length) {
         <data-table [columns]="encounterColumns"
-                    [data]="encounters"
-                    [showDetailButtons]="false">
+                    [data]="encounters">
         </data-table>
     } @else {
         <div><span class="ui orange text">Keine Behandlungsfalldaten gefunden</span></div>

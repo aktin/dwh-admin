@@ -1,15 +1,17 @@
-// all possible combinations of PropertiesKey.operation and PropertiesKey.state
-// used, to display current combination in view
+// Optionale Typdefinition für strikte Zustandswerte
 export enum ImportOperationState {
-    uploading_ready = 'Bereit zum Hochladen',
-    uploading_in_progress = 'Wird hochgeladen',
-    uploading_successful = 'Hochladen abgeschlossen',
-    uploading_cancelled = 'Hochladen abgebrochen',
-    uploading_failed = 'Hochladen fehlgeschlagen',
-    importing_queued = "In Warteschlange zum Import",
-    importing_in_progress = 'Wird importiert',
-    importing_successful = 'Import abgeschlossen',
-    importing_cancelled = 'Import abgebrochen',
-    importing_failed = 'Import fehlgeschlagen',
-    importing_timeout = 'Zeitüberschreitung beim Import',
+    UploadingReady = "uploading_ready",
+    UploadingInProgress = "uploading_in_progress",
+    UploadingSuccessful = "uploading_successful",
+    UploadingCancelled = "uploading_cancelled",
+    UploadingFailed = "uploading_failed",
+    ImportingQueued = "importing_queued",
+    ImportingInProgress = "importing_in_progress",
+    ImportingSuccessful = "importing_successful",
+    ImportingCancelled = "importing_cancelled",
+    ImportingFailed = "importing_failed",
+    ImportingTimeout = "importing_timeout",
 }
+
+
+

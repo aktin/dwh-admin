@@ -31,7 +31,7 @@ import {
     OrderByPipe,
     PopUpMessageComponent,
     SafeUrlPipe,
-    StorageService,
+    StorageService, TemplateVarDirective,
     UrlService
 } from './helpers';
 import {
@@ -107,6 +107,8 @@ import {AngularMyDatePickerModule} from 'gramli-angular-mydatepicker';
 import {RequestOverviewComponent} from './requests/request-overview.component';
 import {FomanticAccordionDirective} from './helpers/directives/fomantic-accordion.directive';
 import {StatsTableComponent} from "./status/stats-table.component";
+import {ImportOperationStatePipe} from './importer/enums/import-operation-state.pipe';
+import { FomanticDropDownDirective } from './helpers/directives/fomantic-drop-down.directive';
 
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
@@ -167,7 +169,8 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         ModalRef,
         ModalComponent,
         RequestOverviewComponent,
-        FomanticAccordionDirective
+        FomanticAccordionDirective,
+        FomanticDropDownDirective
     ],
     bootstrap: [
         AppComponent
@@ -183,6 +186,8 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         FieldModule,
         RevoGrid,
         AgGridAngular,
+        ImportOperationStatePipe,
+        TemplateVarDirective,
     ],
     exports: [
         SafeUrlPipe,

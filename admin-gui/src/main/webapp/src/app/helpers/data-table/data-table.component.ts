@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, QueryList, ViewChildren} from '@angular/core';
+import {Component, EventEmitter, Input, Output, QueryList, TemplateRef, ViewChildren} from '@angular/core';
 import {SortableTableColumnDirective} from "./sortable-table-column/sortable-table-column.directive";
 import {SortEvent} from "./sortable-table-column/sort-event";
 
@@ -14,13 +14,13 @@ export class DataTableComponent<T = any> {
     @Input()
     public columns: TableColumns<T>;
     public allData: T[];
-    @Output()
-    public onDetailsClick: EventEmitter<T> = new EventEmitter();
-    @Input()
-    public showDetailButtons: boolean = true;
     public page: number;
     @ViewChildren(SortableTableColumnDirective)
     private sortableColumns: QueryList<SortableTableColumnDirective>;
+    @Input()
+    public extraColumnHeader: TemplateRef<any>;
+    @Input()
+    public extraColumn: TemplateRef<any>;
 
     @Input()
     public set data(data: T[]) {
@@ -94,19 +94,15 @@ export class DataTableComponent<T = any> {
     }
 
     /**
-     * Handles the event triggered when the  is clicked.
-     *
-     * @param row - The row data of type T associated with the button click event.
-     * @return void - This method does not return any value.
+     * Determines the trackBy value
+     * @param row current row to get the trackBy value for, determined by the column with useToTrack set to true
+     * @param index index of row, fallback if no column is set to track
+     * @return the trackBy value for the row
+     * @protected
      */
-    protected onButtonClick(row: T): void {
-        this.onDetailsClick.emit(row);
-    }
-
-    protected determineTrackBy(row: T): any {
+    protected determineTrackBy(row: T, index?: number): any {
         const column = this.columns.find(c => c.useToTrack);
-        if (!column) return row;
-        return this.resolveField(column.field, row);
+        return !!column ? this.resolveField(column.field, row) : index;
     }
 }
 
