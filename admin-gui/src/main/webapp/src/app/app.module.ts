@@ -104,6 +104,7 @@ import {RequiredDirective} from './helpers/directives/required.directive';
 import {ModalRef} from './helpers/modal/modal-ref.component';
 import {ModalComponent} from './helpers/modal/modal.component';
 import {AngularMyDatePickerModule} from 'gramli-angular-mydatepicker';
+import {StatsTableComponent} from "./status/stats-table.component";
 
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
@@ -162,6 +163,7 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         RequiredDirective,
         ModalRef,
         ModalComponent,
+        StatsTableComponent,
     ],
     bootstrap: [
         AppComponent

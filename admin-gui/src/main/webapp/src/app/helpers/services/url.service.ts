@@ -70,7 +70,6 @@ export class UrlService {
         uploadFile: 'file/@uuid@',
         importScripts: 'script',
         scriptLogs: 'file/@uuid@/log',
-        verifyFile: 'script/@uuid@/verify',
         importFile: 'script/@uuid@/import',
         cancelProcess: 'script/@uuid@/cancel',
 
@@ -79,6 +78,9 @@ export class UrlService {
         updateDWH: 'update',
         getUpdateLog: 'update/log',
         reloadAptPackages: 'update/agent/reload',
+
+        // ImportScriptStatsEndpoint
+        getStats: 'script/stats/p21',
     };
 
     setServerUrl(serverUrl: string) {

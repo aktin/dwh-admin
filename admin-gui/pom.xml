@@ -68,7 +68,7 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>generic-file-importer</artifactId>
-            <version>0.19-SNAPSHOT</version>
+            <version>0.20-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -176,19 +176,19 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>report-manager</artifactId>
-            <version>0.13</version>
+            <version>0.14-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>report-archive</artifactId>
-            <version>0.13</version>
+            <version>0.14-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>report-manager</artifactId>
-            <version>0.13</version>
+            <version>0.14-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -221,7 +221,7 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>request-manager</artifactId>
-            <version>0.13</version>
+            <version>0.14-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -229,6 +229,11 @@
             <artifactId>study-manager</artifactId>
             <version>0.14-SNAPSHOT</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.aktin</groupId>
+            <artifactId>generic-imports-manager</artifactId>
+            <version>0.14-SNAPSHOT</version>
         </dependency>
 
         <dependency>
