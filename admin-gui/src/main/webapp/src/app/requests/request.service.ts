@@ -173,8 +173,7 @@ export class RequestService {
      * @returns Observable of response
      */
     applyRule(queryId: number, ruleAction: QueryRuleAction): Observable<any> {
-        return this._http.post(this._urls.parse('applyRule', {queryId: queryId}), JSON.stringify(ruleAction),
-            {headers: this._http.generateHeaderOptions('Content-Type', 'application/json')}).pipe(
+        return this._http.post(this._urls.parse('applyRule', {queryId: queryId}), ruleAction).pipe(
             catchError(err => {
                 return this._http.handleError(err)
             }))
