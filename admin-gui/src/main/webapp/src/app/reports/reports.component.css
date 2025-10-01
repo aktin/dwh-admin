@@ -42,9 +42,10 @@
     display: block;
 }
 
-.pagination /deep/ .ngx-pagination {
-    text-align: center;
-  }
+.pagination {
+    display: flex;
+    justify-content: center;
+}
 
 .button-new-report {
     margin-left: 53px;

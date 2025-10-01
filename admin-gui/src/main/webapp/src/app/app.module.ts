@@ -69,7 +69,6 @@ import {SetTimeInterceptor} from './helpers/services/set-time.interceptor';
 import {registerLocaleData} from '@angular/common';
 import localeDe from '@angular/common/locales/de';
 import localeDeExtra from '@angular/common/locales/extra/de';
-import {NgbInputDatepicker} from "@ng-bootstrap/ng-bootstrap";
 import {AngularMyDatePickerModule} from "gramli-angular-mydatepicker";
 import {FieldModule} from './helpers/field/field.module';
 import {StatsTableComponent} from "./status/stats-table.component";
@@ -124,7 +123,6 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         // JsonpModule,
         AngularMyDatePickerModule,
         NgxPaginationModule,
-        NgbInputDatepicker,
         FieldModule
     ],
     exports: [
