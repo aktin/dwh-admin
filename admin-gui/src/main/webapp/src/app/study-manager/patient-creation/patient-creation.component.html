@@ -105,8 +105,11 @@
                                    [studyId]="selectedStudy.id"
                                    uniqueSic
                                    #sicModel="ngModel"
+                                   disallowWhitespaces
                                    [(ngModel)]="newEntry.sic">
                             <error-message *ngIf="sicModel.errors?.sicNotUnique">Studien-ID ist schon vorhanden
+                            </error-message>
+                            <error-message *ngIf="sicModel.errors?.whitespaceOnly">Nur Leerzeichen nicht erlaubt
                             </error-message>
                         } @else {
                             <input type="text"
@@ -140,6 +143,7 @@
                                    id="extension"
                                    name="extension"
                                    required
+                                   disallowWhitespaces
                                    type="text">
                             <button (click)="loadEncountersAndMasterData()"
                                     class="ui button"
@@ -162,6 +166,9 @@
                         <error-message *ngIf="extModel.errors?.period">
                             Root und {{ selectedReference | patientReferenceToLabel }} dürfen nicht aus "." oder ".."
                             bestehen
+                        </error-message>
+                        <error-message *ngIf="extModel.errors?.whitespaceOnly">
+                            Nur Leerzeichen nicht erlaubt
                         </error-message>
                     </div>
 
