@@ -97,8 +97,7 @@ export class VisitsComponent implements OnInit, OnDestroy {
             this.visitStart = new Date(this.DP2date(this.formdata.startDate.date));
             this.visitStart.setHours(hours, minutes);
         }
-        // @ts-ignore
-        if (this.formdata.endDate !== null && this.formdata.endDate !== {date: {year: 0 , month: 0, day: 0}}) {
+        if (this.formdata.endDate !== null) {
             this.visitEnd = new Date(this.DP2date(this.formdata.endDate.date));
             if (this.formdata.endTime !== '') {
                 let hours = Number(this.formdata.endTime.split(':')[0]);
@@ -127,16 +126,12 @@ export class VisitsComponent implements OnInit, OnDestroy {
     // not working correctly, DP bubble: ui pointing red basic label?
     isValid(): boolean {
         let comp = this;
-        if (this.visitOption === 'optionDate' && !this.formdata.startDate ||
-            // @ts-ignore
-            this.formdata.startDate === {date: {year: 0 , month: 0, day: 0}} || !new Date(this.formdata.startDate.date)) {
+        if (this.visitOption === 'optionDate' && !this.formdata.startDate || !new Date(this.formdata.startDate.date)) {
             this.startDateRequired = true;
             setTimeout(function(){ comp.startDateRequired = false; }, 5000);
             return false;
         }
-        if (this.visitOption === 'optionDate' && this.formdata.endTime !== '' && (!this.formdata.endDate ||
-            // @ts-ignore
-            this.formdata.endDate === {date: {year: 0 , month: 0, day: 0}})) {
+        if (this.visitOption === 'optionDate' && this.formdata.endTime !== '' && !this.formdata.endDate) {
             this.endDateRequired = true;
             setTimeout(function(){ comp.endDateRequired = false; }, 5000);
             return false;

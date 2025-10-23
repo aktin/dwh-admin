@@ -59,8 +59,9 @@
     margin: 10px auto 10px auto;
 }
 
-.pagination /deep/ .ngx-pagination {
-    text-align: center;
+.pagination {
+    display: flex;
+    justify-content: center;
     padding: 10px 0px 0px 0px;
     margin: 0;
   }
