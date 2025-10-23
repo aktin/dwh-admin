@@ -132,10 +132,13 @@ export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncVal
 
     @HostListener('document:paste', ['$event'])
     public onPaste(event: ClipboardEvent): void {
-        const clipboardData = event.clipboardData;
-        const pastedText = clipboardData.getData('text');
-        this.rowData = this.parseExcelData(pastedText);
-        this.onChange(this.rowData);
+        //prevent dataloss when user wants to paste text into a single cell or input element
+        if(!(document.activeElement instanceof HTMLInputElement)) {
+            const clipboardData = event.clipboardData;
+            const pastedText = clipboardData.getData('text');
+            this.rowData = this.parseExcelData(pastedText);
+            this.onChange(this.rowData);
+        }
     }
 
     public onGridReady(params: GridReadyEvent<GridModel>): void {
