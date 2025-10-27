@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>dwh-api</artifactId>
-            <version>0.11-SNAPSHOT</version>
+            <version>0.11</version>
         </dependency>
         <dependency>
             <groupId>de.li2b2.facade</groupId>
@@ -68,7 +68,12 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>generic-file-importer</artifactId>
-            <version>0.20-SNAPSHOT</version>
+            <version>0.20</version>
+        </dependency>
+        <dependency>
+          <groupId>org.aktin</groupId>
+          <artifactId>generic-imports-manager</artifactId>
+          <version>0.14rc1</version>
         </dependency>
 
         <dependency>
@@ -195,21 +200,21 @@
         <dependency>
             <groupId>org.aktin.dwh</groupId>
             <artifactId>dwh-db</artifactId>
-            <version>0.13-SNAPSHOT</version>
+            <version>0.13</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>r-script</artifactId>
-            <version>1.4</version>
+            <version>1.4.1</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin.dwh</groupId>
             <artifactId>dwh-db</artifactId>
-            <version>0.13-SNAPSHOT</version>
+            <version>0.13</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -229,11 +234,6 @@
             <artifactId>study-manager</artifactId>
             <version>0.14-SNAPSHOT</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.aktin</groupId>
-            <artifactId>generic-imports-manager</artifactId>
-            <version>0.14-SNAPSHOT</version>
         </dependency>
 
         <dependency>
