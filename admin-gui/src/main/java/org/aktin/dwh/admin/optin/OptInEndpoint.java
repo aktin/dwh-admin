@@ -21,12 +21,10 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * RESTful HTTP end point for creating, deleting and retrieving patient entries.
@@ -280,14 +278,14 @@ public class OptInEndpoint {
         Study study = this.getStudy(id);
         val validatedEntries = new ArrayList<PatientEntriesResponseDTO>();
 
-        for (int i = 0; i < entries.extensions.size(); i++) {
-            val extension = entries.extensions.get(i);
+        for (val entry : entries.entries) {
+            val extension = entry.extension;
             val foundEntry = new PatientEntriesResponseDTO();
             foundEntry.setExtension(extension);
             validatedEntries.add(foundEntry);
 
             if (!entries.generateSic) {
-                val sic = entries.sics.get(i);
+                val sic = entry.sic;
                 foundEntry.setSic(sic);
 
                 if (validateSic(entries, study, foundEntry, sic)) {
@@ -328,7 +326,7 @@ public class OptInEndpoint {
      */
     private boolean validateSic(PatientEntriesRequestDTO entries, Study study, PatientEntriesResponseDTO foundEntry, String sic) throws IOException {
         if (sic != null) {
-            if (entries.sics.stream().filter(s -> Objects.equals(s, sic)).count() > 1) {
+            if (entries.entries.stream().filter(s -> Objects.equals(s.sic, sic)).count() > 1) {
                 foundEntry.setEntryValidation(EntryValidation.DUPLICATE_SIC);
                 return true;
             }
@@ -350,7 +348,7 @@ public class OptInEndpoint {
      * @return true if the extension exists more than once in the request data and updates the validation status, false otherwise.
      */
     private boolean validateDuplicateExtension(PatientEntriesRequestDTO entries, PatientEntriesResponseDTO foundEntry, String extension) {
-        if (entries.extensions.stream().filter(e -> Objects.equals(e, extension)).count() > 1) {
+        if (entries.entries.stream().filter(e -> Objects.equals(e.extension, extension)).count() > 1) {
             foundEntry.setEntryValidation(EntryValidation.DUPLICATE_PAT_REF);
             return true;
         }
@@ -427,9 +425,9 @@ public class OptInEndpoint {
                                   PatientEntriesRequestDTO entries) throws IOException {
         Study study = this.getStudy(id);
 
-        for (int i = 0; i < entries.extensions.size(); i++) {
-            val extension = entries.extensions.get(i);
-            val sic = entries.sics.get(i);
+        for (val entry : entries.entries) {
+            val extension = entry.extension;
+            val sic = entry.sic;
 
             PatientEntry pat = study.getPatientByID(ref, root, extension);
             if (pat != null) {
@@ -448,13 +446,18 @@ public class OptInEndpoint {
                             .build();
                 }
 
-                entries.sics.set(i, study.generateSIC());
+                entry.sic = study.generateSIC();
             }
         }
 
-        val ret = study.addPatients(ref, root, entries.extensions, entries.sics, entries.opt, entries.comment, security.getUserPrincipal().getName());
+        val extensionSicMap = new HashMap<String, String>();
+        entries.entries.forEach(e -> {
+            extensionSicMap.put(e.extension, e.sic);
+        });
+        val name = security.getUserPrincipal().getName();
+        List<PatientEntry> result = study.addPatients(ref, root, extensionSicMap, entries.opt, entries.comment, name);
 
-        return Response.ok(ret).build();
+        return Response.ok(result).build();
     }
 
     /**
