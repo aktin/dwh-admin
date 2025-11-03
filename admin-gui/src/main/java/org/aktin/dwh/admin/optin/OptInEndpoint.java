@@ -41,22 +41,6 @@ public class OptInEndpoint {
     private SecurityContext security;
 
     /**
-     * Gets all patient entries of all existing studies.
-     *
-     * @return list of all patient entries of all studies
-     * @throws IOException
-     */
-    @GET
-    public List<PatientEntry> getEntries() throws IOException {
-        List<PatientEntry> patientList = new ArrayList<>();
-        for (Study study : sm.getStudies()) {
-            List<? extends PatientEntry> patients = study.allPatients();
-            patientList.addAll(patients);
-        }
-        return patientList;
-    }
-
-    /**
      * Gets a list of all studies.
      *
      * @return list of studies
@@ -249,9 +233,12 @@ public class OptInEndpoint {
     public Response deleteEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root,
                                 @PathParam("extension") String ext) throws IOException {
         Study study = this.getStudy(id);
+        if(study == null) {
+            return Response.status(Status.NOT_FOUND).entity(MessageFormat.format("Study {0} not found", id)).build();
+        }
         PatientEntry pat = study.getPatientByID(ref, root, ext);
         if (pat == null) {
-            return Response.status(Status.BAD_REQUEST).entity("Patient*in nicht gefunden").build();
+            return Response.status(Status.NOT_FOUND).entity("Patient*in nicht gefunden").build();
         }
         pat.delete(security.getUserPrincipal().getName());
         return Response.ok().build();
@@ -271,11 +258,12 @@ public class OptInEndpoint {
     @Path("entries/{studyId}/{reference}/{root}")
     @PUT
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public ArrayList<PatientEntriesResponseDTO> validateEntries(@PathParam("studyId") String id,
+    public Response validateEntries(@PathParam("studyId") String id,
                                                                 @PathParam("reference") PatientReference ref,
                                                                 @PathParam("root") String root,
                                                                 PatientEntriesRequestDTO entries) throws IOException {
         Study study = this.getStudy(id);
+
         val validatedEntries = new ArrayList<PatientEntriesResponseDTO>();
 
         for (val entry : entries.entries) {
@@ -308,7 +296,7 @@ public class OptInEndpoint {
             foundEntry.setEntryValidation(EntryValidation.VALID);
         }
 
-        return validatedEntries;
+        return Response.ok(validatedEntries).build();
     }
 
     /**
