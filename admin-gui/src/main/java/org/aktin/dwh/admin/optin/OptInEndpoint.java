@@ -264,11 +264,11 @@ public class OptInEndpoint {
                                                                 PatientEntriesRequestDTO entries) throws IOException {
         Study study = this.getStudy(id);
 
-        val validatedEntries = new ArrayList<PatientEntriesResponseDTO>();
+        val validatedEntries = new ArrayList<PatientEntryResponseDTO>();
 
         for (val entry : entries.entries) {
             val extension = entry.extension;
-            val foundEntry = new PatientEntriesResponseDTO();
+            val foundEntry = new PatientEntryResponseDTO();
             foundEntry.setExtension(extension);
             validatedEntries.add(foundEntry);
 
@@ -312,7 +312,7 @@ public class OptInEndpoint {
      *         {@code false} otherwise.
      * @throws IOException If an I/O error occurs during the validation process.
      */
-    private boolean validateSic(PatientEntriesRequestDTO entries, Study study, PatientEntriesResponseDTO foundEntry, String sic) throws IOException {
+    private boolean validateSic(PatientEntriesRequestDTO entries, Study study, PatientEntryResponseDTO foundEntry, String sic) throws IOException {
         if (sic != null) {
             if (entries.entries.stream().filter(s -> Objects.equals(s.sic, sic)).count() > 1) {
                 foundEntry.setEntryValidation(EntryValidation.DUPLICATE_SIC);
@@ -335,7 +335,7 @@ public class OptInEndpoint {
      * @param extension  The extension to check for duplicates in the provided entries.
      * @return true if the extension exists more than once in the request data and updates the validation status, false otherwise.
      */
-    private boolean validateDuplicateExtension(PatientEntriesRequestDTO entries, PatientEntriesResponseDTO foundEntry, String extension) {
+    private boolean validateDuplicateExtension(PatientEntriesRequestDTO entries, PatientEntryResponseDTO foundEntry, String extension) {
         if (entries.entries.stream().filter(e -> Objects.equals(e.extension, extension)).count() > 1) {
             foundEntry.setEntryValidation(EntryValidation.DUPLICATE_PAT_REF);
             return true;
@@ -355,7 +355,7 @@ public class OptInEndpoint {
      * @return true if the patient is found, false otherwise
      * @throws IOException if an I/O error occurs during the operation
      */
-    private boolean checkPatientById(Study study, PatientReference ref, String root, PatientEntriesResponseDTO foundEntry, String extension) throws IOException {
+    private boolean checkPatientById(Study study, PatientReference ref, String root, PatientEntryResponseDTO foundEntry, String extension) throws IOException {
         if (study.getPatientByID(ref, root, extension) != null) {
             foundEntry.setEntryValidation(EntryValidation.ENTRY_FOUND);
             return true;
@@ -373,7 +373,7 @@ public class OptInEndpoint {
      * @return true if encounters or master data are missing, false otherwise.
      * @throws IOException If an error occurs while loading encounters or master data.
      */
-    private boolean checkEncountersAndMasterData(PatientReference ref, String root, PatientEntriesResponseDTO foundEntry, String extension) throws IOException {
+    private boolean checkEncountersAndMasterData(PatientReference ref, String root, PatientEntryResponseDTO foundEntry, String extension) throws IOException {
         val encounters = sm.loadEncounters(ref, root, extension);
 
         if (encounters.isEmpty()) {
