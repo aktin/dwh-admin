@@ -381,7 +381,7 @@ public class OptInEndpoint {
             return true;
         }
 
-        encounters.sort(Comparator.comparing(PatientEncounter::getStartDate));
+        encounters.sort(Comparator.comparing(PatientEncounter::getStartDate).reversed());
         foundEntry.setLastEncounter(encounters.get(0));
 
         val masterdata = sm.loadMasterData(ref, root, extension);
