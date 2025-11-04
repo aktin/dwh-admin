@@ -89,7 +89,7 @@ public class OptInEndpoint {
     }
 
     /**
-     * Gets an entry by the specified study id, reference type, root and extension parameters.
+     * Gets an entry by the specified study id and study specific unique student object identifier (SIC).
      *
      * @param id: study id
      * @param sic unique student object identifier
