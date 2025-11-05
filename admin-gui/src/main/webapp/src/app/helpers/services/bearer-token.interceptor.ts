@@ -9,7 +9,7 @@ export class BearerTokenInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // add auth header with jwt if account is logged in and request is to the api url
-    if (this._storageService.getValue('user.token') /* && config.url === getUrl("/auth/login") */ ) {
+    if (this._storageService.getValue('user.token') && ! request.url.startsWith("http://localhost:8088") /* && config.url === getUrl("/auth/login") */ ) {
       request = request.clone({
         setHeaders: { Authorization: `Bearer ${this._storageService.getValue('user.token')}` }
       })
