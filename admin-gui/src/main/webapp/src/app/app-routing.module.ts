@@ -14,6 +14,7 @@ import {ReportNewComponent, ReportsComponent, ReportSingleComponent} from './rep
 import {PreferencesComponent} from './preferences';
 import {ImporterComponent} from './importer';
 import {RequestsComponent, RequestSingleComponent} from './requests';
+import {DashboardComponent} from './dashboard';
 import {StatusComponent} from './status';
 import {StudyManagerComponent} from "./studyManager";
 
@@ -174,6 +175,17 @@ const routes: Routes = [// array of routes
       ],
       permissions: [
         Permission.STATUS
+      ]
+    },
+  },
+  {
+    path: 'dashboard',
+    canActivate: [UserAuthGuard],
+    component: DashboardComponent,
+    data: {
+      name: 'QM-Dashboard',
+      roles: [
+        'LOGGEDIN',
       ]
     },
   },

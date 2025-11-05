@@ -1,0 +1,10 @@
+.superset-dashboard {
+    width: 100%;
+    position: absolute;
+    left: 0;
+    margin-left: 0;
+    margin-right: 0;
+    height: 1680px;
+    min-height: 240px;
+    padding-bottom: 0;
+}
