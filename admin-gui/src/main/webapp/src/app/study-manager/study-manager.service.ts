@@ -41,8 +41,7 @@ export class StudyManagerService {
      */
     public getStudies(): Observable<Study[]> {
         return this._http.get<Study[]>(this._urls.parse('studies')).pipe(
-            map(studies => studies.map(s => new Study(s))),
-            catchError(err => this._http.handleError(err))
+            map(studies => studies.map(s => new Study(s)))
         );
     }
 
@@ -53,15 +52,12 @@ export class StudyManagerService {
      */
     public getEntries(studyId: string): Observable<Entry[]> {
         return this._http.get<Entry[]>(this._urls.parse('entries', {studyId})).pipe(
-            map(entries => entries?.map(e => new Entry(e)).sort((a, b) => b.timestamp - a.timestamp)),
-            catchError(err => this._http.handleError(err))
-        );
+            map(entries => entries?.map(e => new Entry(e)).sort((a, b) => b.timestamp - a.timestamp)));
     }
 
     public getEntryBySic(studyId: string, sic: string): Observable<Entry> {
         return this._http.get<Entry>(this._urls.parse('sic', {studyId, sic})).pipe(
-            map(e => !!e ? new Entry(e) : null),
-            catchError(err => this._http.handleError(err))
+            map(e => !!e ? new Entry(e) : null)
         );
     }
 
@@ -72,8 +68,7 @@ export class StudyManagerService {
             reference: ref,
             root: root,
             extension: ext
-        })).pipe(map(m => !!m ? new MasterData(m) : null),
-            catchError(err => this._http.handleError(err)));
+        })).pipe(map(m => !!m ? new MasterData(m) : null));
     }
 
     public getEncounters(ref: PatientReference, root: string, ext: string): Observable<Encounter[]> {
@@ -83,8 +78,7 @@ export class StudyManagerService {
             reference: ref,
             root: root,
             extension: ext
-        })).pipe(map(encounters => encounters.map(e => new Encounter(e))),
-            catchError(err => this._http.handleError(err)));
+        })).pipe(map(encounters => encounters.map(e => new Encounter(e))));
     }
 
     public validateEntries(studyId: string, ref: PatientReference, root: string, entries: GridModel[], generateSic: boolean): Observable<GridModel[]> {
@@ -99,7 +93,7 @@ export class StudyManagerService {
             'sics': sics,
             'extensions': extensions,
             'generateSic': generateSic,
-        }).pipe(catchError(err => this._http.handleError(err)));
+        });
     }
 
     public createEntries(studyId: string, ref: PatientReference, root: string, entries: GridModel[], participation: Participation, comment: string, generateSic: boolean): Observable<GridModel[]> {
@@ -116,7 +110,7 @@ export class StudyManagerService {
             'sics': sics,
             'extensions': extensions,
             'generateSic': generateSic,
-        }).pipe(catchError(err => this._http.handleError(err)));
+        });
     }
 
     /**
@@ -138,7 +132,7 @@ export class StudyManagerService {
                 'opt': entry.participation,
                 'sic': entry.sic,
                 'comment': entry.comment
-            }).pipe(catchError(err => this._http.handleError(err)));
+            });
     }
 
 
@@ -158,7 +152,7 @@ export class StudyManagerService {
             reference: ref,
             root: root,
             extension: ext
-        })).pipe(catchError(err => this._http.handleError(err)));
+        }));
     }
 
     public updateEntry(studyId: string, reference: PatientReference, root: string, extension: string, entry: Entry): Observable<Entry> {
@@ -170,6 +164,6 @@ export class StudyManagerService {
                 reference: reference,
                 root: root,
                 extension: extension
-            }), {comment: entry.comment}).pipe(catchError(err => this._http.handleError(err)));
+            }), {comment: entry.comment});
     }
 }

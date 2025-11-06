@@ -105,6 +105,7 @@ import {ModalRef} from './helpers/modal/modal-ref.component';
 import {ModalComponent} from './helpers/modal/modal.component';
 import {AngularMyDatePickerModule} from 'gramli-angular-mydatepicker';
 import {StatsTableComponent} from "./status/stats-table.component";
+import {StudyManagerErrorInterceptor} from './study-manager/study-manager-error.interceptor';
 
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
@@ -188,6 +189,7 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         {provide: HTTP_INTERCEPTORS, useClass: BearerTokenInterceptor, multi: true},
         {provide: HTTP_INTERCEPTORS, useClass: SetTimeInterceptor, multi: true},
         {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+        {provide: HTTP_INTERCEPTORS, useClass: StudyManagerErrorInterceptor, multi: true},
         {provide: LOCALE_ID, useValue: 'de-DE'},
         {provide: MY_CALENDAR_OPTIONS, useValue: MY_CALENDAR_DEFAULT_OPTIONS},
         Title,

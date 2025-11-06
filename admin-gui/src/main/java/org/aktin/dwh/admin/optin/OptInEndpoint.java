@@ -20,11 +20,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * RESTful HTTP end point for creating, deleting and retrieving patient entries.
@@ -162,14 +159,12 @@ public class OptInEndpoint {
 
         PatientEntry pat = study.getPatientByID(ref, root, ext);
         if (pat != null) {
-            log.log(Level.WARNING, "Cannot create entry, PatientEntry already exists.");
-            return Response.status(Status.CONFLICT).entity("Patient*in existiert bereits").build();
+            throw OptInError.buildError(Status.CONFLICT, OptInErrorType.PATIENT_ALREADY_EXISTS, "Cannot create entry, PatientEntry already exists");
         }
 
         pat = study.getPatientBySIC(entry.sic);
         if (pat != null) {
-            log.log(Level.WARNING, "Cannot create entry, SIC already exists.");
-            return Response.status(Status.CONFLICT).entity("Studien-ID existiert bereits").build();
+            throw OptInError.buildError(Status.CONFLICT, OptInErrorType.SIC_ALREADY_EXISTS, "Cannot create entry, SIC {0} already exists", entry.sic);
         }
 
         if (study.getSicGeneration() == SICGeneration.AutoAndManual && (entry.sic == null || entry.sic.isEmpty())) {
@@ -202,8 +197,7 @@ public class OptInEndpoint {
 
         PatientEntry oldEntry = study.getPatientByID(ref, root, ext);
         if (oldEntry == null) {
-            log.log(Level.WARNING, "Cannot update entry, entry does not exist");
-            return Response.status(Status.BAD_REQUEST).entity("Patient*in nicht gefunden").build();
+            throw OptInError.buildError(Status.NOT_FOUND, OptInErrorType.PATIENT_NOT_FOUND, "Patient not found");
         }
         PatientEntry newEntry = study.getPatientByID(ref, root, ext);
         newEntry.setComment(entry.comment);
@@ -233,12 +227,9 @@ public class OptInEndpoint {
     public Response deleteEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root,
                                 @PathParam("extension") String ext) throws IOException {
         Study study = this.getStudy(id);
-        if(study == null) {
-            return Response.status(Status.NOT_FOUND).entity(MessageFormat.format("Study {0} not found", id)).build();
-        }
         PatientEntry pat = study.getPatientByID(ref, root, ext);
         if (pat == null) {
-            return Response.status(Status.NOT_FOUND).entity("Patient*in nicht gefunden").build();
+            throw OptInError.buildError(Status.NOT_FOUND, OptInErrorType.PATIENT_NOT_FOUND, "Patient not found");
         }
         pat.delete(security.getUserPrincipal().getName());
         return Response.ok().build();
@@ -293,7 +284,7 @@ public class OptInEndpoint {
                 continue;
             }
 
-            foundEntry.setEntryValidation(EntryValidation.VALID);
+            foundEntry.setEntryValidation(ValidationErrorType.VALID);
         }
 
         return Response.ok(validatedEntries).build();
@@ -315,12 +306,12 @@ public class OptInEndpoint {
     private boolean validateSic(PatientEntriesRequestDTO entries, Study study, PatientEntryResponseDTO foundEntry, String sic) throws IOException {
         if (sic != null) {
             if (entries.entries.stream().filter(s -> Objects.equals(s.sic, sic)).count() > 1) {
-                foundEntry.setEntryValidation(EntryValidation.DUPLICATE_SIC);
+                foundEntry.setEntryValidation(ValidationErrorType.DUPLICATE_SIC);
                 return true;
             }
 
             if (study.getPatientBySIC(sic) != null) {
-                foundEntry.setEntryValidation(EntryValidation.SIC_FOUND);
+                foundEntry.setEntryValidation(ValidationErrorType.SIC_FOUND);
                 return true;
             }
         }
@@ -337,7 +328,7 @@ public class OptInEndpoint {
      */
     private boolean validateDuplicateExtension(PatientEntriesRequestDTO entries, PatientEntryResponseDTO foundEntry, String extension) {
         if (entries.entries.stream().filter(e -> Objects.equals(e.extension, extension)).count() > 1) {
-            foundEntry.setEntryValidation(EntryValidation.DUPLICATE_PAT_REF);
+            foundEntry.setEntryValidation(ValidationErrorType.DUPLICATE_PAT_REF);
             return true;
         }
         return false;
@@ -357,7 +348,7 @@ public class OptInEndpoint {
      */
     private boolean checkPatientById(Study study, PatientReference ref, String root, PatientEntryResponseDTO foundEntry, String extension) throws IOException {
         if (study.getPatientByID(ref, root, extension) != null) {
-            foundEntry.setEntryValidation(EntryValidation.ENTRY_FOUND);
+            foundEntry.setEntryValidation(ValidationErrorType.ENTRY_FOUND);
             return true;
         }
         return false;
@@ -377,7 +368,7 @@ public class OptInEndpoint {
         val encounters = sm.loadEncounters(ref, root, extension);
 
         if (encounters.isEmpty()) {
-            foundEntry.setEntryValidation(EntryValidation.ENCOUNTERS_NOT_FOUND);
+            foundEntry.setEntryValidation(ValidationErrorType.ENCOUNTERS_NOT_FOUND);
             return true;
         }
 
@@ -387,7 +378,7 @@ public class OptInEndpoint {
         val masterdata = sm.loadMasterData(ref, root, extension);
 
         if (masterdata == null) {
-            foundEntry.setEntryValidation(EntryValidation.MASTER_DATA_NOT_FOUND);
+            foundEntry.setEntryValidation(ValidationErrorType.MASTER_DATA_NOT_FOUND);
             return true;
         }
 
@@ -419,22 +410,16 @@ public class OptInEndpoint {
 
             PatientEntry pat = study.getPatientByID(ref, root, extension);
             if (pat != null) {
-                log.log(Level.WARNING, "Cannot create entry, PatientEntry already exists.");
-                return Response.status(Status.CONFLICT)
-                        .entity(MessageFormat.format("Patient*in {0} bereits registiert", pat.getIdExt()))
-                        .build();
+                throw OptInError.buildError(Status.CONFLICT, OptInErrorType.PATIENT_ALREADY_EXISTS, "Cannot create entry, PatientEntry already exists");
             }
 
             if (entries.generateSic) {
+                entry.sic = study.generateSIC();
+            } else {
                 pat = study.getPatientBySIC(sic);
                 if (pat != null) {
-                    log.log(Level.WARNING, "Cannot create entry, SIC already exists.");
-                    return Response.status(Status.CONFLICT)
-                            .entity(MessageFormat.format("Studien-ID {0} existiert bereits", sic))
-                            .build();
+                    throw OptInError.buildError(Status.CONFLICT, OptInErrorType.SIC_ALREADY_EXISTS, "Cannot create entry, SIC {0} already exists", sic);
                 }
-
-                entry.sic = study.generateSIC();
             }
         }
 
@@ -478,6 +463,6 @@ public class OptInEndpoint {
      */
     private Study getStudy(String id) throws IOException {
         return sm.getStudies().stream().filter(s -> s.getId().equals(id)).findFirst()
-                .orElseThrow(() -> new NotFoundException("Unable to find study with id " + id + ".", Response.status(Status.NOT_FOUND).build()));
+                .orElseThrow(() -> OptInError.buildError(Status.NOT_FOUND, OptInErrorType.STUDY_NOT_FOUND, "Study {0} not found", id));
     }
 }

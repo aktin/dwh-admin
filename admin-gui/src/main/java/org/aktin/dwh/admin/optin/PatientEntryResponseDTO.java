@@ -9,7 +9,7 @@ import org.aktin.dwh.optinout.PatientMasterData;
 public class PatientEntryResponseDTO {
     private String extension;
     private String sic;
-    private EntryValidation entryValidation = EntryValidation.VALID;
+    private ValidationErrorType entryValidation = ValidationErrorType.VALID;
     private PatientEncounter lastEncounter;
     private PatientMasterData masterData;
 }

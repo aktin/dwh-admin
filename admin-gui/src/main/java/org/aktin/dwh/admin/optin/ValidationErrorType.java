@@ -4,7 +4,7 @@ package org.aktin.dwh.admin.optin;
  * Validation result of a inserted entry data
  */
 //BatchEntryValidation
-public enum EntryValidation {
+public enum ValidationErrorType implements ErrorType {
     // Entry Request
     DUPLICATE_PAT_REF, // User entered a patient reference at least twice
     DUPLICATE_SIC, // User entered a SIC at least twice

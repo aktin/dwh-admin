@@ -61,7 +61,7 @@ export class PatientEditComponent extends PatientDialogBase implements OnInit {
                         this.notificationService.showSuccess('Änderungen gespeichert');
                         this.close();
                     },
-                    error: e => this.notificationService.showError(`Änderungen konnten nicht gespeichert werden. ${e}.`)
+                    error: e => this.notificationService.showError(`Änderungen konnten nicht gespeichert werden. ${e.readable}`)
                 });
         } else {
             this.notificationService.showError('Alle Felder müssen gültige Werte haben');

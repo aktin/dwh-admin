@@ -95,11 +95,13 @@ export class PatientCreationComponent extends PatientDialogBase implements OnIni
     public create(): void {
         if (this.form.valid) {
             this.studyManagerService.createEntry(this.selectedStudy.id, this.selectedReference, this.toRootPipe.transform(this.selectedReference), this.extension, this.newEntry)
-                .subscribe({next: e => {
-                        this.notificationService.showSuccess("Patient*in registriert");
+                .subscribe({
+                    next: e => {
+                        this.notificationService.showSuccess('Patient*in registriert');
                         this.close();
                     },
-                error: e => this.notificationService.showError(`Patient*in konnte nicht registriert werden. ${e}.`)});
+                    error: e => this.notificationService.showError(`Patient*in konnte nicht registriert werden. ${e.readable}`)
+                });
         } else {
             this.notificationService.showError('Alle Felder müssen gültige Werte haben')
         }
