@@ -14,13 +14,7 @@ import {Participation} from './participation';
 
 @Injectable({providedIn: 'root'})
 export class StudyManagerService {
-    public get preferences(): Map<string, string> {
-        return JSON.parse(sessionStorage.getItem('studyManager.preferences'));
-    };
-
-    private set preferences(preferences: Map<string, string>) {
-        sessionStorage.setItem('studyManager.preferences', JSON.stringify(preferences));
-    };
+    public preferences: Map<string, string>;
 
     constructor(private _http: HttpService,
                 private _urls: UrlService) {
@@ -83,23 +77,19 @@ export class StudyManagerService {
 
     public validateEntries(studyId: string, ref: PatientReference, root: string, entries: GridModel[], generateSic: boolean): Observable<GridModel[]> {
         root = encodeURIComponent(root);
-        const extensions = entries.map(e => e.extension);
-        const sics = entries.map(e => e.sic);
         return this._http.put<GridModel[]>(this._urls.parse('multi', {
             studyId: studyId,
             reference: ref,
             root: root,
         }), {
-            'sics': sics,
-            'extensions': extensions,
+            'entries': entries,
             'generateSic': generateSic,
         });
     }
 
     public createEntries(studyId: string, ref: PatientReference, root: string, entries: GridModel[], participation: Participation, comment: string, generateSic: boolean): Observable<GridModel[]> {
         root = encodeURIComponent(root);
-        const extensions = entries.map(e => e.extension);
-        const sics = entries.map(e => e.sic);
+
         return this._http.post<GridModel[]>(this._urls.parse('multi', {
             studyId: studyId,
             reference: ref,
@@ -107,8 +97,7 @@ export class StudyManagerService {
         }), {
             'opt': participation,
             'comment': comment,
-            'sics': sics,
-            'extensions': extensions,
+            'entries': entries,
             'generateSic': generateSic,
         });
     }
