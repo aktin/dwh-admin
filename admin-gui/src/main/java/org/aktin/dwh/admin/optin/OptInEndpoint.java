@@ -45,8 +45,8 @@ public class OptInEndpoint {
      */
     @Path("studies")
     @GET
-    public List<Study> getStudies() throws IOException {
-        return (List<Study>) sm.getStudies();
+    public Response getStudies() throws IOException {
+        return Response.ok(sm.getStudies()).build();
     }
 
     /**
@@ -79,10 +79,10 @@ public class OptInEndpoint {
     @Path("{studyId}/{reference}/{root}{p:/?}{extension:.*}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public PatientEntry getEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root,
+    public Response getEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root,
                                  @PathParam("extension") String ext) throws IOException {
         Study study = this.getStudy(id);
-        return study.getPatientByID(ref, root, ext);
+        return Response.ok(study.getPatientByID(ref, root, ext)).build();
     }
 
     /**
@@ -113,10 +113,10 @@ public class OptInEndpoint {
     @Path("encounter/{reference}/{root}{p:/?}{extension:.*}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<PatientEncounter> getEncounters(@PathParam("reference") PatientReference ref,
+    public Response getEncounters(@PathParam("reference") PatientReference ref,
                                                 @PathParam("root") String root,
                                                 @PathParam("extension") String ext) throws IOException {
-        return sm.loadEncounters(ref, root, ext);
+        return Response.ok(sm.loadEncounters(ref, root, ext)).build();
     }
 
     /**
@@ -131,10 +131,10 @@ public class OptInEndpoint {
     @Path("masterdata/{reference}/{root}{p:/?}{extension:.*}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public PatientMasterData getMasterData(@PathParam("reference") PatientReference ref,
+    public Response getMasterData(@PathParam("reference") PatientReference ref,
                                            @PathParam("root") String root,
                                            @PathParam("extension") String ext) throws IOException {
-        return sm.loadMasterData(ref, root, ext);
+        return Response.ok(sm.loadMasterData(ref, root, ext)).build();
     }
 
 
