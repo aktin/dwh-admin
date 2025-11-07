@@ -18,7 +18,7 @@ declare var $: any;
     selector: 'patient-list',
     templateUrl: './patient-list.component.html',
     styleUrl: './patient-list.component.css',
-    providers: [StudyManagerService, PatientReferenceToLabelPipe]
+    providers: [PatientReferenceToLabelPipe]
 })
 export class PatientListComponent implements OnInit, AfterViewInit {
     public studies: Study[] = [];
@@ -56,7 +56,7 @@ export class PatientListComponent implements OnInit, AfterViewInit {
 
     constructor(private studyManagerService: StudyManagerService,
                 private patientReferenceToLabelPipe: PatientReferenceToLabelPipe,
-                public modalService: ModalService,
+                private modalService: ModalService,
                 @Inject(MY_CALENDAR_OPTIONS) protected options: IMyOptions) {
         this.options.dateRange = true;
     }
