@@ -203,7 +203,7 @@ public class OptInEndpoint {
 
         newEntry = study.updatePatient(oldEntry, newEntry);
 
-        return Response.created(buildEntryLocation(newEntry)).entity(newEntry).build();
+        return Response.ok(newEntry).build();
     }
 
     private static URI buildEntryLocation(PatientEntry entry) throws UnsupportedEncodingException {
