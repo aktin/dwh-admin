@@ -15,18 +15,25 @@ public class OptInError {
     public String message;
     public ErrorType type;
 
+    /**
+     * Build a web application exception with the given error type and message for front end processing
+     * @param status http status code
+     * @param type error type enum for machine processing
+     * @param message human readable error message
+     * @return the built exception
+     */
     public static WebApplicationException buildError(Response.Status status, ErrorType type, String message) {
         val response = Response.status(status).entity(new OptInError(status.getStatusCode(), message, type)).build();
         return new WebApplicationException(message, response);
     }
 
     /**
-     *
-     * @param status
-     * @param type
-     * @param message
-     * @param params
-     * @return
+     * Build a web application exception with the given error type and message.
+     * @param status http status code
+     * @param type error type enum for machine processing
+     * @param message human readable error message
+     * @param params variable parameters for the message (see {@link MessageFormat})
+     * @return the built exception
      */
     public static WebApplicationException buildError(Response.Status status, ErrorType type, String message, Object... params) {
         message = MessageFormat.format(message, params);
