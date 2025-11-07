@@ -60,9 +60,8 @@ public class OptInEndpoint {
     @GET
     public Response getEntriesByStudy(@PathParam("studyId") String id) throws IOException {
         Study s = this.getStudy(id);
-        List<PatientEntry> list = new ArrayList<>();
-        list.addAll(s.allPatients());
-        return Response.ok(list).build();
+
+        return Response.ok(s.allPatients()).build();
     }
 
 
