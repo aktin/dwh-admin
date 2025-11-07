@@ -64,11 +64,10 @@ import {
     RequestSingleViewComponent,
     RequestStatusBarComponent
 } from './requests';
-import {PopUpDetailComponent, PopUpNewEntryComponent, StudyManagerComponent, StudyManagerService} from './studyManager';
 import {StatusComponent, StatusService} from './status';
 import {RestrictedComponent} from './restricted/restricted.component';
 import {HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
-import {ErrorInterceptor} from './helpers/services/error.interceptor';
+import {ErrorInterceptor} from './helpers/error/error.interceptor';
 import {BearerTokenInterceptor} from './helpers/services/bearer-token.interceptor';
 import {SetTimeInterceptor} from './helpers/services/set-time.interceptor';
 import {registerLocaleData} from '@angular/common';
@@ -104,7 +103,7 @@ import {RequiredDirective} from './helpers/directives/required.directive';
 import {ModalRef} from './helpers/modal/modal-ref.component';
 import {ModalComponent} from './helpers/modal/modal.component';
 import {AngularMyDatePickerModule} from 'gramli-angular-mydatepicker';
-import {StatsTableComponent} from "./status/stats-table.component";
+import {StatsTableComponent} from './status/stats-table.component';
 import {StudyManagerErrorInterceptor} from './study-manager/study-manager-error.interceptor';
 
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
@@ -131,9 +130,6 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         RequestStatusBarComponent,
         VisitsComponent,
         VisitSingleViewComponent,
-        StudyManagerComponent,
-        PopUpNewEntryComponent,
-        PopUpDetailComponent,
         StatusComponent,
         RestrictedComponent,
         LoadingComponent,
@@ -204,7 +200,6 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         ReportService,
         RequestService,
         VisitService,
-        StudyManagerService,
         PreferenceService,
         ImporterService,
         UpdaterService,
