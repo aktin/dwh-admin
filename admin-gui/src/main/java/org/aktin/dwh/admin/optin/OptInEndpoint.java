@@ -166,10 +166,6 @@ public class OptInEndpoint {
             throw OptInError.buildError(Status.CONFLICT, OptInErrorType.SIC_ALREADY_EXISTS, "Cannot create entry, SIC {0} already exists", entry.sic);
         }
 
-        if (study.getSicGeneration() == SICGeneration.AutoAndManual && (entry.sic == null || entry.sic.isEmpty())) {
-            entry.sic = study.generateSIC();
-        }
-
         pat = study.addPatient(ref, root, ext, entry.opt, entry.sic, entry.comment, security.getUserPrincipal().getName());
 
         return Response.created(buildEntryLocation(pat)).entity(pat).build();
@@ -412,9 +408,7 @@ public class OptInEndpoint {
                 throw OptInError.buildError(Status.CONFLICT, OptInErrorType.PATIENT_ALREADY_EXISTS, "Cannot create entry, PatientEntry already exists");
             }
 
-            if (entries.generateSic) {
-                entry.sic = study.generateSIC();
-            } else {
+            if (!entries.generateSic) {
                 pat = study.getPatientBySIC(sic);
                 if (pat != null) {
                     throw OptInError.buildError(Status.CONFLICT, OptInErrorType.SIC_ALREADY_EXISTS, "Cannot create entry, SIC {0} already exists", sic);
