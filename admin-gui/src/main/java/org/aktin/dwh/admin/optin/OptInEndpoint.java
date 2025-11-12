@@ -81,7 +81,11 @@ public class OptInEndpoint {
     public Response getEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root,
                                  @PathParam("extension") String ext) throws IOException {
         Study study = this.getStudy(id);
-        return Response.ok(study.getPatientByID(ref, root, ext)).build();
+        PatientEntry patientEntry = study.getPatientByID(ref, root, ext);
+        if(patientEntry == null) {
+            throw OptInError.buildError(Status.NOT_FOUND, OptInErrorType.PATIENT_NOT_FOUND, "Patient not found");
+        }
+        return Response.ok(patientEntry).build();
     }
 
     /**
@@ -95,9 +99,13 @@ public class OptInEndpoint {
     @Path("{studyId}/{sic}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public PatientEntry getEntryBySic(@PathParam("studyId") String id, @PathParam("sic") String sic) throws IOException {
+    public Response getEntryBySic(@PathParam("studyId") String id, @PathParam("sic") String sic) throws IOException {
         Study study = this.getStudy(id);
-        return study.getPatientBySIC(sic);
+        PatientEntry patientEntry = study.getPatientBySIC(sic);
+        if(patientEntry == null) {
+            throw OptInError.buildError(Status.NOT_FOUND, OptInErrorType.PATIENT_NOT_FOUND, "Patient not found");
+        }
+        return Response.ok(patientEntry).build();
     }
 
     /**
@@ -454,7 +462,7 @@ public class OptInEndpoint {
      * @throws IOException
      * @throws NotFoundException if none of the existing study ids matches the given id
      */
-    private Study getStudy(String id) throws IOException {
+    private Study getStudy(String id) throws IOException, WebApplicationException {
         return sm.getStudies().stream().filter(s -> s.getId().equals(id)).findFirst()
                 .orElseThrow(() -> OptInError.buildError(Status.NOT_FOUND, OptInErrorType.STUDY_NOT_FOUND, "Study {0} not found", id));
     }
