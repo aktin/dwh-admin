@@ -6,6 +6,8 @@ import {catchError, switchMap} from 'rxjs/operators';
 
 import {embedDashboard} from '@superset-ui/embedded-sdk';
 
+import {AuthService, Permission} from "../users";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -18,10 +20,11 @@ export class DashboardService {
   private apiUrl = `${this.domain}/api/v1/security`;
   private dashboardId = '';
 
-  /**
-   * @param {HttpClient} http Http Client to send requests.
-   */
-  constructor(private http: HttpClient) { }
+  constructor(private _auth: AuthService, private _http: HttpClient) {}
+
+  checkPermission(): boolean {
+    return this._auth.userLocalCheckPermissions([Permission.DASHBOARD]);
+  }
 
   /**
    *
@@ -39,7 +42,7 @@ export class DashboardService {
 
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    return this.http.post<any>(`${this.apiUrl}/login`, body, { headers });
+    return this._http.post<any>(`${this.apiUrl}/login`, body, { headers });
   }
 
   /**
@@ -75,7 +78,7 @@ export class DashboardService {
     });
 
     //guest_token URL should end with forward_slash(/)
-    return this.http.post<any>(`${this.apiUrl}/guest_token/`, body, {headers});
+    return this._http.post<any>(`${this.apiUrl}/guest_token/`, body, {headers});
   }
   /**
    *

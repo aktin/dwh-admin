@@ -186,6 +186,9 @@ const routes: Routes = [// array of routes
       name: 'QM-Dashboard',
       roles: [
         'LOGGEDIN',
+      ],
+      permissions: [
+        Permission.DASHBOARD
       ]
     },
   },

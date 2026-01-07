@@ -13,4 +13,5 @@ public enum Permission {
     READ_P21,
     WRITE_P21,
     UPDATE,
+    DASHBOARD,
 }

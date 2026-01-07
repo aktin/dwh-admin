@@ -10,5 +10,6 @@ export enum Permission {
     STATUS,
     READ_P21,
     WRITE_P21,
-    UPDATE
+    UPDATE,
+    DASHBOARD,
 }
