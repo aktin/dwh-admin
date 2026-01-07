@@ -74,7 +74,6 @@ export class DashboardService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${acc}`,
-      'Some-Header': 'Some Value',
     });
 
     //guest_token URL should end with forward_slash(/)
