@@ -34,8 +34,8 @@ export class DashboardService {
     //BEARER_TOKEN_SUPER=$(curl -s -X POST "http://localhost:8088/api/v1/security/login" -H "Content-Type: application/json" --data '{ "username": "admin", "password": "admin", "provider": "db" }' | jq -r .access_token)
     //curl -L -X POST "http://localhost:8088/api/v1/security/guest_token" -H 'Content-Type: application/json' -H "Authorization: Bearer $BEARER_TOKEN_SUPER" --data @guest_token_request.json
     const body = {
-      'username': 'admin',
-      'password': 'admin',
+      'username': 'guest_token_issuer',
+      'password': 'guest_token_issuer',
       'provider': 'db',
       'refresh': true
     };
