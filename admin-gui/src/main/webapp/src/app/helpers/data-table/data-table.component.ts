@@ -57,7 +57,7 @@ export class DataTableComponent<T = any> {
                 sortFunction = (a: number, b: number) => a - b;
                 break;
             case "string":
-                sortFunction = (a: string, b: string) => a.localeCompare(b);
+                sortFunction = (a: string, b: string) => (a ?? "").localeCompare(b ?? "");
                 break;
             case "function":
             case "symbol":

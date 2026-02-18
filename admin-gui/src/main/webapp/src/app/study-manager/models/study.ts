@@ -1,5 +1,6 @@
-import {BaseModel} from "../helpers";
+import {BaseModel} from "../../helpers";
 import {SICGeneration} from './sic-generation';
+import {Participation} from './participation';
 
 export class Study extends BaseModel {
   public id: string;
@@ -10,8 +11,7 @@ export class Study extends BaseModel {
   public sicGeneration: SICGeneration;
   public sicGenerator: string;
   public sicGeneratorState: string;
-  public optIn: boolean;
-  public optOut: boolean;
+  public participation: Participation
 
   constructor(obj?: any) {
     super(obj);

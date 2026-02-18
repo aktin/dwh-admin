@@ -1,16 +1,16 @@
-import {Component, ElementRef, EventEmitter, Inject, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {PatientDialogBase} from '../patient-dialog-base';
-import {compareStudies, Study} from '../study';
-import {PatientReference} from '../patient-reference';
+import {Component, Inject, Input, OnInit, ViewChild} from '@angular/core';
+import {PatientDialogBase} from '../models/patient-dialog-base';
+import {compareStudies, Study} from '../models/study';
+import {PatientReference} from '../models/patient-reference';
 import {NgForm} from '@angular/forms';
-import {StudyManagerService} from '../study-manager.service';
+import {StudyManagerService} from '../services/study-manager.service';
 import {NotificationService} from '../../helpers';
-import {Participation} from '../participation';
-import {SICGeneration} from '../sic-generation';
-import {PatientReferenceToRootPipe} from '../patient-reference-to-root.pipe';
-import {GridModel} from './patients-text-area/patients-text-area.component';
+import {Participation} from '../models/participation';
+import {SICGeneration} from '../models/sic-generation';
+import {PatientReferenceToRootPipe} from '../helpers/patient-reference-to-root.pipe';
 import {ModalRef} from '../../helpers/modal/modal-ref.component';
 import {IModalConfig, MODAL_CONFIG} from '../../helpers/modal/modal.service';
+import {Patient} from '../models/patient';
 
 declare var $: any;
 
@@ -22,8 +22,6 @@ declare var $: any;
 })
 export class PatientsCreationComponent extends PatientDialogBase implements OnInit {
     public studies: Study[] = [];
-    @Output()
-    public selectedStudyChange: EventEmitter<Study> = new EventEmitter();
     public extension: string;
     public selectedReference: PatientReference = PatientReference.Patient;
     public references: PatientReference[] = [PatientReference.Patient, PatientReference.Encounter, PatientReference.Billing];
@@ -31,7 +29,7 @@ export class PatientsCreationComponent extends PatientDialogBase implements OnIn
     protected readonly SICGeneration = SICGeneration;
     protected readonly compareStudies = compareStudies;
 
-    public entries: GridModel[];
+    public entries: Patient[];
 
     @ViewChild(NgForm)
     private form: NgForm;
@@ -40,11 +38,10 @@ export class PatientsCreationComponent extends PatientDialogBase implements OnIn
 
     constructor(studyManagerService: StudyManagerService,
                 private notificationService: NotificationService,
-                private toRootPipe: PatientReferenceToRootPipe,
                 private modalRef: ModalRef<PatientsCreationComponent>,
-                @Inject(MODAL_CONFIG)config: IModalConfig<Study>,) {
+                @Inject(MODAL_CONFIG)config: IModalConfig<any>,) {
         super(studyManagerService);
-        this.selectedStudy = config.data;
+        this.selectedStudy = config.data.study;
     }
 
     private _selectedStudy: Study;
@@ -58,21 +55,9 @@ export class PatientsCreationComponent extends PatientDialogBase implements OnIn
         this._selectedStudy = value;
 
         if (!!value) {
-            if (this._selectedStudy.optOut) {
-                this.participation = Participation.OptOut;
-            } else if (this._selectedStudy.optIn) {
-                this.participation = Participation.OptIn;
-            }
+            this.participation = value.participation;
 
             this.generateSic = this._selectedStudy.sicGeneration === SICGeneration.AutoAndManual;
-        }
-        this.selectedStudyChange.emit(this._selectedStudy);
-    }
-
-    @ViewChild('accordion', {static: false})
-    private set accordion(value: ElementRef<HTMLDivElement>) {
-        if (!!value) {
-            $(value.nativeElement).accordion({exclusive: false});
         }
     }
 
@@ -87,22 +72,26 @@ export class PatientsCreationComponent extends PatientDialogBase implements OnIn
 
     public create(): void {
         if (this.form.valid) {
-            this.studyManagerService.createEntries(this.selectedStudy.id,
-                this.selectedReference,
-                this.toRootPipe.transform(this.selectedReference),
-                this.entries,
-                this.participation,
-                this.comment,
-                this.generateSic)
+            // populate every patient with the same reference and participation
+            this.entries.forEach(e => {
+                e.reference = this.selectedReference;
+                e.participation = this.participation;
+                e.comment = this.comment;
+                e.generateSic = this.generateSic;
+            });
+            this.studyManagerService.createPatients(this.selectedStudy.id,
+                this.entries)
                 .subscribe({
                     next: e => {
                         this.notificationService.showSuccess('Patient*innen registriert');
                         this.close();
                     },
-                    error: e => this.notificationService.showError(`Patient*innen konnten nicht registriert werden. ${e.readable}.`)
+                    error: e => this.notificationService.showError(`Patient*innen konnten nicht registriert werden.`)
                 });
         } else {
             this.notificationService.showError('Alle Felder müssen gültige Werte haben');
         }
     }
+
+    protected readonly Participation = Participation;
 }

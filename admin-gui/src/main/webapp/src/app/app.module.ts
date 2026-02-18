@@ -32,6 +32,7 @@ import {
     PopUpMessageComponent,
     SafeUrlPipe,
     StorageService,
+    TemplateVarDirective,
     UrlService
 } from './helpers';
 import {
@@ -90,8 +91,8 @@ import {AgGridAngular} from 'ag-grid-angular';
 import {
     RemoveRowButtonComponent
 } from './study-manager/patients-creation/patients-text-area/remove-row-button.component';
-import {PatientReferenceToRootPipe} from './study-manager/patient-reference-to-root.pipe';
-import {PatientReferenceToLabelPipe} from './study-manager/patient-reference-to-label.pipe';
+import {PatientReferenceToRootPipe} from './study-manager/helpers/patient-reference-to-root.pipe';
+import {PatientReferenceToLabelPipe} from './study-manager/helpers/patient-reference-to-label.pipe';
 import {
     ReadableEntryValidationPipe
 } from './study-manager/patients-creation/patients-text-area/readable-entry-validation.pipe';
@@ -104,7 +105,8 @@ import {ModalRef} from './helpers/modal/modal-ref.component';
 import {ModalComponent} from './helpers/modal/modal.component';
 import {AngularMyDatePickerModule} from 'gramli-angular-mydatepicker';
 import {StatsTableComponent} from './status/stats-table.component';
-import {StudyManagerErrorInterceptor} from './study-manager/study-manager-error.interceptor';
+import {StudyManagerErrorInterceptor} from './study-manager/helpers/study-manager-error.interceptor';
+import {AccordionDirective} from './helpers/accordion/accordion.directive';
 
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
@@ -161,6 +163,7 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         ModalRef,
         ModalComponent,
         StatsTableComponent,
+        AccordionDirective,
     ],
     bootstrap: [
         AppComponent
@@ -176,6 +179,7 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         FieldModule,
         RevoGrid,
         AgGridAngular,
+        TemplateVarDirective,
     ],
     exports: [
         SafeUrlPipe,

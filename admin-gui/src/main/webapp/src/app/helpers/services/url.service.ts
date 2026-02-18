@@ -53,14 +53,14 @@ export class UrlService {
         visitId: 'visit/@id@?xslt=@filter@',
         visitEide: 'visit/',
 
-        studyPrefs: 'optin/preferences',
-        studies: 'optin/studies',
-        entries: 'optin/@studyId@',
-        sic: 'optin/@studyId@/@sic@',
-        multi: 'optin/entries/@studyId@/@reference@/@root@', //put/post
-        entry: 'optin/@studyId@/@reference@/@root@/@extension@', // get/put/post/delete
-        masterdata: 'optin/masterdata/@reference@/@root@/@extension@',
-        encounter: 'optin/encounter/@reference@/@root@/@extension@',
+        studyPrefs: 'studies/preferences',
+        studies: 'studies',
+        entries: 'studies/@studyId@/patients',
+        multi: 'studies/@studyId@/patients/batch', // put
+        entry: 'studies/@studyId@/patients/@reference@/@extension@', // get/put/delete
+        masterdata: 'studies/patients/@reference@/masterdata',
+        encounter: 'studies/patients/@reference@/encounters',
+        validate: 'studies/@studyId@/patients/batch/validate',
 
         // versions endpoint
         version: 'info/version',

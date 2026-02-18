@@ -17,6 +17,12 @@ export class ExtensionValidatorDirective implements Validator {
         root: string
     } = {separator: '/', root: ''}
 
+    /**
+     * Validates the given control's value based on specific formatting rules and preferences.
+     *
+     * @param {AbstractControl} control - The form control to validate. It contains the value to be checked.
+     * @return {ValidationErrors | null} An object containing validation errors if any conditions are violated, or null if the value is valid.
+     */
     validate(control: AbstractControl): ValidationErrors | null {
         const value = control.value;
 

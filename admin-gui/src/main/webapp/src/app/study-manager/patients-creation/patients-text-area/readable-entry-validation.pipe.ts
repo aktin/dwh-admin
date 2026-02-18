@@ -1,46 +1,35 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {EntryValidation} from './entry-validation';
-import {PatientReference} from '../../patient-reference';
-import {PatientReferenceToLabelPipe} from '../../patient-reference-to-label.pipe';
+import {compareEntryValidationBySeverity, EntryValidation} from '../../models/entry-validation';
+import {PatientReference} from '../../models/patient-reference';
+import {PatientReferenceToLabelPipe} from '../../helpers/patient-reference-to-label.pipe';
+
+type MessageFn = (reference: PatientReference) => string;
 
 @Pipe({
     name: 'readableEntryValidation'
 })
 export class ReadableEntryValidationPipe implements PipeTransform {
+
+    private readonly validationMessageMap: Record<EntryValidation, MessageFn> = {
+        [EntryValidation.Valid]: () => 'OK',
+        [EntryValidation.EntryFound]: () => 'Patient*in bereits registriert',
+        [EntryValidation.SicFound]: () => 'Studien-ID existiert bereits',
+        [EntryValidation.SicMissing]: () => 'Studien-ID erforderlich',
+        [EntryValidation.NoMasterdataFound]: () => 'Keine Stammdaten gefunden',
+        [EntryValidation.NoEncountersFound]: () => 'Keine Behandlungsfalldaten gefunden',
+        [EntryValidation.PatientReferenceDuplicate]: (reference) =>
+            `${this.patientReferenceToLabelPipe.transform(reference)} mehrfach angegeben`,
+        [EntryValidation.SicDuplicate]: () => 'Studien-ID mehrfach angegeben',
+        [EntryValidation.Pending]: () => '',
+    };
+
     constructor(private readonly patientReferenceToLabelPipe: PatientReferenceToLabelPipe) {}
 
-    transform(value: EntryValidation, reference: PatientReference): string {
-        let result;
-        switch (value) {
-            case EntryValidation.Valid:
-                result = 'OK';
-                break;
-            case EntryValidation.EntryFound:
-                result = 'Patient*in bereits registriert';
-                break;
-            case EntryValidation.SicFound:
-                result = 'Studien-ID existiert bereits';
-                break;
-            case EntryValidation.SicMissing:
-                result = 'Studien-ID erforderlich';
-                break;
-            case EntryValidation.NoMasterdataFound:
-                result = 'Keine Stammdaten gefunden';
-                break;
-            case EntryValidation.NoEncountersFound:
-                result = 'Keine Behandlungsfalldaten gefunden';
-                break;
-            case EntryValidation.PatientReferenceDuplicate:
-                result = `${this.patientReferenceToLabelPipe.transform(reference)} mehrfach angegeben`;
-                break;
-            case EntryValidation.SicDuplicate:
-                result = 'Studien-ID mehrfach angegeben';
-                break;
-            case EntryValidation.Pending:
-                result = '';
-                break;
-        }
-        return result;
+    transform(value: EntryValidation[], reference: PatientReference): string {
+        const convertedValues = value
+            .sort(compareEntryValidationBySeverity)
+            .map(v => this.validationMessageMap[v](reference));
+        return convertedValues.join('; ');
     }
 
 }
