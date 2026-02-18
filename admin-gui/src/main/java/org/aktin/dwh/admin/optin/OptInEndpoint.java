@@ -3,7 +3,13 @@ package org.aktin.dwh.admin.optin;
 import lombok.val;
 import org.aktin.Preferences;
 import org.aktin.dwh.admin.auth.Secured;
-import org.aktin.dwh.optinout.*;
+import org.aktin.dwh.admin.optin.model.OptInErrorType;
+import org.aktin.dwh.admin.optin.model.PatientEntryRequestDTO;
+import org.aktin.dwh.admin.optin.model.PatientEntryResponseDTO;
+import org.aktin.dwh.optinout.model.*;
+import org.aktin.dwh.optinout.service.PatientService;
+import org.aktin.dwh.optinout.service.PatientValidator;
+import org.aktin.dwh.optinout.service.StudyService;
 
 import javax.inject.Inject;
 import javax.json.Json;
@@ -20,19 +26,28 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * RESTful HTTP end point for creating, deleting and retrieving patient entries.
  */
-@Path("optin")
+@Secured
+@Path("studies")
 public class OptInEndpoint {
     private static final Logger log = Logger.getLogger(OptInEndpoint.class.getName());
     @Inject
-    private StudyManager sm;
+    private StudyService studyService;
+    @Inject
+    private PatientService patientService;
     @Inject
     private Preferences pref;
+    @Inject
+    private PatientValidator validator;
 
     @Context
     private SecurityContext security;
@@ -41,12 +56,19 @@ public class OptInEndpoint {
      * Gets a list of all studies.
      *
      * @return list of studies
-     * @throws IOException
      */
-    @Path("studies")
     @GET
-    public Response getStudies() throws IOException {
-        return Response.ok(sm.getStudies()).build();
+    public Response getStudies() {
+        List<? extends Study> studies = null;
+        try {
+            studies = studyService.getStudies();
+        } catch (IOException e) {
+            throw ErrorUtils.buildError(Status.NOT_FOUND, OptInErrorType.UNKNOWN, "An error occurred while retrieving studies:");
+        }
+        if(studies == null || studies.isEmpty()) {
+            throw ErrorUtils.buildError(Status.NOT_FOUND, OptInErrorType.STUDIES_NOT_FOUND, "No studies found");
+        }
+        return Response.ok(studies).build();
     }
 
     /**
@@ -54,14 +76,20 @@ public class OptInEndpoint {
      *
      * @param id
      * @return Response with status 'ok' and the list of entries
-     * @throws IOException
      */
-    @Path("{studyId}")
+    @Path("{id}/patients")
     @GET
-    public Response getEntriesByStudy(@PathParam("studyId") String id) throws IOException {
-        Study s = this.getStudy(id);
-
-        return Response.ok(s.allPatients()).build();
+    public Response getPatientsOfStudy(@PathParam("id") String id) {
+        List<PatientEntry> patients = null;
+        try {
+            patients = patientService.getAllPatientsOfStudy(id);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if(patients == null || patients.isEmpty()) {
+            throw ErrorUtils.buildError(Status.NOT_FOUND, OptInErrorType.PATIENTS_NOT_FOUND, "No patients of study found");
+        }
+        return Response.ok(patients).build();
     }
 
 
@@ -70,40 +98,23 @@ public class OptInEndpoint {
      *
      * @param id:   study id
      * @param ref:  type of the patient reference
-     * @param root: root number
      * @param ext:  extension number, can be empty
      * @return PatientEntry that belongs to the given parameters
-     * @throws IOException
      */
-    @Path("{studyId}/{reference}/{root}{p:/?}{extension:.*}")
+    @Path("{studyId}/patients/{reference}/{extension}")
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root,
-                                 @PathParam("extension") String ext) throws IOException {
-        Study study = this.getStudy(id);
-        PatientEntry patientEntry = study.getPatientByID(ref, root, ext);
-        if(patientEntry == null) {
-            throw OptInError.buildError(Status.NOT_FOUND, OptInErrorType.PATIENT_NOT_FOUND, "Patient not found");
+    public Response getPatient(@PathParam("studyId") String id,
+                               @PathParam("reference") PatientReference ref,
+                               @PathParam("extension") String ext) {
+        PatientEntry patientEntry = null;
+        try {
+            patientEntry = patientService.getPatientByID(id, ref, ext);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        return Response.ok(patientEntry).build();
-    }
-
-    /**
-     * Gets an entry by the specified study id and study specific unique student object identifier (SIC).
-     *
-     * @param id: study id
-     * @param sic unique student object identifier
-     * @return PatientEntry that belongs to the given parameters
-     * @throws IOException
-     */
-    @Path("{studyId}/{sic}")
-    @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response getEntryBySic(@PathParam("studyId") String id, @PathParam("sic") String sic) throws IOException {
-        Study study = this.getStudy(id);
-        PatientEntry patientEntry = study.getPatientBySIC(sic);
         if(patientEntry == null) {
-            throw OptInError.buildError(Status.NOT_FOUND, OptInErrorType.PATIENT_NOT_FOUND, "Patient not found");
+            throw ErrorUtils.buildError(Status.NOT_FOUND, OptInErrorType.PATIENT_NOT_FOUND, "Patient not found");
         }
         return Response.ok(patientEntry).build();
     }
@@ -112,106 +123,86 @@ public class OptInEndpoint {
      * Get encounters for a patient
      *
      * @param ref  patient reference
-     * @param root root id
-     * @param ext  extension
+     * @param extensions  extension
      * @return list of patient encounters
-     * @throws IOException
      */
-    @Path("encounter/{reference}/{root}{p:/?}{extension:.*}")
-    @GET
+    @Path("patients/{reference}/encounters")
+    @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getEncounters(@PathParam("reference") PatientReference ref,
-                                                @PathParam("root") String root,
-                                                @PathParam("extension") String ext) throws IOException {
-        return Response.ok(sm.loadEncounters(ref, root, ext)).build();
+                                  List<String> extensions) {
+        List<PatientEncounter> encounters = null;
+        try {
+            encounters = patientService.getEncounters(ref, extensions);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if(encounters == null || encounters.isEmpty()) {
+            throw ErrorUtils.buildError(Status.NOT_FOUND, OptInErrorType.ENCOUNTERS_NOT_FOUND, "Encounters not found");
+        }
+        return Response.ok(encounters).build();
     }
 
-    /**
-     * Get master data (zip code, gender, birth date) for a patient
-     *
-     * @param ref  patient reference
-     * @param root root id
-     * @param ext  extension
-     * @return master data
-     * @throws IOException
-     */
-    @Path("masterdata/{reference}/{root}{p:/?}{extension:.*}")
-    @GET
+
+    @Path("patients/{reference}/masterdata")
+    @POST
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getMasterData(@PathParam("reference") PatientReference ref,
-                                           @PathParam("root") String root,
-                                           @PathParam("extension") String ext) throws IOException {
-        return Response.ok(sm.loadMasterData(ref, root, ext)).build();
+                                  List<String> extensions) {
+        List<PatientMasterData> masterData = null;
+        try {
+            masterData = patientService.getMasterData(ref, extensions);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if(masterData == null || masterData.isEmpty()) {
+            throw ErrorUtils.buildError(Status.NOT_FOUND, OptInErrorType.MASTERDATA_NOT_FOUND, "Master data not found");
+        }
+        return Response.ok(masterData).build();
     }
-
 
     /**
      * Creates an entry under the location of the specified parameters with the data of the given PatientEntryRequest object.
      *
      * @param id:    study id
      * @param ref:   type of the patient reference
-     * @param root:  root number
      * @param ext:   extension number, can be empty
      * @param entry: object that contains further information (participation, sic, comment) about the entry
      * @return Response with status 'created' if the entry was successfully created, otherwise Response with status 'conflict' if the entry already exists
-     * @throws IOException
      */
-    @Secured
-    @Path("{studyId}/{reference}/{root}{p:/?}{extension:.*}")
-    @POST
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response createEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root,
-                                @PathParam("extension") String ext, PatientEntryRequestDTO entry) throws IOException {
-        Study study = this.getStudy(id);
-
-        PatientEntry pat = study.getPatientByID(ref, root, ext);
-        if (pat != null) {
-            throw OptInError.buildError(Status.CONFLICT, OptInErrorType.PATIENT_ALREADY_EXISTS, "Cannot create entry, PatientEntry already exists");
-        }
-
-        pat = study.getPatientBySIC(entry.sic);
-        if (pat != null) {
-            throw OptInError.buildError(Status.CONFLICT, OptInErrorType.SIC_ALREADY_EXISTS, "Cannot create entry, SIC {0} already exists", entry.sic);
-        }
-
-        pat = study.addPatient(ref, root, ext, entry.opt, entry.sic, entry.comment, security.getUserPrincipal().getName());
-
-        return Response.created(buildEntryLocation(pat)).entity(pat).build();
-    }
-
-    /**
-     * Updates an existing entry
-     *
-     * @param id:    study id
-     * @param ref:   type of the patient reference
-     * @param root:  root number
-     * @param ext:   extension number, can be empty
-     * @param entry: object that contains further information (participation, sic, comment) about the entry
-     * @return Response with status 'created' if the entry was successfully created, otherwise Response with status 'conflict' if the entry already exists
-     * @throws IOException
-     */
-    @Secured
-    @Path("{studyId}/{reference}/{root}{p:/?}{extension:.*}")
+    @Path("{studyId}/patients/{reference}/{extension}")
     @PUT
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response updateEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root,
-                                @PathParam("extension") String ext, PatientEntryRequestDTO entry) throws IOException {
-        val study = this.getStudy(id);
+    public Response saveEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref,
+                                @PathParam("extension") String ext, PatientEntryRequestDTO entry) {
+        val username = security.getUserPrincipal().getName();
+        val patientData = entry.toPatientEntryData();
+        try {
+            PatientEntry pat = patientService.getPatientByID(id, ref, ext);
+            val shouldAddPatient = pat == null;
 
-        PatientEntry oldEntry = study.getPatientByID(ref, root, ext);
-        if (oldEntry == null) {
-            throw OptInError.buildError(Status.NOT_FOUND, OptInErrorType.PATIENT_NOT_FOUND, "Patient not found");
+            if (shouldAddPatient) {
+                patientData.setReference(ref);
+                patientService.addPatientsToStudy(id, Collections.singletonList(patientData), username);
+            } else {
+                patientService.updatePatient(id, ref, ext, patientData, username);
+            }
+
+            pat = patientService.getPatientByID(id, ref, ext);
+            val response = new PatientEntryResponseDTO(pat);
+
+            if (shouldAddPatient) {
+                return Response.created(buildEntryLocation(id, pat)).entity(response).build();
+            } else {
+                return Response.ok(pat).build();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        PatientEntry newEntry = study.getPatientByID(ref, root, ext);
-        newEntry.setComment(entry.comment);
-
-        newEntry = study.updatePatient(oldEntry, newEntry);
-
-        return Response.ok(newEntry).build();
     }
 
-    private static URI buildEntryLocation(PatientEntry entry) throws UnsupportedEncodingException {
-        return URI.create(entry.getStudy().getId() + "/" + entry.getReference() + "/" + URLEncoder.encode(entry.getIdRoot(), StandardCharsets.UTF_8.name()) + "/" + URLEncoder.encode(entry.getIdExt(), StandardCharsets.UTF_8.name()));
+    private static URI buildEntryLocation(String studyId, PatientEntry entry) throws UnsupportedEncodingException {
+        return URI.create(MessageFormat.format("{0}/{1}/{2}", studyId, entry.getReference(), URLEncoder.encode(entry.getExtension(), StandardCharsets.UTF_8.name())));
     }
 
     /**
@@ -219,219 +210,76 @@ public class OptInEndpoint {
      *
      * @param id:   study id
      * @param ref:  type of the patient reference
-     * @param root: root number
      * @param ext:  extension number, can be empty
      * @return Response with status 'bad request' if no entry for these parameters was found, otherwise Response with status 'ok'
-     * @throws IOException
      */
     @Secured
-    @Path("{studyId}/{reference}/{root}{p:/?}{extension:.*}")
+    @Path("{studyId}/patients/{reference}/{extension}")
     @DELETE
-    public Response deleteEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root,
-                                @PathParam("extension") String ext) throws IOException {
-        Study study = this.getStudy(id);
-        PatientEntry pat = study.getPatientByID(ref, root, ext);
-        if (pat == null) {
-            throw OptInError.buildError(Status.NOT_FOUND, OptInErrorType.PATIENT_NOT_FOUND, "Patient not found");
+    public Response deleteEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref,
+                                @PathParam("extension") String ext) {
+        try {
+            val pat = patientService.getPatientByID(id, ref, ext);
+            if (pat == null) {
+                throw ErrorUtils.buildError(Status.NOT_FOUND, OptInErrorType.PATIENT_NOT_FOUND, "Patient not found");
+            }
+            patientService.deletePatient(id, ref, ext, security.getUserPrincipal().getName());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        pat.delete(security.getUserPrincipal().getName());
-        return Response.ok().build();
+        return Response.noContent().build();
     }
 
     /**
      * Validates entered entry data for batch registration
      *
      * @param id      Study id
-     * @param ref     patient reference
-     * @param root    root id
-     * @param entries Entry data to validate
+     * @param patients Entry data to validate
      * @return validation result, master data and encounters for every valid entry
-     * @throws IOException
      */
     @Secured
-    @Path("entries/{studyId}/{reference}/{root}")
-    @PUT
+    @Path("{studyId}/patients/batch/validate")
+    @POST
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response validateEntries(@PathParam("studyId") String id,
-                                                                @PathParam("reference") PatientReference ref,
-                                                                @PathParam("root") String root,
-                                                                PatientEntriesRequestDTO entries) throws IOException {
-        Study study = this.getStudy(id);
-
-        val validatedEntries = new ArrayList<PatientEntryResponseDTO>();
-
-        for (val entry : entries.entries) {
-            val extension = entry.extension;
-            val foundEntry = new PatientEntryResponseDTO();
-            foundEntry.setExtension(extension);
-            validatedEntries.add(foundEntry);
-
-            if (!entries.generateSic) {
-                val sic = entry.sic;
-                foundEntry.setSic(sic);
-
-                if (validateSic(entries, study, foundEntry, sic)) {
-                    continue;
-                }
-            }
-
-            if (validateDuplicateExtension(entries, foundEntry, extension)) {
-                continue;
-            }
-
-            if (checkPatientById(study, ref, root, foundEntry, extension)) {
-                continue;
-            }
-
-            if (checkEncountersAndMasterData(ref, root, foundEntry, extension)) {
-                continue;
-            }
-
-            foundEntry.setEntryValidation(ValidationErrorType.VALID);
+                                    List<PatientEntryRequestDTO> patients) {
+        Map<PatientEntry, List<ValidationResult>> map = null;
+        try {
+            map = validator.validatePatients(id, patients.stream().map(PatientEntryRequestDTO::toPatientEntryData).collect(Collectors.toList()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        return Response.ok(validatedEntries).build();
-    }
-
-    /**
-     * Validates the SIC (Study Instance Code) of a given patient entry based on the patient entry request,
-     * the study, the found entry, and the SIC provided.
-     *
-     * @param entries The {@code PatientEntriesRequestDTO} object containing details of the patient entries to be validated.
-     * @param study   The {@code Study} object containing the study information for validation.
-     * @param foundEntry The {@code PatientEntriesResponseDTO} object representing the entry being validated.
-     *                   This object is updated with validation status if validation fails.
-     * @param sic     The SIC (Study Instance Code) to be validated.
-     * @return {@code true} if the SIC is found to be a duplicate or already exists in the study;
-     *         {@code false} otherwise.
-     * @throws IOException If an I/O error occurs during the validation process.
-     */
-    private boolean validateSic(PatientEntriesRequestDTO entries, Study study, PatientEntryResponseDTO foundEntry, String sic) throws IOException {
-        if (sic != null) {
-            if (entries.entries.stream().filter(s -> Objects.equals(s.sic, sic)).count() > 1) {
-                foundEntry.setEntryValidation(ValidationErrorType.DUPLICATE_SIC);
-                return true;
-            }
-
-            if (study.getPatientBySIC(sic) != null) {
-                foundEntry.setEntryValidation(ValidationErrorType.SIC_FOUND);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Validates whether the given extension is a duplicate in the request data.
-     *
-     * @param entries  The request object containing a list of patient entry extensions to be checked.
-     * @param foundEntry  The response object where the validation result will be recorded if a duplicate is found.
-     * @param extension  The extension to check for duplicates in the provided entries.
-     * @return true if the extension exists more than once in the request data and updates the validation status, false otherwise.
-     */
-    private boolean validateDuplicateExtension(PatientEntriesRequestDTO entries, PatientEntryResponseDTO foundEntry, String extension) {
-        if (entries.entries.stream().filter(e -> Objects.equals(e.extension, extension)).count() > 1) {
-            foundEntry.setEntryValidation(ValidationErrorType.DUPLICATE_PAT_REF);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Checks if a patient exists in a given study by their reference, root, and extension.
-     * Sets the entry validation status of the found entry if the patient is found.
-     *
-     * @param study       the study in which to search for the patient
-     * @param ref         the type of the patient reference
-     * @param root        the root identifier for the patient
-     * @param foundEntry  the object representing the patient entry response, where the validation status will be updated
-     * @param extension   the extension identifier for the patient, can be empty
-     * @return true if the patient is found, false otherwise
-     * @throws IOException if an I/O error occurs during the operation
-     */
-    private boolean checkPatientById(Study study, PatientReference ref, String root, PatientEntryResponseDTO foundEntry, String extension) throws IOException {
-        if (study.getPatientByID(ref, root, extension) != null) {
-            foundEntry.setEntryValidation(ValidationErrorType.ENTRY_FOUND);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Checks the encounters and master data for a patient and updates the provided patient entry response object.
-     *
-     * @param ref The reference type of the patient.
-     * @param root The root identifier for the patient.
-     * @param foundEntry The patient entry response object to be updated based on validation.
-     * @param extension The extension identifier for the patient, may be empty.
-     * @return true if encounters or master data are missing, false otherwise.
-     * @throws IOException If an error occurs while loading encounters or master data.
-     */
-    private boolean checkEncountersAndMasterData(PatientReference ref, String root, PatientEntryResponseDTO foundEntry, String extension) throws IOException {
-        val encounters = sm.loadEncounters(ref, root, extension);
-
-        if (encounters.isEmpty()) {
-            foundEntry.setEntryValidation(ValidationErrorType.ENCOUNTERS_NOT_FOUND);
-            return true;
-        }
-
-        encounters.sort(Comparator.comparing(PatientEncounter::getStartDate).reversed());
-        foundEntry.setLastEncounter(encounters.get(0));
-
-        val masterdata = sm.loadMasterData(ref, root, extension);
-
-        if (masterdata == null) {
-            foundEntry.setEntryValidation(ValidationErrorType.MASTER_DATA_NOT_FOUND);
-            return true;
-        }
-
-        foundEntry.setMasterData(masterdata);
-        return false;
+        val result = map.entrySet().stream()
+                .map(e -> {
+                    val r = new PatientEntryResponseDTO(e.getKey());
+                    r.setValidationResults(e.getValue());
+                    return r;
+                })
+                .collect(Collectors.toList());
+        return Response.ok(result).build();
     }
 
     /**
      * Batch registration for multiple entries
      *
      * @param id      Study id
-     * @param ref     patient reference
-     * @param root    root id
      * @param entries new entry data
      * @return created entries
-     * @throws IOException
      */
     @Secured
-    @Path("entries/{studyId}/{reference}/{root}")
-    @POST
+    @Path("{studyId}/patients/batch")
+    @PUT
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Response createEntries(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref, @PathParam("root") String root,
-                                  PatientEntriesRequestDTO entries) throws IOException {
-        Study study = this.getStudy(id);
-
-        for (val entry : entries.entries) {
-            val extension = entry.extension;
-            val sic = entry.sic;
-
-            PatientEntry pat = study.getPatientByID(ref, root, extension);
-            if (pat != null) {
-                throw OptInError.buildError(Status.CONFLICT, OptInErrorType.PATIENT_ALREADY_EXISTS, "Cannot create entry, PatientEntry already exists");
-            }
-
-            if (!entries.generateSic) {
-                pat = study.getPatientBySIC(sic);
-                if (pat != null) {
-                    throw OptInError.buildError(Status.CONFLICT, OptInErrorType.SIC_ALREADY_EXISTS, "Cannot create entry, SIC {0} already exists", sic);
-                }
-            }
+    public Response createEntries(@PathParam("studyId") String id,
+                                  List<PatientEntryRequestDTO> entries) {
+        try {
+            patientService.addPatientsToStudy(id,
+                    entries.stream().map(PatientEntryRequestDTO::toPatientEntryData).collect(Collectors.toList()),
+                    security.getUserPrincipal().getName());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        val extensionSicMap = new HashMap<String, String>();
-        entries.entries.forEach(e -> {
-            extensionSicMap.put(e.extension, e.sic);
-        });
-        val name = security.getUserPrincipal().getName();
-        List<PatientEntry> result = study.addPatients(ref, root, extensionSicMap, entries.opt, entries.comment, name);
-
-        return Response.ok(result).build();
+        return Response.ok().build();
     }
 
     /**
@@ -452,18 +300,5 @@ public class OptInEndpoint {
         b.add("labelEncounter", pref.get("study.id.encounter.label"));
         b.add("labelBilling", pref.get("study.id.billing.label"));
         return b.build();
-    }
-
-    /**
-     * Gets the study by the given id.
-     *
-     * @param id: study id
-     * @return study object
-     * @throws IOException
-     * @throws NotFoundException if none of the existing study ids matches the given id
-     */
-    private Study getStudy(String id) throws IOException, WebApplicationException {
-        return sm.getStudies().stream().filter(s -> s.getId().equals(id)).findFirst()
-                .orElseThrow(() -> OptInError.buildError(Status.NOT_FOUND, OptInErrorType.STUDY_NOT_FOUND, "Study {0} not found", id));
     }
 }
