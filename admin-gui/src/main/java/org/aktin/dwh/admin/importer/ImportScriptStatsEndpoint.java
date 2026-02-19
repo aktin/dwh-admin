@@ -31,7 +31,6 @@ public class ImportScriptStatsEndpoint {
   @GET
   @Path("p21")
   public Response p21() {
-    List<Map<String, Object>> stats = statsService.run(p21Spec);
-    return Response.ok(stats).build();
+    return Response.ok(statsService.run(p21Spec)).build();
   }
 }
