@@ -58,6 +58,7 @@ public class OptInEndpoint {
      * @return list of studies
      */
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getStudies() {
         List<? extends Study> studies = null;
         try {
@@ -79,6 +80,7 @@ public class OptInEndpoint {
      */
     @Path("{id}/patients")
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getPatientsOfStudy(@PathParam("id") String id) {
         List<PatientEntry> patients = null;
         try {
@@ -103,7 +105,7 @@ public class OptInEndpoint {
      */
     @Path("{studyId}/patients/{reference}/{extension}")
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getPatient(@PathParam("studyId") String id,
                                @PathParam("reference") PatientReference ref,
                                @PathParam("extension") String ext) {
@@ -128,7 +130,8 @@ public class OptInEndpoint {
      */
     @Path("patients/{reference}/encounters")
     @POST
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getEncounters(@PathParam("reference") PatientReference ref,
                                   List<String> extensions) {
         List<PatientEncounter> encounters = null;
@@ -146,7 +149,8 @@ public class OptInEndpoint {
 
     @Path("patients/{reference}/masterdata")
     @POST
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response getMasterData(@PathParam("reference") PatientReference ref,
                                   List<String> extensions) {
         List<PatientMasterData> masterData = null;
@@ -172,7 +176,8 @@ public class OptInEndpoint {
      */
     @Path("{studyId}/patients/{reference}/{extension}")
     @PUT
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response saveEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref,
                                 @PathParam("extension") String ext, PatientEntryRequestDTO entry) {
         val username = security.getUserPrincipal().getName();
@@ -240,7 +245,8 @@ public class OptInEndpoint {
     @Secured
     @Path("{studyId}/patients/batch/validate")
     @POST
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response validateEntries(@PathParam("studyId") String id,
                                     List<PatientEntryRequestDTO> patients) {
         Map<PatientEntry, List<ValidationResult>> map = null;
@@ -269,7 +275,8 @@ public class OptInEndpoint {
     @Secured
     @Path("{studyId}/patients/batch")
     @PUT
-    @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response createEntries(@PathParam("studyId") String id,
                                   List<PatientEntryRequestDTO> entries) {
         try {
@@ -289,6 +296,7 @@ public class OptInEndpoint {
      */
     @Path("preferences")
     @GET
+    @Produces(MediaType.APPLICATION_JSON)
     public JsonObject getPreferences() {
         JsonObjectBuilder b = Json.createObjectBuilder();
         b.add("reference", pref.get("study.id.reference"));
