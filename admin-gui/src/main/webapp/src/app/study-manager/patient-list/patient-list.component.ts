@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {compareStudies, Study} from '../models/study';
 import {Patient} from '../models/patient';
 import {MomentDatePipe, MY_CALENDAR_OPTIONS, TableColumns} from '../../helpers';
@@ -53,6 +53,8 @@ export class PatientListComponent implements OnInit, AfterViewInit {
     protected search: string = '';
     @ViewChild(AngularMyDatePickerDirective)
     private datePicker: AngularMyDatePickerDirective;
+    @ViewChild('batchAddDropdown')
+    private batchAddDropdown: ElementRef<HTMLDivElement>;
 
     constructor(private studyManagerService: StudyManagerService,
                 private patientReferenceToLabelPipe: PatientReferenceToLabelPipe,
@@ -75,6 +77,7 @@ export class PatientListComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
+        $(this.batchAddDropdown.nativeElement).dropdown();
         this.resetFilter();
     }
 
