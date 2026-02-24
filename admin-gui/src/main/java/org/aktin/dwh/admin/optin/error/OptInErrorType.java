@@ -1,4 +1,4 @@
-package org.aktin.dwh.admin.optin.model;
+package org.aktin.dwh.admin.optin.error;
 
 // errors that occur during CRUD operations on opt-in data
 public enum OptInErrorType {

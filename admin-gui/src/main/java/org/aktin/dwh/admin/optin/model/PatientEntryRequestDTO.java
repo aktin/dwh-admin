@@ -2,6 +2,7 @@ package org.aktin.dwh.admin.optin.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.aktin.dwh.admin.optin.validation.CreateOrUpdateGroup;
 import org.aktin.dwh.optinout.model.Participation;
 import org.aktin.dwh.optinout.model.PatientEntryData;
 import org.aktin.dwh.optinout.model.PatientReference;
@@ -9,12 +10,14 @@ import org.aktin.dwh.optinout.model.PatientReference;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
 public class PatientEntryRequestDTO {
-	@NotNull
+	@NotNull(groups = CreateOrUpdateGroup.class)
 	private Participation participation;
 	@NotNull
 	private PatientReference reference;
@@ -22,7 +25,7 @@ public class PatientEntryRequestDTO {
 	@NotNull
 	private String extension;
 	private String comment;
-	@NotNull
+	@NotNull(groups = CreateOrUpdateGroup.class)
 	private boolean generateSic;
 
 	public PatientEntryData toPatientEntryData() {
