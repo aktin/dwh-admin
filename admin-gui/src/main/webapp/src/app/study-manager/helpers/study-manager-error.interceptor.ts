@@ -14,7 +14,7 @@ export class StudyManagerErrorInterceptor implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(req).pipe(catchError((response: HttpErrorResponse) => {
             let err = response.error;
-            switch (err) {
+            switch (err.detail) {
                 case StudyManagerErrorType.PATIENT_ALREADY_EXISTS:
                     err = "Patient*in existiert bereits";
                     break;
