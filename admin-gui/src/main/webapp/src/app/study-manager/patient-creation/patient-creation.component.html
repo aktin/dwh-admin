@@ -174,7 +174,7 @@
 
                     <div class="field">
                         @if (extModel.dirty) {
-                            <patient-master-data [patient]="patient" [study]="selectedStudy"></patient-master-data>
+                            <patient-master-data [patient]="patient"></patient-master-data>
                         } @else {
                             <div>Bitte gültige {{ patient.reference | patientReferenceToLabel }} eingeben, um Daten zu
                                 laden

@@ -58,8 +58,8 @@ export class UrlService {
         entries: 'studies/@studyId@/patients',
         multi: 'studies/@studyId@/patients/batch', // put
         entry: 'studies/@studyId@/patients/@reference@/@extension@', // get/put/delete
-        masterdata: 'studies/patients/@reference@/masterdata',
-        encounter: 'studies/patients/@reference@/encounters',
+        masterdata: 'studies/masterdata',
+        encounter: 'studies/encounters',
         validate: 'studies/@studyId@/patients/batch/validate',
 
         // versions endpoint

@@ -19,8 +19,6 @@ import {Study} from '../models/study';
 export class PatientMasterDataComponent {
     @Input({required: true})
     public patient!: Patient;
-    @Input({required: true})
-    public study!: Study;
 
     /**
      * Observable that emits a boolean indicating whether the master data for the patient is available.
@@ -55,7 +53,7 @@ export class PatientMasterDataComponent {
     ).pipe(
         switchMap(has =>
             has
-                ? this.studyManagerService.getEncounters(this.study.id, this.patient.reference, [this.patient.extension])
+                ? this.studyManagerService.getEncounters(this.patient.reference, [this.patient.extension])
                 : of([])
         ),
         shareReplay({bufferSize: 1, refCount: true}),
@@ -72,7 +70,7 @@ export class PatientMasterDataComponent {
     ).pipe(
         switchMap(has =>
             has
-                ? this.studyManagerService.getMasterData(this.study.id, this.patient.reference, [this.patient.extension])
+                ? this.studyManagerService.getMasterData(this.patient.reference, [this.patient.extension])
                     .pipe(map(m => m?.find(() => true)))
                 : of(null)
         ),

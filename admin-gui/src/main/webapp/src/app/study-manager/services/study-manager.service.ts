@@ -56,11 +56,11 @@ export class StudyManagerService {
      * @param {string[]} extensions - A list of extension strings used for the request.
      * @return {Observable<MasterData[]>} An observable that emits an array of MasterData objects.
      */
-    public getMasterData(studyId: string, ref: PatientReference, extensions: string[]): Observable<MasterData[]> {
-        return this._http.post<MasterData[]>(this._urls.parse('masterdata', {
-            studyId: studyId,
-            reference: ref,
-        }), extensions).pipe(map(masterData => masterData?.map(m => new MasterData(m))));
+    public getMasterData(ref: PatientReference, extensions: string[]): Observable<MasterData[]> {
+        return this._http.post<MasterData[]>(this._urls.parse('masterdata'), {
+            patientReference: ref,
+            extensions: extensions
+        }).pipe(map(masterData => masterData?.map(m => new MasterData(m))));
     }
 
     /**
@@ -71,11 +71,11 @@ export class StudyManagerService {
      * @param {string[]} extensions - An array of extension identifiers.
      * @return {Observable<Encounter[]>} An observable that emits an array of Encounter objects.
      */
-    public getEncounters(studyId: string, ref: PatientReference, extensions: string[]): Observable<Encounter[]> {
-        return this._http.post<Encounter[]>(this._urls.parse('encounter', {
-            studyId: studyId,
-            reference: ref,
-        }), extensions).pipe(map(encounters => encounters?.map(e => new Encounter(e))));
+    public getEncounters(ref: PatientReference, extensions: string[]): Observable<Encounter[]> {
+        return this._http.post<Encounter[]>(this._urls.parse('encounter'), {
+            patientReference: ref,
+            extensions: extensions
+        }).pipe(map(encounters => encounters?.map(e => new Encounter(e))));
     }
 
     /**

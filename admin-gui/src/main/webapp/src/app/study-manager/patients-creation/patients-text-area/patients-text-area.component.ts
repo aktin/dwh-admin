@@ -146,7 +146,7 @@ export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncVal
         this.patientValidationService.validationData$
             .pipe(map(patients => patients?.filter(e => !e.validationResults.includes(EntryValidation.NoEncountersFound))),
                 filter(patients => !!patients?.length),
-                switchMap(patients => this.studyManagerService.getEncounters(this.studyId, this.reference, patients.map(p => p.extension))),
+                switchMap(patients => this.studyManagerService.getEncounters(this.reference, patients.map(p => p.extension))),
                 takeUntilDestroyed(this.destroyRef),)
             .subscribe(encounters => {
                 this.rowData.forEach(row => row.encounters = encounters.filter(e => e.idEnc === row.idEnc));
@@ -157,7 +157,7 @@ export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncVal
         this.patientValidationService.validationData$
             .pipe(map(patients => patients?.filter(e => !e.validationResults.includes(EntryValidation.NoMasterdataFound))),
                 filter(patients => !!patients?.length),
-                switchMap(patients => this.studyManagerService.getMasterData(this.studyId, this.reference, patients.map(p => p.extension))),
+                switchMap(patients => this.studyManagerService.getMasterData(this.reference, patients.map(p => p.extension))),
                 takeUntilDestroyed(this.destroyRef),)
             .subscribe(masterData => {
                 this.rowData.forEach(row => row.masterData = masterData.find(m => m.idEnc === row.idEnc));
