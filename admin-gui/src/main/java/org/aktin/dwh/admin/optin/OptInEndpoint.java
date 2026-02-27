@@ -7,6 +7,7 @@ import org.aktin.dwh.admin.optin.error.ErrorUtils;
 import org.aktin.dwh.admin.optin.error.OptInErrorType;
 import org.aktin.dwh.admin.optin.model.PatientEntryRequestDTO;
 import org.aktin.dwh.admin.optin.model.PatientEntryResponseDTO;
+import org.aktin.dwh.admin.optin.model.PatientReferenceExtensionsDTO;
 import org.aktin.dwh.admin.optin.validation.CreateOrUpdateGroup;
 import org.aktin.dwh.admin.util.PATCH;
 import org.aktin.dwh.optinout.model.*;
@@ -120,15 +121,18 @@ public class OptInEndpoint {
      * @param extensions  extensions
      * @return list of patient encounters
      */
-    @Path("patients/{reference}/encounters")
+    @Path("/encounters")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getEncountersForPatients(@PathParam("reference") PatientReference ref,
-                                             List<String> extensions) {
+    public Response getEncountersForPatients(@Valid PatientReferenceExtensionsDTO request) {
+        if(request.getExtensions().isEmpty()){
+            return ErrorUtils.buildErrorResponse(Status.BAD_REQUEST, OptInErrorType.PARAM_INVALID, "List of extensions cannot be empty");
+        }
+
         List<PatientEncounter> encounters = null;
         try {
-            encounters = patientService.getEncounters(ref, extensions);
+            encounters = patientService.getEncounters(request.getPatientReference(), request.getExtensions());
         } catch (IOException e) {
             return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while retrieving encounters");
         }
@@ -136,15 +140,18 @@ public class OptInEndpoint {
     }
 
 
-    @Path("patients/{reference}/masterdata")
+    @Path("/masterdata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMasterDataForPatients(@PathParam("reference") PatientReference ref,
-                                  List<String> extensions) {
+    public Response getMasterDataForPatients(@Valid PatientReferenceExtensionsDTO request) {
+        if(request.getExtensions().isEmpty()){
+            return ErrorUtils.buildErrorResponse(Status.BAD_REQUEST, OptInErrorType.PARAM_INVALID, "List of extensions cannot be empty");
+        }
+
         List<PatientMasterData> masterData = null;
         try {
-            masterData = patientService.getMasterData(ref, extensions);
+            masterData = patientService.getMasterData(request.getPatientReference(), request.getExtensions());
         } catch (IOException e) {
             return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while retrieving master data");
         }
