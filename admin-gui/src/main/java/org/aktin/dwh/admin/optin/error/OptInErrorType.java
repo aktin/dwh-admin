@@ -2,6 +2,7 @@ package org.aktin.dwh.admin.optin.error;
 
 // errors that occur during CRUD operations on opt-in data
 public enum OptInErrorType {
+    PARAM_INVALID,
     STUDIES_NOT_FOUND,
     STUDY_NOT_FOUND,
     PATIENTS_NOT_FOUND,
