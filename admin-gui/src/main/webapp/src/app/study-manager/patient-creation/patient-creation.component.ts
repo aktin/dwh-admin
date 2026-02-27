@@ -73,7 +73,7 @@ export class PatientCreationComponent extends PatientDialogBase implements OnIni
 
     public create(): void {
         if (this.form.valid) {
-            this.studyManagerService.savePatient(this.selectedStudy.id, this.patient.reference, this.patient.extension, this.patient)
+            this.studyManagerService.createPatients(this.selectedStudy.id, [this.patient])
                 .subscribe({
                     next: e => {
                         this.notificationService.showSuccess('Patient*in registriert');

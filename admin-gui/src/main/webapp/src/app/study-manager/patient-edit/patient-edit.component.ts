@@ -44,7 +44,7 @@ export class PatientEditComponent extends PatientDialogBase implements OnInit {
 
     public save(): void {
         if (this.form.valid) {
-            this.studyManagerService.savePatient(this.study.id, this.entry.reference, this.entry.extension, this.entry)
+            this.studyManagerService.updatePatient(this.study.id, this.entry.reference, this.entry.extension, this.entry)
                 .subscribe({
                     next: e => {
                         this.notificationService.showSuccess('Änderungen gespeichert');

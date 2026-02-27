@@ -94,7 +94,7 @@ export class StudyManagerService {
     }
 
     /**
-     * Creates or updates a patient entry to the specified study.
+     * updates a patient entry to the specified study.
      *
      * @param {string} studyId - The unique identifier of the study to which the patient belongs.
      * @param {string} ref - The reference string associated with the patient entry.
@@ -102,7 +102,7 @@ export class StudyManagerService {
      * @param {Patient} entry - The patient entry object containing details such as participation, SIC, comment, and other metadata.
      * @return {Observable<Patient>} An observable that emits the updated patient object upon successful save.
      */
-    public savePatient(studyId: string, ref: string, ext: string, entry: Patient): Observable<Patient> {
+    public updatePatient(studyId: string, ref: string, ext: string, entry: Patient): Observable<Patient> {
         ext = encodeURIComponent(ext);
         return this._http.put<Patient>(
             this._urls.parse('entry', {studyId: studyId, reference: ref, extension: ext}), {
