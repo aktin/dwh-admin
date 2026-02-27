@@ -158,7 +158,7 @@ public class OptInEndpoint {
     }
 
     /**
-     * Partly updates an existing entry
+     * Updates the comment of an existing entry
      *
      * @param id:    study id
      * @param ref:   type of the patient reference
@@ -170,7 +170,7 @@ public class OptInEndpoint {
     @PATCH
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response partlyUpdateEntry(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref,
+    public Response updateEntryComment(@PathParam("studyId") String id, @PathParam("reference") PatientReference ref,
                                 @PathParam("extension") String ext,
                                 @Valid @ConvertGroup(from = Default.class, to = CreateOrUpdateGroup.class) PatientEntryRequestDTO entry) {
         val username = security.getUserPrincipal().getName();
