@@ -104,7 +104,7 @@ export class StudyManagerService {
      */
     public updatePatient(studyId: string, ref: string, ext: string, entry: Patient): Observable<Patient> {
         ext = encodeURIComponent(ext);
-        return this._http.put<Patient>(
+        return this._http.patch<Patient>(
             this._urls.parse('entry', {studyId: studyId, reference: ref, extension: ext}), {
                 participation: entry.participation,
                 sic: entry.sic,
