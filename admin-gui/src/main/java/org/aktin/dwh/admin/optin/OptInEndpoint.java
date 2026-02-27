@@ -123,8 +123,8 @@ public class OptInEndpoint {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getEncounters(@PathParam("reference") PatientReference ref,
-                                  List<String> extensions) {
+    public Response getEncountersForPatients(@PathParam("reference") PatientReference ref,
+                                             List<String> extensions) {
         List<PatientEncounter> encounters = null;
         try {
             encounters = patientService.getEncounters(ref, extensions);
@@ -139,7 +139,7 @@ public class OptInEndpoint {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getMasterData(@PathParam("reference") PatientReference ref,
+    public Response getMasterDataForPatients(@PathParam("reference") PatientReference ref,
                                   List<String> extensions) {
         List<PatientMasterData> masterData = null;
         try {
