@@ -117,8 +117,7 @@ public class OptInEndpoint {
     /**
      * Get encounters for patients
      *
-     * @param ref  patient reference
-     * @param extensions  extensions
+     * @param request contains reference and extensions of patients
      * @return list of patient encounters
      */
     @Path("/encounters")
