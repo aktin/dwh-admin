@@ -250,7 +250,7 @@ public class OptInEndpoint {
      */
     @Secured
     @Path("{studyId}/patients/batch")
-    @PUT
+    @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createEntries(@PathParam("studyId") String id,
