@@ -63,7 +63,7 @@ public class OptInEndpoint {
         try {
             studies = studyService.getStudies();
         } catch (IOException e) {
-            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while retrieving studies");
+            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while retrieving studies", e);
         }
         return Response.ok(studies).build();
     }
@@ -82,7 +82,7 @@ public class OptInEndpoint {
         try {
             patients = patientService.getAllPatientsOfStudy(id);
         } catch (IOException e) {
-            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while retrieving patients");
+            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while retrieving patients", e);
         }
         return Response.ok(patients).build();
     }
@@ -106,7 +106,7 @@ public class OptInEndpoint {
         try {
             patientEntry = patientService.getPatientByID(id, ref, ext);
         } catch (IOException e) {
-            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while retrieving patient");
+            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while retrieving patient", e);
         }
         if (patientEntry == null) {
             return ErrorUtils.buildErrorResponse(Status.NOT_FOUND, OptInErrorType.PATIENT_NOT_FOUND, "Patient not found");
@@ -134,7 +134,7 @@ public class OptInEndpoint {
         try {
             encounters = patientService.getEncounters(request.getPatientReference(), request.getExtensions());
         } catch (IOException e) {
-            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while retrieving encounters");
+            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while retrieving encounters", e);
         }
         return Response.ok(encounters).build();
     }
@@ -153,7 +153,7 @@ public class OptInEndpoint {
         try {
             masterData = patientService.getMasterData(request.getPatientReference(), request.getExtensions());
         } catch (IOException e) {
-            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while retrieving master data");
+            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while retrieving master data", e );
         }
         return Response.ok(masterData).build();
     }
@@ -183,7 +183,7 @@ public class OptInEndpoint {
 
             return Response.ok(new PatientEntryResponseDTO(pat)).build();
         } catch (IOException e) {
-            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while updating patient entry");
+            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while updating patient entry", e);
         }
     }
 
@@ -207,7 +207,7 @@ public class OptInEndpoint {
             }
             patientService.deletePatient(id, ref, ext, security.getUserPrincipal().getName());
         } catch (IOException e) {
-            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred deleting patient entry");
+            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred deleting patient entry", e);
         }
         return Response.noContent().build();
     }
@@ -230,7 +230,7 @@ public class OptInEndpoint {
         try {
             map = validator.validatePatients(id, patients.stream().map(PatientEntryRequestDTO::toPatientEntryData).collect(Collectors.toList()));
         } catch (IOException e) {
-            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while validating patients");
+            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while validating patients", e);
         }
         val result = map.entrySet().stream()
                 .map(e -> {
@@ -261,7 +261,7 @@ public class OptInEndpoint {
                     entries.stream().map(PatientEntryRequestDTO::toPatientEntryData).collect(Collectors.toList()),
                     security.getUserPrincipal().getName());
         } catch (IOException e) {
-            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while creating entries");
+            return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while creating entries", e);
         }
         return Response.ok().build();
     }
