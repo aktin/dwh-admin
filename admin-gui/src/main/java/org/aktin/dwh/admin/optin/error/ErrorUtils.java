@@ -9,6 +9,7 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ErrorUtils {
@@ -24,7 +25,17 @@ public class ErrorUtils {
     public static Response buildErrorResponse(Response.Status status, OptInErrorType type, String message) {
         log.warning(message);
 
-        return Response.status(status).type(MediaType.APPLICATION_JSON_TYPE).entity(new ErrorModel(type)).build();
+        return buildResponse(status, type);
+    }
+
+    public static Response buildErrorResponse(Response.Status status, OptInErrorType type, String message, Exception e) {
+        log.log(Level.WARNING, message, e);
+
+        return buildResponse(status, type);
+    }
+
+    private static Response buildResponse(Response.Status status, OptInErrorType type) {
+        return Response.status(status).type(MediaType.APPLICATION_JSON).entity(new ErrorModel(type)).build();
     }
 
     @XmlRootElement
