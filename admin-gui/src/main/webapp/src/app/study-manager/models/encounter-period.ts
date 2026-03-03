@@ -1,7 +1,7 @@
 import {BaseModel} from '../../helpers';
 
-export class Encounter extends BaseModel {
-    public idEnc: string;
+export class EncounterPeriod extends BaseModel {
+    public ide: string;
     public startDate: number;
     public endDate: number;
 

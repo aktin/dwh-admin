@@ -8,7 +8,7 @@ import {Patient} from '../models/patient';
 import {Study} from '../models/study';
 import {PatientReference} from '../models/patient-reference';
 import {MasterData} from '../models/master-data';
-import {Encounter} from '../models/encounter';
+import {EncounterPeriod} from '../models/encounter-period';
 import {toPatientRequests} from './patient-validation.service';
 
 @Injectable({providedIn: 'root'})
@@ -69,13 +69,13 @@ export class StudyManagerService {
      * @param {string} studyId - The unique identifier of the study.
      * @param {PatientReference} ref - The reference object for the patient.
      * @param {string[]} extensions - An array of extension identifiers.
-     * @return {Observable<Encounter[]>} An observable that emits an array of Encounter objects.
+     * @return {Observable<EncounterPeriod[]>} An observable that emits an array of Encounter objects.
      */
-    public getEncounters(ref: PatientReference, extensions: string[]): Observable<Encounter[]> {
-        return this._http.post<Encounter[]>(this._urls.parse('encounter'), {
+    public getEncounters(ref: PatientReference, extensions: string[]): Observable<EncounterPeriod[]> {
+        return this._http.post<EncounterPeriod[]>(this._urls.parse('encounter'), {
             patientReference: ref,
             extensions: extensions
-        }).pipe(map(encounters => encounters?.map(e => new Encounter(e))));
+        }).pipe(map(encounters => encounters?.map(e => new EncounterPeriod(e))));
     }
 
     /**
@@ -86,7 +86,7 @@ export class StudyManagerService {
      * @return {Observable<void>} An observable that emits when the operation is complete.
      */
     public createPatients(studyId: string, entries: Patient[]): Observable<void> {
-        return this._http.put<void>(this._urls.parse('multi', {
+        return this._http.post<void>(this._urls.parse('multi', {
                 studyId: studyId,
             }),
             toPatientRequests(entries),

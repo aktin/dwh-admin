@@ -1,15 +1,12 @@
-import {Component, EventEmitter, Inject, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {compareStudies, Study} from '../models/study';
 import {Patient} from '../models/patient';
 import {PatientReference} from '../models/patient-reference';
-import {forkJoin} from 'rxjs';
 import {Participation} from '../models/participation';
 import {NgForm} from '@angular/forms';
 import {SICGeneration} from '../models/sic-generation';
 import {PatientDialogBase} from '../models/patient-dialog-base';
 import {StudyManagerService} from '../services/study-manager.service';
-import {Encounter} from '../models/encounter';
-import {MasterData} from '../models/master-data';
 import {NotificationService} from '../../helpers';
 import {PatientReferenceToRootPipe} from '../helpers/patient-reference-to-root.pipe';
 import {IModalConfig, MODAL_CONFIG} from '../../helpers/modal/modal.service';

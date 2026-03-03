@@ -3,7 +3,7 @@ import {Study} from './study';
 import {BaseModel} from '../../helpers';
 import {PatientReference} from './patient-reference';
 import {EntryValidation} from './entry-validation';
-import {Encounter} from './encounter';
+import {EncounterPeriod} from './encounter-period';
 import {MasterData} from './master-data';
 
 export class Patient extends BaseModel {
@@ -20,7 +20,7 @@ export class Patient extends BaseModel {
     public generateSic: boolean;
     public validationResults: EntryValidation[];
 
-    public encounters: Encounter[];
+    public encounters: EncounterPeriod[];
     public masterData: MasterData;
 
     constructor(obj?: any) {
@@ -28,7 +28,7 @@ export class Patient extends BaseModel {
         Object.assign(this, obj);
     }
 
-    public get lastEncounter(): Encounter {
+    public get lastEncounter(): EncounterPeriod {
         return this.encounters?.sort((a, b) => b.startDate - a.startDate)?.[0];
     }
 

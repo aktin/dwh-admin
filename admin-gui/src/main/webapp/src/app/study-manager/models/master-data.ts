@@ -4,7 +4,7 @@ export class MasterData extends BaseModel {
     public birthDate: number;
     public sex: string;
     public zip: any;
-    public idEnc: string;
+    public ide: string;
 
     constructor(obj?: any) {
         super(obj);

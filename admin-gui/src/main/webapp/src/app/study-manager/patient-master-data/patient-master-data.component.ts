@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
 import {DateFormat, MomentDatePipe, TableColumns} from '../../helpers';
-import {Encounter} from '../models/encounter';
+import {EncounterPeriod} from '../models/encounter-period';
 import {MasterData} from '../models/master-data';
 import moment from 'moment/moment';
 import {Patient} from '../models/patient';
@@ -9,7 +9,6 @@ import {defer, distinctUntilChanged, Observable, of, shareReplay, switchMap, tap
 import {PatientValidationService} from '../services/patient-validation.service';
 import {catchError, map} from 'rxjs/operators';
 import {EntryValidation} from '../models/entry-validation';
-import {Study} from '../models/study';
 
 @Component({
     selector: 'patient-master-data',
@@ -48,7 +47,7 @@ export class PatientMasterDataComponent {
     /**
      * An observable that emits a list of encounters for a patient. Only loads encounters if valid encounters exist for the patient. See {@link hasEncounters$}.
      */
-    public readonly encounters$: Observable<Encounter[]> = defer(() =>
+    public readonly encounters$: Observable<EncounterPeriod[]> = defer(() =>
         this.hasEncounters$
     ).pipe(
         switchMap(has =>
@@ -78,7 +77,7 @@ export class PatientMasterDataComponent {
         shareReplay({bufferSize: 1, refCount: true}),
         catchError(() => of(null))
     );
-    protected encounterColumns: TableColumns<Encounter> = [
+    protected encounterColumns: TableColumns<EncounterPeriod> = [
         {
             field: e => new MomentDatePipe().transform(e.startDate, DateFormat.DATETIME),
             header: 'Aufnahmezeitpunkt',
