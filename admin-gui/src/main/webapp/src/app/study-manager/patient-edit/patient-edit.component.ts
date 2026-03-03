@@ -1,6 +1,6 @@
-import {Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {Component, Inject, LOCALE_ID, OnInit, ViewChild} from '@angular/core';
 import {Participation} from '../models/participation';
-import {DateFormat, NotificationService, PopUpMessageComponent} from '../../helpers';
+import {DateFormat, MY_CALENDAR_OPTIONS, NotificationService, PopUpMessageComponent} from '../../helpers';
 import {PatientDialogBase} from '../models/patient-dialog-base';
 import {Patient} from '../models/patient';
 import {NgForm} from '@angular/forms';
@@ -10,6 +10,8 @@ import {ModalRef} from '../../helpers/modal/modal-ref.component';
 import {iif, of, switchMap, tap} from 'rxjs';
 import {Study} from '../models/study';
 import {PatientValidationService} from '../services/patient-validation.service';
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
+import {StudyManagerErrorInterceptor} from "../helpers/study-manager-error.interceptor";
 
 declare var $: any;
 
@@ -17,7 +19,8 @@ declare var $: any;
     selector: 'patient-edit',
     templateUrl: './patient-edit.component.html',
     styleUrls: ['./patient-edit.component.css', '../../helpers/popup-message.component.css'],
-    providers: [PatientValidationService]
+    providers: [PatientValidationService,
+        {provide: HTTP_INTERCEPTORS, useClass: StudyManagerErrorInterceptor, multi: true},]
 })
 export class PatientEditComponent extends PatientDialogBase implements OnInit {
     public entry: Patient;

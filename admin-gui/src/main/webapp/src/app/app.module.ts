@@ -189,7 +189,6 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         {provide: HTTP_INTERCEPTORS, useClass: BearerTokenInterceptor, multi: true},
         {provide: HTTP_INTERCEPTORS, useClass: SetTimeInterceptor, multi: true},
         {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
-        {provide: HTTP_INTERCEPTORS, useClass: StudyManagerErrorInterceptor, multi: true},
         {provide: LOCALE_ID, useValue: 'de-DE'},
         {provide: MY_CALENDAR_OPTIONS, useValue: MY_CALENDAR_DEFAULT_OPTIONS},
         Title,

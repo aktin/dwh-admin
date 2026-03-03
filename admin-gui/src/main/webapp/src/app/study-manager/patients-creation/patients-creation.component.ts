@@ -1,16 +1,18 @@
-import {Component, Inject, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Inject, Input, LOCALE_ID, OnInit, ViewChild} from '@angular/core';
 import {PatientDialogBase} from '../models/patient-dialog-base';
 import {compareStudies, Study} from '../models/study';
 import {PatientReference} from '../models/patient-reference';
 import {NgForm} from '@angular/forms';
 import {StudyManagerService} from '../services/study-manager.service';
-import {NotificationService} from '../../helpers';
+import {MY_CALENDAR_OPTIONS, NotificationService} from '../../helpers';
 import {Participation} from '../models/participation';
 import {SICGeneration} from '../models/sic-generation';
 import {PatientReferenceToRootPipe} from '../helpers/patient-reference-to-root.pipe';
 import {ModalRef} from '../../helpers/modal/modal-ref.component';
 import {IModalConfig, MODAL_CONFIG} from '../../helpers/modal/modal.service';
 import {Patient} from '../models/patient';
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
+import {StudyManagerErrorInterceptor} from "../helpers/study-manager-error.interceptor";
 
 declare var $: any;
 
@@ -18,7 +20,8 @@ declare var $: any;
     selector: 'patients-creation',
     templateUrl: './patients-creation.component.html',
     styleUrls: ['./patients-creation.component.css', '../../helpers/popup-message.component.css'],
-    providers: [PatientReferenceToRootPipe]
+    providers: [PatientReferenceToRootPipe,
+        {provide: HTTP_INTERCEPTORS, useClass: StudyManagerErrorInterceptor, multi: true},]
 })
 export class PatientsCreationComponent extends PatientDialogBase implements OnInit {
     public studies: Study[] = [];

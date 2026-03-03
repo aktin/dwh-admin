@@ -12,6 +12,8 @@ import {PatientReferenceToRootPipe} from '../helpers/patient-reference-to-root.p
 import {IModalConfig, MODAL_CONFIG} from '../../helpers/modal/modal.service';
 import {ModalRef} from '../../helpers/modal/modal-ref.component';
 import {PatientValidationService} from '../services/patient-validation.service';
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
+import {StudyManagerErrorInterceptor} from "../helpers/study-manager-error.interceptor";
 
 /**
  * The `PatientCreationComponent` is a component designed for managing the creation and registration
@@ -22,7 +24,10 @@ import {PatientValidationService} from '../services/patient-validation.service';
     selector: 'patient-creation',
     templateUrl: './patient-creation.component.html',
     styleUrls: ['./patient-creation.component.css', '../../helpers/popup-message.component.css'],
-    providers: [PatientReferenceToRootPipe, PatientValidationService]
+    providers: [PatientReferenceToRootPipe,
+        PatientValidationService,
+        {provide: HTTP_INTERCEPTORS, useClass: StudyManagerErrorInterceptor, multi: true},
+    ]
 })
 export class PatientCreationComponent extends PatientDialogBase implements OnInit {
     public studies: Study[] = [];

@@ -1,4 +1,4 @@
-import {Component, DestroyRef, HostListener, Input, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, DestroyRef, HostListener, Input, LOCALE_ID, OnInit, ViewEncapsulation} from '@angular/core';
 import {
     AbstractControl,
     AsyncValidator,
@@ -13,7 +13,7 @@ import {filter, map} from 'rxjs/operators';
 import {determineSeverity, EntryValidation} from '../../models/entry-validation';
 import {PatientReference} from '../../models/patient-reference';
 import {RemoveRowButtonComponent} from './remove-row-button.component';
-import {DateFormat, MomentDatePipe} from '../../../helpers';
+import {DateFormat, MomentDatePipe, MY_CALENDAR_OPTIONS} from '../../../helpers';
 import {ReadableEntryValidationPipe} from './readable-entry-validation.pipe';
 import {NoRowsOverlayComponent} from './no-rows-overlay.component';
 import {PatientReferenceToLabelPipe} from '../../helpers/patient-reference-to-label.pipe';
@@ -22,6 +22,8 @@ import {PatientValidationService} from '../../services/patient-validation.servic
 import {Patient} from '../../models/patient';
 import {StudyManagerService} from '../../services/study-manager.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
+import {StudyManagerErrorInterceptor} from "../../helpers/study-manager-error.interceptor";
 
 /**
  * Represents a text area component designed to manage and edit patient data in a tabular format.
@@ -40,7 +42,8 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
         ReadableEntryValidationPipe,
         MomentDatePipe,
         PatientReferenceToLabelPipe,
-        PatientValidationService],
+        PatientValidationService,
+        {provide: HTTP_INTERCEPTORS, useClass: StudyManagerErrorInterceptor, multi: true},],
     encapsulation: ViewEncapsulation.None
 })
 export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncValidator, OnInit {

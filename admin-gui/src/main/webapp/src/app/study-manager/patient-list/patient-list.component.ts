@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Inject, LOCALE_ID, OnInit, ViewChild} from '@angular/core';
 import {compareStudies, Study} from '../models/study';
 import {Patient} from '../models/patient';
 import {MomentDatePipe, MY_CALENDAR_OPTIONS, TableColumns} from '../../helpers';
@@ -12,6 +12,8 @@ import {switchMap} from 'rxjs';
 import {PatientsCreationComponent} from '../patients-creation/patients-creation.component';
 import {PatientViewComponent} from '../patient-view/patient-view.component';
 import {PatientValidationService} from '../services/patient-validation.service';
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
+import {StudyManagerErrorInterceptor} from "../helpers/study-manager-error.interceptor";
 
 declare var $: any;
 
@@ -20,7 +22,8 @@ declare var $: any;
     templateUrl: './patient-list.component.html',
     styleUrl: './patient-list.component.css',
     providers: [PatientReferenceToLabelPipe,
-        PatientValidationService]
+        PatientValidationService,
+        {provide: HTTP_INTERCEPTORS, useClass: StudyManagerErrorInterceptor, multi: true},]
 })
 export class PatientListComponent implements OnInit, AfterViewInit {
     public studies: Study[] = [];

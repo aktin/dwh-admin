@@ -1,5 +1,5 @@
-import {Component, Input} from '@angular/core';
-import {DateFormat, MomentDatePipe, TableColumns} from '../../helpers';
+import {Component, Input, LOCALE_ID} from '@angular/core';
+import {DateFormat, MomentDatePipe, MY_CALENDAR_OPTIONS, TableColumns} from '../../helpers';
 import {EncounterPeriod} from '../models/encounter-period';
 import {MasterData} from '../models/master-data';
 import moment from 'moment/moment';
@@ -9,11 +9,14 @@ import {defer, distinctUntilChanged, Observable, of, shareReplay, switchMap, tap
 import {PatientValidationService} from '../services/patient-validation.service';
 import {catchError, map} from 'rxjs/operators';
 import {EntryValidation} from '../models/entry-validation';
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
+import {StudyManagerErrorInterceptor} from "../helpers/study-manager-error.interceptor";
 
 @Component({
     selector: 'patient-master-data',
     templateUrl: './patient-master-data.component.html',
-    styleUrl: './patient-master-data.component.css'
+    styleUrl: './patient-master-data.component.css',
+    providers: [{provide: HTTP_INTERCEPTORS, useClass: StudyManagerErrorInterceptor, multi: true}]
 })
 export class PatientMasterDataComponent {
     @Input({required: true})

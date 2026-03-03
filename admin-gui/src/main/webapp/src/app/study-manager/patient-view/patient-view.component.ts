@@ -1,7 +1,7 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, LOCALE_ID, OnInit} from '@angular/core';
 import {Patient} from "../models/patient";
 import {PatientDialogBase} from "../models/patient-dialog-base";
-import {DateFormat} from "../../helpers";
+import {DateFormat, MY_CALENDAR_OPTIONS} from "../../helpers";
 import {StudyManagerService} from "../services/study-manager.service";
 import {Participation} from "../models/participation";
 import {PatientReferenceToRootPipe} from "../helpers/patient-reference-to-root.pipe";
@@ -10,6 +10,8 @@ import {IModalConfig, MODAL_CONFIG, ModalService} from '../../helpers/modal/moda
 import {PatientEditComponent} from '../patient-edit/patient-edit.component';
 import {Study} from '../models/study';
 import {PatientValidationService} from '../services/patient-validation.service';
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
+import {StudyManagerErrorInterceptor} from "../helpers/study-manager-error.interceptor";
 
 declare var $: any;
 
@@ -18,7 +20,8 @@ declare var $: any;
     templateUrl: './patient-view.component.html',
     styleUrls: ['./patient-view.component.css', '../../helpers/popup-message.component.css'],
     providers: [PatientReferenceToRootPipe,
-    PatientValidationService]
+    PatientValidationService,
+        {provide: HTTP_INTERCEPTORS, useClass: StudyManagerErrorInterceptor, multi: true},]
 })
 export class PatientViewComponent extends PatientDialogBase implements OnInit {
     protected readonly DateFormat = DateFormat;
