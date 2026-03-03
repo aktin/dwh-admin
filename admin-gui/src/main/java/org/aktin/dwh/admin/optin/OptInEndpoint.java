@@ -120,7 +120,7 @@ public class OptInEndpoint {
      * @param request contains reference and extensions of patients
      * @return list of patient encounters
      */
-    @Path("/encounters")
+    @Path("/encounterperiods")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -129,9 +129,9 @@ public class OptInEndpoint {
             return ErrorUtils.buildErrorResponse(Status.BAD_REQUEST, OptInErrorType.PARAM_INVALID, "List of extensions cannot be empty");
         }
 
-        List<PatientEncounter> encounters = null;
+        List<PatientEncounterPeriod> encounters = null;
         try {
-            encounters = patientService.getEncounters(request.getPatientReference(), request.getExtensions());
+            encounters = patientService.getEncounterPeriods(request.getPatientReference(), request.getExtensions());
         } catch (IOException e) {
             return ErrorUtils.buildErrorResponse(Status.INTERNAL_SERVER_ERROR, OptInErrorType.UNKNOWN, "An error occurred while retrieving encounters", e);
         }
