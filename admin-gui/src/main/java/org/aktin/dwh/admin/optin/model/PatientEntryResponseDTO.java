@@ -22,7 +22,7 @@ public class PatientEntryResponseDTO {
     private String user;
     private String extension;
     private String sic;
-    private String idEnc;
+    private String ide;
 
     @Setter
     private List<ValidationResult> validationResults;
@@ -38,11 +38,6 @@ public class PatientEntryResponseDTO {
         participation = pat.getParticipation();
         timestamp = pat.getTimestamp();
         user = pat.getUser();
-        idEnc = pat.getIdEnc();
-    }
-
-    public PatientEntryResponseDTO(PatientEntryData pat) {
-        extension = pat.getExtension();
-        sic = pat.getSic();
+        ide = pat.getIde();
     }
 }
