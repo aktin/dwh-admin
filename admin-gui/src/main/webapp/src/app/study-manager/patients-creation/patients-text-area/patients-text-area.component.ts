@@ -1,4 +1,4 @@
-import {Component, DestroyRef, HostListener, Input, LOCALE_ID, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, DestroyRef, HostListener, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {
     AbstractControl,
     AsyncValidator,
@@ -13,7 +13,7 @@ import {filter, map} from 'rxjs/operators';
 import {determineSeverity, EntryValidation} from '../../models/entry-validation';
 import {PatientReference} from '../../models/patient-reference';
 import {RemoveRowButtonComponent} from './remove-row-button.component';
-import {DateFormat, MomentDatePipe, MY_CALENDAR_OPTIONS} from '../../../helpers';
+import {DateFormat, MomentDatePipe} from '../../../helpers';
 import {ReadableEntryValidationPipe} from './readable-entry-validation.pipe';
 import {NoRowsOverlayComponent} from './no-rows-overlay.component';
 import {PatientReferenceToLabelPipe} from '../../helpers/patient-reference-to-label.pipe';
@@ -216,12 +216,20 @@ export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncVal
         }
 
         return this.patientValidationService.validatePatients$(this.studyId, this.rowData)
-                   .pipe(tap(v => this.rowData = v ?? this.rowData),
-                       map(result => (result?.flatMap(r => r.validationResults).every(r => [EntryValidation.NoMasterdataFound,
-                           EntryValidation.NoEncountersFound].includes(r))
-                           ? null
-                           : {entries: result}))
-                   );
+            .pipe(map(result => result.map(r => {
+                    if (r.extension) return r;
+
+                    r.validationResults = [EntryValidation.PatientReferenceMissing];
+
+                    return r;
+                })),
+                map(result => result.sort((a, b) => this.rowData.map(r => r.extension).lastIndexOf(a.extension) - this.rowData.map(r => r.extension).lastIndexOf(b.extension))),
+                tap(v => this.rowData = v ?? this.rowData),
+                map(result => (result?.flatMap(r => r.validationResults).every(r => [EntryValidation.NoMasterdataFound,
+                    EntryValidation.NoEncountersFound].includes(r))
+                    ? null
+                    : {entries: result}))
+            );
     }
 
     public invokeValidation(): void {
@@ -250,7 +258,7 @@ export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncVal
      */
     private parseExcelData(data: string): Patient[] {
         const rows = data.split('\n')
-                         .filter(r => !!r?.length);//omit empty rows
+            .filter(r => !!r?.length);//omit empty rows
 
         let mapFunc: (r: string) => Patient;
         // if sic won't be generated, add a row for optionally entering a sic

@@ -17,6 +17,8 @@ export class ReadableEntryValidationPipe implements PipeTransform {
         [EntryValidation.SicMissing]: () => 'Studien-ID erforderlich',
         [EntryValidation.NoMasterdataFound]: () => 'Keine Stammdaten gefunden',
         [EntryValidation.NoEncountersFound]: () => 'Keine Behandlungsfalldaten gefunden',
+        [EntryValidation.PatientReferenceMissing]: (reference) =>
+            `${this.patientReferenceToLabelPipe.transform(reference)} fehlt`,
         [EntryValidation.PatientReferenceDuplicate]: (reference) =>
             `${this.patientReferenceToLabelPipe.transform(reference)} mehrfach angegeben`,
         [EntryValidation.SicDuplicate]: () => 'Studien-ID mehrfach angegeben',
@@ -29,7 +31,7 @@ export class ReadableEntryValidationPipe implements PipeTransform {
         const convertedValues = value
             .sort(compareEntryValidationBySeverity)
             .map(v => this.validationMessageMap[v](reference));
-        return convertedValues.join('; ');
+        return !!convertedValues?.length ? convertedValues.join('; ') : 'OK';
     }
 
 }

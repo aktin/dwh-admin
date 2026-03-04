@@ -5,6 +5,7 @@ export enum EntryValidation {
     SicMissing = 'SIC_MISSING',
     NoMasterdataFound = 'MASTER_DATA_NOT_FOUND',
     NoEncountersFound = 'ENCOUNTERS_NOT_FOUND',
+    PatientReferenceMissing = "PATIENT_REFERENCE_MISSING",
     PatientReferenceDuplicate = 'DUPLICATE_PAT_REF',
     SicDuplicate = 'DUPLICATE_SIC',
     Pending = 'PENDING',
@@ -28,6 +29,7 @@ const entryValidationSeverity: Record<EntryValidation, Severity> = {
     [EntryValidation.NoMasterdataFound]: 'warn',
     [EntryValidation.NoEncountersFound]: 'warn',
 
+    [EntryValidation.PatientReferenceMissing]: 'error',
     [EntryValidation.PatientReferenceDuplicate]: 'error',
     [EntryValidation.SicDuplicate]: 'error',
     [EntryValidation.EntryFound]: 'error',
@@ -38,7 +40,7 @@ export function compareEntryValidationBySeverity(a: EntryValidation, b: EntryVal
     const sa = severityRank[entryValidationSeverity[a]];
     const sb = severityRank[entryValidationSeverity[b]];
     if (sa !== sb) return sb - sa;
-    return a.localeCompare(b);
+    return 0;
 }
 
 export function determineSeverity(validation: EntryValidation[]): Severity {
