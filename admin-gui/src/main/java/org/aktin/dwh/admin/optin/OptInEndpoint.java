@@ -224,7 +224,7 @@ public class OptInEndpoint {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response validateEntries(@PathParam("studyId") String id,
-                                    @Valid List<PatientEntryRequestDTO> patients) {
+                                    List<PatientEntryRequestDTO> patients) {
         Map<PatientEntry, List<ValidationResult>> map = null;
         try {
             map = validator.validatePatients(id, patients.stream().map(PatientEntryRequestDTO::toPatientEntryData).collect(Collectors.toList()));
