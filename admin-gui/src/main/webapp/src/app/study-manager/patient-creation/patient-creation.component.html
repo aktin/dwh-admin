@@ -170,6 +170,9 @@
                         <error-message *ngIf="extModel.errors?.whitespaceOnly">
                             Nur Leerzeichen nicht erlaubt
                         </error-message>
+                        <error-message *ngIf="extModel.errors?.extensionFound">
+                            {{ patient.reference | patientReferenceToLabel }} schon vorhanden
+                        </error-message>
                     </div>
 
                     <div class="field">
