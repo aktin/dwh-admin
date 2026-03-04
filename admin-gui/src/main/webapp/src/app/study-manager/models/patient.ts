@@ -16,7 +16,7 @@ export class Patient extends BaseModel {
     public timestamp: number;
     public user: string;
     public study: Study;
-    public idEnc: string;
+    public ide: string;
     public generateSic: boolean;
     public validationResults: EntryValidation[];
 

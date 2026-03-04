@@ -152,7 +152,7 @@ export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncVal
                 switchMap(patients => this.studyManagerService.getEncounters(this.reference, patients.map(p => p.extension))),
                 takeUntilDestroyed(this.destroyRef),)
             .subscribe(encounters => {
-                this.rowData.forEach(row => row.encounters = encounters.filter(e => e.ide === row.idEnc));
+                this.rowData.forEach(row => row.encounters = encounters.filter(e => e.ide === row.ide));
 
                 this.gridApi?.refreshCells({force: true});
             });
@@ -163,7 +163,7 @@ export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncVal
                 switchMap(patients => this.studyManagerService.getMasterData(this.reference, patients.map(p => p.extension))),
                 takeUntilDestroyed(this.destroyRef),)
             .subscribe(masterData => {
-                this.rowData.forEach(row => row.masterData = masterData.find(m => m.ide === row.idEnc));
+                this.rowData.forEach(row => row.masterData = masterData.find(m => m.ide === row.ide));
 
                 this.gridApi?.refreshCells({force: true});
             });
