@@ -125,6 +125,7 @@
                         <label>Patient*innen-Referenz</label>
                         <drop-down [(ngModel)]="patient.reference"
                                    name="references"
+                                   (ngModelChange)="validate()"
                                    required>
                             @for (ref of references; track ref) {
                                 <drop-down-option [value]="ref">{{ ref | patientReferenceToLabel }}</drop-down-option>

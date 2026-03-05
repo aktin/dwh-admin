@@ -1,4 +1,4 @@
-import {Directive} from '@angular/core';
+import {Directive, OnInit} from '@angular/core';
 import {
     AbstractControl,
     AsyncValidator,
@@ -7,11 +7,12 @@ import {
     ValidationErrors,
     Validator
 } from '@angular/forms';
-import {Observable, of, take} from "rxjs";
+import {Observable, of, Subject, take, takeUntil} from "rxjs";
 import {StudyManagerService} from "../services/study-manager.service";
 import {PatientValidationService} from "../services/patient-validation.service";
 import {filter, map} from "rxjs/operators";
 import {EntryValidation} from "../models/entry-validation";
+import {ExternalTriggeredAsyncValidatorBase} from "../helpers/external-triggered-async-validator-base";
 
 @Directive({
     selector: 'input[extension]',
@@ -23,13 +24,18 @@ import {EntryValidation} from "../models/entry-validation";
         },
     ]
 })
-export class ExtensionValidatorDirective implements AsyncValidator {
+export class ExtensionValidatorDirective extends ExternalTriggeredAsyncValidatorBase implements OnInit {
     private prefs: {
         separator: string,
         root: string
     } = {separator: '/', root: ''}
 
-    constructor(private validationService: PatientValidationService) {
+    constructor(private patientValidationService: PatientValidationService) {
+        super();
+    }
+
+    ngOnInit() {
+        this.reactToExternalChanges(this.patientValidationService.validationData$);
     }
 
     /**
@@ -38,7 +44,7 @@ export class ExtensionValidatorDirective implements AsyncValidator {
      * @param {AbstractControl} control - The form control to validate. It contains the value to be checked.
      * @return {Promise<ValidationErrors> | Observable<ValidationErrors> | null} An observable containing validation errors if any conditions are violated, or null if the value is valid.
      */
-    validate(control: AbstractControl): Promise<ValidationErrors> | Observable<ValidationErrors>  {
+    validate(control: AbstractControl): Observable<ValidationErrors | null> | Promise<ValidationErrors | null>  {
         const value = control.value;
 
         if (!value) {
@@ -76,7 +82,7 @@ export class ExtensionValidatorDirective implements AsyncValidator {
             return of({period: true});
         }
 
-        return this.validationService.validationData$.pipe(map(v => v?.find(e => e.extension === value)?.validationResults),
+        return this.patientValidationService.validationData$.pipe(map(v => v?.find(e => e.extension === value)?.validationResults),
             filter(v => !!v?.length),
             map(v => v?.find(e => e === EntryValidation.EntryFound)),
             map(e => !!e ? {'extensionFound': true} : null),

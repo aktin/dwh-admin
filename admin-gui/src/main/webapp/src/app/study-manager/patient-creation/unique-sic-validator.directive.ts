@@ -1,9 +1,10 @@
-import {Directive} from '@angular/core';
+import {Directive, OnDestroy, OnInit} from '@angular/core';
 import {AbstractControl, AsyncValidator, NG_ASYNC_VALIDATORS, ValidationErrors} from '@angular/forms';
-import {Observable, of, take} from 'rxjs';
+import {Observable, of, Subject, take, takeUntil} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import {PatientValidationService} from '../services/patient-validation.service';
 import {EntryValidation} from '../models/entry-validation';
+import {ExternalTriggeredAsyncValidatorBase} from "../helpers/external-triggered-async-validator-base";
 
 
 @Directive({
@@ -16,8 +17,13 @@ import {EntryValidation} from '../models/entry-validation';
         },
     ]
 })
-export class UniqueSicValidatorDirective implements AsyncValidator {
+export class UniqueSicValidatorDirective extends ExternalTriggeredAsyncValidatorBase implements OnInit {
     constructor(private patientValidationService: PatientValidationService) {
+        super();
+    }
+
+    ngOnInit() {
+        this.reactToExternalChanges(this.patientValidationService.validationData$);
     }
 
     /**
@@ -34,9 +40,9 @@ export class UniqueSicValidatorDirective implements AsyncValidator {
         }
 
         return this.patientValidationService.validationData$.pipe(map(v => v?.find(e => e.sic === sic)?.validationResults),
-            filter(v => !!v?.length),
             map(v => v?.find(e => e === EntryValidation.SicFound)),
             map(e => !!e ? {'sicNotUnique': true} : null),
             take(1));
     }
+
 }
