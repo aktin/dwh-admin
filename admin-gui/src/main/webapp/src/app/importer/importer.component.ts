@@ -149,7 +149,7 @@ export class ImporterComponent {
                         lock_script,
                         lock_file.name,
                         lock_file.size,
-                        event._body
+                        event
                     ));
                     this.deleteHoldingFile();
                     this.subscription_upload.unsubscribe();
