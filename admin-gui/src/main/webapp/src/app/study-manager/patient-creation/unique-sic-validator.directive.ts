@@ -23,7 +23,7 @@ export class UniqueSicValidatorDirective extends ExternalTriggeredAsyncValidator
     }
 
     ngOnInit() {
-        this.reactToExternalChanges(this.patientValidationService.validationData$);
+        this.reactToExternalChanges(this.patientValidationService.revalidate$);
     }
 
     /**

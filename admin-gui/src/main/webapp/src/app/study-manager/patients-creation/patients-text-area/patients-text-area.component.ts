@@ -24,6 +24,7 @@ import {StudyManagerService} from '../../services/study-manager.service';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
 import {StudyManagerErrorInterceptor} from "../../helpers/study-manager-error.interceptor";
+import {ExternalTriggeredAsyncValidatorBase} from "../../helpers/external-triggered-async-validator-base";
 
 /**
  * Represents a text area component designed to manage and edit patient data in a tabular format.
@@ -42,11 +43,10 @@ import {StudyManagerErrorInterceptor} from "../../helpers/study-manager-error.in
         ReadableEntryValidationPipe,
         MomentDatePipe,
         PatientReferenceToLabelPipe,
-        PatientValidationService,
         {provide: HTTP_INTERCEPTORS, useClass: StudyManagerErrorInterceptor, multi: true},],
     encapsulation: ViewEncapsulation.None
 })
-export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncValidator, OnInit {
+export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBase implements ControlValueAccessor, OnInit {
     public columnDefs: ColDef<Patient>[] = [
         {
             headerName: 'Entfernen',
@@ -95,6 +95,7 @@ export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncVal
                 private studyManagerService: StudyManagerService,
                 private momentDatePipe: MomentDatePipe,
                 private destroyRef: DestroyRef) {
+        super();
     }
 
     private _reference: PatientReference;
@@ -107,10 +108,14 @@ export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncVal
     public set reference(value: PatientReference) {
         this._reference = value;
 
+        this.rowData.forEach(r => r.reference = this.reference);
+
         const colDef = this.columnDefs.find(c => c.field === 'extension');
         colDef.headerComponentParams = {reference: this.reference};
 
         this.gridApi?.setGridOption('columnDefs', this.columnDefs);
+
+        this.patientValidationService.requestRevalidation();
     }
 
     private _rowData: Patient[] = [];
@@ -121,6 +126,7 @@ export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncVal
 
     public set rowData(value: Patient[]) {
         this._rowData = value;
+        this.rowData.forEach(r => r.reference = this.reference);
 
         this.gridApi?.setGridOption('rowData', value);
         this.gridApi?.autoSizeAllColumns();
@@ -142,6 +148,8 @@ export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncVal
     }
 
     ngOnInit(): void {
+        this.reactToExternalChanges(this.patientValidationService.revalidate$);
+
         /**
          * observables load encounters and master data for all patients who have encounters and master data available respectively
          * using a bulk call avoids possible tens or hundreds of single calls (1 per patient)
@@ -223,7 +231,6 @@ export class PatientsTextAreaComponent implements ControlValueAccessor, AsyncVal
 
                     return r;
                 })),
-                map(result => result.sort((a, b) => this.rowData.map(r => r.extension).lastIndexOf(a.extension) - this.rowData.map(r => r.extension).lastIndexOf(b.extension))),
                 tap(v => this.rowData = v ?? this.rowData),
                 map(result => (result?.flatMap(r => r.validationResults).every(r => [EntryValidation.NoMasterdataFound,
                     EntryValidation.NoEncountersFound].includes(r))

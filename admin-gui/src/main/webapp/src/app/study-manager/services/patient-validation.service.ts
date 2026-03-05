@@ -1,15 +1,27 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, debounceTime, distinctUntilChanged, first, Observable, tap} from 'rxjs';
+import {BehaviorSubject, debounceTime, distinctUntilChanged, first, Observable, Subject, tap} from 'rxjs';
 import {UrlService} from '../../helpers';
 import {Patient} from '../models/patient';
 import {map} from 'rxjs/operators';
 import {PatientReference} from '../models/patient-reference';
 import {Participation} from '../models/participation';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class PatientValidationService {
-    private dataSubject$ = new BehaviorSubject<Patient[]>(null);
+    private readonly dataSubject$ = new BehaviorSubject<Patient[]>(null);
+
+    private readonly revalidateSubject$ = new Subject<void>();
+
+    /** Subscribe to this in validators to re-run validation on demand. */
+    public get revalidate$(): Observable<void> {
+        return this.revalidateSubject$.asObservable()
+    };
+
+    /** Call this whenever some external event means validators should re-run. */
+    public requestRevalidation(): void {
+        this.revalidateSubject$.next();
+    }
 
     constructor(private _http: HttpClient,
                 private _urls: UrlService) {
@@ -29,7 +41,7 @@ export class PatientValidationService {
     }
 
     public validatePatients(studyId: string, entries: Patient[]): void {
-        this.validatePatients$(studyId, entries).subscribe()
+        this.validatePatients$(studyId, entries).subscribe(() => this.requestRevalidation());
     }
 }
 
