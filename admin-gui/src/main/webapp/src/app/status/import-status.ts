@@ -33,7 +33,7 @@ export class ImportStatus {
     public static parseError(objErr: any[]): ImportStatusError[] {
         return objErr?.reduce((array, obj) => {
             let error: any = {};
-            obj['value'].split('\n').forEach((msg: string) => {
+            obj['value']?.split('\n')?.forEach((msg: string) => {
                 let ind = msg.indexOf(':');
                 let head = msg.substring(0, ind);
                 if (typeof error[head] === 'undefined') {
@@ -41,7 +41,7 @@ export class ImportStatus {
                 }
                 error[head].push(msg.substring(ind + 1).trim());
             });
-            array.push({
+            array?.push({
                 value : obj['value'],
                     timestamp : new Date(obj['timestamp']),
                 repeats : obj['repeats'] || 1,
