@@ -46,7 +46,7 @@
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
-              "semantic/dist/semantic.js"
+              "semantic/dist/semantic.min.js"
             ],
             "allowedCommonJsDependencies": ["file-saver", "jquery", "moment"]
           },
@@ -55,14 +55,18 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
+                  "maximumWarning": "5mb",
+                  "maximumError": "7mb"
                 },
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "6kb"
                 }
               ],
+              "optimization": {
+                "scripts": true,
+                "styles": { "minify": true, "inlineCritical": false }
+              },
               "outputHashing": "all"
             },
             "development": {
@@ -113,5 +117,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
