@@ -120,7 +120,7 @@ public class OptInEndpoint {
      * @param request contains reference and extensions of patients
      * @return list of patient encounters
      */
-    @Path("/encounterperiods")
+    @Path("encounterperiods")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -139,7 +139,7 @@ public class OptInEndpoint {
     }
 
 
-    @Path("/masterdata")
+    @Path("masterdata")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

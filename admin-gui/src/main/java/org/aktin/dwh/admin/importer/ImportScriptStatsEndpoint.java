@@ -25,12 +25,10 @@ public class ImportScriptStatsEndpoint {
   @Inject
   private StatsQueryService statsService;
 
-  @Inject
-  private P21StatsSpec p21Spec;
-
   @GET
   @Path("p21")
   public Response p21() {
-    return Response.ok(statsService.run(p21Spec)).build();
+    List<Map<String, Object>> stats = statsService.run(new P21StatsSpec());
+    return Response.ok(stats).build();
   }
 }
