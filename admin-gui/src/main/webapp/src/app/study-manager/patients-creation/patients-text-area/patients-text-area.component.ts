@@ -195,6 +195,10 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         this.gridApi?.autoSizeAllColumns();
     }
 
+    public resizeGrid(): void {
+        this.gridApi?.autoSizeAllColumns();
+    }
+
     writeValue(value: Patient[]): void {
         this._rowData = value;
     }
@@ -236,6 +240,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
                     EntryValidation.NoEncountersFound].includes(r))
                     ? null
                     : {entries: result}))
+
             );
     }
 
