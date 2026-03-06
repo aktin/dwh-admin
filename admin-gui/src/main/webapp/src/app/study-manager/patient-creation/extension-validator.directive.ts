@@ -82,10 +82,9 @@ export class ExtensionValidatorDirective extends ExternalTriggeredAsyncValidator
             return of({period: true});
         }
 
-        return this.patientValidationService.validationData$.pipe(map(v => v?.find(e => e.extension === value)?.validationResults),
-            filter(v => !!v?.length),
-            map(v => v?.find(e => e === EntryValidation.EntryFound)),
-            map(e => !!e ? {'extensionFound': true} : null),
+        return this.patientValidationService.validationData$.pipe(
+            map(v => v?.find(e => e.extension === value)?.validationResults ?? []),
+            map(v => v?.find(e => e === EntryValidation.EntryFound) ? {'extensionFound': true} : null),
             take(1));
     }
 }
