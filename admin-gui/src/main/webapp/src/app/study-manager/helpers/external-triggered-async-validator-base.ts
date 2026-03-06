@@ -26,10 +26,7 @@ export abstract class ExternalTriggeredAsyncValidatorBase implements AsyncValida
 
         stream$
             .pipe(takeUntil(this.destroy$))
-            .subscribe(() => {
-                console.log("External change detected, re-validating.");
-                this.onValidatorChange();
-            });
+            .subscribe(() => this.onValidatorChange());
     }
 
     registerOnValidatorChange(fn: () => void): void {
