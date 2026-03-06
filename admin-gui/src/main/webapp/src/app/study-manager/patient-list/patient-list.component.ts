@@ -39,8 +39,13 @@ export class PatientListComponent implements OnInit, AfterViewInit {
             header: 'Studien-ID'
         },
         {
-            field: e => `${e.extension} (${this.patientReferenceToLabelPipe.transform(e.reference)})`,
+            field: e => e.extension,
             header: 'Patient*innen-Referenz',
+            useToTrack: true
+        },
+        {
+            field: e => this.patientReferenceToLabelPipe.transform(e.reference),
+            header: 'Referenzart',
             useToTrack: true
         },
         {
