@@ -42,7 +42,7 @@ export class DataTableComponent<T = any> {
 
         // identifier is the header
         const column = this.columns.find(c => c.header === $event.identifier);
-        const resolvedField = this.resolveField(column.field, this.allData[0]);
+        const resolvedField = this.resolveField(column.field, this.allData).find(v => !!v);
 
         switch (typeof resolvedField) {
             case "boolean":
@@ -89,7 +89,9 @@ export class DataTableComponent<T = any> {
      *         of invoking the function with the object is returned. If it is a key, the value corresponding to
      *         the key in the object is returned.
      */
-    protected resolveField(field: string | number | symbol | ((obj: any) => string), obj: any): any {
+    protected resolveField(field: string | number | symbol | ((obj: any) => string), obj: any | any[]): any {
+        if (Array.isArray(obj)) return obj.map(o => this.resolveField(field, o));
+
         return typeof field === "function" ? field(obj) : obj[field];
     }
 
@@ -104,9 +106,9 @@ export class DataTableComponent<T = any> {
     }
 
     protected determineTrackBy(row: T): any {
-        const column = this.columns.find(c => c.useToTrack);
+        const column = this.columns.filter(c => c.useToTrack);
         if (!column) return row;
-        return this.resolveField(column.field, row);
+        return column.map(c => this.resolveField(c.field, row)).join("");
     }
 }
 
