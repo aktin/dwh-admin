@@ -76,7 +76,7 @@ export class PatientsCreationComponent extends PatientDialogBase implements OnIn
     public create(): void {
         if (this.form.valid) {
             // populate every patient with the same reference and participation
-            this.entries.forEach(e => {
+            this.entries?.forEach(e => {
                 e.reference = this.selectedReference;
                 e.participation = this.participation;
                 e.comment = this.comment;
