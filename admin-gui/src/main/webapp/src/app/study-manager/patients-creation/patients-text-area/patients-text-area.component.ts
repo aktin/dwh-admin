@@ -108,7 +108,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     public set reference(value: PatientReference) {
         this._reference = value;
 
-        this.rowData.forEach(r => r.reference = this.reference);
+        this.rowData?.forEach(r => r.reference = this.reference);
 
         const colDef = this.columnDefs.find(c => c.field === 'extension');
         colDef.headerComponentParams = {reference: this.reference};
@@ -126,7 +126,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
 
     public set rowData(value: Patient[]) {
         this._rowData = value;
-        this.rowData.forEach(r => r.reference = this.reference);
+        this.rowData?.forEach>(r => r.reference = this.reference);
 
         this.gridApi?.setGridOption('rowData', value);
         this.gridApi?.autoSizeAllColumns();
