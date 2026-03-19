@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>dwh-api</artifactId>
-            <version>0.10</version>
+            <version>0.11</version>
         </dependency>
         <dependency>
             <groupId>de.li2b2.facade</groupId>
@@ -68,7 +68,12 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>generic-file-importer</artifactId>
-            <version>0.19rc1</version>
+            <version>0.20</version>
+        </dependency>
+        <dependency>
+          <groupId>org.aktin</groupId>
+          <artifactId>generic-imports-manager</artifactId>
+          <version>0.14rc1</version>
         </dependency>
 
         <dependency>
@@ -81,7 +86,19 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.11.3</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.11.3</version>
+            <scope>provided</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.20</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- test with jetty -->
         <!-- test dependencies to run a server for testing -->
@@ -164,40 +181,40 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>report-manager</artifactId>
-            <version>0.13</version>
+            <version>0.14-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>report-archive</artifactId>
-            <version>0.13</version>
+            <version>0.14-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>report-manager</artifactId>
-            <version>0.13</version>
+            <version>0.14-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin.dwh</groupId>
             <artifactId>dwh-db</artifactId>
-            <version>0.12</version>
+            <version>0.13</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>r-script</artifactId>
-            <version>1.4</version>
+            <version>1.4.1</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin.dwh</groupId>
             <artifactId>dwh-db</artifactId>
-            <version>0.12</version>
+            <version>0.13</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -209,13 +226,13 @@
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>request-manager</artifactId>
-            <version>0.13</version>
+            <version>0.14-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.aktin</groupId>
             <artifactId>study-manager</artifactId>
-            <version>0.13</version>
+            <version>0.14-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 
@@ -246,7 +263,16 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <warSourceExcludes>node_modules/**,**/*.ts,**/*.js.map,.idea/**,.vscode/**</warSourceExcludes>
+                    <warSourceExcludes>node_modules/**,.angular/**,*.json,*.md,.browserslistrc,.vscode/**,.idea/**,dist/**,public/**,src/**</warSourceExcludes>
+                    <webResources>
+                        <resource>
+                            <directory>${project.basedir}/src/main/webapp/dist/browser</directory>
+                            <includes>
+                                <include>**/*</include>
+                            </includes>
+                            <targetPath>/</targetPath> <!-- This places the build files at the root of the WAR -->
+                        </resource>
+                    </webResources>
                 </configuration>
             </plugin>
             <plugin>
@@ -302,7 +328,7 @@
                         </goals>
                         <phase>generate-resources</phase>
                         <configuration>
-                            <nodeVersion>v14.21.1</nodeVersion>
+                            <nodeVersion>v18.19.1</nodeVersion>
                         </configuration>
                     </execution>
 

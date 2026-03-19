@@ -1,0 +1,38 @@
+@import "semantic/src/site/globals/site.variables";
+
+
+.ag-cell {
+  background-color: @white;
+
+  &.error {
+    border-color: @red;
+    &.static-cell {
+      background: @red;
+      color: @white;
+    }
+  }
+
+  &.warn {
+    border-color: @orange;
+    &.static-cell {
+      background: @orange;
+      color: @white;
+    }
+  }
+
+  &.success {
+    border-color: @green;
+    &.static-cell {
+      background: @green;
+      color: @white;
+    }
+  }
+
+  &.static-cell {
+    background-color: rgba(1, 1, 1, 0.1);
+  }
+
+  &:not(.static-cell) {
+    cursor: pointer;
+  }
+}

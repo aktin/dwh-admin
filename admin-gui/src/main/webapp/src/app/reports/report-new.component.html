@@ -1,0 +1,76 @@
+<div class="ui grid">
+    <div class="row">
+        <div class="ui breadcrumb">
+            <a class="section breadcrumb-header"
+               routerLink="/report">Berichtsübersicht</a>
+            <i class="right angle icon divider"></i>
+            <div class="active section">Neuen Bericht erzeugen</div>
+        </div>
+    </div>
+    <div class="ui segment row">
+        <form #newReportForm="ngForm"
+              (ngSubmit)="generateReport()"
+              class="ui form new-report-form sixteen wide column">
+            <div class="field template-select-field">
+                <label>Berichtsart</label>
+                <select [(ngModel)]="template"
+                        class="ui fluid dropdown template-select"
+                        name="template"
+                        title="Bericht Templates">
+                    <!--<option value="" disabled="disabled">bitte Auswählen</option>-->
+                    <option *ngFor="let tem of templates"
+                            [selected]="template==tem.id"
+                            [value]="tem.id">{{ tem.description }}
+                    </option>
+                </select>
+            </div>
+
+            <div class="sixteen wide fields">
+                <div class="eight wide field">
+                    <label>Startdatum</label>
+                    <div class="ui action input">
+                        <input #dpFrom="angular-mydatepicker"
+                               [(ngModel)]="fromDateModel"
+                               [options]="fromDPOptions"
+                               angular-mydatepicker
+                               name="fromDateMDP"
+                               required/>
+                        <button (click)="dpFrom.toggleCalendar()"
+                                class="ui icon button"
+                                type="button">
+                            <i class="calendar icon"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="eight wide field">
+                    <label>Enddatum</label>
+                    <div class="ui action input">
+                        <input #dpTo="angular-mydatepicker"
+                               [(ngModel)]="toDateModel"
+                               [options]="toDPOptions"
+                               angular-mydatepicker
+                               name="toDateMDP"
+                               required/>
+                        <button (click)="dpTo.toggleCalendar()"
+                                class="ui icon button"
+                                type="button">
+                            <i class="calendar icon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <button class="ui fluid green large submit button"
+                    type="submit">
+                Jetzt erstellen
+            </button>
+        </form>
+    </div>
+</div>
+<br/>
+<div *ngIf="this.showErrorNotification"
+     class="ui negative message">
+    <i (click)="this.showErrorNotification=false;"
+       class="close icon"></i>
+    <div class="header">Fehler!</div>
+    <p>{{ errorNotificationText }}</p>
+</div>
