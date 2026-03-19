@@ -2,34 +2,36 @@ import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest}
 import {catchError} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {Observable, throwError} from 'rxjs';
-import {StudyManagerError, StudyManagerErrorType} from './error-types';
-import {NotificationService} from '../helpers';
+import {StudyManagerErrorType} from '../models/error-types';
 
 @Injectable()
 export class StudyManagerErrorInterceptor implements HttpInterceptor {
-    constructor(private notificationService: NotificationService) {
-    }
-
+    /**
+     * Intercepts all http errors and translates them into human readable messages
+     * @param req
+     * @param next
+     */
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         return next.handle(req).pipe(catchError((response: HttpErrorResponse) => {
-            const err = response.error as StudyManagerError;
-            switch (err.type) {
+            let err = response.error;
+            switch (err.detail) {
                 case StudyManagerErrorType.PATIENT_ALREADY_EXISTS:
-                    err.readable = "Patient*in existiert bereits";
+                    err = "Patient*in existiert bereits";
                     break;
                 case StudyManagerErrorType.SIC_ALREADY_EXISTS:
-                    err.readable = "SIC existiert bereits";
+                    err = "SIC existiert bereits";
                     break;
                 case StudyManagerErrorType.PATIENT_NOT_FOUND:
-                    err.readable = "Patient*in nicht gefunden";
+                    err = "Patient*in nicht gefunden";
                     break;
                 case StudyManagerErrorType.STUDY_NOT_FOUND:
-                    err.readable = "Studie nicht gefunden";
+                    err = "Studie nicht gefunden";
                     break;
                 default:
-                    err.readable = "";
+                    err = "Unbekannter Fehler";
             }
-            return throwError(() => response);
+
+            return throwError(() => err);
         }));
     }
 

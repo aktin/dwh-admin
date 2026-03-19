@@ -114,14 +114,13 @@ export class ListEntry {
     reload() {
         this.subscription_reload = this._importerService.getUploadedFile(this.uuid)
             .subscribe(event => {
-                if (event._body) {
-                    let json = JSON.parse(event._body);
-                    this.id_script = json[PropertiesKey.script]
-                    this.name_file = json[PropertiesKey.filename]
-                    this.size_file = json[PropertiesKey.size]
-                    this.uuid = json[PropertiesKey.id]
-                    this.operation = json[PropertiesKey.operation]
-                    this.state = json[PropertiesKey.state]
+                if (event) {
+                    this.id_script = event[PropertiesKey.script]
+                    this.name_file = event[PropertiesKey.filename]
+                    this.size_file = event[PropertiesKey.size]
+                    this.uuid = event[PropertiesKey.id]
+                    this.operation = event[PropertiesKey.operation]
+                    this.state = event[PropertiesKey.state]
                     this.computeOperationState();
                     this.getScriptLogs();
                     this.subscription_reload.unsubscribe();
@@ -138,9 +137,8 @@ export class ListEntry {
      */
     getScriptLogs() {
         this.subscription_scriptLogs = this._importerService.getScriptLogs(this.uuid)
-            .subscribe(event => {
-                if (event._body) {
-                    let list_logs = JSON.parse(event._body);
+            .subscribe(list_logs => {
+                if (!!list_logs?.length) {
                     list_logs.forEach((json: any) => {
                         if (json['type'] == LogType.stdError && json['text'] != null) {
                             this.msg_error = json['text'];

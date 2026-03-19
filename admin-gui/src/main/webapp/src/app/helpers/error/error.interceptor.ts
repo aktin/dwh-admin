@@ -1,16 +1,8 @@
 import {Injectable} from '@angular/core';
-import {
-    HttpEvent,
-    HttpEventType,
-    HttpHandler,
-    HttpInterceptor,
-    HttpRequest, HttpResponse,
-    HttpStatusCode
-} from '@angular/common/http';
-import {Observable, of, switchMap, throwError} from 'rxjs';
+import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpStatusCode} from '@angular/common/http';
+import {Observable, of, throwError} from 'rxjs';
 import {CleanUpAuthService} from '../services/clean-up-auth.service';
-import {catchError, map} from 'rxjs/operators';
-import {ServerError} from './error';
+import {catchError} from 'rxjs/operators';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
@@ -29,7 +21,7 @@ export class ErrorInterceptor implements HttpInterceptor {
             }
             const error = this.getError(response);
             console.error(response.message, error);
-            return throwError(() => error as (ServerError | string | any));
+            return throwError(() => error as (string | any));
         }));
     }
 
@@ -39,7 +31,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         this._cleanUp.redirect2Home();
     }
 
-    private getError(response: any) {
+    private getError(response: any): string {
         let error = '';
         if (typeof response.error === 'object') {
             error = response.error;

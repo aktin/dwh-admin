@@ -1,10 +1,10 @@
-import {BaseModel} from '../helpers';
+import {BaseModel} from '../../helpers';
 
 export class MasterData extends BaseModel {
     public birthDate: number;
     public sex: string;
     public zip: any;
-    public patientId: number;
+    public ide: string;
 
     constructor(obj?: any) {
         super(obj);

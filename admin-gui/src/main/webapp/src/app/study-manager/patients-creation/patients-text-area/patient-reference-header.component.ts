@@ -1,8 +1,12 @@
 import {Component} from '@angular/core';
 import {AgPromise, IHeaderParams} from 'ag-grid-community';
-import {PatientReference} from '../../patient-reference';
+import {PatientReference} from '../../models/patient-reference';
 import {IHeaderAngularComp} from 'ag-grid-angular';
 
+/**
+ * PatientReferenceHeaderComponent is an Angular component that serves as a custom header
+ * for a grid, specifically designed to handle and display patient reference information.
+ */
 @Component({
     selector: 'patient-reference-header',
     templateUrl: './patient-reference-header.component.html',

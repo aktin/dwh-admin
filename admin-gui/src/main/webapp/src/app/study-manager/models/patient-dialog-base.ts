@@ -1,4 +1,4 @@
-import {StudyManagerService} from "./study-manager.service";
+import {StudyManagerService} from "../services/study-manager.service";
 import {Directive, EventEmitter, Output} from "@angular/core";
 
 @Directive({})

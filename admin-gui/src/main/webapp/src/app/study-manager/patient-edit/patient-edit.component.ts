@@ -1,61 +1,53 @@
-import {Component, ElementRef, Inject, Input, OnInit, ViewChild} from '@angular/core';
-import {Participation} from '../participation';
-import {DateFormat, NotificationService, PopUpMessageComponent} from '../../helpers';
-import {PatientDialogBase} from '../patient-dialog-base';
-import {Entry} from '../entry';
+import {Component, Inject, LOCALE_ID, OnInit, ViewChild} from '@angular/core';
+import {Participation} from '../models/participation';
+import {DateFormat, MY_CALENDAR_OPTIONS, NotificationService, PopUpMessageComponent} from '../../helpers';
+import {PatientDialogBase} from '../models/patient-dialog-base';
+import {Patient} from '../models/patient';
 import {NgForm} from '@angular/forms';
-import {Encounter} from '../encounter';
-import {MasterData} from '../master-data';
-import {StudyManagerService} from '../study-manager.service';
+import {StudyManagerService} from '../services/study-manager.service';
 import {IModalConfig, MODAL_CONFIG, ModalService} from '../../helpers/modal/modal.service';
 import {ModalRef} from '../../helpers/modal/modal-ref.component';
 import {iif, of, switchMap, tap} from 'rxjs';
+import {Study} from '../models/study';
+import {PatientValidationService} from '../services/patient-validation.service';
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
+import {StudyManagerErrorInterceptor} from "../helpers/study-manager-error.interceptor";
 
 declare var $: any;
 
 @Component({
     selector: 'patient-edit',
     templateUrl: './patient-edit.component.html',
-    styleUrls: ['./patient-edit.component.css', '../../helpers/popup-message.component.css']
+    styleUrls: ['./patient-edit.component.css', '../../helpers/popup-message.component.css'],
+    providers: [PatientValidationService,
+        {provide: HTTP_INTERCEPTORS, useClass: StudyManagerErrorInterceptor, multi: true},]
 })
 export class PatientEditComponent extends PatientDialogBase implements OnInit {
-    @Input()
-    public entry: Entry;
+    public entry: Patient;
     @ViewChild(NgForm)
     private form: NgForm;
-    protected encounters: Encounter[];
-    protected masterData: MasterData;
 
     protected readonly Participation = Participation;
     protected readonly DateFormat = DateFormat;
-
-    @ViewChild('accordion', {static: false})
-    private set accordion(value: ElementRef<HTMLDivElement>) {
-        if (!!value) {
-            $(value.nativeElement).accordion({exclusive: false});
-        }
-    }
+    protected study: Study;
 
     constructor(studyManagerService: StudyManagerService,
                 private notificationService: NotificationService,
                 private modalService: ModalService,
                 private modalRef: ModalRef<PatientEditComponent>,
-                @Inject(MODAL_CONFIG) config: IModalConfig<Entry>) {
+                @Inject(MODAL_CONFIG) config: IModalConfig) {
         super(studyManagerService);
-        this.entry = config.data;
+        this.entry = config.data.patient;
+        this.study = config.data.study
     }
 
     ngOnInit(): void {
         this.studyManagerService.getPreferences().subscribe(p => this.preferences = p);
-        this.studyManagerService.getEncounters(this.entry.reference, this.entry.idRoot, this.entry.idExt)
-            .subscribe(e => this.encounters = e);
-        this.studyManagerService.getMasterData(this.entry.reference, this.entry.idRoot, this.entry.idExt)
-            .subscribe(m => this.masterData = m);
     }
 
     public save(): void {
         if (this.form.valid) {
-            this.studyManagerService.updateEntry(this.entry.study.id, this.entry.reference, this.entry.idRoot, this.entry.idExt, this.entry)
+            this.studyManagerService.updatePatient(this.study.id, this.entry.reference, this.entry.extension, this.entry)
                 .subscribe({
                     next: e => {
                         this.notificationService.showSuccess('Änderungen gespeichert');
@@ -79,7 +71,7 @@ export class PatientEditComponent extends PatientDialogBase implements OnInit {
                     ref.instance.show = true;
                 }), switchMap(ref => ref.closed$),
                 switchMap(shouldDelete => iif(() => shouldDelete,
-                    this.studyManagerService.deleteEntry(this.entry.study.id, this.entry.reference, this.entry.idRoot, this.entry.idExt),
+                    this.studyManagerService.deletePatient(this.study.id, this.entry.reference, this.entry.extension),
                     of(false)
                 )))
             .subscribe({

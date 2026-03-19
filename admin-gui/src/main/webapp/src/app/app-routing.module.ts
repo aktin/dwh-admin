@@ -16,7 +16,7 @@ import {ImporterComponent} from './importer';
 import {RequestsComponent, RequestSingleComponent} from './requests';
 import {StatusComponent} from './status';
 import {PatientListComponent} from "./study-manager/patient-list/patient-list.component";
-import {StudyManagerPreferenceResolver} from "./study-manager/study-manager-preference.resolver";
+import {StudyManagerPreferenceResolver} from "./study-manager/helpers/study-manager-preference.resolver";
 
 const routes: Routes = [// array of routes
   {

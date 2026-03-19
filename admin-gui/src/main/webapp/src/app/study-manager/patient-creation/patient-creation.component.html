@@ -45,7 +45,7 @@
                         <div class="inline fields">
                             <div class="field">
                                 <div class="ui radio checkbox">
-                                    <input [checked]="selectedStudy?.optIn"
+                                    <input [checked]="patient.participation === Participation.OptIn"
                                            disabled
                                            name="opt"
                                            type="radio">
@@ -55,7 +55,7 @@
 
                             <div class="field">
                                 <div class="ui radio checkbox">
-                                    <input [checked]="selectedStudy?.optOut"
+                                    <input [checked]="patient.participation === Participation.OptOut"
                                            disabled
                                            name="opt"
                                            type="radio">
@@ -75,7 +75,7 @@
                         <div class="inline fields">
                             <div class="field">
                                 <div class="ui radio checkbox">
-                                    <input [(ngModel)]="generateSic"
+                                    <input [(ngModel)]="patient.generateSic"
                                            [disabled]="selectedStudy.sicGeneration === SICGeneration.ManualOnly"
                                            [value]="true"
                                            name="generateSic"
@@ -86,7 +86,7 @@
 
                             <div class="field">
                                 <div class="ui radio checkbox">
-                                    <input [(ngModel)]="generateSic"
+                                    <input [(ngModel)]="patient.generateSic"
                                            [value]="false"
                                            name="generateSic"
                                            type="radio">
@@ -98,15 +98,15 @@
 
                     <div class="field">
                         <label>Studien-ID (SIC)</label>
-                        @if (!generateSic) {
+                        @if (!patient.generateSic) {
                             <input type="text"
                                    name="sic"
                                    class="ui input"
-                                   [studyId]="selectedStudy.id"
                                    uniqueSic
                                    #sicModel="ngModel"
                                    disallowWhitespaces
-                                   [(ngModel)]="newEntry.sic">
+                                   (keyup)="validate()"
+                                   [(ngModel)]="patient.sic">
                             <error-message *ngIf="sicModel.errors?.sicNotUnique">Studien-ID ist schon vorhanden
                             </error-message>
                             <error-message *ngIf="sicModel.errors?.whitespaceOnly">Nur Leerzeichen nicht erlaubt
@@ -122,9 +122,10 @@
 
 
                     <div class="field">
-                        <label>Patient*innen-Referenz</label>
-                        <drop-down [(ngModel)]="selectedReference"
+                        <label>Patient*innen-Referenzart</label>
+                        <drop-down [(ngModel)]="patient.reference"
                                    name="references"
+                                   (ngModelChange)="validate()"
                                    required>
                             @for (ref of references; track ref) {
                                 <drop-down-option [value]="ref">{{ ref | patientReferenceToLabel }}</drop-down-option>
@@ -133,11 +134,11 @@
                     </div>
 
                     <div class="field">
-                        <label for="extension">{{ selectedReference | patientReferenceToLabel }}</label>
+                        <label for="extension">{{ patient.reference | patientReferenceToLabel }}</label>
                         <div class="ui action input">
                             <input #extModel="ngModel"
-                                   (ngModelChange)="extension = $event; loadEncountersAndMasterData();"
-                                   [ngModel]="extension"
+                                   [(ngModel)]="patient.extension"
+                                   (keyup)="validate();"
                                    class="ui input"
                                    extension
                                    id="extension"
@@ -145,7 +146,7 @@
                                    required
                                    disallowWhitespaces
                                    type="text">
-                            <button (click)="loadEncountersAndMasterData()"
+                            <button (click)="validate()"
                                     class="ui button"
                                     type="button">
                                 Fälle anzeigen
@@ -153,31 +154,33 @@
                         </div>
 
                         <error-message *ngIf="extModel.errors?.required">
-                            {{ selectedReference | patientReferenceToLabel }} erforderlich
+                            {{ patient.reference | patientReferenceToLabel }} erforderlich
                         </error-message>
                         <error-message *ngIf="extModel.errors?.slashSep">
                             Maximal ein "/" als Trennzeichen von Root
-                            und {{ selectedReference | patientReferenceToLabel }} erlaubt
+                            und {{ patient.reference | patientReferenceToLabel }} erlaubt
                         </error-message>
                         <error-message *ngIf="extModel.errors?.slash">"/" nicht erlaubt</error-message>
                         <error-message *ngIf="extModel.errors?.separator">
                             Trennzeichen darf nicht an erster Stelle stehen
                         </error-message>
                         <error-message *ngIf="extModel.errors?.period">
-                            Root und {{ selectedReference | patientReferenceToLabel }} dürfen nicht aus "." oder ".."
+                            Root und {{ patient.reference | patientReferenceToLabel }} dürfen nicht aus "." oder ".."
                             bestehen
                         </error-message>
                         <error-message *ngIf="extModel.errors?.whitespaceOnly">
                             Nur Leerzeichen nicht erlaubt
                         </error-message>
+                        <error-message *ngIf="extModel.errors?.extensionFound">
+                            {{ patient.reference | patientReferenceToLabel }} schon vorhanden
+                        </error-message>
                     </div>
 
                     <div class="field">
                         @if (extModel.dirty) {
-                            <patient-master-data [encounters]="encounters"
-                                                 [masterData]="masterData"></patient-master-data>
+                            <patient-master-data [patient]="patient"></patient-master-data>
                         } @else {
-                            <div>Bitte gültige {{ selectedReference | patientReferenceToLabel }} eingeben, um Daten zu
+                            <div>Bitte gültige {{ patient.reference | patientReferenceToLabel }} eingeben, um Daten zu
                                 laden
                             </div>
                         }
@@ -186,7 +189,7 @@
                     <div class="field">
                         <label>Kommentar</label>
                         <div class="inline fields">
-                                <textarea [(ngModel)]="newEntry.comment"
+                                <textarea [(ngModel)]="patient.comment"
                                           name="comment"
                                           rows="4">
                                 </textarea>
@@ -201,7 +204,7 @@
                 <div class="content">
                     <div class="field">
                         <label>Root</label>
-                        <div class="value-field">{{ selectedReference | patientReferenceToRoot }}</div>
+                        <div class="value-field">{{ patient.reference | patientReferenceToRoot }}</div>
                     </div>
                 </div>
             </div>

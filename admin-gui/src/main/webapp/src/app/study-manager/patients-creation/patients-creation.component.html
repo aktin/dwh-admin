@@ -45,7 +45,7 @@
                         <div class="inline fields">
                             <div class="field">
                                 <div class="ui radio checkbox">
-                                    <input [checked]="selectedStudy?.optIn"
+                                    <input [checked]="selectedStudy.participation === Participation.OptIn"
                                            disabled
                                            name="opt"
                                            type="radio">
@@ -55,7 +55,7 @@
 
                             <div class="field">
                                 <div class="ui radio checkbox">
-                                    <input [checked]="selectedStudy?.optOut"
+                                    <input [checked]="selectedStudy.participation === Participation.OptOut"
                                            disabled
                                            name="opt"
                                            type="radio">
@@ -98,7 +98,7 @@
                     </div>
 
                     <div class="field">
-                        <label>Patient*innen-Referenz</label>
+                        <label>Patient*innen-Referenzart</label>
                         <drop-down [(ngModel)]="selectedReference"
                                    name="references">
                             @for (ref of references; track ref) {
@@ -110,7 +110,6 @@
                         <patients-text-area [(ngModel)]="entries"
                                             [generateSic]="generateSic"
                                             [reference]="selectedReference"
-                                            [root]="selectedReference | patientReferenceToRoot"
                                             [studyId]="selectedStudy?.id"
                                             name="patients"
                                             required>

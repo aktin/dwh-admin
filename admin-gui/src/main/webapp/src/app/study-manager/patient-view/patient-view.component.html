@@ -30,7 +30,7 @@
                 <div class="active content">
                     <div class="field">
                         <label>Studie</label>
-                        <div class="value-field">{{ entry.study.title }}</div>
+                        <div class="value-field">{{ study.title }}</div>
                     </div>
 
                     <div class="field">
@@ -58,7 +58,7 @@
                     </div>
 
                     <div class="field">
-                        <label>Patient*innen-Referenz</label>
+                        <label>Patient*innen-Referenzart</label>
                         <div class="value-field">{{ entry.reference | patientReferenceToLabel }}</div>
                     </div>
 
@@ -69,12 +69,11 @@
 
                     <div class="field">
                         <label>{{ entry.reference | patientReferenceToLabel }}</label>
-                        <div class="value-field">{{ entry.idExt }}</div>
+                        <div class="value-field">{{ entry.extension }}</div>
                     </div>
 
                     <div class="field">
-                        <patient-master-data [encounters]="encounters"
-                                             [masterData]="masterData">
+                        <patient-master-data [patient]="entry">
                         </patient-master-data>
                     </div>
 
@@ -94,7 +93,7 @@
                 <div class="content">
                     <div class="field">
                         <label>Root</label>
-                        <div class="value-field">{{ entry.idRoot }}</div>
+                        <div class="value-field">{{ entry.root }}</div>
                     </div>
                     <div class="field">
                         <label>Registriert von</label>
@@ -106,31 +105,31 @@
                     </div>
                     <div class="field">
                         <label>Studien-interne ID</label>
-                        <div class="value-field">{{ entry.study.id }}</div>
+                        <div class="value-field">{{ study.id }}</div>
                     </div>
                     <div class="field">
                         <label>Studientitel</label>
-                        <div class="value-field">{{ entry.study.title }}</div>
+                        <div class="value-field">{{ study.title }}</div>
                     </div>
                     <div class="field">
                         <label>Studienbeschreibung</label>
-                        <div class="value-field">{{ entry.study.description }}</div>
+                        <div class="value-field">{{ study.description }}</div>
                     </div>
                     <div class="field">
                         <label>Studie erstellt am</label>
-                        <div class="value-field">{{ entry.study.createdTimestamp | momentDate:DateFormat.DATE }}</div>
+                        <div class="value-field">{{ study.createdTimestamp | momentDate:DateFormat.DATE }}</div>
                     </div>
                     <div class="field">
                         <label>Studie beendet am</label>
-                        <div class="value-field">{{ entry.study.closedTimestamp | momentDate:DateFormat.DATE }}</div>
+                        <div class="value-field">{{ study.closedTimestamp | momentDate:DateFormat.DATE }}</div>
                     </div>
                     <div class="field">
                         <label>SIC Generator</label>
-                        <div class="value-field">{{ entry.study.sicGenerator }}</div>
+                        <div class="value-field">{{ study.sicGenerator }}</div>
                     </div>
                     <div class="field">
                         <label>SIC State</label>
-                        <div class="value-field">{{ entry.study.sicGeneratorState }}</div>
+                        <div class="value-field">{{ study.sicGeneratorState }}</div>
                     </div>
                 </div>
             </div>

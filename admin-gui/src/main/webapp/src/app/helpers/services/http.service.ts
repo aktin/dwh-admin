@@ -110,7 +110,7 @@ export class HttpService extends HttpClient {
         //     options.headers = new Headers();
         // }
         if (key) {
-            options.set(key, value);
+            options = options.set(key, value ?? '');
         }
         return options;
     }

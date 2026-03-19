@@ -25,7 +25,7 @@
             Letzter fehlgeschlagener Import:
         </div>
         <div class="six wide column">
-            {{status.lastReject | date: 'medium'}}
+            {{status.lastRejectTime | date: 'medium'}}
         </div>
     </div>
     <div class="row">
@@ -33,13 +33,13 @@
             Importiert:
         </div>
         <div class="three wide column">
-            {{status.imported}}
+            {{status.importedCount}}
         </div>
         <div class="three wide column">
             Aktualisiert:
         </div>
         <div class="three wide column">
-            {{status.updated}}
+            {{status.updatedCount}}
         </div>
     </div>
     <div class="row">
@@ -47,23 +47,23 @@
             Ungültig:
         </div>
         <div class="three wide column">
-            {{status.invalid}}
+            {{status.invalidCount}}
         </div>
         <div class="three wide column">
             Fehlgeschlagen:
         </div>
         <div class="three wide column">
-            {{status.failed}}
+            {{status.failedCount}}
         </div>
     </div>
-    <ng-container *ngIf="status.error && status.error.length > 0">
+    <ng-container *ngIf="status.lastErrors && status.lastErrors.length > 0">
         <div class="row">
             <div class="four wide column">
                 Fehlermeldungen:
             </div>
         </div>
         <div class="ui segments sixteen wide column">
-            <div class="ui segment grid" *ngFor="let err of status.error">
+            <div class="ui segment grid" *ngFor="let err of status.lastErrors">
                 <div class="three wide column">
                     Letzter Fehler:
                 </div>

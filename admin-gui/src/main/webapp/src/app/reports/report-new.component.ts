@@ -7,10 +7,8 @@ import {Router} from '@angular/router';
 
 import {ReportTemplate} from './report';
 import {ReportService} from './report.service';
-import {IMyDate, IMyDateModel, IMyOptions} from "gramli-angular-mydatepicker";
-import moment from "moment";
-import {MY_CALENDAR_DEFAULT_OPTIONS, MY_CALENDAR_OPTIONS} from "../helpers";
-
+import {IMyDateModel, IMyOptions} from 'gramli-angular-mydatepicker';
+import {MY_CALENDAR_OPTIONS} from '../helpers';
 
 @Component({
     templateUrl: './report-new.component.html',

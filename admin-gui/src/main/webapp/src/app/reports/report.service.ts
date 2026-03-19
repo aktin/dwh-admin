@@ -84,7 +84,7 @@ export class ReportService {
 
     getReports (): Report[] {
         this._updateReport();
-        return JSON.parse(this._store.getValue('reports.data')).map((rep: any) => { return Report.parseObj(rep); } );
+        return JSON.parse(this._store.getValue('reports.data'))?.map((rep: any) => { return Report.parseObj(rep); } );
     }
 
     getReport (id: number = -1): Report {

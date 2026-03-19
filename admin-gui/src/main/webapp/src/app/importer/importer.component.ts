@@ -68,10 +68,9 @@ export class ImporterComponent {
      */
     constructor(private _importerService: ImporterService) {
         this.subscription_scripts = this._importerService.getImportScripts()
-            .subscribe(event => {
-                if (event._body) {
-                    let list_json = JSON.parse(event._body);
-                    list_json.forEach((json: any) => {
+            .subscribe(r => {
+                if (!!r.length) {
+                    r.forEach((json: any) => {
                         this.list_scripts.set(json[ScriptKey.id], [json[ScriptKey.viewname], " ", "V", json[ScriptKey.version]].join(""));
                     });
                     this.script_selected = Array.from(this.list_scripts)[0][0];
@@ -81,10 +80,9 @@ export class ImporterComponent {
                 console.log(error);
             });
         this.subscription_files = this._importerService.getUploadedFiles()
-            .subscribe(event => {
-                if (event._body) {
-                    let list_json = JSON.parse(event._body);
-                    list_json.forEach((json: any) => {
+            .subscribe(r => {
+                if (!!r.length) {
+                    r.forEach((json: any) => {
                         this.list_files_upload.push(
                             new ListEntry(
                                 this._importerService,
@@ -151,7 +149,7 @@ export class ImporterComponent {
                         lock_script,
                         lock_file.name,
                         lock_file.size,
-                        event._body
+                        event
                     ));
                     this.deleteHoldingFile();
                     this.subscription_upload.unsubscribe();

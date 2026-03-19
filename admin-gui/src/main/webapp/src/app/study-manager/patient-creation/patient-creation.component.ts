@@ -1,51 +1,51 @@
-import {Component, ElementRef, EventEmitter, Inject, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {compareStudies, Study} from '../study';
-import {Entry} from '../entry';
-import {PatientReference} from '../patient-reference';
-import {forkJoin} from 'rxjs';
-import {Participation} from '../participation';
+import {Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {compareStudies, Study} from '../models/study';
+import {Patient} from '../models/patient';
+import {PatientReference} from '../models/patient-reference';
+import {Participation} from '../models/participation';
 import {NgForm} from '@angular/forms';
-import {SICGeneration} from '../sic-generation';
-import {PatientDialogBase} from '../patient-dialog-base';
-import {StudyManagerService} from '../study-manager.service';
-import {Encounter} from '../encounter';
-import {MasterData} from '../master-data';
+import {SICGeneration} from '../models/sic-generation';
+import {PatientDialogBase} from '../models/patient-dialog-base';
+import {StudyManagerService} from '../services/study-manager.service';
 import {NotificationService} from '../../helpers';
-import {PatientReferenceToRootPipe} from '../patient-reference-to-root.pipe';
+import {PatientReferenceToRootPipe} from '../helpers/patient-reference-to-root.pipe';
 import {IModalConfig, MODAL_CONFIG} from '../../helpers/modal/modal.service';
 import {ModalRef} from '../../helpers/modal/modal-ref.component';
+import {PatientValidationService} from '../services/patient-validation.service';
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
+import {StudyManagerErrorInterceptor} from "../helpers/study-manager-error.interceptor";
 
-declare var $: any;
-
+/**
+ * The `PatientCreationComponent` is a component designed for managing the creation and registration
+ * of patients in the application. It provides functionality for selecting studies, validating input,
+ * and saving new patient data.
+ */
 @Component({
     selector: 'patient-creation',
     templateUrl: './patient-creation.component.html',
     styleUrls: ['./patient-creation.component.css', '../../helpers/popup-message.component.css'],
-    providers: [PatientReferenceToRootPipe]
+    providers: [PatientReferenceToRootPipe,
+        PatientValidationService,
+        {provide: HTTP_INTERCEPTORS, useClass: StudyManagerErrorInterceptor, multi: true},
+    ]
 })
 export class PatientCreationComponent extends PatientDialogBase implements OnInit {
     public studies: Study[] = [];
-    @Output()
-    public selectedStudyChange: EventEmitter<Study> = new EventEmitter();
-    public newEntry: Entry = new Entry();
-    public extension: string;
-    public selectedReference: PatientReference = PatientReference.Patient;
+    public patient: Patient = new Patient();
     public references: PatientReference[] = [PatientReference.Patient, PatientReference.Encounter, PatientReference.Billing];
-    public generateSic: boolean = false;
     protected readonly SICGeneration = SICGeneration;
     protected readonly compareStudies = compareStudies;
-    protected encounters: Encounter[];
-    protected masterData: MasterData;
+    protected readonly Participation = Participation;
     @ViewChild(NgForm)
     private form: NgForm;
 
     constructor(studyManagerService: StudyManagerService,
                 private notificationService: NotificationService,
-                private toRootPipe: PatientReferenceToRootPipe,
-                @Inject(MODAL_CONFIG) config: IModalConfig<Study>,
-                private modalRef: ModalRef<PatientCreationComponent>,) {
+                @Inject(MODAL_CONFIG) config: IModalConfig<any>,
+                private modalRef: ModalRef<PatientCreationComponent>,
+                private patientValidationService: PatientValidationService,) {
         super(studyManagerService);
-        this.selectedStudy = config.data;
+        this.selectedStudy = config.data.study;
     }
 
     private _selectedStudy: Study;
@@ -54,26 +54,13 @@ export class PatientCreationComponent extends PatientDialogBase implements OnIni
         return this._selectedStudy;
     }
 
-    @Input()
     public set selectedStudy(value: Study) {
         this._selectedStudy = value;
 
-        if(!!value) {
-            if (this._selectedStudy.optOut) {
-                this.newEntry.participation = Participation.OptOut;
-            } else if (this._selectedStudy.optIn) {
-                this.newEntry.participation = Participation.OptIn;
-            }
-
-            this.generateSic = this._selectedStudy.sicGeneration === SICGeneration.AutoAndManual;
-        }
-        this.selectedStudyChange.emit(this._selectedStudy);
-    }
-
-    @ViewChild('accordion', {static: false})
-    private set accordion(value: ElementRef<HTMLDivElement>) {
         if (!!value) {
-            $(value.nativeElement).accordion({exclusive: false});
+            this.patient.participation = value.participation;
+
+            this.patient.generateSic = this._selectedStudy.sicGeneration === SICGeneration.AutoAndManual;
         }
     }
 
@@ -82,28 +69,22 @@ export class PatientCreationComponent extends PatientDialogBase implements OnIni
         this.studyManagerService.getStudies().subscribe(s => this.studies = s);
     }
 
-    public loadEncountersAndMasterData(): void {
-        const root = this.toRootPipe.transform(this.selectedReference);
-        forkJoin([this.studyManagerService.getEncounters(this.selectedReference, root, this.extension),
-            this.studyManagerService.getMasterData(this.selectedReference, this.toRootPipe.transform(this.selectedReference), this.extension)])
-            .subscribe(([e, m]) => {
-                this.encounters = e;
-                this.masterData = m;
-            });
+    public validate(): void {
+        this.patientValidationService.validatePatients(this.selectedStudy.id, [this.patient]);
     }
 
     public create(): void {
         if (this.form.valid) {
-            this.studyManagerService.createEntry(this.selectedStudy.id, this.selectedReference, this.toRootPipe.transform(this.selectedReference), this.extension, this.newEntry)
+            this.studyManagerService.createPatients(this.selectedStudy.id, [this.patient])
                 .subscribe({
                     next: e => {
                         this.notificationService.showSuccess('Patient*in registriert');
                         this.close();
                     },
-                    error: e => this.notificationService.showError(`Patient*in konnte nicht registriert werden. ${e.readable}`)
+                    error: e => this.notificationService.showError(`Patient*in konnte nicht registriert werden.`)
                 });
         } else {
-            this.notificationService.showError('Alle Felder müssen gültige Werte haben')
+            this.notificationService.showError('Alle Felder müssen gültige Werte haben');
         }
     }
 

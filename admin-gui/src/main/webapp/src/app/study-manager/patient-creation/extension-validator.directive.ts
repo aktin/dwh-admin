@@ -1,23 +1,50 @@
-import {Directive} from '@angular/core';
-import {AbstractControl, NG_VALIDATORS, ValidationErrors, Validator} from '@angular/forms';
+import {Directive, OnInit} from '@angular/core';
+import {
+    AbstractControl,
+    AsyncValidator,
+    NG_ASYNC_VALIDATORS,
+    NG_VALIDATORS,
+    ValidationErrors,
+    Validator
+} from '@angular/forms';
+import {Observable, of, Subject, take, takeUntil} from "rxjs";
+import {StudyManagerService} from "../services/study-manager.service";
+import {PatientValidationService} from "../services/patient-validation.service";
+import {filter, map} from "rxjs/operators";
+import {EntryValidation} from "../models/entry-validation";
+import {ExternalTriggeredAsyncValidatorBase} from "../helpers/external-triggered-async-validator-base";
 
 @Directive({
     selector: 'input[extension]',
     providers: [
         {
-            provide: NG_VALIDATORS,
+            provide: NG_ASYNC_VALIDATORS,
             useExisting: ExtensionValidatorDirective,
             multi: true,
         },
     ]
 })
-export class ExtensionValidatorDirective implements Validator {
+export class ExtensionValidatorDirective extends ExternalTriggeredAsyncValidatorBase implements OnInit {
     private prefs: {
         separator: string,
         root: string
     } = {separator: '/', root: ''}
 
-    validate(control: AbstractControl): ValidationErrors | null {
+    constructor(private patientValidationService: PatientValidationService) {
+        super();
+    }
+
+    ngOnInit() {
+        this.reactToExternalChanges(this.patientValidationService.revalidate$);
+    }
+
+    /**
+     * Validates the given control's value based on specific formatting rules and preferences.
+     *
+     * @param {AbstractControl} control - The form control to validate. It contains the value to be checked.
+     * @return {Promise<ValidationErrors> | Observable<ValidationErrors> | null} An observable containing validation errors if any conditions are violated, or null if the value is valid.
+     */
+    validate(control: AbstractControl): Observable<ValidationErrors | null> | Promise<ValidationErrors | null>  {
         const value = control.value;
 
         if (!value) {
@@ -26,15 +53,15 @@ export class ExtensionValidatorDirective implements Validator {
 
         // maximal one slash as separator if root is not set in properties
         if (this.prefs['separator'] === '/' && this.prefs['root'] === '' && value.match(/\//g)?.length > 1) {
-            return {slashSep: true};
+            return of({slashSep: true});
         }
         // no slash allowed if root is set in properties (reserved for path syntax)
         if ((this.prefs['separator'] !== '/' || this.prefs['root'] !== '') && value.includes('/')) {
-            return {slash: true};
+            return of({slash: true});
         }
         // separator not as first character if root is not set in properties
         if (this.prefs['root'] === '' && value.slice(0, 1) === this.prefs['separator']) {
-            return {separator: true};
+            return of({separator: true});
         }
         // set correct root and extension by possibly splitting input on separator
         let root = this.prefs['root'];
@@ -52,9 +79,12 @@ export class ExtensionValidatorDirective implements Validator {
         // value of root and extension may not be . or .. (reserved for path syntax)
         const periods = ['.', '..'];
         if (periods.includes(ext) || periods.includes(root)) {
-            return {period: true};
+            return of({period: true});
         }
 
-        return null;
+        return this.patientValidationService.validationData$.pipe(
+            map(v => v?.find(e => e.extension === value)?.validationResults ?? []),
+            map(v => v?.find(e => e === EntryValidation.EntryFound) ? {'extensionFound': true} : null),
+            take(1));
     }
 }

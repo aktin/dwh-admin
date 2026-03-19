@@ -1,8 +1,7 @@
-import {BaseModel} from '../helpers';
+import {BaseModel} from '../../helpers';
 
-export class Encounter extends BaseModel {
-    public encounterId: number;
-    public patientId: number;
+export class EncounterPeriod extends BaseModel {
+    public ide: string;
     public startDate: number;
     public endDate: number;
 

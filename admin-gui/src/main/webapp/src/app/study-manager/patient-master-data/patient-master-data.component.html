@@ -1,29 +1,29 @@
 <div class="ui segment">
     <div class="ui top attached label">Patient*innen- und Behandlungsfall-Daten im AKTIN DWH</div>
-    @if (!!masterData) {
-        <div class="ui fifteen wide inline fields">
+    @if (hasMasterData$ | async) {
+        <div class="ui fifteen wide inline fields" *templateVar="(masterData$ | async) as masterData">
             <div class="field">
                 <label>Geburtsdatum</label>
-                <div class="value-field">{{ masterData.birthDate | momentDate:DateFormat.DATE }}</div>
+                <div class="value-field">{{ masterData?.birthDate | momentDate:DateFormat.DATE }}</div>
             </div>
 
             <div class="field">
                 <label>Geschlecht</label>
-                <div class="value-field">{{ masterData.sex }}</div>
+                <div class="value-field">{{ masterData?.sex }}</div>
             </div>
 
             <div class="field">
                 <label>Postleitzahl</label>
-                <div class="value-field">{{ masterData.zip }}</div>
+                <div class="value-field">{{ masterData?.zip }}</div>
             </div>
         </div>
     } @else {
         <div><span class="ui orange text">Keine Patient*innen-Daten gefunden</span></div>
     }
 
-    @if (!!encounters?.length) {
+    @if (hasEncounters$ | async) {
         <data-table [columns]="encounterColumns"
-                    [data]="encounters"
+                    [data]="encounters$ | async"
                     [showDetailButtons]="false">
         </data-table>
     } @else {

@@ -179,9 +179,9 @@ export class RequestService {
                     setTimeout(() => this._router.navigate([currentRoute]), 600);
                 });
         } else {
-            this._http.put(this._urls.parse('updateRequestMarker', {requestId: requestId}),
+            this._http.put<void>(this._urls.parse('updateRequestMarker', {requestId: requestId}),
                 JSON.stringify(RequestMarker[marker]),
-                {headers: this._http.generateHeaderOptions('Content-Type', 'application/json')}
+                { headers: this._http.generateHeaderOptions('Content-Type', 'application/json') }
             ).subscribe(() => {
                 // this.updateRequest(requestId, null, marker);
                 // this._updateRequests();

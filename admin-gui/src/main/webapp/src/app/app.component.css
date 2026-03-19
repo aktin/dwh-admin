@@ -35,6 +35,10 @@
   min-height: 350px;
 }
 
+.ui.text.container.app {
+  max-width: 850px !important;
+}
+
 .main.menu.fixed {
   /*background-color: #5f021f;*/
   border: 0px solid #DDD;
