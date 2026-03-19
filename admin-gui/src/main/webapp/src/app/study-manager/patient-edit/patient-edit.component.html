@@ -1,0 +1,162 @@
+<div class="ui text container very padded segment">
+    <div class="popup-header">
+        <div>
+            <div class="ui header">
+                Patientendaten bearbeiten
+            </div>
+
+            <div class="ui content"
+                 style="padding-bottom: 1em">
+                Bitte bearbeiten Sie die Felder, die Sie ändern möchten und speichern dann diese
+            </div>
+        </div>
+
+        <div>
+            <a (click)="close()"
+               class="ui compact small icon circular button">
+                <i class="remove icon"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="ui sixteen wide column form">
+        <form ngForm>
+            <div class="ui row">
+                <div #accordion
+                     class="ui styled accordion">
+                    <div class="active title">
+                        <i class="dropdown icon right"></i>
+                        Studieninformationen
+                    </div>
+                    <div class="active content">
+                        <div class="field">
+                            <label>Studie</label>
+                            <div class="value-field">{{ study.title }}</div>
+                        </div>
+
+                        <div class="field">
+                            <label>Teilnahme</label>
+                            <div class="value-field">
+                                @switch (entry.participation) {
+                                    @case (Participation.OptIn) {
+                                        Ja, hat zugestimmt
+                                    }
+                                    @case (Participation.OptOut) {
+                                        Nein, ist ausgeschlossen
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="active title">
+                        <i class="dropdown icon right"></i>
+                        Patient*innen-Informationen
+                    </div>
+                    <div class="active content">
+                        <div class="field">
+                            <label>Studien-ID (SIC)</label>
+                            <div class="value-field">{{ entry.sic }}</div>
+                        </div>
+
+                        <div class="field">
+                            <label>Einschlussdatum</label>
+                            <div class="value-field">{{ entry.timestamp | momentDate:DateFormat.DATE }}</div>
+                        </div>
+
+                        <div class="field">
+                            <label>Patient*innen-Referenzart</label>
+                            <div class="value-field">{{ entry.reference | patientReferenceToLabel }}</div>
+                        </div>
+
+                        <div class="field">
+                            <label>{{ entry.reference | patientReferenceToLabel }}</label>
+                            <div class="value">{{ entry.extension }}</div>
+                        </div>
+
+                        <div class="field">
+                            <patient-master-data [patient]="entry"></patient-master-data>
+                        </div>
+
+                        <div class="field">
+                            <label>Kommentar</label>
+                            <textarea [(ngModel)]="entry.comment"
+                                      name="comment"
+                                      rows="4">
+                                </textarea>
+                        </div>
+                    </div>
+
+                    <div class="title">
+                        <i class="dropdown icon right"></i>
+                        Technische Informationen
+                    </div>
+
+                    <div class="content">
+                        <div class="field">
+                            <label>Root</label>
+                            <div class="value-field">{{ entry.root }}</div>
+                        </div>
+                        <div class="field">
+                            <label>Registriert von</label>
+                            <div class="value-field">{{ entry.user }}</div>
+                        </div>
+                        <div class="field">
+                            <label>Registriert am</label>
+                            <div class="value-field">{{ entry.timestamp | momentDate:DateFormat.DATE }}</div>
+                        </div>
+                        <div class="field">
+                            <label>Studien-interne ID</label>
+                            <div class="value-field">{{ study.id }}</div>
+                        </div>
+                        <div class="field">
+                            <label>Studientitel</label>
+                            <div class="value-field">{{ study.title }}</div>
+                        </div>
+                        <div class="field">
+                            <label>Studienbeschreibung</label>
+                            <div class="value-field">{{ study.description }}</div>
+                        </div>
+                        <div class="field">
+                            <label>Studie erstellt am</label>
+                            <div class="value-field">{{ study.createdTimestamp | momentDate:DateFormat.DATE }}</div>
+                        </div>
+                        <div class="field">
+                            <label>Studie beendet am</label>
+                            <div class="value-field">{{ study.closedTimestamp | momentDate:DateFormat.DATE }}</div>
+                        </div>
+                        <div class="field">
+                            <label>SIC Generator</label>
+                            <div class="value-field">{{ study.sicGenerator }}</div>
+                        </div>
+                        <div class="field">
+                            <label>SIC State</label>
+                            <div class="value-field">{{ study.sicGeneratorState }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button (click)="close()"
+                        class="ui labeled icon secondary button"
+                        type="button">
+                    <i class="times icon"></i>
+                    Abbrechen
+                </button>
+                <button (click)="confirmDelete()"
+                        class="ui labeled icon primary button"
+                        type="button">
+                    <i class="user minus icon"></i>
+                    Löschen
+                </button>
+                <button (click)="save()"
+                        class="ui labeled icon primary button"
+                        type="button">
+                    <i class="save icon"></i>
+                    Speichern
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+

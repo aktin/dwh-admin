@@ -2,6 +2,9 @@ import {Injectable, OnInit} from '@angular/core';
 
 declare const $: any;
 
+/**
+ * Wrapper for semantic ui toast
+ */
 @Injectable()
 export class NotificationService {
     public showInfo(message: string): void {

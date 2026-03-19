@@ -1,18 +1,19 @@
 /**
  * Created by Xu on 04.05.2017.
  */
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
-import { RequestService } from './request.service';
-import { LocalRequest, RequestMarker, RequestStatus } from './request';
-import {Subscription, timer} from "rxjs";
+import {RequestService} from './request.service';
+import {LocalRequest, RequestStatus} from './request';
+import {race, Subject, switchMap, takeUntil, timer} from 'rxjs';
+import {finalize} from 'rxjs/operators';
 
 @Component({
     templateUrl: './requests.component.html',
     styleUrls: ['./requests.component.css'],
 })
 
-export class RequestsComponent implements OnInit, OnDestroy {
+export class RequestsComponent implements OnInit {
     p: number;
     requestsData: LocalRequest[];
     etag = '0';
@@ -21,27 +22,28 @@ export class RequestsComponent implements OnInit, OnDestroy {
     queryDetails = {};
     timeoutBool = false;
 
-    private _timerSubscription: Subscription;
     private _dataInterval = 5000;
     private _dataTimeout = 30000;
+    private _foundRequests$: Subject<void> = new Subject<void>();
 
     constructor(private _requestService: RequestService) {}
 
     ngOnInit() {
-        let timer$ = timer(0, this._dataInterval);
-        this._timerSubscription = timer$.subscribe(() => {
-            this.updateRequests();
-        });
-        setTimeout(() => {
-            console.log('unsubscribe timer due to timeout');
-            this._timerSubscription.unsubscribe();
-            this.timeoutBool=true;
-        }, this._dataTimeout);
-    }
+        // get requests every {this._dataInterval} ms until either {this._dateTimeout} runs out or getRequests returns a non-empty array
+        timer(0, this._dataInterval)
+            .pipe(switchMap(() => this._requestService.getRequests(this.etag)),
+                takeUntil(race(timer(this._dataTimeout), this._foundRequests$)),
+                finalize(() => this.timeoutBool = true),)
+            .subscribe(res => {
+                this.requestsData = res['req'];
+                this.etag = res['etag'];
 
-    ngOnDestroy(): void {
-        console.log('unsubscribe timer');
-        this._timerSubscription.unsubscribe();
+                this.updateQueryDetails();
+
+                if(!!this.requestsData?.length) {
+                    this._foundRequests$.next();
+                }
+            });
     }
 
     /**
@@ -77,19 +79,6 @@ export class RequestsComponent implements OnInit, OnDestroy {
                 ]
             ]
         ];
-    }
-
-    /**
-     * Updates the list of requests and the belonging etag.
-     */
-    updateRequests(): void {
-        this._requestService.getRequests(this.etag)
-            .subscribe(res => {
-                console.log('update Requests');
-                this.requestsData = res['req'];
-                this.etag = res['etag'];
-                this.updateQueryDetails();
-            });
     }
 
     get requests(): LocalRequest[] {

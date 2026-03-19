@@ -21,19 +21,19 @@ export class ImportStatus {
         return new ImportStatus(
             new Date(obj['start']),
             new Date(obj['lastWrite']),
-            (obj['last-reject']) ? new Date(obj['last-reject']) : null,
-            obj['imported'],
-            obj['updated'],
-            obj['invalid'],
-            obj['failed'],
-            ImportStatus.parseError(obj['error']),
+            (obj['lastRejectTime']) ? new Date(obj['lastRejectTime']) : null,
+            obj['importedCount'],
+            obj['updatedCount'],
+            obj['invalidCount'],
+            obj['failedCount'],
+            ImportStatus.parseError(obj['lastErrors']),
         );
     }
 
     public static parseError(objErr: any[]): ImportStatusError[] {
         return objErr?.reduce((array, obj) => {
             let error: any = {};
-            obj['value'].split('\n').forEach((msg: string) => {
+            obj['value']?.split('\n')?.forEach((msg: string) => {
                 let ind = msg.indexOf(':');
                 let head = msg.substring(0, ind);
                 if (typeof error[head] === 'undefined') {
@@ -41,7 +41,7 @@ export class ImportStatus {
                 }
                 error[head].push(msg.substring(ind + 1).trim());
             });
-            array.push({
+            array?.push({
                 value : obj['value'],
                     timestamp : new Date(obj['timestamp']),
                 repeats : obj['repeats'] || 1,
@@ -54,11 +54,11 @@ export class ImportStatus {
     constructor(
         public start: Date,
         public lastWrite: Date,
-        public lastReject: Date,
-        public imported: number,
-        public updated: number,
-        public invalid: number,
-        public failed: number,
-        public error: ImportStatusError[],
+        public lastRejectTime: Date,
+        public importedCount: number,
+        public updatedCount: number,
+        public invalidCount: number,
+        public failedCount: number,
+        public lastErrors: ImportStatusError[],
     ) {}
 }

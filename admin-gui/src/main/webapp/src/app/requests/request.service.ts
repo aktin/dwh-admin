@@ -8,12 +8,11 @@ import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
 
 
-
 import {DownloadService, HttpService, UrlService} from '../helpers/index';
 import {LocalRequest, QueryRuleAction, RequestMarker, RequestStatus} from './request';
 import {AuthService} from './../users/auth.service';
 import {Permission} from '../users/index';
-import {HttpHeaders} from "@angular/common/http";
+import {HttpHeaders} from '@angular/common/http';
 
 @Injectable()
 export class RequestService {
@@ -59,16 +58,12 @@ export class RequestService {
             headers: new HttpHeaders({'If-None-Match': etag}),
             observe: 'response'
         }).pipe(
-            catchError(err => {
-                return this._http.handleError(err)
-            }),
             map(resp => {
                 let res: any = {};
                 res['etag'] = resp.headers.get('ETag');
-                res['req'] = JSON.parse(resp.body.toString()).map((req: any) => LocalRequest.parseRequest(req));
-                res['req'].sort((req1: LocalRequest, req2: LocalRequest) => {
-                    return req1.requestId - req2.requestId;
-                });
+                res['req'] = Array.from(<any[]>resp.body ?? [])
+                                  .map((req: any) => LocalRequest.parseRequest(req))
+                                  .sort((req1: LocalRequest, req2: LocalRequest) => req1.requestId - req2.requestId);
                 return res;
             }),);
     }
@@ -89,18 +84,15 @@ export class RequestService {
         }
         return this._http.get(this._urls.parse(url, {requestId: requestId}),
             {headers: new HttpHeaders({'If-None-Match': etag}), observe: 'response'})
-                   .pipe(catchError(err => {
-                           return this._http.handleError(err)
-                       }),
-                       map(resp => {
-                           let res: any = {};
-                           res['etag'] = resp.headers.get('ETag');
-                           res['req'] = LocalRequest.parseRequest(JSON.parse(resp.body.toString()));
-                           if (res['req'].status === RequestStatus.Retrieved) {
-                               res['req'].status = this.authorizeRequest(res['req'].requestId, res['req'].status, true);
-                           }
-                           return res;
-                       }),);
+                   .pipe(map(resp => {
+                       let res: any = {};
+                       res['etag'] = resp.headers.get('ETag');
+                       res['req'] = LocalRequest.parseRequest(resp.body);
+                       if (res['req'].status === RequestStatus.Retrieved) {
+                           res['req'].status = this.authorizeRequest(res['req'].requestId, res['req'].status, true);
+                       }
+                       return res;
+                   }),);
     }
 
     /**
@@ -116,22 +108,19 @@ export class RequestService {
         }
         return this._http.get(this._urls.parse('query', {queryId: queryId}),
             {headers: new HttpHeaders({'If-None-Match': etag}), observe: 'response'})
-                   .pipe(
-                       catchError(err => {
-                           return this._http.handleError(err)
-                       }),
-                       map(resp => {
+                   .pipe(map(resp => {
                            let res: any = {};
                            res['etag'] = resp.headers.get('ETag');
-                           res['bundle'] = JSON.parse(resp.body.toString());
-                           res['bundle'].requests = res['bundle'].requests.map((req: any) => LocalRequest.parseRequest(req));
-                           res['bundle'].requests.sort((req1: LocalRequest, req2: LocalRequest) => {
-                               if (+new Date(req1.query.reference) === +new Date(req2.query.reference)) {
-                                   return req1.requestId - req2.requestId;
-                               } else {
-                                   return +new Date(req1.query.reference) - +new Date(req2.query.reference);
-                               }
-                           });
+                           res['bundle'] = resp.body;
+                           res['bundle'].requests = res['bundle']
+                               .requests.map((req: any) => LocalRequest.parseRequest(req))
+                               .sort((req1: LocalRequest, req2: LocalRequest) => {
+                                   if (+new Date(req1.query.reference) === +new Date(req2.query.reference)) {
+                                       return req1.requestId - req2.requestId;
+                                   } else {
+                                       return +new Date(req1.query.reference) - +new Date(req2.query.reference);
+                                   }
+                               });
                            if (res['bundle'].rule) {
                                res['bundle'].rule.creationDate = new Date(res['bundle'].rule.creationDate);
                            }
@@ -147,10 +136,7 @@ export class RequestService {
      */
     setQueryRule(requestId: number, action: QueryRuleAction): Observable<any> {
         return this._http.post(
-            this._urls.parse('setQueryRule', {requestId: requestId, action: QueryRuleAction[action]}), {}).pipe(
-            catchError(err => {
-                return this._http.handleError(err)
-            }));
+            this._urls.parse('setQueryRule', {requestId: requestId, action: QueryRuleAction[action]}), {});
     }
 
     /**
@@ -159,10 +145,7 @@ export class RequestService {
      * @returns Observable of response
      */
     deleteQueryRule(queryId: number): Observable<any> {
-        return this._http.delete(this._urls.parse('queryRule', {queryId: queryId})).pipe(
-            catchError(err => {
-                return this._http.handleError(err)
-            }))
+        return this._http.delete(this._urls.parse('queryRule', {queryId: queryId}));
     }
 
     /**
@@ -173,10 +156,8 @@ export class RequestService {
      * @returns Observable of response
      */
     applyRule(queryId: number, ruleAction: QueryRuleAction): Observable<any> {
-        return this._http.post(this._urls.parse('applyRule', {queryId: queryId}), ruleAction).pipe(
-            catchError(err => {
-                return this._http.handleError(err)
-            }))
+        return this._http.post(this._urls.parse('applyRule', {queryId: queryId}), JSON.stringify(ruleAction),
+            {headers: this._http.generateHeaderOptions('Content-Type', 'application/json')});
     }
 
     /**
@@ -198,19 +179,15 @@ export class RequestService {
                     setTimeout(() => this._router.navigate([currentRoute]), 600);
                 });
         } else {
-            this._http.put(this._urls.parse('updateRequestMarker', {requestId: requestId}),
+            this._http.put<void>(this._urls.parse('updateRequestMarker', {requestId: requestId}),
                 JSON.stringify(RequestMarker[marker]),
-                {headers: this._http.generateHeaderOptions('Content-Type', 'application/json')}
-            ).pipe(
-                catchError(err => {
-                    return this._http.handleError(err)
-                }))
-                .subscribe(() => {
-                    // this.updateRequest(requestId, null, marker);
-                    // this._updateRequests();
-                    // console.log(currentRoute);
-                    setTimeout(() => this._router.navigate([currentRoute]), 600);
-                });
+                { headers: this._http.generateHeaderOptions('Content-Type', 'application/json') }
+            ).subscribe(() => {
+                // this.updateRequest(requestId, null, marker);
+                // this._updateRequests();
+                // console.log(currentRoute);
+                setTimeout(() => this._router.navigate([currentRoute]), 600);
+            });
         }
     }
 
@@ -240,7 +217,7 @@ export class RequestService {
                 submit: autoSubmit
             }), {}).pipe(
                 catchError(err => {
-                    return this._http.handleError(err)
+                    return this._http.handleError(err);
                 }))
                 .subscribe(() => {
                     setStatusPost.subscribe(statusCallback);

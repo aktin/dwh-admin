@@ -1,0 +1,228 @@
+<div class="ui text container very padded segment">
+    <div class="popup-header">
+        <div>
+            <div class="ui header">
+                Neue Patient*in registrieren
+            </div>
+
+            <div class="ui content"
+                 style="padding-bottom: 1em">
+                Bitte füllen Sie die folgenden Felder, um eine*n neue*n Patient*in zu registrieren
+            </div>
+        </div>
+
+        <div>
+            <a (click)="close()"
+               class="ui compact small icon circular button">
+                <i class="remove icon"></i>
+            </a>
+        </div>
+    </div>
+    <form #frm="ngForm"
+          class="ui form sixteen wide column form">
+        <div class="ui row">
+            <div #accordion
+                 class="ui styled accordion">
+                <div class="active title">
+                    <i class="dropdown icon right"></i>
+                    Studieninformationen
+                </div>
+                <div class="active content">
+                    <div class="field">
+                        <label>Studie</label>
+                        <drop-down [(ngModel)]="selectedStudy"
+                                   [compare]="compareStudies"
+                                   name="studies"
+                                   required>
+                            @for (study of studies; track study.id) {
+                                <drop-down-option [value]="study">{{ study.title }}</drop-down-option>
+                            }
+                        </drop-down>
+                    </div>
+
+                    <div class="field">
+                        <label>Teilnahme</label>
+                        <div class="inline fields">
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input [checked]="patient.participation === Participation.OptIn"
+                                           disabled
+                                           name="opt"
+                                           type="radio">
+                                    <label>Ja, hat zugestimmt</label>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input [checked]="patient.participation === Participation.OptOut"
+                                           disabled
+                                           name="opt"
+                                           type="radio">
+                                    <label>Nein, ist ausgeschlossen</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="active title">
+                    <i class="dropdown icon right"></i>
+                    Patient*innen-Informationen
+                </div>
+                <div class="active content">
+                    <div class="field">
+                        <label>Studien-ID (SIC) automatisch neu erstellen lassen?</label>
+                        <div class="inline fields">
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input [(ngModel)]="patient.generateSic"
+                                           [disabled]="selectedStudy.sicGeneration === SICGeneration.ManualOnly"
+                                           [value]="true"
+                                           name="generateSic"
+                                           type="radio">
+                                    <label>Ja, neue Studien-ID erstellen</label>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input [(ngModel)]="patient.generateSic"
+                                           [value]="false"
+                                           name="generateSic"
+                                           type="radio">
+                                    <label>Nein, optional vorhandendene Studien-ID eintragen</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Studien-ID (SIC)</label>
+                        @if (!patient.generateSic) {
+                            <input type="text"
+                                   name="sic"
+                                   class="ui input"
+                                   uniqueSic
+                                   #sicModel="ngModel"
+                                   disallowWhitespaces
+                                   (keyup)="validate()"
+                                   [(ngModel)]="patient.sic">
+                            <error-message *ngIf="sicModel.errors?.sicNotUnique">Studien-ID ist schon vorhanden
+                            </error-message>
+                            <error-message *ngIf="sicModel.errors?.whitespaceOnly">Nur Leerzeichen nicht erlaubt
+                            </error-message>
+                        } @else {
+                            <input type="text"
+                                   name="sic"
+                                   class="ui input"
+                                   disabled
+                                   value="Wird nach abgeschlossener Registrierung erstellt ..">
+                        }
+                    </div>
+
+
+                    <div class="field">
+                        <label>Patient*innen-Referenzart</label>
+                        <drop-down [(ngModel)]="patient.reference"
+                                   name="references"
+                                   (ngModelChange)="validate()"
+                                   required>
+                            @for (ref of references; track ref) {
+                                <drop-down-option [value]="ref">{{ ref | patientReferenceToLabel }}</drop-down-option>
+                            }
+                        </drop-down>
+                    </div>
+
+                    <div class="field">
+                        <label for="extension">{{ patient.reference | patientReferenceToLabel }}</label>
+                        <div class="ui action input">
+                            <input #extModel="ngModel"
+                                   [(ngModel)]="patient.extension"
+                                   (keyup)="validate();"
+                                   class="ui input"
+                                   extension
+                                   id="extension"
+                                   name="extension"
+                                   required
+                                   disallowWhitespaces
+                                   type="text">
+                            <button (click)="validate()"
+                                    class="ui button"
+                                    type="button">
+                                Fälle anzeigen
+                            </button>
+                        </div>
+
+                        <error-message *ngIf="extModel.errors?.required">
+                            {{ patient.reference | patientReferenceToLabel }} erforderlich
+                        </error-message>
+                        <error-message *ngIf="extModel.errors?.slashSep">
+                            Maximal ein "/" als Trennzeichen von Root
+                            und {{ patient.reference | patientReferenceToLabel }} erlaubt
+                        </error-message>
+                        <error-message *ngIf="extModel.errors?.slash">"/" nicht erlaubt</error-message>
+                        <error-message *ngIf="extModel.errors?.separator">
+                            Trennzeichen darf nicht an erster Stelle stehen
+                        </error-message>
+                        <error-message *ngIf="extModel.errors?.period">
+                            Root und {{ patient.reference | patientReferenceToLabel }} dürfen nicht aus "." oder ".."
+                            bestehen
+                        </error-message>
+                        <error-message *ngIf="extModel.errors?.whitespaceOnly">
+                            Nur Leerzeichen nicht erlaubt
+                        </error-message>
+                        <error-message *ngIf="extModel.errors?.extensionFound">
+                            {{ patient.reference | patientReferenceToLabel }} schon vorhanden
+                        </error-message>
+                    </div>
+
+                    <div class="field">
+                        @if (extModel.dirty) {
+                            <patient-master-data [patient]="patient"></patient-master-data>
+                        } @else {
+                            <div>Bitte gültige {{ patient.reference | patientReferenceToLabel }} eingeben, um Daten zu
+                                laden
+                            </div>
+                        }
+                    </div>
+
+                    <div class="field">
+                        <label>Kommentar</label>
+                        <div class="inline fields">
+                                <textarea [(ngModel)]="patient.comment"
+                                          name="comment"
+                                          rows="4">
+                                </textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="title">
+                    <i class="dropdown icon right"></i>
+                    Technische Informationen
+                </div>
+                <div class="content">
+                    <div class="field">
+                        <label>Root</label>
+                        <div class="value-field">{{ patient.reference | patientReferenceToRoot }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button (click)="close()"
+                    class="ui labeled icon secondary button"
+                    type="button">
+                <i class="times icon"></i>
+                Abbrechen
+            </button>
+
+            <button (click)="create()"
+                    class="ui labeled icon primary button">
+                <i class="plus icon"></i>
+                Registrieren
+            </button>
+        </div>
+    </form>
+</div>

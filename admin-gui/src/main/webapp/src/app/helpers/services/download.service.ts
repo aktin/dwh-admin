@@ -8,14 +8,16 @@ import FileSaver from 'file-saver';
 
 @Injectable()
 export class DownloadService {
-    constructor(
-        private _http: HttpService,
-    ) {}
-    get (filename: string, type: string, url: string): void {
-        this._http.get<Blob>(url, {headers: this._http.generateHeaderOptions('Accept', type)}).subscribe(blob => FileSaver(blob, filename),
-            error => {
+    constructor(private _http: HttpService) {
+    }
+
+    get(filename: string, type: string, url: string): void {
+        this._http.get(url, {headers: this._http.generateHeaderOptions('Accept', type), responseType: 'blob'}).subscribe({
+            next: blob => FileSaver.saveAs(blob, filename),
+            error: error => {
                 console.log('Error downloading the file.');
                 return error;
-            });
+            }
+        });
     }
 }

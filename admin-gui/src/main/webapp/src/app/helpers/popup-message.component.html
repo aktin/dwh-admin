@@ -1,45 +1,72 @@
-<div id="popup-message-overlay" [ngClass]="onTop ? 'on-top' : ''" (click)="closeMessage()" *ngIf="show">
-</div>
+@if(show) {
+    @if(!hasModalRef) {
+        <div class="popup-message-overlay"
+             [class.on-top]="onTop"
+             (click)="closeMessage()">
+        </div>
+    }
 
-<div id="popup-message-content" [ngClass]="onTop ? 'on-top' : ''" class="ui text container very padded segment" *ngIf="show">
-    <div class="ui header">
-        {{head}}
-    </div>
+    <div [class.on-top]="onTop"
+         [class.popup-message-content]="!hasModalRef"
+         class="ui text container very padded segment">
+        <div class="popup-header">
+            <div class="ui header">
+                {{ head }}
+            </div>
 
-    <div class="ui content formatMsg">
-        {{message}}
-    </div>
-
-    <div class="ui extra" *ngIf="firstCheckBox">
-        <br/>
-        <label>{{firstCheckBox[0]}}</label>
-        <div class="field">
-            <div class="ui checkbox">
-                <input type="checkbox" name="firstCheck" [(ngModel)]="firstChecked">
-                <label class="fontBlack">{{ firstCheckBox[1] }}</label>
+            <div>
+                <a (click)="closeMessage()"
+                   class="ui compact small icon circular button">
+                    <i class="remove icon"></i>
+                </a>
             </div>
         </div>
-    </div>
 
-    <div class="ui extra" *ngIf="secondCheckBox">
-        <br/>
-        <label>{{secondCheckBox[0]}}</label>
-        <div class="field">
-            <div class="ui checkbox">
-                <input type="checkbox" name="secondCheck" [(ngModel)]="secondChecked">
-                <label class="fontBlack">{{ secondCheckBox[1] }}</label>
+        <div class="ui content formatMsg">
+            {{ message }}
+        </div>
+
+        <div class="ui extra"
+             *ngIf="firstCheckBox">
+            <br/>
+            <label>{{ firstCheckBox[0] }}</label>
+            <div class="field">
+                <div class="ui checkbox">
+                    <input type="checkbox"
+                           name="firstCheck"
+                           [(ngModel)]="firstChecked">
+                    <label class="fontBlack">{{ firstCheckBox[1] }}</label>
+                </div>
             </div>
         </div>
-    </div>
 
-    <br>
-    <div class="popup-message-buttons" *ngIf="mode === 'confirm'" style="display: flex; justify-content: center;">
-        <div class="ui animated vertical button" [ngClass]="button[2]" (click)="msgOk()">
-            <div class="hidden content">{{button[1]}}</div>
-            <div class="visible content"><i class="popup-buttons" [ngClass]="button[0]"></i></div>
+        <div class="ui extra"
+             *ngIf="secondCheckBox">
+            <br/>
+            <label>{{ secondCheckBox[0] }}</label>
+            <div class="field">
+                <div class="ui checkbox">
+                    <input type="checkbox"
+                           name="secondCheck"
+                           [(ngModel)]="secondChecked">
+                    <label class="fontBlack">{{ secondCheckBox[1] }}</label>
+                </div>
+            </div>
         </div>
-        <div class="ui basic button" (click)="msgCancel()">
-            <div class="visible content"><i class="left arrow icon popup-buttons"></i></div>
+
+        <div class="actions"
+             *ngIf="mode === 'confirm'">
+            <div class="ui icon labeled secondary button"
+                 (click)="msgCancel()">
+                <i class="times icon"></i>
+                Abbrechen
+            </div>
+            <button class="ui icon labeled button"
+                    [class]="button[2]"
+                    (click)="msgOk()">
+                <i [class]="button[0]"></i>
+                {{ button[1] }}
+            </button>
         </div>
     </div>
-</div>
+}

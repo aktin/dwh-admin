@@ -1,26 +1,21 @@
 package org.aktin.dwh.admin;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Paths;
-import java.security.Principal;
-import java.util.concurrent.ForkJoinPool;
-
-import javax.sql.DataSource;
-
+import de.sekmi.li2b2.api.pm.Project;
+import de.sekmi.li2b2.api.pm.ProjectManager;
+import de.sekmi.li2b2.api.pm.User;
+import de.sekmi.li2b2.services.impl.ProjectManagerImpl;
+import de.sekmi.li2b2.services.token.AbstractTokenManager;
 import org.aktin.Preferences;
 import org.aktin.broker.request.RequestManager;
 import org.aktin.broker.request.RequestStatus;
 import org.aktin.dwh.Authenticator;
+import org.aktin.dwh.ImportSummary;
 import org.aktin.dwh.PreferenceKey;
 import org.aktin.dwh.admin.auth.TokenManager;
 import org.aktin.dwh.admin.log.DemoLogfileReader;
 import org.aktin.dwh.admin.log.LogLineSupplierFactory;
-import org.aktin.dwh.optinout.StudyManager;
-import org.aktin.dwh.optinout.StudyManagerImpl;
 import org.aktin.dwh.prefs.impl.PropertyFilePreferences;
 import org.aktin.dwh.statistics.ImportSummaryImpl;
-import org.aktin.dwh.ImportSummary;
 import org.aktin.report.ReportArchive;
 import org.aktin.report.ReportManager;
 import org.aktin.report.archive.ReportArchiveImpl;
@@ -31,11 +26,12 @@ import org.aktin.report.test.SimpleReport;
 import org.aktin.request.manager.RequestManagerImpl;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
-import de.sekmi.li2b2.api.pm.Project;
-import de.sekmi.li2b2.api.pm.ProjectManager;
-import de.sekmi.li2b2.api.pm.User;
-import de.sekmi.li2b2.services.impl.ProjectManagerImpl;
-import de.sekmi.li2b2.services.token.AbstractTokenManager;
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
+import java.security.Principal;
+import java.util.concurrent.ForkJoinPool;
 
 
 public class MyBinder extends AbstractBinder{
@@ -135,9 +131,9 @@ public class MyBinder extends AbstractBinder{
 		
 		bindRequestModules(prefs);
 
-		StudyManagerImpl sm = new StudyManagerImpl();
-		sm.setDataSource(ds);
-		bind(sm).to(StudyManager.class);
+//		StudyManagerImpl sm = new StudyManagerImpl();
+//		sm.setDataSource(ds);
+//		bind(sm).to(StudyManager.class);
 
 		// bind summary
 		ImportSummaryImpl summ = new ImportSummaryImpl();
