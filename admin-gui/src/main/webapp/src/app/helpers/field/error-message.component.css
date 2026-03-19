@@ -1,5 +1,6 @@
 :host {
-    font-size: .6em;
+    font-size: .75em;
     display: block;
     color: #9f3a38;
+    position: absolute;
 }

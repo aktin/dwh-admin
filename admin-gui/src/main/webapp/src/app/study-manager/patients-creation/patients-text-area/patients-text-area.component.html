@@ -1,0 +1,33 @@
+<ag-grid-angular
+        (cellValueChanged)="invokeValidation()"
+        (gridReady)="onGridReady($event)"
+        [columnDefs]="columnDefs"
+        [defaultColDef]="defaultColDef"
+        [loading]="false"
+        [noRowsOverlayComponentParams]="{reference: reference}"
+        [noRowsOverlayComponent]="NoRowsOverlayComponent"
+        class="ag-theme-alpine"
+        style="width: 100%; height: 500px;">
+</ag-grid-angular>
+<button (click)="clearEntries()"
+        aria-label="Zurücksetzen"
+        class="ui icon button"
+        title="Zurücksetzen">
+    <i class="trash icon"></i>
+</button>
+<button (click)="addRow()"
+        aria-label="Zeile hinzufügen"
+        class="ui icon button"
+        title="Zeile hinzufügen">
+    <i class="plus icon"></i>
+</button>
+<button (click)="resizeGrid()"
+        class="ui labeled icon button">
+    <i class="arrows alternate horizontal icon"></i>
+    Spaltenbreite anpassen
+</button>
+<button (click)="invokeValidation()"
+        class="ui labeled icon button">
+    <i class="search icon"></i>
+    Fälle anzeigen
+</button>

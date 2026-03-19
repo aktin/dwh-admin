@@ -71,8 +71,12 @@ export class ImporterService {
         const params = new HttpParams();
         params.set("scriptId", id_script);
         params.set("filename", name_file);
-        return this._http.post(this._urls.parse('uploadFiles'), file, {params}).pipe(
-            catchError(err => { return this._http.handleError(err); }));
+        return this._http.post(this._urls.parse('uploadFiles'), file, {
+            params: {"scriptId": id_script, "filename": name_file},
+            responseType: 'text',
+            headers: {Accept: 'text/plain'},
+        }).pipe(
+            catchError(err => this._http.handleError(err)));
     }
 
     /**

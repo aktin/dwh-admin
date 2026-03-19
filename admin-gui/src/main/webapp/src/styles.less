@@ -1,0 +1,60 @@
+@import "semantic/src/site/globals/site.variables";
+
+h1 {
+  color: #369;
+}
+
+.breadcrumb-header {
+  font-size: 20px;
+}
+
+/*Semantic UI changes*/
+.ui.grid .row.compact {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.bottom.aligned {
+  align-content: flex-end;
+}
+
+.ui.grid[class*='space between'] {
+  justify-content: space-between;
+}
+
+.ui.grid[class*='space around'] {
+  justify-content: space-around;
+}
+
+pre {
+  /*white-space: pre-wrap;*/
+  overflow-wrap: break-word;
+}
+
+pre {
+  /*white-space: pre-wrap;*/
+  overflow-wrap: break-word;
+}
+
+.ui.modal > * {
+  display: flex;
+  justify-content: center;
+}
+
+.ui.modal:not(.fullscreen) {
+  max-width: 700px;
+}
+
+@borderRadius: 0.25rem;
+// ngx-paginator
+.ngx-pagination {
+  .current {
+    background-color: @primaryColor !important;
+    border-radius: @borderRadius !important;
+  }
+
+  a:hover {
+    background-color: rgba(0, 0, 0, 0.03) !important;
+    border-radius: @borderRadius !important;
+  }
+}

@@ -1,0 +1,43 @@
+import {Injectable} from '@angular/core';
+import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpStatusCode} from '@angular/common/http';
+import {Observable, of, throwError} from 'rxjs';
+import {CleanUpAuthService} from '../services/clean-up-auth.service';
+import {catchError} from 'rxjs/operators';
+
+@Injectable()
+export class ErrorInterceptor implements HttpInterceptor {
+
+    constructor(private _cleanUp: CleanUpAuthService) {
+    }
+
+    intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<any>> {
+        return next.handle(request).pipe(catchError(response => {
+            // Angular handles 304 (or even all non-2XX http status codes) as error
+            // return response instead of throwing an error
+            if(response.status === HttpStatusCode.NotModified) return of(response);
+            if (response.status === HttpStatusCode.Unauthorized) {
+                this.logout();
+                throw "Sitzung abgelaufen";
+            }
+            const error = this.getError(response);
+            console.error(response.message, error);
+            return throwError(() => error as (string | any));
+        }));
+    }
+
+    private logout(): void {
+        sessionStorage.removeItem('permissions');
+        this._cleanUp.cleanUpStorage('Sitzung abgelaufen. Bitte erneut anmelden.');
+        this._cleanUp.redirect2Home();
+    }
+
+    private getError(response: any): string {
+        let error = '';
+        if (typeof response.error === 'object') {
+            error = response.error;
+        } else if (typeof response.error === 'string') {
+            error = response.error;
+        }
+        return error;
+    }
+}

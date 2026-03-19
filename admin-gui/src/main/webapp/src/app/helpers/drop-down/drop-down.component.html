@@ -1,0 +1,10 @@
+<div #dropdown class="ui fluid search selection dropdown">
+    <input type="hidden"
+           name="dropdown"
+           (change)="onElementChange($event)">
+    <i class="dropdown icon"></i>
+    <div class="default text">Suchen ..</div>
+    <div class="menu">
+        <ng-content></ng-content>
+    </div>
+</div>
