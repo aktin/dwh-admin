@@ -1,7 +1,6 @@
 package org.aktin.dwh.admin.importer;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,7 +27,7 @@ public class ImportScriptStatsEndpoint {
   @GET
   @Path("p21")
   public Response p21() {
-    List<Map<String, Object>> stats = statsService.run(new P21StatsSpec());
+    Properties stats = statsService.run(new P21StatsSpec());
     return Response.ok(stats).build();
   }
 }
