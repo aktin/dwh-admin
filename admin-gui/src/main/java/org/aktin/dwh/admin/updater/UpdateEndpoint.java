@@ -24,10 +24,14 @@ import javax.ws.rs.core.SecurityContext;
 public class UpdateEndpoint {
 
     @Inject
-    UpdateManager updateManager;
+    UpdateManagerFactory updateManagerFactory;
 
     @Context
     private SecurityContext security;
+
+    private IUpdateManager getUpdateManager() {
+        return updateManagerFactory.getMainUpdateManager();
+    }
 
     /**
      * Checks if the update agent is installed in the system.
@@ -38,6 +42,10 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response isUpdateAgentInstalled() {
+        IUpdateManager updateManager = getUpdateManager();
+        if (updateManager == null) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
         return Response.ok(updateManager.isUpdateAgentInstalled()).build();
     }
 
@@ -52,6 +60,10 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUpdateStatus() {
+        IUpdateManager updateManager = getUpdateManager();
+        if (updateManager == null) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
         if (!updateManager.isUpdateAgentInstalled()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
@@ -73,6 +85,10 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response getUpdateLog() {
+        IUpdateManager updateManager = getUpdateManager();
+        if (updateManager == null) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
         if (!updateManager.isUpdateAgentInstalled()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
@@ -94,6 +110,10 @@ public class UpdateEndpoint {
     @POST
     @Secured
     public Response reloadAptPackageLists() {
+        IUpdateManager updateManager = getUpdateManager();
+        if (updateManager == null) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
         if (!updateManager.isUpdateAgentInstalled()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
@@ -115,6 +135,10 @@ public class UpdateEndpoint {
     @POST
     @Secured
     public Response executeDwhUpdate() {
+        IUpdateManager updateManager = getUpdateManager();
+        if (updateManager == null) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
         if (!updateManager.isUpdateAgentInstalled()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
