@@ -1,5 +1,7 @@
 package org.aktin.dwh.admin.updater;
 
+import java.util.ArrayList;
+
 /**
  * Represents the status of a DWH update operation, containing information about versions, success status, and timestamps from both result and info
  * property files.

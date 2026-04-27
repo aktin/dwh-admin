@@ -11,6 +11,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * REST endpoint for managing DWH (Data Warehouse) update operations.
@@ -25,6 +27,7 @@ public class UpdateEndpoint {
 
     @Inject
     UpdateManagerFactory updateManagerFactory;
+    private static final Logger LOGGER = Logger.getLogger(UpdateEndpoint.class.getName());
 
     @Context
     private SecurityContext security;
@@ -69,8 +72,8 @@ public class UpdateEndpoint {
         }
         UpdateStatus status = updateManager.getUpdateStatus();
         return status != null ?
-            Response.ok(status).build() :
-            Response.status(Response.Status.NOT_FOUND).build();
+                Response.ok(status).build() :
+                Response.status(Response.Status.NOT_FOUND).build();
     }
 
     /**

@@ -129,10 +129,8 @@ public abstract class AbstractUpdateManager implements IUpdateManager {
     private boolean executeSocketOperation(int port) {
         String host = getHost();
         String msg = getMsg();
-        try (Socket socket = new Socket(host, port);
-             PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
+        try (Socket socket = new Socket(host, port)) {
             socket.setSoTimeout(SOCKET_TIMEOUT);
-            writer.println(msg);
             Thread.sleep(1000);
             LOGGER.log(Level.INFO, "Socket operation completed on {0}:{1}", new Object[]{host, port});
             return true;
