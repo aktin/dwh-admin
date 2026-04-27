@@ -1,9 +1,6 @@
 package org.aktin.dwh.admin.updater;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Reader;
+import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -129,9 +126,23 @@ public abstract class AbstractUpdateManager implements IUpdateManager {
     private boolean executeSocketOperation(int port) {
         String host = getHost();
         String msg = getMsg();
+
+        // todo: move socket operations into own class
         try (Socket socket = new Socket(host, port)) {
             socket.setSoTimeout(SOCKET_TIMEOUT);
             Thread.sleep(1000);
+            String composeLocation = System.getenv("COMPOSE_LOCATION");
+            if (composeLocation == null) {
+                composeLocation = "";
+            }
+            LOGGER.log(Level.INFO, "composeloc: " + composeLocation.trim());
+
+            String message =
+                    "compose.location=" + composeLocation + "\n";
+
+            OutputStream out = socket.getOutputStream();
+            out.write(message.getBytes("UTF-8"));
+            out.flush();
             LOGGER.log(Level.INFO, "Socket operation completed on {0}:{1}", new Object[]{host, port});
             return true;
         } catch (InterruptedException e) {
