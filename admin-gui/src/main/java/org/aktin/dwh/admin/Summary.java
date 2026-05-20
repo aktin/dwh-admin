@@ -16,17 +16,12 @@ public class Summary {
 
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
-	public ImportSummary getSummaryXML(){
+	public ImportSummary getSummary(){
 		return summ;
 	}
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public ImportSummary getSummaryJSON(){
-		return summ;
-	}
+
 	@DELETE
 	public void reset(){
 		summ.reset();
-		
 	}
 }
