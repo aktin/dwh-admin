@@ -11,7 +11,7 @@
                 <div class="ui button" [ngClass]="moduleTest['buttonStyle']" (click)="test(moduleTest)">{{moduleTest.name}}</div>
             </div>
             <div class="twelve wide column">
-                <div class="ui segment" [ngClass]="moduleTest['segmentStyle']" *ngIf="moduleTest.message"><pre>{{moduleTest.message}}</pre></div>
+                <div class="ui segment" style="overflow-x: auto" [ngClass]="moduleTest['segmentStyle']" *ngIf="moduleTest.message"><pre>{{moduleTest.message}}</pre></div>
             </div>
         </div>
 
