@@ -76,19 +76,18 @@ export class UpdaterService {
      */
     getUpdateStatus(): void {
         if (this.isUpdateAgentInstalled) {
-            this._http.get<string>(this._url.parse('updateDWH'))
-            .pipe(catchError(err => this._http.handleError(err)))
-            .subscribe(event => {
-                if (event) {
-                    let json_info = JSON.parse(event);
-                    this.installedVersion = json_info['installedVersion'];
-                    this.candidateVersion = json_info['candidateVersion'];
-                    this.wasUpdateSuccessful = json_info['success'];
-                    this.isNewUpdateAvailable = this.installedVersion !== this.candidateVersion;
-                }
-            }, error => {
-                console.error(error);
-            });
+            this._http.get<any>(this._url.parse('updateDWH'))
+                .pipe(catchError(err => this._http.handleError(err)))
+                .subscribe(event => {
+                    if (event) {
+                        this.installedVersion = event.installedVersion;
+                        this.candidateVersion = event.candidateVersion;
+                        this.wasUpdateSuccessful = event.success;
+                        this.isNewUpdateAvailable = this.installedVersion !== this.candidateVersion;
+                    }
+                }, error => {
+                    console.error(error);
+                });
         }
     }
 
@@ -144,8 +143,10 @@ export class UpdaterService {
     reloadAptPackages(showFeedback: boolean = true): void {
         if (this.checkPermission() && this.isUpdateAgentInstalled) {
             this._http.post(this._url.parse('reloadAptPackages'), null)
-            .pipe(catchError(err => this._http.handleError(err)),
-                    finalize(() => this.getUpdateStatus()))
+            .pipe(
+                catchError(err => this._http.handleError(err)),
+                finalize(() => this.getUpdateStatus())
+            )
             .subscribe(event => {
                 if (showFeedback) {
                     this.isCheckingForUpdates = true;
