@@ -39,7 +39,7 @@ public class UpdateManagerFactory {
     private List<IUpdateManager> getUpdateManagersFromInstance(@NonNull Instance<IUpdateManager> managers) {
         List<IUpdateManager> extracted = new ArrayList<>();
         for (IUpdateManager manager : managers) {
-            LOGGER.log(Level.INFO, "UpdateManager Beean found: "+ manager.getClass().getName());
+            LOGGER.log(Level.INFO, "UpdateManager Bean found: "+ manager.getClass().getName());
             extracted.add(manager);
         }
         return extracted;
