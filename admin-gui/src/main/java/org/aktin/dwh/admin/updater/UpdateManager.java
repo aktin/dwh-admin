@@ -4,7 +4,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 
 /**
@@ -35,7 +34,6 @@ public class UpdateManager extends AbstractUpdateManager {
     private static final int DWH_UPDATE_PORT = 1003;
     private static final String msg = "";
 
-    @PostConstruct
     public void initialize() {
         LOGGER.log(Level.INFO, "Initializing UpdateManager and triggering APT package list reload...");
         boolean supports = this.supportsCurrentSystem();
