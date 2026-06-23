@@ -124,6 +124,7 @@ export class UpdaterService {
                         }))
                 .subscribe(event => {
                     this.setCookie('AKTIN.showUpdateSummary', 'true');
+                    this.setCookie('PORT', window.location.port);
                     window.location.href = "/aktin/admin/plain/update.html";
                 }, (error: any) => {
                     console.log(error);
