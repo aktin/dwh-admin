@@ -27,7 +27,6 @@ public class UpdateEndpoint {
 
     @Inject
     UpdateManagerFactory updateManagerFactory;
-    private static final Logger LOGGER = Logger.getLogger(UpdateEndpoint.class.getName());
 
     @Context
     private SecurityContext security;
@@ -35,6 +34,7 @@ public class UpdateEndpoint {
     private IUpdateManager getUpdateManager() {
         return updateManagerFactory.getMainUpdateManager();
     }
+
 
     /**
      * Checks if the update agent is installed in the system.

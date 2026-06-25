@@ -8,19 +8,11 @@ import java.util.logging.Logger;
 import javax.inject.Singleton;
 
 /**
- * Docker container implementation of {@link IUpdateManager}.
- *
- * <p>Communicates with updateagent services running on the Docker host machine
+ * This class communicates with updateagent services running on the Docker host machine
  * via the {@code host.docker.internal} DNS name that Docker makes available
- * inside containers:</p>
- * <ul>
- *   <li>APT package-list reload ({@code apt-get update}) – port 1004</li>
- *   <li>DWH package upgrade ({@code apt-get install}) – port 1005</li>
- * </ul>
- *
- * <p>This class is intentionally thin: all business logic lives in
- * {@link AbstractUpdateManager}. Only the network coordinates differ between
- * this class and {@link UpdateManager}.</p>
+ * inside containers:
+ *   -APT package-list reload ({@code apt-get update}) – port 1004
+ *   -DWH package upgrade ({@code apt-get install}) – port 1005
  */
 @Singleton
 @EnvironmentSpecific

@@ -15,7 +15,7 @@ import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
 
 /**
- * Shared update manager implementation for environment-specific update agents.
+ * Shared update manager parent class for environment-specific update agents.
  *
  * <p>Concrete implementations only need to provide the target host and ports
  * for the socket-based update agent communication as well as the environment

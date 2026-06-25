@@ -11,6 +11,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * This class acts like a broker for update managers and provides the correct
+ * UpdateManager implementation depending on the current system requirements.
+ */
+
 @Singleton
 public class UpdateManagerFactory {
 
