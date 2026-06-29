@@ -21,7 +21,7 @@ import org.aktin.dwh.admin.helper.TcpHelper;
  * for the socket-based update agent communication as well as the environment
  * detection used by {@link UpdateManagerFactory}.</p>
  */
-public abstract class AbstractUpdateManager implements IUpdateManager {
+public abstract class AbstractUpdateManager implements UpdateManager {
 
     private static final Logger LOGGER = Logger.getLogger(AbstractUpdateManager.class.getName());
     private final TcpHelper tcp = new TcpHelper();

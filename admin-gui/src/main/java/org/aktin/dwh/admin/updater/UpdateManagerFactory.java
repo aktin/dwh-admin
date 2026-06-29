@@ -17,15 +17,16 @@ public class UpdateManagerFactory {
     private static final Logger LOGGER = Logger.getLogger(UpdateManagerFactory.class.getName());
 
     @Setter
-    private List<IUpdateManager> updateManagers;
-    private final IUpdateManager applicable;
+    private List<UpdateManager> updateManagers;
+    private final UpdateManager applicable;
 
     /**
-     * Jakarta CDI inject searches beans implementing {@link IUpdateManager} and
+     * "Jakarta CDI inject" searches {@link UpdateManager} beans annotated with {@link EnvironmentSpecific} and
+     * selects the first bean fulfilling its run requirements.
      * @param managers
      */
     @Inject
-    public UpdateManagerFactory(@EnvironmentSpecific Instance<IUpdateManager> managers) {
+    public UpdateManagerFactory(@EnvironmentSpecific Instance<UpdateManager> managers) {
         this.updateManagers = this.getUpdateManagersFromInstance(managers);
         this.applicable = this.getFirstApplicableManager();
 
@@ -36,17 +37,17 @@ public class UpdateManagerFactory {
         }
     }
 
-    private List<IUpdateManager> getUpdateManagersFromInstance(@NonNull Instance<IUpdateManager> managers) {
-        List<IUpdateManager> extracted = new ArrayList<>();
-        for (IUpdateManager manager : managers) {
+    private List<UpdateManager> getUpdateManagersFromInstance(@NonNull Instance<UpdateManager> managers) {
+        List<UpdateManager> extracted = new ArrayList<>();
+        for (UpdateManager manager : managers) {
             LOGGER.log(Level.INFO, "UpdateManager Bean found: "+ manager.getClass().getName());
             extracted.add(manager);
         }
         return extracted;
     }
 
-    private IUpdateManager getFirstApplicableManager() {
-        for (IUpdateManager manager : this.updateManagers) {
+    private UpdateManager getFirstApplicableManager() {
+        for (UpdateManager manager : this.updateManagers) {
             if (manager.supportsCurrentSystem()) {
                 return manager;
             }
@@ -55,7 +56,12 @@ public class UpdateManagerFactory {
         return null;
     }
 
-    public IUpdateManager getMainUpdateManager() {
+    /**
+     * @return
+     *      - updateManager: returns the first update manager instance matching its requirements
+     *      - null: every instance failed at their requirements check
+     */
+    public UpdateManager getMainUpdateManager() {
         return applicable;
     }
 

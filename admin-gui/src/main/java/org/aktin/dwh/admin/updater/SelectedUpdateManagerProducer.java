@@ -12,7 +12,7 @@ public class SelectedUpdateManagerProducer {
 
     @Produces
     @Singleton
-    public IUpdateManager produceUpdateManager() {
+    public UpdateManager produceUpdateManager() {
         return updateManagerFactory.getMainUpdateManager();
     }
 }

@@ -11,7 +11,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -26,14 +25,27 @@ import java.util.logging.Logger;
 public class UpdateEndpoint {
 
     @Inject
-    UpdateManagerFactory updateManagerFactory;
-    private static final Logger LOGGER = Logger.getLogger(UpdateEndpoint.class.getName());
+    SelectedUpdateManagerProducer producer;
+
+    UpdateManager updateManager = producer.produceUpdateManager();
 
     @Context
     private SecurityContext security;
 
-    private IUpdateManager getUpdateManager() {
-        return updateManagerFactory.getMainUpdateManager();
+
+    /**
+     * Checks if an update manager could be found.
+     * @return  - 200 OK: a update manager is available to execute the update
+     *          - 503 SERVICE UNAVAILABLE: no suitable update manager was found
+     */
+    @Path("manager/available")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response isUpdateManagerAvailable() {
+        if (updateManager == null) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
+        return Response.ok().build();
     }
 
     /**
@@ -45,7 +57,6 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response isUpdateAgentInstalled() {
-        IUpdateManager updateManager = getUpdateManager();
         if (updateManager == null) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
@@ -63,7 +74,6 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUpdateStatus() {
-        IUpdateManager updateManager = getUpdateManager();
         if (updateManager == null) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
@@ -88,7 +98,6 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response getUpdateLog() {
-        IUpdateManager updateManager = getUpdateManager();
         if (updateManager == null) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
@@ -113,7 +122,6 @@ public class UpdateEndpoint {
     @POST
     @Secured
     public Response reloadAptPackageLists() {
-        IUpdateManager updateManager = getUpdateManager();
         if (updateManager == null) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
@@ -138,7 +146,6 @@ public class UpdateEndpoint {
     @POST
     @Secured
     public Response executeDwhUpdate() {
-        IUpdateManager updateManager = getUpdateManager();
         if (updateManager == null) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
