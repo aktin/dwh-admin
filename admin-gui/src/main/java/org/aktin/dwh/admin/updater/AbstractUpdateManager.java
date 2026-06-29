@@ -1,7 +1,6 @@
 package org.aktin.dwh.admin.updater;
 
 import java.io.*;
-import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,6 +12,7 @@ import java.util.logging.Logger;
 import javax.inject.Inject;
 import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
+import org.aktin.dwh.admin.helper.TcpHelper;
 
 /**
  * Shared update manager implementation for environment-specific update agents.
@@ -24,7 +24,7 @@ import org.aktin.dwh.PreferenceKey;
 public abstract class AbstractUpdateManager implements IUpdateManager {
 
     private static final Logger LOGGER = Logger.getLogger(AbstractUpdateManager.class.getName());
-    private static final int SOCKET_TIMEOUT = 5000;
+    private final TcpHelper tcp = new TcpHelper();
 
     @Inject
     Preferences preferences;
@@ -100,9 +100,17 @@ public abstract class AbstractUpdateManager implements IUpdateManager {
             return false;
         }
         LOGGER.log(Level.INFO, "Started apt-reload service");
-        return executeSocketOperation(getAptUpdatePort());
+        int tcpCode = this.tcp.touch(getHost(), getAptUpdatePort());
+        return tcpCode == 0;
     }
 
+    /**
+     * This method connects to the AKTIN update agent socket responsible for executing
+     * the update process for a data warehouse. This method runs async, to not block
+     * other operations while waiting for the touch event to finish (fire and forget).
+     * @return - true: fire-and-forget tcp request was sent
+     *         - false
+     */
     @Override
     public boolean executeDwhUpdate() {
         if (!isUpdateAgentInstalled() || isUpdateInProgress()) {
@@ -110,8 +118,11 @@ public abstract class AbstractUpdateManager implements IUpdateManager {
         }
         LOGGER.log(Level.INFO, "Started dwh-update service");
         try {
-            currentUpdate = CompletableFuture.supplyAsync(() -> executeSocketOperation(getDwhUpdatePort()));
-            return true;
+            currentUpdate = CompletableFuture.supplyAsync(() -> {
+                int tcpCode = this.tcp.touch(getHost(), getAptUpdatePort());
+                return tcpCode == 0;
+            });
+            return true; // fire-and-forget: result tracked in currentUpdate
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Failed to start update process", e);
             return false;
@@ -123,36 +134,10 @@ public abstract class AbstractUpdateManager implements IUpdateManager {
         return currentUpdate != null && !currentUpdate.isDone();
     }
 
-    private boolean executeSocketOperation(int port) {
+    private boolean triggerPortActionOn(int port) {
         String host = getHost();
-        String msg = getMsg();
-
-        // todo: move socket operations into own class
-        try (Socket socket = new Socket(host, port)) {
-            socket.setSoTimeout(SOCKET_TIMEOUT);
-            Thread.sleep(1000);
-            String composeLocation = System.getenv("COMPOSE_LOCATION");
-            if (composeLocation == null) {
-                composeLocation = "";
-            }
-            LOGGER.log(Level.INFO, "composeloc: " + composeLocation.trim());
-
-            String message =
-                    "compose.location=" + composeLocation + "\n";
-
-            OutputStream out = socket.getOutputStream();
-            out.write(message.getBytes("UTF-8"));
-            out.flush();
-            LOGGER.log(Level.INFO, "Socket operation completed on {0}:{1}", new Object[]{host, port});
-            return true;
-        } catch (InterruptedException e) {
-            LOGGER.log(Level.WARNING, "Thread interrupted during socket operation on port: " + port, e);
-            Thread.currentThread().interrupt();
-            return false;
-        } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "I/O error during socket operation on port: " + port, e);
-            return false;
-        }
+        int tcpCode = this.tcp.touch(host, port);
+        return tcpCode == 0;
     }
 
     protected abstract String getHost();
@@ -161,5 +146,5 @@ public abstract class AbstractUpdateManager implements IUpdateManager {
 
     protected abstract int getDwhUpdatePort();
 
-    protected abstract String getMsg();
+
 }
