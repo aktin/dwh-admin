@@ -63,8 +63,4 @@ public class UpdateManager extends AbstractUpdateManager {
         return DWH_UPDATE_PORT;
     }
 
-    @Override
-    protected String getMsg() {
-        return msg;
-    }
 }

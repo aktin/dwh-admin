@@ -61,9 +61,4 @@ public class DockerUpdateManager extends AbstractUpdateManager {
         return DWH_UPDATE_PORT;
     }
 
-    @Override
-    public String getMsg() {
-        String composeLocation = System.getenv("COMPOSE_LOCATION");
-        return composeLocation == null ? "" : composeLocation.trim();
-    }
 }
