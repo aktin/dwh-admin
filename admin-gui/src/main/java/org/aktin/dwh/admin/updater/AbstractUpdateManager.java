@@ -119,7 +119,7 @@ public abstract class AbstractUpdateManager implements UpdateManager {
         LOGGER.log(Level.INFO, "Started dwh-update service");
         try {
             currentUpdate = CompletableFuture.supplyAsync(() -> {
-                int tcpCode = this.tcp.touch(getHost(), getAptUpdatePort());
+                int tcpCode = this.tcp.touch(getHost(), getDwhUpdatePort());
                 return tcpCode == 0;
             });
             return true; // fire-and-forget: result tracked in currentUpdate
