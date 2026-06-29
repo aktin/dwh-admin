@@ -66,6 +66,7 @@
     function call_dwh(el) {
         const port = getCookie('PORT');
         const base = port ? window.location.protocol + '//' + window.location.hostname + ':' + port : '';
+        const checkInterval = 1 * 10 * 1000
 
         $.ajax({
         type: "HEAD",
@@ -80,9 +81,11 @@
         },
         error: function (xhr, status, error) {
           console.log(error)
+          // interval check, if the DWH is online after an update. Good reference are 10 seconds,
+          // to reduce waiting time while DWH is online again.
           setTimeout(function () {
             call_dwh(this);
-          }, 1 * 10 * 1000);
+          }, checkInterval);
         },
         dataType: "text"
       });

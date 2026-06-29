@@ -1,66 +1,77 @@
 package org.aktin.dwh.admin.updater;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.inject.Singleton;
-
 /**
- * Manages DWH (Data Warehouse) update operations and status tracking.
- * This singleton class handles update agent verification, status checks,
- * and execution of update operations through socket communication.
+ * Interface defining the contract for DWH update management operations.
  *
- * Update operations are performed asynchronously and their status is tracked
- * through property files in a configured update directory.
+ * <p>Implementations of this interface encapsulate the environment-specific
+ * details of how updates are triggered and monitored (e.g. Debian host vs.
+ * Docker container), while exposing a stable API that {@link UpdateEndpoint}
+ * and other callers depend on.</p>
  *
- * <p><b>Implementation Note:</b>
- * This manager relies on the 'updateagent' Debian package being installed on the system.
- * The updateagent package:
- * <ul>
- *   <li>Creates the required update directory structure</li>
- *   <li>Installs a service listening on port 1002 for executing 'apt-get update'</li>
- *   <li>Installs a service listening on port 1003 for executing 'apt-get install &lt;this dwh&gt;'</li>
- * </ul>
- * Without this package installed, all update operations will fail as the required
- * directory structure and services will not be present.
+ * <p>Follows the Dependency Inversion Principle: high-level components such as
+ * {@link UpdateEndpoint} depend on this abstraction rather than on any concrete
+ * implementation.</p>
  */
-@Singleton
-@EnvironmentSpecific
-public class UpdateManager extends AbstractUpdateManager {
+public interface UpdateManager {
 
-    private static final Logger LOGGER = Logger.getLogger(UpdateManager.class.getName());
-    private static final int APT_UPDATE_PORT = 1002;
-    private static final int DWH_UPDATE_PORT = 1003;
-    private static final String msg = "";
+    void initialize();
 
-    public void initialize() {
-        LOGGER.log(Level.INFO, "Initializing UpdateManager and triggering APT package list reload...");
-        boolean supports = this.supportsCurrentSystem();
-        LOGGER.log(Level.INFO, "Supports Current System: " + supports);
-        if (supports) {
-            reloadAptPackageLists();
-        }
-    }
+    /**
+     * Returns whether this implementation is responsible for the current runtime
+     * environment.
+     *
+     * <p>This method is used by {@link UpdateManagerFactory} to select the
+     * correct implementation at application startup.</p>
+     *
+     * @return {@code true} if this manager should handle updates in the current
+     *         environment
+     */
+    boolean supportsCurrentSystem();
 
-    @Override
-    public boolean supportsCurrentSystem() {
-        return !Files.exists(Paths.get("/.dockerenv"));
-    }
+    /**
+     * Checks whether the update agent is installed and available in the
+     * current environment.
+     *
+     * @return {@code true} if the update agent is present and operational
+     */
+    boolean isUpdateAgentInstalled();
 
-    @Override
-    protected String getHost() {
-        return "localhost";
-    }
+    /**
+     * Retrieves the current update status, combining version information and
+     * the result of the last update attempt.
+     *
+     * @return an {@link UpdateStatus} object, or {@code null} if no status
+     *         information is available yet
+     */
+    UpdateStatus getUpdateStatus();
 
-    @Override
-    protected int getAptUpdatePort() {
-        return APT_UPDATE_PORT;
-    }
+    /**
+     * Retrieves the textual content of the update operation log.
+     *
+     * @return the log as a {@link String}, or {@code null} if no log exists
+     */
+    String getUpdateLog();
 
-    @Override
-    protected int getDwhUpdatePort() {
-        return DWH_UPDATE_PORT;
-    }
+    /**
+     * Triggers a reload of APT package lists (equivalent to {@code apt-get update}).
+     *
+     * @return {@code true} if the reload was initiated successfully
+     */
+    boolean reloadAptPackageLists();
+
+    /**
+     * Triggers an upgrade of the DWH Debian package
+     * (equivalent to {@code apt-get install <dwh-package>}).
+     *
+     * @return {@code true} if the update was initiated successfully
+     */
+    boolean executeDwhUpdate();
+
+    /**
+     * Returns whether an update operation is currently running.
+     *
+     * @return {@code true} if an update is in progress
+     */
+    boolean isUpdateInProgress();
 
 }

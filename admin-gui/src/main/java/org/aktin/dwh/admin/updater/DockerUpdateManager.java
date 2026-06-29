@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import javax.inject.Singleton;
 
 /**
- * Docker container implementation of {@link IUpdateManager}.
+ * Docker container implementation of {@link UpdateManager}.
  *
  * <p>Communicates with updateagent services running on the Docker host machine
  * via the {@code host.docker.internal} DNS name that Docker makes available
@@ -20,7 +20,7 @@ import javax.inject.Singleton;
  *
  * <p>This class is intentionally thin: all business logic lives in
  * {@link AbstractUpdateManager}. Only the network coordinates differ between
- * this class and {@link UpdateManager}.</p>
+ * this class and {@link DebianUpdateManager}.</p>
  */
 @Singleton
 @EnvironmentSpecific

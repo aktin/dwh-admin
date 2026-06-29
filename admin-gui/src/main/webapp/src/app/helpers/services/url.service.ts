@@ -75,6 +75,7 @@ export class UrlService {
 
         // updateEndpoint
         updateAgentInstalled: 'update/agent/installed',
+        updateManagerAvailable: 'update/manager/available',
         updateDWH: 'update',
         getUpdateLog: 'update/log',
         reloadAptPackages: 'update/agent/reload',

@@ -13,6 +13,8 @@ export class UpdaterService {
 
     /** Flag indicating if the backend update agent is installed and available */
     public isUpdateAgentInstalled: boolean = false;
+    /** Flag indicating if the backend found a suitable update manager */
+    public isUpdateManagerAvailable: boolean = false;
     /** Currently installed DWH version */
     public installedVersion: string;
     /** Available update version (if any) */
@@ -58,6 +60,10 @@ export class UpdaterService {
         return this._auth.userLocalCheckPermissions([Permission.UPDATE]);
     }
 
+    checkBackendRequirements(): boolean {
+        return this.isUpdateAgentInstalled && this.isUpdateManagerAvailable;
+    }
+
     checkUpdateAgentInstallation(): void {
         this._http.get<string>(this._url.parse('updateAgentInstalled'))
             .pipe(catchError(err => { return this._http.handleError(err); }))
@@ -69,13 +75,24 @@ export class UpdaterService {
             });
     }
 
+    checkUpdateManagerAvailable(): void {
+        this._http.get<string>(this._url.parse('updateManagerAvailable'))
+            .pipe(catchError(err => { return this._http.handleError(err); }))
+            .subscribe(event => {
+                if (event)
+                    this.isUpdateManagerAvailable = JSON.parse(event);
+            }, (error: any) => {
+                console.log(error);
+            });
+    }
+
     /**
      * Retrieves the current update status from the backend.
      * Updates version information and status flags based on the response.
      * Only executes if the update agent is installed.
      */
     getUpdateStatus(): void {
-        if (this.isUpdateAgentInstalled) {
+        if (this.checkBackendRequirements) {
             this._http.get<any>(this._url.parse('updateDWH'))
                 .pipe(catchError(err => this._http.handleError(err)))
                 .subscribe(event => {
@@ -96,7 +113,7 @@ export class UpdaterService {
      * Only executes if the update agent is installed.
      */
     getUpdateLog(): void {
-        if (this.isUpdateAgentInstalled) {
+        if (this.checkBackendRequirements) {
             this._http.get<string>(this._url.parse('getUpdateLog'))
                 .pipe(catchError(err => { return this._http.handleError(err); }))
                 .subscribe(event => {
@@ -115,7 +132,7 @@ export class UpdaterService {
      * Updates package information and log after completion.
      */
     executeUpdate(): void {
-        if (this.checkPermission() && this.isUpdateAgentInstalled) {
+        if (this.checkPermission() && this.checkBackendRequirements) {
             this._http.post(this._url.parse('updateDWH'), null)
                 .pipe(catchError(err => { return this._http.handleError(err); }),
                     finalize(() => {
@@ -142,7 +159,7 @@ export class UpdaterService {
      *                       Default is true. Set to false for background updates.
      */
     reloadAptPackages(showFeedback: boolean = true): void {
-        if (this.checkPermission() && this.isUpdateAgentInstalled) {
+        if (this.checkPermission() && this.checkBackendRequirements) {
             this._http.post(this._url.parse('reloadAptPackages'), null)
             .pipe(
                 catchError(err => this._http.handleError(err)),
