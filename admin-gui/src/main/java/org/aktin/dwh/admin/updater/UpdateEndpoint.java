@@ -11,7 +11,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.util.logging.Logger;
 
 /**
  * REST endpoint for managing DWH (Data Warehouse) update operations.
@@ -25,9 +24,11 @@ import java.util.logging.Logger;
 public class UpdateEndpoint {
 
     @Inject
-    SelectedUpdateManagerProducer producer;
+    UpdateManagerFactory updateManagerFactory;
 
-    UpdateManager updateManager = producer.produceUpdateManager();
+    private UpdateManager getUpdateManager() {
+        return updateManagerFactory.getMainUpdateManager();
+    }
 
     @Context
     private SecurityContext security;
@@ -42,6 +43,7 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response isUpdateManagerAvailable() {
+        UpdateManager updateManager = getUpdateManager();
         if (updateManager == null) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
@@ -57,6 +59,7 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response isUpdateAgentInstalled() {
+        UpdateManager updateManager = getUpdateManager();
         if (updateManager == null) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
@@ -74,6 +77,7 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUpdateStatus() {
+        UpdateManager updateManager = getUpdateManager();
         if (updateManager == null) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
@@ -98,6 +102,7 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response getUpdateLog() {
+        UpdateManager updateManager = getUpdateManager();
         if (updateManager == null) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
@@ -122,6 +127,7 @@ public class UpdateEndpoint {
     @POST
     @Secured
     public Response reloadAptPackageLists() {
+        UpdateManager updateManager = getUpdateManager();
         if (updateManager == null) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
@@ -146,6 +152,7 @@ public class UpdateEndpoint {
     @POST
     @Secured
     public Response executeDwhUpdate() {
+        UpdateManager updateManager = getUpdateManager();
         if (updateManager == null) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
