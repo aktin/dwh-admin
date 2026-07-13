@@ -31,6 +31,7 @@ public class DockerUpdater extends AbstractUpdater {
     private static final int APT_UPDATE_PORT = 1004;
     private static final int DWH_UPDATE_PORT = 1005;
 
+    @Override
     public void initialize() {
         LOGGER.log(Level.INFO, "Initializing Docker UpdateManager and triggering APT package list reload...");
         boolean supports = this.supportsCurrentSystem();

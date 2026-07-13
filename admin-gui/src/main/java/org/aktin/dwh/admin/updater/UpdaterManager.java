@@ -1,7 +1,6 @@
 package org.aktin.dwh.admin.updater;
 
 import lombok.NonNull;
-import lombok.Setter;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -16,9 +15,8 @@ public class UpdaterManager {
 
     private static final Logger LOGGER = Logger.getLogger(UpdaterManager.class.getName());
 
-    @Setter
-    private List<Updater> updaters;
-    private final Updater applicable;
+    private final List<Updater> updaters;
+    private final Updater selected;
 
     /**
      * "Jakarta CDI inject" searches {@link Updater} beans annotated with {@link EnvironmentSpecific} and
@@ -28,10 +26,10 @@ public class UpdaterManager {
     @Inject
     public UpdaterManager(@EnvironmentSpecific Instance<Updater> managers) {
         this.updaters = this.getUpdateManagersFromInstance(managers);
-        this.applicable = this.getFirstApplicableManager();
+        this.selected = this.getFirstApplicableManager();
 
-        if (this.applicable != null) {
-            this.applicable.initialize();
+        if (this.selected != null) {
+            this.selected.initialize();
         } else {
             LOGGER.log(Level.WARNING, "No update manager was selected. Update REST operations will remain unavailable.");
         }
@@ -62,7 +60,7 @@ public class UpdaterManager {
      *      - null: every instance failed at their requirements check
      */
     public Updater getMainUpdateManager() {
-        return applicable;
+        return selected;
     }
 
 }

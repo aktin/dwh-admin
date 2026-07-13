@@ -30,10 +30,11 @@ import javax.inject.Singleton;
 public class DebianUpdater extends AbstractUpdater {
 
     private static final Logger LOGGER = Logger.getLogger(DebianUpdater.class.getName());
-    private static final String HOST = "host.docker.internal";
+    private static final String HOST = "localhost";
     private static final int APT_UPDATE_PORT = 1002;
     private static final int DWH_UPDATE_PORT = 1003;
 
+    @Override
     public void initialize() {
         LOGGER.log(Level.INFO, "Initializing UpdateManager and triggering APT package list reload...");
         boolean supports = this.supportsCurrentSystem();
