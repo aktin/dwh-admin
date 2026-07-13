@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import javax.inject.Singleton;
 
 /**
- * Docker container implementation of {@link UpdateManager}.
+ * Docker container implementation of {@link Updater}.
  *
  * <p>Communicates with updateagent services running on the Docker host machine
  * via the {@code host.docker.internal} DNS name that Docker makes available
@@ -19,15 +19,14 @@ import javax.inject.Singleton;
  * </ul>
  *
  * <p>This class is intentionally thin: all business logic lives in
- * {@link AbstractUpdateManager}. Only the network coordinates differ between
- * this class and {@link DebianUpdateManager}.</p>
+ * {@link AbstractUpdater}. Only the network coordinates differ between
+ * this class and {@link DebianUpdater}.</p>
  */
 @Singleton
 @EnvironmentSpecific
-public class DockerUpdateManager extends AbstractUpdateManager {
+public class DockerUpdater extends AbstractUpdater {
 
-    private static final Logger LOGGER = Logger.getLogger(DockerUpdateManager.class.getName());
-
+    private static final Logger LOGGER = Logger.getLogger(DockerUpdater.class.getName());
     private static final String HOST = "host.docker.internal";
     private static final int APT_UPDATE_PORT = 1004;
     private static final int DWH_UPDATE_PORT = 1005;
@@ -37,7 +36,7 @@ public class DockerUpdateManager extends AbstractUpdateManager {
         boolean supports = this.supportsCurrentSystem();
         LOGGER.log(Level.INFO, "Supports Current System: " + supports);
         if (supports) {
-            reloadAptPackageLists();
+            refreshUpdateStatus();
         }
     }
 

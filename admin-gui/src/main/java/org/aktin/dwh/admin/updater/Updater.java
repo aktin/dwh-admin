@@ -12,7 +12,7 @@ package org.aktin.dwh.admin.updater;
  * {@link UpdateEndpoint} depend on this abstraction rather than on any concrete
  * implementation.</p>
  */
-public interface UpdateManager {
+interface Updater {
 
     void initialize();
 
@@ -20,7 +20,7 @@ public interface UpdateManager {
      * Returns whether this implementation is responsible for the current runtime
      * environment.
      *
-     * <p>This method is used by {@link UpdateManagerFactory} to select the
+     * <p>This method is used by {@link UpdaterManager} to select the
      * correct implementation at application startup.</p>
      *
      * @return {@code true} if this manager should handle updates in the current
@@ -53,11 +53,12 @@ public interface UpdateManager {
     String getUpdateLog();
 
     /**
-     * Triggers a reload of APT package lists (equivalent to {@code apt-get update}).
+     * Compares installed application version with latest available version.
      *
-     * @return {@code true} if the reload was initiated successfully
+     * @return - {@code true} if check operation was successful. Does not mean a update is available.
+     *         - {@code false} if check operation could not be executed. Does not mean installed version is latest available.
      */
-    boolean reloadAptPackageLists();
+    boolean refreshUpdateStatus();
 
     /**
      * Triggers an upgrade of the DWH Debian package

@@ -27,19 +27,19 @@ import javax.inject.Singleton;
  */
 @Singleton
 @EnvironmentSpecific
-public class DebianUpdateManager extends AbstractUpdateManager {
+public class DebianUpdater extends AbstractUpdater {
 
-    private static final Logger LOGGER = Logger.getLogger(DebianUpdateManager.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(DebianUpdater.class.getName());
+    private static final String HOST = "host.docker.internal";
     private static final int APT_UPDATE_PORT = 1002;
     private static final int DWH_UPDATE_PORT = 1003;
-    private static final String msg = "";
 
     public void initialize() {
         LOGGER.log(Level.INFO, "Initializing UpdateManager and triggering APT package list reload...");
         boolean supports = this.supportsCurrentSystem();
         LOGGER.log(Level.INFO, "Supports Current System: " + supports);
         if (supports) {
-            reloadAptPackageLists();
+            refreshUpdateStatus();
         }
     }
 
@@ -50,7 +50,7 @@ public class DebianUpdateManager extends AbstractUpdateManager {
 
     @Override
     protected String getHost() {
-        return "localhost";
+        return HOST;
     }
 
     @Override
