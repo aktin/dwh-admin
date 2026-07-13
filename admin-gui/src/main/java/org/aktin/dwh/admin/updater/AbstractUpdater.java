@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
@@ -19,9 +19,11 @@ import org.aktin.dwh.admin.helper.TcpHelper;
  *
  * <p>Concrete implementations only need to provide the target host and ports
  * for the socket-based update agent communication as well as the environment
- * detection used by {@link UpdateManagerFactory}.</p>
+ * detection used by {@link UpdaterManager}.</p>
  */
-public abstract class AbstractUpdateManager implements UpdateManager {
+public abstract class AbstractUpdater implements Updater {
+
+    private static final Logger LOGGER = Logger.getLogger(AbstractUpdater.class.getName());
 
     private final AtomicBoolean statusReadErrorLogged = new AtomicBoolean(false);
 
@@ -29,8 +31,6 @@ public abstract class AbstractUpdateManager implements UpdateManager {
 
     @Inject
     Preferences preferences;
-
-    private CompletableFuture<Boolean> currentUpdate;
 
     @Override
     public boolean isUpdateAgentInstalled() {
@@ -97,22 +97,26 @@ public abstract class AbstractUpdateManager implements UpdateManager {
         }
     }
 
+    /**
+     * This method connects to the AKTIN update agent socket responsible for writing the installed
+     * data warehouse version and the latest available candidate version into a data directory.
+     * @return - {@code true}: request was sent
+     *         - {@code false}: request could not be sent, update agent is not installed
+     */
     @Override
-    public boolean reloadAptPackageLists() {
+    public boolean refreshUpdateStatus() {
         if (!isUpdateAgentInstalled()) {
             return false;
         }
         LOGGER.log(Level.INFO, "Started apt-reload service");
-        int tcpCode = this.tcp.touch(getHost(), getAptUpdatePort());
-        return tcpCode == 0;
+        return TcpHelper.touch(getHost(), getAptUpdatePort());
     }
 
     /**
      * This method connects to the AKTIN update agent socket responsible for executing
-     * the update process for a data warehouse. This method runs async, to not block
-     * other operations while waiting for the touch event to finish (fire and forget).
-     * @return - true: fire-and-forget tcp request was sent
-     *         - false
+     * the update process for a data warehouse.
+     * @return - true:  update request was sent (does not mean update is finished or was successful)
+     *         - false: update request could not be sent, update agent is not installed
      */
     @Override
     public boolean executeDwhUpdate() {
@@ -120,27 +124,14 @@ public abstract class AbstractUpdateManager implements UpdateManager {
             return false;
         }
         LOGGER.log(Level.INFO, "Started dwh-update service");
-        try {
-            currentUpdate = CompletableFuture.supplyAsync(() -> {
-                int tcpCode = this.tcp.touch(getHost(), getDwhUpdatePort());
-                return tcpCode == 0;
-            });
-            return true; // fire-and-forget: result tracked in currentUpdate
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Failed to start update process", e);
-            return false;
-        }
+        boolean success = TcpHelper.touch(getHost(), getDwhUpdatePort());
+        this.isUpdateInProgress.set(success);
+        return success;
     }
 
     @Override
     public boolean isUpdateInProgress() {
-        return currentUpdate != null && !currentUpdate.isDone();
-    }
-
-    private boolean triggerPortActionOn(int port) {
-        String host = getHost();
-        int tcpCode = this.tcp.touch(host, port);
-        return tcpCode == 0;
+        return this.isUpdateInProgress.get();
     }
 
     protected abstract String getHost();

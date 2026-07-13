@@ -2,7 +2,7 @@ package org.aktin.dwh.admin;
 
 import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
-import org.aktin.dwh.admin.updater.DebianUpdateManager;
+import org.aktin.dwh.admin.updater.DebianUpdater;
 import org.aktin.dwh.admin.updater.UpdateStatus;
 import org.junit.After;
 import org.junit.Assert;
@@ -18,13 +18,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.nio.file.Paths;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TestDebianUpdateManager {
+public class TestDebianUpdater {
 
     @Mock
     Preferences preferences;
 
     @InjectMocks
-    DebianUpdateManager debianUpdateManager;
+    DebianUpdater debianUpdateManager;
 
     private AutoCloseable closeable;
 

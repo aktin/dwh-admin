@@ -46,49 +46,56 @@
     </div>
   </div>
 
-  <script language="Javascript">
 
-    // first call on 25secs after page-load
+  <script language="Javascript">
+    const INITIAL_DELAY_MS = 25 * 1000;
+    const CHECK_DELAY_MS = 10 * 1000;   // delay until next check, after a check has failed. Keep reasonably high to avoid call overload
+    const DEFAULT_PORT = '80';
+
+    // First check happens 25s after page load, giving the update process time to restart services
     document.addEventListener("DOMContentLoaded", function () {
-      setTimeout(function () {
-        call_dwh(this);
-      }, 25 * 1000);
+        setTimeout(checkDwhAvailability, INITIAL_DELAY_MS);
     });
 
+    // Get cookies of current session by name
     function getCookie(name) {
         const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
         return match ? match[2] : null;
     }
 
-    // check if aktin homepage is up
-    // redirect if true, else check again in 5 min
-    // no-cache headers to avoid false positive
-    function call_dwh(el) {
-        const port = getCookie('PORT');
-        const base = port ? window.location.protocol + '//' + window.location.hostname + ':' + port : '';
-        const checkInterval = 1 * 10 * 1000
+    function getDwhBaseUrl() {
+        let port = getCookie('PORT');
+        if (port === null || port === undefined || port === '') {
+            port = DEFAULT_PORT;
+        }
+        return window.location.protocol + '//' + window.location.hostname + ':' + port;
+    }
+
+    /*
+     * Polls the data warehouse's admin page after an update.
+     * Retries on failure (DWH still restarting) and redirects to the
+     * landing page as soon as it responds successfully.
+     */
+    function checkDwhAvailability() {
+        const url = getDwhBaseUrl() + "/aktin/admin/#/home";
 
         $.ajax({
-        type: "HEAD",
-        beforeSend: function (request) {
-          request.setRequestHeader("pragma", "no-cache");
-          request.setRequestHeader("cache-control", "no-cache");
-        },
-        url: base + "/aktin/admin/#/home",
-        data: "",
-        success: function (data, status, xhr) {
-          window.location = this.url;
-        },
-        error: function (xhr, status, error) {
-          console.log(error)
-          // interval check, if the DWH is online after an update. Good reference are 10 seconds,
-          // to reduce waiting time while DWH is online again.
-          setTimeout(function () {
-            call_dwh(this);
-          }, checkInterval);
-        },
-        dataType: "text"
-      });
+            type: "HEAD",
+            url: url,
+            dataType: "text",
+            beforeSend: function (request) {
+                // no-cache headers to avoid a false positive from a cached response
+                request.setRequestHeader("pragma", "no-cache");
+                request.setRequestHeader("cache-control", "no-cache");
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+                setTimeout(checkDwhAvailability, CHECK_DELAY_MS);
+            },
+            success: function () {
+                window.location = url;
+            }
+        });
     }
   </script>
 </body>
