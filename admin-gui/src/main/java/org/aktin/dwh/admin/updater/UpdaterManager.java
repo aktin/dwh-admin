@@ -25,8 +25,8 @@ public class UpdaterManager {
      */
     @Inject
     public UpdaterManager(@EnvironmentSpecific Instance<Updater> managers) {
-        this.updaters = this.getUpdateManagersFromInstance(managers);
-        this.selected = this.getFirstApplicableManager();
+        this.updaters = this.getUpdatersFromInstance(managers);
+        this.selected = this.getFirstApplicableUpdater();
 
         if (this.selected != null) {
             this.selected.initialize();
@@ -35,31 +35,31 @@ public class UpdaterManager {
         }
     }
 
-    private List<Updater> getUpdateManagersFromInstance(@NonNull Instance<Updater> managers) {
+    private List<Updater> getUpdatersFromInstance(@NonNull Instance<Updater> updaters) {
         List<Updater> extracted = new ArrayList<>();
-        for (Updater manager : managers) {
-            LOGGER.log(Level.INFO, "UpdateManager Bean found: "+ manager.getClass().getName());
-            extracted.add(manager);
+        for (Updater u : updaters) {
+            LOGGER.log(Level.INFO, "Updater Bean found: "+ u.getClass().getName());
+            extracted.add(u);
         }
         return extracted;
     }
 
-    private Updater getFirstApplicableManager() {
+    private Updater getFirstApplicableUpdater() {
         for (Updater manager : this.updaters) {
             if (manager.supportsCurrentSystem()) {
                 return manager;
             }
         }
-        LOGGER.log(Level.WARNING, "No applicable update manager found, automatic update function will not work.");
+        LOGGER.log(Level.WARNING, "No applicable updater found, automatic update function will not work.");
         return null;
     }
 
     /**
      * @return
-     *      - updateManager: returns the first update manager instance matching its requirements
+     *      - updater: returns the first {@code updater} instance matching its requirements
      *      - null: every instance failed at their requirements check
      */
-    public Updater getMainUpdateManager() {
+    public Updater getMainUpdater() {
         return selected;
     }
 

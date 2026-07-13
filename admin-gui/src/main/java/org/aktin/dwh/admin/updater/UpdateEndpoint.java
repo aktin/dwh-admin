@@ -27,7 +27,7 @@ public class UpdateEndpoint {
     UpdaterManager updaterManager;
 
     private Updater getUpdateManager() {
-        return updaterManager.getMainUpdateManager();
+        return updaterManager.getMainUpdater();
     }
 
     @Context
