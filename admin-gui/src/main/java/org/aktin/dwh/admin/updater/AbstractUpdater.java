@@ -23,8 +23,9 @@ import org.aktin.dwh.admin.helper.TcpHelper;
  */
 public abstract class AbstractUpdateManager implements UpdateManager {
 
-    private static final Logger LOGGER = Logger.getLogger(AbstractUpdateManager.class.getName());
-    private final TcpHelper tcp = new TcpHelper();
+    private final AtomicBoolean statusReadErrorLogged = new AtomicBoolean(false);
+
+    private final AtomicBoolean isUpdateInProgress = new AtomicBoolean(false);
 
     @Inject
     Preferences preferences;
@@ -59,7 +60,9 @@ public abstract class AbstractUpdateManager implements UpdateManager {
                 hasData = true;
             }
         } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error reading update status files", e);
+            if (statusReadErrorLogged.compareAndSet(false, true)) {
+                LOGGER.log(Level.WARNING, "Error reading update status files", e);
+            }
         }
         return hasData ? status : null;
     }
