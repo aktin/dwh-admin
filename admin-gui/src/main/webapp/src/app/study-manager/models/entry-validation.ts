@@ -9,9 +9,31 @@ export enum EntryValidation {
     PatientReferenceDuplicate = 'DUPLICATE_PAT_REF',
     SicDuplicate = 'DUPLICATE_SIC',
     Pending = 'PENDING',
+
+    // client-side extension format violations (see extension-validation.ts)
+    ExtensionSlashSeparator = 'EXTENSION_SLASH_SEPARATOR',
+    ExtensionSlashNotAllowed = 'EXTENSION_SLASH_NOT_ALLOWED',
+    ExtensionSeparatorPosition = 'EXTENSION_SEPARATOR_POSITION',
+    ExtensionPeriod = 'EXTENSION_PERIOD',
+    ExtensionLineBreak = 'EXTENSION_LINE_BREAK',
+    ExtensionWhitespace = 'EXTENSION_WHITESPACE',
 }
 
-type Severity = 'success' | 'warn' | 'error' | 'pending';
+/**
+ * Bridges a format rule key from extension-validation.ts to the matching {@link EntryValidation}
+ * so client-side format errors flow through the grid's status/severity/filter pipeline.
+ * Add an entry here when introducing a new extension rule that should surface in the grid.
+ */
+export const EXTENSION_ERROR_TO_ENTRY_VALIDATION: Record<string, EntryValidation> = {
+    slashSep: EntryValidation.ExtensionSlashSeparator,
+    slash: EntryValidation.ExtensionSlashNotAllowed,
+    separator: EntryValidation.ExtensionSeparatorPosition,
+    period: EntryValidation.ExtensionPeriod,
+    lineBreak: EntryValidation.ExtensionLineBreak,
+    whitespace: EntryValidation.ExtensionWhitespace,
+};
+
+export type Severity = 'success' | 'warn' | 'error' | 'pending';
 
 const severityRank: Record<Severity, number> = {
     pending: 0,
@@ -20,7 +42,7 @@ const severityRank: Record<Severity, number> = {
     error: 3,
 };
 
-const entryValidationSeverity: Record<EntryValidation, Severity> = {
+export const entryValidationSeverity: Record<EntryValidation, Severity> = {
     [EntryValidation.Pending]: 'pending',
 
     [EntryValidation.Valid]: 'success',
@@ -34,6 +56,13 @@ const entryValidationSeverity: Record<EntryValidation, Severity> = {
     [EntryValidation.SicDuplicate]: 'error',
     [EntryValidation.EntryFound]: 'error',
     [EntryValidation.SicFound]: 'error',
+
+    [EntryValidation.ExtensionSlashSeparator]: 'error',
+    [EntryValidation.ExtensionSlashNotAllowed]: 'error',
+    [EntryValidation.ExtensionSeparatorPosition]: 'error',
+    [EntryValidation.ExtensionPeriod]: 'error',
+    [EntryValidation.ExtensionLineBreak]: 'error',
+    [EntryValidation.ExtensionWhitespace]: 'error',
 };
 
 export function compareEntryValidationBySeverity(a: EntryValidation, b: EntryValidation): number {

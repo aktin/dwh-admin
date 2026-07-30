@@ -144,7 +144,6 @@
                                    id="extension"
                                    name="extension"
                                    required
-                                   disallowWhitespaces
                                    type="text">
                             <button (click)="validate()"
                                     class="ui button"
@@ -168,8 +167,11 @@
                             Root und {{ patient.reference | patientReferenceToLabel }} dürfen nicht aus "." oder ".."
                             bestehen
                         </error-message>
-                        <error-message *ngIf="extModel.errors?.whitespaceOnly">
-                            Nur Leerzeichen nicht erlaubt
+                        <error-message *ngIf="extModel.errors?.lineBreak">
+                            Zeilenumbrüche sind nicht erlaubt
+                        </error-message>
+                        <error-message *ngIf="extModel.errors?.whitespace">
+                            Leerzeichen sind nicht erlaubt
                         </error-message>
                         <error-message *ngIf="extModel.errors?.extensionFound">
                             {{ patient.reference | patientReferenceToLabel }} schon vorhanden

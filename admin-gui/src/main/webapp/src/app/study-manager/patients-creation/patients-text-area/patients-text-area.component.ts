@@ -1,7 +1,6 @@
 import {Component, DestroyRef, HostListener, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {
     AbstractControl,
-    AsyncValidator,
     ControlValueAccessor,
     NG_ASYNC_VALIDATORS,
     NG_VALUE_ACCESSOR,
@@ -10,7 +9,14 @@ import {
 import {ColDef, GridApi, GridReadyEvent, ICellRendererParams} from 'ag-grid-community';
 import {Observable, of, switchMap, tap} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
-import {determineSeverity, EntryValidation} from '../../models/entry-validation';
+import {
+    determineSeverity,
+    EntryValidation,
+    entryValidationSeverity,
+    EXTENSION_ERROR_TO_ENTRY_VALIDATION,
+    Severity
+} from '../../models/entry-validation';
+import {DEFAULT_EXTENSION_PREFS, validateExtension} from '../../helpers/extension-validation';
 import {PatientReference} from '../../models/patient-reference';
 import {RemoveRowButtonComponent} from './remove-row-button.component';
 import {DateFormat, MomentDatePipe} from '../../../helpers';
@@ -228,14 +234,8 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         }
 
         return this.patientValidationService.validatePatients$(this.studyId, this.rowData)
-            .pipe(map(result => result.map(r => {
-                    if (r.extension) return r;
-
-                    r.validationResults = [EntryValidation.PatientReferenceMissing];
-
-                    return r;
-                })),
                 tap(v => this.rowData = v ?? this.rowData),
+            .pipe(map(result => result.map(r => this.applyExtensionFormatValidation(r))),
                 map(result => (result?.flatMap(r => r.validationResults).every(r => [EntryValidation.NoMasterdataFound,
                     EntryValidation.NoEncountersFound].includes(r))
                     ? null
@@ -289,6 +289,23 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     private removeRow(event: ICellRendererParams) {
         this.rowData = this.rowData.filter((_, i) => i !== event.node.rowIndex);
         this.onChange(this.rowData);
+    }
+
+    /**
+     * Adds shared client-side extension format violations to the server validation result.
+     * The grid keeps a single validationResults pipeline, so its existing severity, filter,
+     * and status rendering continue to work for both server and client-side validation.
+     */
+    private applyExtensionFormatValidation(patient: Patient): Patient {
+        const serverValidationResults = patient.extension
+            ? patient.validationResults ?? []
+            : [EntryValidation.PatientReferenceMissing];
+        const extensionValidationResults = validateExtension(patient.extension, DEFAULT_EXTENSION_PREFS)
+            .map(key => EXTENSION_ERROR_TO_ENTRY_VALIDATION[key])
+            .filter((validation): validation is EntryValidation => !!validation);
+
+        patient.validationResults = [...new Set([...serverValidationResults, ...extensionValidationResults])];
+        return patient;
     }
 
     private onChange: (value: Patient[]) => void = () => {

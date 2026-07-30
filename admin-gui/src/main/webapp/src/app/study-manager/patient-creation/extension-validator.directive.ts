@@ -1,18 +1,11 @@
 import {Directive, OnInit} from '@angular/core';
-import {
-    AbstractControl,
-    AsyncValidator,
-    NG_ASYNC_VALIDATORS,
-    NG_VALIDATORS,
-    ValidationErrors,
-    Validator
-} from '@angular/forms';
-import {Observable, of, Subject, take, takeUntil} from "rxjs";
-import {StudyManagerService} from "../services/study-manager.service";
+import {AbstractControl, NG_ASYNC_VALIDATORS, ValidationErrors} from '@angular/forms';
+import {Observable, of, take} from "rxjs";
 import {PatientValidationService} from "../services/patient-validation.service";
-import {filter, map} from "rxjs/operators";
+import {map} from "rxjs/operators";
 import {EntryValidation} from "../models/entry-validation";
 import {ExternalTriggeredAsyncValidatorBase} from "../helpers/external-triggered-async-validator-base";
+import {ExtensionPrefs, validateExtension} from "../helpers/extension-validation";
 
 @Directive({
     selector: 'input[extension]',
@@ -25,10 +18,7 @@ import {ExternalTriggeredAsyncValidatorBase} from "../helpers/external-triggered
     ]
 })
 export class ExtensionValidatorDirective extends ExternalTriggeredAsyncValidatorBase implements OnInit {
-    private prefs: {
-        separator: string,
-        root: string
-    } = {separator: '/', root: ''}
+    private prefs: ExtensionPrefs = {separator: '/', root: ''}
 
     constructor(private patientValidationService: PatientValidationService) {
         super();
@@ -44,42 +34,17 @@ export class ExtensionValidatorDirective extends ExternalTriggeredAsyncValidator
      * @param {AbstractControl} control - The form control to validate. It contains the value to be checked.
      * @return {Promise<ValidationErrors> | Observable<ValidationErrors> | null} An observable containing validation errors if any conditions are violated, or null if the value is valid.
      */
-    validate(control: AbstractControl): Observable<ValidationErrors | null> | Promise<ValidationErrors | null>  {
+    validate(control: AbstractControl): Observable<ValidationErrors | null> | Promise<ValidationErrors | null> {
         const value = control.value;
 
         if (!value) {
             return null;
         }
 
-        // maximal one slash as separator if root is not set in properties
-        if (this.prefs['separator'] === '/' && this.prefs['root'] === '' && value.match(/\//g)?.length > 1) {
-            return of({slashSep: true});
-        }
-        // no slash allowed if root is set in properties (reserved for path syntax)
-        if ((this.prefs['separator'] !== '/' || this.prefs['root'] !== '') && value.includes('/')) {
-            return of({slash: true});
-        }
-        // separator not as first character if root is not set in properties
-        if (this.prefs['root'] === '' && value.slice(0, 1) === this.prefs['separator']) {
-            return of({separator: true});
-        }
-        // set correct root and extension by possibly splitting input on separator
-        let root = this.prefs['root'];
-        let ext = value;
-        if (this.prefs['root'].length === 0) {
-            if (value.includes(this.prefs['separator'])) {
-                let splits = value.split(this.prefs['separator']);
-                root = splits[0];
-                ext = value.slice(value.indexOf(this.prefs['separator']) + 1);
-            } else {
-                root = value;
-                ext = '';
-            }
-        }
-        // value of root and extension may not be . or .. (reserved for path syntax)
-        const periods = ['.', '..'];
-        if (periods.includes(ext) || periods.includes(root)) {
-            return of({period: true});
+        // run the shared, extensible format rules (slash, separator, period, line breaks, ...)
+        const violations = validateExtension(value, this.prefs);
+        if (violations.length) {
+            return of(violations.reduce((errors, key) => ({...errors, [key]: true}), {} as ValidationErrors));
         }
 
         return this.patientValidationService.validationData$.pipe(

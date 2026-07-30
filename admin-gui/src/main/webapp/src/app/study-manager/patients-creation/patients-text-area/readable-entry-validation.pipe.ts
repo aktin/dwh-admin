@@ -23,6 +23,15 @@ export class ReadableEntryValidationPipe implements PipeTransform {
             `${this.patientReferenceToLabelPipe.transform(reference)} mehrfach angegeben`,
         [EntryValidation.SicDuplicate]: () => 'Studien-ID mehrfach angegeben',
         [EntryValidation.Pending]: () => '',
+
+        [EntryValidation.ExtensionSlashSeparator]: (reference) =>
+            `Maximal ein "/" als Trennzeichen von Root und ${this.patientReferenceToLabelPipe.transform(reference)} erlaubt`,
+        [EntryValidation.ExtensionSlashNotAllowed]: () => '"/" nicht erlaubt',
+        [EntryValidation.ExtensionSeparatorPosition]: () => 'Trennzeichen darf nicht an erster Stelle stehen',
+        [EntryValidation.ExtensionPeriod]: (reference) =>
+            `Root und ${this.patientReferenceToLabelPipe.transform(reference)} dürfen nicht aus "." oder ".." bestehen`,
+        [EntryValidation.ExtensionLineBreak]: () => 'Zeilenumbrüche sind nicht erlaubt',
+        [EntryValidation.ExtensionWhitespace]: () => 'Leerzeichen sind nicht erlaubt',
     };
 
     constructor(private readonly patientReferenceToLabelPipe: PatientReferenceToLabelPipe) {}
