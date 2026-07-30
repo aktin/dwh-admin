@@ -275,7 +275,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
      * @return {Patient[]} An array of Patient objects created by processing each row of the input data.
      */
     private parseExcelData(data: string): Patient[] {
-        const rows = data.split('\n')
+        const rows = data.split(/\r\n|\r|\n/)
             .filter(r => !!r?.length);//omit empty rows
 
         let mapFunc: (r: string) => Patient;
