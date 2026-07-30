@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, Inject, LOCALE_ID, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {compareStudies, Study} from '../models/study';
 import {Patient} from '../models/patient';
 import {MomentDatePipe, MY_CALENDAR_RANGE_OPTIONS, TableColumns} from '../../helpers';
@@ -84,7 +84,6 @@ export class PatientListComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-        $(this.batchAddDropdown.nativeElement).dropdown();
         this.resetFilter();
     }
 
