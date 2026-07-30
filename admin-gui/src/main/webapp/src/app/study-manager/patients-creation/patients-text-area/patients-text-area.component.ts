@@ -124,16 +124,24 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         this.patientValidationService.requestRevalidation();
     }
 
-    private _rowData: Patient[] = [];
+    private _rowData: Patient[];
 
     public get rowData(): Patient[] {
         return this._rowData;
+    };
+
+    public updateRowData(rowData: Patient[], resetStatusFilter: boolean = false) {
+        this._rowData = rowData;
+        this.rowData?.forEach(r => r.reference = this.reference);
+
+        if(resetStatusFilter) {
+            this.selectedSeverity = null;
+        }
+
+        this.filterRowData(this.selectedSeverity)
     }
 
-    public set rowData(value: Patient[]) {
-        this._rowData = value;
-        this.rowData?.forEach>(r => r.reference = this.reference);
-
+    private updateGridView(value: Patient[]): void {
         this.gridApi?.setGridOption('rowData', value);
         this.gridApi?.autoSizeAllColumns();
     }
@@ -149,9 +157,40 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         this._generateSic = value;
 
         this.gridApi?.applyColumnState({state: [{colId: 'sic', hide: value}]});
-        this.rowData = [];
+        this.updateRowData([], true);
         this.onChange(this.rowData);
     }
+
+    public get allEntriesCount(): number {
+        return this.rowData?.length ?? 0;
+    }
+
+    public get validEntries(): Patient[] {
+        return this.rowData?.filter(r => !r.validationResults?.length)
+    }
+
+    public get validEntriesCount(): number {
+        return this.validEntries?.length ?? 0;
+    }
+
+    public get warnEntries(): Patient[] {
+        return this.rowData?.filter(r => !!r.validationResults?.length
+            && r.validationResults.every(v => entryValidationSeverity[v] === 'warn'))
+    }
+
+    public get warnEntriesCount(): number {
+        return this.warnEntries?.length ?? 0;
+    }
+
+    public get errorEntries(): Patient[] {
+        return this.rowData?.filter(r => r.validationResults.some(v => entryValidationSeverity[v] === 'error'));
+    }
+
+    public get errorEntriesCount(): number {
+        return this.errorEntries?.length ?? 0;
+    }
+
+    public selectedSeverity: Severity | null = null;
 
     ngOnInit(): void {
         this.reactToExternalChanges(this.patientValidationService.revalidate$);
@@ -189,7 +228,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         if (!(document.activeElement instanceof HTMLInputElement)) {
             const clipboardData = event.clipboardData;
             const pastedText = clipboardData.getData('text');
-            this.rowData = this.parseExcelData(pastedText);
+            this.updateRowData(this.parseExcelData(pastedText), true);
             this.onChange(this.rowData);
         }
     }
@@ -206,7 +245,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     }
 
     writeValue(value: Patient[]): void {
-        this._rowData = value;
+        this.updateRowData(value);
     }
 
     registerOnChange(fn: (value: Patient[]) => void): void {
@@ -234,8 +273,8 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         }
 
         return this.patientValidationService.validatePatients$(this.studyId, this.rowData)
-                tap(v => this.rowData = v ?? this.rowData),
             .pipe(map(result => result.map(r => this.applyExtensionFormatValidation(r))),
+                tap(v => this.updateRowData(v ?? this.rowData)),
                 map(result => (result?.flatMap(r => r.validationResults).every(r => [EntryValidation.NoMasterdataFound,
                     EntryValidation.NoEncountersFound].includes(r))
                     ? null
@@ -250,16 +289,16 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     }
 
     public clearEntries(): void {
-        this.rowData = [];
+        this.updateRowData([], true)
         this.onChange(this.rowData);
     }
 
     public addRow(): void {
         if (!this.rowData) {
-            this.rowData = [];
+            this._rowData = [];
         }
         //add new row this way instead of Array.push to trigger the ag grid update
-        this.rowData = [...this.rowData, new Patient({extension: '', validationResults: [EntryValidation.Pending]})];
+        this.updateRowData([...this.rowData, new Patient({extension: '', validationResults: [EntryValidation.Pending]})], true);
     }
 
     protected async pasteRowData(): Promise<void> {
@@ -293,7 +332,9 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     }
 
     private removeRow(event: ICellRendererParams) {
-        this.rowData = this.rowData.filter((_, i) => i !== event.node.rowIndex);
+        // update row data without triggering validation, which would cause the status filter to reset
+        this._rowData = this.rowData.filter(r => r.id !== event.data?.id);
+        this.filterRowData(this.selectedSeverity);
         this.onChange(this.rowData);
     }
 
@@ -319,4 +360,21 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
 
     private onTouched: () => void = () => {
     };
+
+    protected filterRowData(severity: Severity) {
+        switch (severity) {
+            case "success":
+                this.updateGridView(this.validEntries);
+                break;
+            case 'error':
+                this.updateGridView(this.errorEntries);
+                break;
+            case 'warn':
+                this.updateGridView(this.warnEntries);
+                break;
+            default:
+                this.updateGridView(this.rowData);
+        }
+    }
+
 }

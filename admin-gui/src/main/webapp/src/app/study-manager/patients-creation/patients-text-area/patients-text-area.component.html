@@ -1,4 +1,15 @@
 <div class="ui form">
+    <div class="field">
+        <label>Nach Status filtern</label>
+        <drop-down [(ngModel)]="selectedSeverity" name="severity"
+                   (ngModelChange)="filterRowData($event)">
+            <drop-down-option [value]="null">Alle</drop-down-option>
+            <drop-down-option labelClass="success" [value]="'success'">OK</drop-down-option>
+            <drop-down-option labelClass="warn" [value]="'warn'">Warnung</drop-down-option>
+            <drop-down-option labelClass="error" [value]="'error'">Kritisch</drop-down-option>
+        </drop-down>
+    </div>
+
     <ag-grid-angular
             (cellValueChanged)="invokeValidation()"
             (gridReady)="onGridReady($event)"
