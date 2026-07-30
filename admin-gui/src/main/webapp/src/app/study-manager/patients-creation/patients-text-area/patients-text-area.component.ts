@@ -262,6 +262,12 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         this.rowData = [...this.rowData, new Patient({extension: '', validationResults: [EntryValidation.Pending]})];
     }
 
+    protected async pasteRowData(): Promise<void> {
+        const cbText = await navigator.clipboard.readText();
+        this.updateRowData(this.parseExcelData(cbText), true);
+        this.onChange(this.rowData);
+    }
+
     /**
      * Parses Excel data from a string and converts it into an array of Patient objects.
      *
