@@ -8,6 +8,17 @@
             <drop-down-option labelClass="warn" [value]="'warn'">Warnung</drop-down-option>
             <drop-down-option labelClass="error" [value]="'error'">Kritisch</drop-down-option>
         </drop-down>
+        <help-text>
+            <span class="summary">
+                <span>Gesamt {{ allEntriesCount }}</span>
+                &nbsp;/&nbsp;
+                <span class="success">OK {{ validEntriesCount }}</span>
+                &nbsp;/&nbsp;
+                <span class="warn">Warnung {{ warnEntriesCount }}</span>
+                &nbsp;/&nbsp;
+                <span class="error">Kritisch {{ errorEntriesCount }}</span>
+            </span>
+        </help-text>
     </div>
 
     <ag-grid-angular
