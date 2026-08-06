@@ -7,7 +7,7 @@ import {
     ValidationErrors
 } from '@angular/forms';
 import {ColDef, GridApi, GridReadyEvent, ICellRendererParams} from 'ag-grid-community';
-import {Observable, of, switchMap, tap} from 'rxjs';
+import {Observable, of, switchMap} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
 import {
     determineSeverity,
@@ -275,14 +275,38 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         }
 
         return this.patientValidationService.validatePatients$(this.studyId, this.rowData)
-            .pipe(map(result => result.map(r => this.applyExtensionFormatValidation(r))),
-                tap(v => this.updateRowData(v ?? this.rowData)),
+            .pipe(map(result => this.applyValidationResults(result)),
                 map(result => (result?.flatMap(r => r.validationResults).every(r => [EntryValidation.NoMasterdataFound,
                     EntryValidation.NoEncountersFound].includes(r))
                     ? null
                     : {entries: result}))
 
             );
+    }
+
+    /**
+     * Merges validation data into the existing form-value instances. The parent form therefore
+     * observes updated validation results through its single ngModel value, without treating the
+     * validation response as another user edit and starting a new validation cycle.
+     */
+    private applyValidationResults(validatedPatients: Patient[]): Patient[] {
+        const entries = this.rowData ?? [];
+
+        validatedPatients.forEach((validatedPatient, index) => {
+            const entry = entries[index];
+            if (!entry) {
+                return;
+            }
+
+            // `id` is a client-side UI identity and must stay stable for ag-Grid.
+            const {id: _serverId, ...validatedFields} = validatedPatient;
+            Object.assign(entry, validatedFields);
+            this.applyExtensionFormatValidation(entry);
+        });
+
+        // Use a fresh array for ag-Grid while retaining the Patient instances shared with ngModel.
+        this.updateRowData([...entries]);
+        return entries;
     }
 
     public invokeValidation(): void {

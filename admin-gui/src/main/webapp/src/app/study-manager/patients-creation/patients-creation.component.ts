@@ -1,18 +1,20 @@
-import {Component, Inject, Input, LOCALE_ID, OnInit, ViewChild} from '@angular/core';
+import {Component, Inject, Input, OnInit, ViewChild} from '@angular/core';
 import {PatientDialogBase} from '../models/patient-dialog-base';
 import {compareStudies, Study} from '../models/study';
 import {PatientReference} from '../models/patient-reference';
 import {NgForm} from '@angular/forms';
 import {StudyManagerService} from '../services/study-manager.service';
-import {MY_CALENDAR_OPTIONS, NotificationService} from '../../helpers';
+import {NotificationService, PopUpMessageComponent} from '../../helpers';
 import {Participation} from '../models/participation';
 import {SICGeneration} from '../models/sic-generation';
 import {PatientReferenceToRootPipe} from '../helpers/patient-reference-to-root.pipe';
 import {ModalRef} from '../../helpers/modal/modal-ref.component';
-import {IModalConfig, MODAL_CONFIG} from '../../helpers/modal/modal.service';
+import {IModalConfig, MODAL_CONFIG, ModalService} from '../../helpers/modal/modal.service';
 import {Patient} from '../models/patient';
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
 import {StudyManagerErrorInterceptor} from "../helpers/study-manager-error.interceptor";
+import {filter, Observable, of, switchMap, tap} from "rxjs";
+import {determineSeverity, EntryValidation} from "../models/entry-validation";
 
 declare var $: any;
 
@@ -41,8 +43,9 @@ export class PatientsCreationComponent extends PatientDialogBase implements OnIn
 
     constructor(studyManagerService: StudyManagerService,
                 private notificationService: NotificationService,
+                private modalService: ModalService,
                 private modalRef: ModalRef<PatientsCreationComponent>,
-                @Inject(MODAL_CONFIG)config: IModalConfig<any>,) {
+                @Inject(MODAL_CONFIG) config: IModalConfig<any>,) {
         super(studyManagerService);
         this.selectedStudy = config.data.study;
     }
@@ -51,6 +54,10 @@ export class PatientsCreationComponent extends PatientDialogBase implements OnIn
 
     public get selectedStudy(): Study {
         return this._selectedStudy;
+    }
+
+    public get isPending(): boolean {
+        return this.entries?.some(r => r.validationResults.includes(EntryValidation.Pending));
     }
 
     @Input()
@@ -75,15 +82,17 @@ export class PatientsCreationComponent extends PatientDialogBase implements OnIn
 
     public create(): void {
         if (this.form.valid) {
-            // populate every patient with the same reference and participation
-            this.entries?.forEach(e => {
-                e.reference = this.selectedReference;
-                e.participation = this.participation;
-                e.comment = this.comment;
-                e.generateSic = this.generateSic;
-            });
-            this.studyManagerService.createPatients(this.selectedStudy.id,
-                this.entries)
+            // only show confirm dialog if there are entries with warnings, otherwise just create
+            let hasConfirmed$: Observable<boolean>;
+            if(this.entries?.some(e => determineSeverity(e.validationResults) === "warn")) {
+                hasConfirmed$ = this.openConfirmDialog();
+            } else {
+                hasConfirmed$ = of(true);
+            }
+
+            hasConfirmed$.pipe(
+                filter(Boolean),
+                switchMap(() => this.performCreate()))
                 .subscribe({
                     next: e => {
                         this.notificationService.showSuccess('Patient*innen registriert');
@@ -94,6 +103,33 @@ export class PatientsCreationComponent extends PatientDialogBase implements OnIn
         } else {
             this.notificationService.showError('Alle Felder müssen gültige Werte haben');
         }
+    }
+
+    private performCreate(): Observable<void> {
+        // populate every patient with the same reference and participation
+        this.entries?.forEach(e => {
+            e.reference = this.selectedReference;
+            e.participation = this.participation;
+            e.comment = this.comment;
+            e.generateSic = this.generateSic;
+        });
+        return this.studyManagerService.createPatients(this.selectedStudy.id,
+            this.entries);
+    }
+
+    private openConfirmDialog(): Observable<boolean> {
+        return this.modalService.open(PopUpMessageComponent).pipe(
+            tap(ref => {
+                ref.instance.button = ['checkmark icon', 'Registrieren', 'primary'];
+                ref.instance.head = 'Patient*innen registrieren';
+                ref.instance.message = 'Es existiert mind. ein Eintrag mit Warnungen. ' +
+                    'Sind Sie sicher, diese Einträge zu registrieren? ' +
+                    'Sie können später nur einzelnd gelöscht werden.';
+                ref.instance.mode = 'confirm';
+                ref.instance.show = true;
+            }),
+            switchMap(ref => ref.closed$)
+        );
     }
 
     protected readonly Participation = Participation;
