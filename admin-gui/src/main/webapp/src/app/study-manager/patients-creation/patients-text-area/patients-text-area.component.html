@@ -6,19 +6,14 @@
             <drop-down-option [value]="null">Alle</drop-down-option>
             <drop-down-option labelClass="success" [value]="'success'">OK</drop-down-option>
             <drop-down-option labelClass="warn" [value]="'warn'">Warnung</drop-down-option>
-            <drop-down-option labelClass="error" [value]="'error'">Kritisch</drop-down-option>
+            <drop-down-option labelClass="error" [value]="'error'">Fehler</drop-down-option>
         </drop-down>
-        <help-text>
-            <span class="summary">
-                <span>Gesamt {{ allEntriesCount }}</span>
-                &nbsp;/&nbsp;
-                <span class="success">OK {{ validEntriesCount }}</span>
-                &nbsp;/&nbsp;
-                <span class="warn">Warnung {{ warnEntriesCount }}</span>
-                &nbsp;/&nbsp;
-                <span class="error">Kritisch {{ errorEntriesCount }}</span>
-            </span>
-        </help-text>
+    </div>
+    <div class="summary">
+        <span>Gesamt {{ allEntriesCount }}</span>
+        <span class="success">OK {{ validEntriesCount }}</span>
+        <span class="warn">Warnung {{ warnEntriesCount }}</span>
+        <span class="error">Fehler {{ errorEntriesCount }}</span>
     </div>
 
     <ag-grid-angular
@@ -32,42 +27,54 @@
             class="ag-theme-alpine"
             style="width: 100%; height: 500px;">
     </ag-grid-angular>
+    <div class="button-group">
+        <div class="ui icon buttons">
+            <button (click)="clearEntries()"
+                    aria-label="Zurücksetzen"
+                    class="ui icon button"
+                    title="Zurücksetzen">
+                <i class="trash icon"></i>
+            </button>
+            <button (click)="addRow()"
+                    aria-label="Zeile hinzufügen"
+                    class="ui icon button"
+                    title="Zeile hinzufügen">
+                <i class="plus icon"></i>
+            </button>
+        </div>
+        <div>
+            <button aria-label="Aus Zwischenspeicher mit Kopfzeile einfügen"
+                    class="ui labeled icon button"
+                    title="Aus Zwischenspeicher mit Kopfzeile einfügen"
+                    (click)="pasteRowData(true)">
+                <i class="paste icon"></i>
+                Mit Kopfzeile
+            </button>
 
-
-    <button (click)="clearEntries()"
-            aria-label="Zurücksetzen"
-            class="ui icon button"
-            title="Zurücksetzen">
-        <i class="trash icon"></i>
-    </button>
-    <button (click)="addRow()"
-            aria-label="Zeile hinzufügen"
-            class="ui icon button"
-            title="Zeile hinzufügen">
-        <i class="plus icon"></i>
-    </button>
-
-    <div class="ui right floated buttons">
-        <button class="ui labeled icon button"
-                (click)="pasteRowData()">
-            <i class="clipboard icon"></i>
-            Aus Zwischenspeicher einfügen
-        </button>
-        <div class="ui floating dropdown icon button">
-            <i class="dropdown icon"></i>
-            <div class="menu">
-                <button (click)="invokeValidation()"
-                        class="ui labeled icon button item">
-                    <i class="search icon"></i>
-                    Fälle anzeigen
+            <div class="ui right floated buttons">
+                <button aria-label="Aus Zwischenspeicher ohne Kopfzeile einfügen"
+                        class="ui labeled icon button"
+                        title="Aus Zwischenspeicher ohne Kopfzeile einfügen"
+                        (click)="pasteRowData(false)">
+                    <i class="paste icon"></i>
+                    Ohne Kopfzeile
                 </button>
-                <button (click)="resizeGrid()"
-                        class="ui labeled icon button item">
-                    <i class="arrows alternate horizontal icon"></i>
-                    Spaltenbreite anpassen
-                </button>
+                <div class="ui floating dropdown icon button">
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <button (click)="invokeValidation()"
+                                class="ui labeled icon button item">
+                            <i class="search icon"></i>
+                            Fälle anzeigen
+                        </button>
+                        <button (click)="resizeGrid()"
+                                class="ui labeled icon button item">
+                            <i class="arrows alternate horizontal icon"></i>
+                            Spaltenbreite anpassen
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
 </div>

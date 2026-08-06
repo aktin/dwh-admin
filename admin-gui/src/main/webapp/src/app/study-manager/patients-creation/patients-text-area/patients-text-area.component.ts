@@ -19,7 +19,7 @@ import {
 import {DEFAULT_EXTENSION_PREFS, validateExtension} from '../../helpers/extension-validation';
 import {PatientReference} from '../../models/patient-reference';
 import {RemoveRowButtonComponent} from './remove-row-button.component';
-import {DateFormat, MomentDatePipe} from '../../../helpers';
+import {DateFormat, MomentDatePipe, NotificationService} from '../../../helpers';
 import {ReadableEntryValidationPipe} from './readable-entry-validation.pipe';
 import {NoRowsOverlayComponent} from './no-rows-overlay.component';
 import {PatientReferenceToLabelPipe} from '../../helpers/patient-reference-to-label.pipe';
@@ -31,6 +31,7 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
 import {StudyManagerErrorInterceptor} from "../../helpers/study-manager-error.interceptor";
 import {ExternalTriggeredAsyncValidatorBase} from "../../helpers/external-triggered-async-validator-base";
+import {read, utils} from "xlsx";
 
 /**
  * Represents a text area component designed to manage and edit patient data in a tabular format.
@@ -100,7 +101,8 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
                 private readableEntryValidationPipe: ReadableEntryValidationPipe,
                 private studyManagerService: StudyManagerService,
                 private momentDatePipe: MomentDatePipe,
-                private destroyRef: DestroyRef) {
+                private destroyRef: DestroyRef,
+                private notificationService: NotificationService,) {
         super();
     }
 
@@ -228,7 +230,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         if (!(document.activeElement instanceof HTMLInputElement)) {
             const clipboardData = event.clipboardData;
             const pastedText = clipboardData.getData('text');
-            this.updateRowData(this.parseExcelData(pastedText), true);
+            this.updateRowData(this.parseExcelData(pastedText, true), true);
             this.onChange(this.rowData);
         }
     }
@@ -301,9 +303,9 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         this.updateRowData([...this.rowData, new Patient({extension: '', validationResults: [EntryValidation.Pending]})], true);
     }
 
-    protected async pasteRowData(): Promise<void> {
+    protected async pasteRowData(withHeader: boolean): Promise<void> {
         const cbText = await navigator.clipboard.readText();
-        this.updateRowData(this.parseExcelData(cbText), true);
+        this.updateRowData(this.parseExcelData(cbText, withHeader), true);
         this.onChange(this.rowData);
     }
 
@@ -313,19 +315,32 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
      * @param {string} data - The input Excel data as a tab-separated string. Each row is expected to be separated by a newline.
      * @return {Patient[]} An array of Patient objects created by processing each row of the input data.
      */
-    private parseExcelData(data: string): Patient[] {
-        const rows = data.split(/\r\n|\r|\n/)
-            .filter(r => !!r?.length);//omit empty rows
+    private parseExcelData(data: string, withHeader: boolean): Patient[] {
+        const workbook = read(data, {type: 'string', raw: true});
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = utils.sheet_to_json<string[]>(sheet, {header: 1}).slice(withHeader ? 1 : 0)
 
-        let mapFunc: (r: string) => Patient;
+        if(this.generateSic && rows.some(r => r.length > 1)) {
+            this.notificationService.showError("Eingefügte Daten enthalten mehr als eine Spalte")
+            return [];
+        } else if (!this.generateSic && rows.some(r => r.length > 2)) {
+            this.notificationService.showError("Eingefügte Daten enthalten mehr als zwei Spalten")
+            return [];
+        }
+        return this.excelRowsToPatients(rows);
+    }
+
+    private excelRowsToPatients(rows: string[][]): Patient[] {
+        let mapFunc: (cells: string[]) => Patient;
         // if sic won't be generated, add a row for optionally entering a sic
         if (!this.generateSic) {
-            mapFunc = row => {
-                const cells = row.split('\t');
-                return new Patient({extension: cells[0], sic: cells[1], validationResults: [EntryValidation.Pending]});
-            };
+            mapFunc = cells => new Patient({
+                extension: cells[0],
+                sic: cells[1],
+                validationResults: [EntryValidation.Pending]
+            });
         } else {
-            mapFunc = row => new Patient({extension: row, validationResults: [EntryValidation.Pending]});
+            mapFunc = cells => new Patient({extension: cells[0], validationResults: [EntryValidation.Pending]});
         }
 
         return rows.map(mapFunc);
