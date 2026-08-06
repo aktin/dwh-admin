@@ -22,7 +22,7 @@ export class ReadableEntryValidationPipe implements PipeTransform {
         [EntryValidation.PatientReferenceDuplicate]: (reference) =>
             `${this.patientReferenceToLabelPipe.transform(reference)} mehrfach angegeben`,
         [EntryValidation.SicDuplicate]: () => 'Studien-ID mehrfach angegeben',
-        [EntryValidation.Pending]: () => '',
+        [EntryValidation.Pending]: () => 'Noch nicht geprüft',
 
         [EntryValidation.ExtensionSlashSeparator]: (reference) =>
             `Maximal ein "/" als Trennzeichen von Root und ${this.patientReferenceToLabelPipe.transform(reference)} erlaubt`,
