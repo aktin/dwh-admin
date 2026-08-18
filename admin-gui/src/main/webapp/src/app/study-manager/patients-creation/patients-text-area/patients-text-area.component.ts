@@ -230,8 +230,11 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         if (!(document.activeElement instanceof HTMLInputElement)) {
             const clipboardData = event.clipboardData;
             const pastedText = clipboardData.getData('text');
-            this.updateRowData(this.parseExcelData(pastedText, true), true);
-            this.onChange(this.rowData);
+            const data = this.parseExcelData(pastedText, true);
+            if(!!data) {
+                this.updateRowData(data, true);
+                this.onChange(this.rowData);
+            }
         }
     }
 
@@ -329,8 +332,11 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
 
     protected async pasteRowData(withHeader: boolean): Promise<void> {
         const cbText = await navigator.clipboard.readText();
-        this.updateRowData(this.parseExcelData(cbText, withHeader), true);
-        this.onChange(this.rowData);
+        const data = this.parseExcelData(cbText, withHeader);
+        if(!!data) {
+            this.updateRowData(data, true);
+            this.onChange(this.rowData);
+        }
     }
 
     /**
@@ -342,14 +348,16 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     private parseExcelData(data: string, withHeader: boolean): Patient[] {
         const workbook = read(data, {type: 'string', raw: true});
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const rows = utils.sheet_to_json<string[]>(sheet, {header: 1}).slice(withHeader ? 1 : 0)
+        const rows = utils.sheet_to_json<string[]>(sheet, {header: 1})
+            .slice(withHeader ? 1 : 0)
+            .filter(arr => !!arr?.length);
 
         if(this.generateSic && rows.some(r => r.length > 1)) {
             this.notificationService.showError("Eingefügte Daten enthalten mehr als eine Spalte")
-            return [];
+            return null;
         } else if (!this.generateSic && rows.some(r => r.length > 2)) {
             this.notificationService.showError("Eingefügte Daten enthalten mehr als zwei Spalten")
-            return [];
+            return null;
         }
         return this.excelRowsToPatients(rows);
     }
