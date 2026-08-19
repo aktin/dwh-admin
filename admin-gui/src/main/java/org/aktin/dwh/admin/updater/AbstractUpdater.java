@@ -32,10 +32,30 @@ public abstract class AbstractUpdater implements Updater {
     @Inject
     Preferences preferences;
 
+
+    /**
+     * Check if update agent is installed by attempting a connection to the socket and validating if a
+     * update directory has been created/exists.
+     * @return
+     */
     @Override
     public boolean isUpdateAgentInstalled() {
+        boolean isInstalled = false;
+
+        // connect to socket, remember success status
+        boolean socketReached = TcpHelper.touch(getHost(), getAptUpdatePort());
+        LOGGER.log(Level.INFO, "Update agent connection on port "+getAptUpdatePort()+" returned: "+socketReached);
+
+        // check if a update path exist. Update agent always creates the path under "/var/lib/aktin/update", so
+        // todo: PreferenceKey.updateDataPath should not be allowed to have another value.
         Path updatePath = Paths.get(preferences.get(PreferenceKey.updateDataPath));
-        return Files.exists(updatePath);
+        boolean updatePathExists = Files.exists(updatePath);
+        LOGGER.log(Level.INFO, "Update path validation returned: "+updatePathExists);
+
+        if (socketReached && updatePathExists) {
+            isInstalled = true;
+        }
+        return isInstalled;
     }
 
     @Override
