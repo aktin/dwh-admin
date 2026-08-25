@@ -5,6 +5,7 @@
         <li>Kopieren Sie die gewünschten Daten aus Excel.</li>
         <li>Wählen Sie <i class="clipboard icon"></i> <em>Mit Kopfzeile</em>, wenn die erste Zeile Überschriften enthält, zum Beispiel „Patienten-ID“ oder „Studien-ID“.</li>
         <li>Wählen Sie <i class="clipboard icon"></i> <em>Ohne Kopfzeile</em>, wenn die Daten direkt mit einem Patienten beginnen.</li>
+        <li *ngIf="isFirefox">Bestätigen Sie in Firefox den Zugriff auf die Zwischenablage zusätzlich im eingeblendeten Browser-Menü.</li>
         <li>Alternativ können Sie Strg/Cmd+V verwenden. Dabei wird die erste Zeile als Kopfzeile behandelt.</li>
     </ul>
 

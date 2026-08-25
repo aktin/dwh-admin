@@ -14,6 +14,8 @@ import {PatientReference} from '../../models/patient-reference';
 })
 export class NoRowsOverlayComponent implements INoRowsOverlayAngularComp {
     private params: INoRowsOverlayParams<any, any>;
+    protected readonly isFirefox = /firefox/i.test(navigator.userAgent);
+
     protected get reference(): PatientReference {
         // @ts-ignore
         return this.params?.reference;
