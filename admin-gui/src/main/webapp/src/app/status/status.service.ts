@@ -27,7 +27,7 @@ export class StatusService {
         .pipe(map(res => ImportStatus.parseXml(res)));
   }
 
-  getStats(): Observable<StatsData[]> {
-    return this._http.get<StatsData[]>(this._urls.parse('script/stats/p21'));
+  getStats(): Observable<Record<string, string>> {
+    return this._http.get<Record<string, string>>(this._urls.parse('script/stats/p21'));
   }
 }
