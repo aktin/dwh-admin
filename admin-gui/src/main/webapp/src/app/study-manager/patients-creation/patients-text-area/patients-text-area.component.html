@@ -1,7 +1,8 @@
 <div class="ui form">
     <div class="field">
         <label>Nach Status filtern</label>
-        <drop-down [(ngModel)]="selectedSeverity" name="severity"
+        <drop-down [(ngModel)]="selectedSeverity"
+                   [ngModelOptions]="{standalone: true}"
                    (ngModelChange)="filterRowData($event)">
             <drop-down-option [value]="null">Alle</drop-down-option>
             <drop-down-option labelClass="success" [value]="'success'">OK</drop-down-option>
