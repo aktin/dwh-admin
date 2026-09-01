@@ -12,7 +12,6 @@ export enum EntryValidation {
 
     // client-side extension format violations (see extension-validation.ts)
     ExtensionSlashSeparator = 'EXTENSION_SLASH_SEPARATOR',
-    ExtensionSlashNotAllowed = 'EXTENSION_SLASH_NOT_ALLOWED',
     ExtensionSeparatorPosition = 'EXTENSION_SEPARATOR_POSITION',
     ExtensionPeriod = 'EXTENSION_PERIOD',
     ExtensionLineBreak = 'EXTENSION_LINE_BREAK',
@@ -26,7 +25,6 @@ export enum EntryValidation {
  */
 export const EXTENSION_ERROR_TO_ENTRY_VALIDATION: Record<string, EntryValidation> = {
     slashSep: EntryValidation.ExtensionSlashSeparator,
-    slash: EntryValidation.ExtensionSlashNotAllowed,
     separator: EntryValidation.ExtensionSeparatorPosition,
     period: EntryValidation.ExtensionPeriod,
     lineBreak: EntryValidation.ExtensionLineBreak,
@@ -58,7 +56,6 @@ export const entryValidationSeverity: Record<EntryValidation, Severity> = {
     [EntryValidation.SicFound]: 'error',
 
     [EntryValidation.ExtensionSlashSeparator]: 'error',
-    [EntryValidation.ExtensionSlashNotAllowed]: 'error',
     [EntryValidation.ExtensionSeparatorPosition]: 'error',
     [EntryValidation.ExtensionPeriod]: 'error',
     [EntryValidation.ExtensionLineBreak]: 'error',

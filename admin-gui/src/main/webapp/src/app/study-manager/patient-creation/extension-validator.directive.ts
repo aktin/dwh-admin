@@ -5,7 +5,7 @@ import {PatientValidationService} from "../services/patient-validation.service";
 import {map} from "rxjs/operators";
 import {EntryValidation} from "../models/entry-validation";
 import {ExternalTriggeredAsyncValidatorBase} from "../helpers/external-triggered-async-validator-base";
-import {ExtensionPrefs, validateExtension} from "../helpers/extension-validation";
+import {validateExtension} from "../helpers/extension-validation";
 
 @Directive({
     selector: 'input[extension]',
@@ -18,8 +18,6 @@ import {ExtensionPrefs, validateExtension} from "../helpers/extension-validation
     ]
 })
 export class ExtensionValidatorDirective extends ExternalTriggeredAsyncValidatorBase implements OnInit {
-    private prefs: ExtensionPrefs = {separator: '/', root: ''}
-
     constructor(private patientValidationService: PatientValidationService) {
         super();
     }
@@ -42,7 +40,7 @@ export class ExtensionValidatorDirective extends ExternalTriggeredAsyncValidator
         }
 
         // run the shared, extensible format rules (slash, separator, period, line breaks, ...)
-        const violations = validateExtension(value, this.prefs);
+        const violations = validateExtension(value);
         if (violations.length) {
             return of(violations.reduce((errors, key) => ({...errors, [key]: true}), {} as ValidationErrors));
         }
