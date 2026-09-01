@@ -124,7 +124,7 @@ export class PatientsCreationComponent extends PatientDialogBase implements OnIn
                 ref.instance.head = 'Patient*innen registrieren';
                 ref.instance.message = 'Es existiert mind. ein Eintrag mit Warnungen. ' +
                     'Sind Sie sicher, diese Einträge zu registrieren? ' +
-                    'Sie können später nur einzelnd gelöscht werden.';
+                    'Sie können später nur einzeln gelöscht werden.';
                 ref.instance.mode = 'confirm';
                 ref.instance.show = true;
             }),
