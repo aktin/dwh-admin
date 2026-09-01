@@ -160,6 +160,7 @@ export class UpdaterService {
      */
     reloadAptPackages(showFeedback: boolean = true): void {
         if (this.checkPermission() && this.checkBackendRequirements) {
+            this.showAptUpdateError = false;    // hide error banner when attempting package reload
             this._http.post(this._url.parse('reloadAptPackages'), null)
             .pipe(
                 catchError(err => this._http.handleError(err)),
