@@ -57,7 +57,7 @@ export class PatientsCreationComponent extends PatientDialogBase implements OnIn
     }
 
     public get isPending(): boolean {
-        return this.entries?.some(r => r.validationResults.includes(EntryValidation.Pending));
+        return this.entries?.some(r => r.validationResults?.includes(EntryValidation.Pending));
     }
 
     @Input()
