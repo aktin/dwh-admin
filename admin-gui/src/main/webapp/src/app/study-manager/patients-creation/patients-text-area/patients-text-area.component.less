@@ -1,7 +1,7 @@
 @import "semantic/src/site/globals/site.variables";
 
 
-.ag-cell {
+patients-text-area .ag-cell {
   background-color: @white;
 
   &.error {
@@ -31,6 +31,15 @@
     }
   }
 
+  &.pending {
+    border-color: @grey;
+
+    &.static-cell {
+      background: @grey;
+      color: @white;
+    }
+  }
+
   &.static-cell {
     background-color: rgba(1, 1, 1, 0.1);
   }
@@ -40,26 +49,30 @@
   }
 }
 
-.summary {
+patients-text-area .summary {
   width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+
+  .error {
+    color: @red;
+  }
+
+  .warn {
+    color: @orange;
+  }
+
+  .success {
+    color: @green;
+  }
+
+  .pending {
+    color: @grey;
+  }
 }
 
-.error {
-  color: @red;
-}
-
-.warn {
-  color: @orange;
-}
-
-.success {
-  color: @green;
-}
-
-.button-group {
+patients-text-area .button-group {
   display: flex;
   flex-direction: row;
   justify-content: space-between;

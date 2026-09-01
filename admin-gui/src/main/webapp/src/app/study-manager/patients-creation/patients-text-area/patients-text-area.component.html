@@ -8,6 +8,7 @@
             <drop-down-option labelClass="success" [value]="'success'">OK</drop-down-option>
             <drop-down-option labelClass="warn" [value]="'warn'">Warnung</drop-down-option>
             <drop-down-option labelClass="error" [value]="'error'">Fehler</drop-down-option>
+            <drop-down-option labelClass="pending" [value]="'pending'">Ausstehend</drop-down-option>
         </drop-down>
     </div>
     <div class="summary">
@@ -15,6 +16,7 @@
         <span class="success">OK {{ validEntriesCount }}</span>
         <span class="warn">Warnung {{ warnEntriesCount }}</span>
         <span class="error">Fehler {{ errorEntriesCount }}</span>
+        <span class="pending">Ausstehend {{ pendingEntriesCount }}</span>
     </div>
 
     <ag-grid-angular
@@ -23,7 +25,7 @@
             [columnDefs]="columnDefs"
             [defaultColDef]="defaultColDef"
             [loading]="false"
-            [noRowsOverlayComponentParams]="{reference: reference}"
+            [noRowsOverlayComponentParams]="{reference: reference, filtered: selectedSeverity !== null}"
             [noRowsOverlayComponent]="NoRowsOverlayComponent"
             class="ag-theme-alpine"
             style="width: 100%; height: 500px;">

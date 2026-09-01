@@ -144,6 +144,10 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     }
 
     private updateGridView(value: Patient[]): void {
+        this.gridApi?.setGridOption('noRowsOverlayComponentParams', {
+            reference: this.reference,
+            filtered: this.selectedSeverity !== null,
+        });
         this.gridApi?.setGridOption('rowData', value);
         this.gridApi?.autoSizeAllColumns();
     }
@@ -168,7 +172,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     }
 
     public get validEntries(): Patient[] {
-        return this.rowData?.filter(r => !r.validationResults?.length)
+        return this.entriesBySeverity('success');
     }
 
     public get validEntriesCount(): number {
@@ -176,8 +180,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     }
 
     public get warnEntries(): Patient[] {
-        return this.rowData?.filter(r => !!r.validationResults?.length
-            && r.validationResults.every(v => entryValidationSeverity[v] === 'warn'))
+        return this.entriesBySeverity('warn');
     }
 
     public get warnEntriesCount(): number {
@@ -185,11 +188,19 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     }
 
     public get errorEntries(): Patient[] {
-        return this.rowData?.filter(r => r.validationResults.some(v => entryValidationSeverity[v] === 'error'));
+        return this.entriesBySeverity('error');
     }
 
     public get errorEntriesCount(): number {
         return this.errorEntries?.length ?? 0;
+    }
+
+    public get pendingEntries(): Patient[] {
+        return this.entriesBySeverity('pending');
+    }
+
+    public get pendingEntriesCount(): number {
+        return this.pendingEntries.length;
     }
 
     public selectedSeverity: Severity | null = null;
@@ -419,9 +430,16 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
             case 'warn':
                 this.updateGridView(this.warnEntries);
                 break;
+            case 'pending':
+                this.updateGridView(this.pendingEntries);
+                break;
             default:
                 this.updateGridView(this.rowData);
         }
+    }
+
+    private entriesBySeverity(severity: Severity): Patient[] {
+        return this.rowData?.filter(row => determineSeverity(row.validationResults) === severity) ?? [];
     }
 
 }
