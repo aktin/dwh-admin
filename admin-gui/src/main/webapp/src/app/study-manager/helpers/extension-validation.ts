@@ -63,12 +63,6 @@ export const EXTENSION_RULES: ExtensionRule[] = [
             prefs.separator === '/' && prefs.root === '' && (value.match(/\//g)?.length ?? 0) > 1,
     },
     {
-        // no slash allowed if root is set in properties (reserved for path syntax)
-        key: 'slash',
-        test: (value, prefs) =>
-            (prefs.separator !== '/' || prefs.root !== '') && value.includes('/'),
-    },
-    {
         // separator not as first character if root is not set in properties
         key: 'separator',
         test: (value, prefs) => prefs.root === '' && value.startsWith(prefs.separator),
@@ -101,10 +95,9 @@ export const EXTENSION_RULES: ExtensionRule[] = [
 export function validateExtension(
     value: string,
     prefs: ExtensionPrefs = DEFAULT_EXTENSION_PREFS,
-    rules: ExtensionRule[] = EXTENSION_RULES,
 ): string[] {
     if (!value) {
         return [];
     }
-    return rules.filter(rule => rule.test(value, prefs)).map(rule => rule.key);
+    return EXTENSION_RULES.filter(rule => rule.test(value, prefs)).map(rule => rule.key);
 }
