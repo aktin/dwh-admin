@@ -12,11 +12,10 @@ import {filter, map} from 'rxjs/operators';
 import {
     determineSeverity,
     EntryValidation,
-    entryValidationSeverity,
     EXTENSION_ERROR_TO_ENTRY_VALIDATION,
     Severity
 } from '../../models/entry-validation';
-import {DEFAULT_EXTENSION_PREFS, validateExtension} from '../../helpers/extension-validation';
+import {validateExtension} from '../../helpers/extension-validation';
 import {PatientReference} from '../../models/patient-reference';
 import {RemoveRowButtonComponent} from './remove-row-button.component';
 import {DateFormat, MomentDatePipe, NotificationService} from '../../../helpers';
@@ -405,7 +404,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         const serverValidationResults = patient.extension
             ? patient.validationResults ?? []
             : [EntryValidation.PatientReferenceMissing];
-        const extensionValidationResults = validateExtension(patient.extension, DEFAULT_EXTENSION_PREFS)
+        const extensionValidationResults = validateExtension(patient.extension)
             .map(key => EXTENSION_ERROR_TO_ENTRY_VALIDATION[key])
             .filter((validation): validation is EntryValidation => !!validation);
 

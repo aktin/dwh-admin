@@ -26,7 +26,6 @@ export class ReadableEntryValidationPipe implements PipeTransform {
 
         [EntryValidation.ExtensionSlashSeparator]: (reference) =>
             `Maximal ein "/" als Trennzeichen von Root und ${this.patientReferenceToLabelPipe.transform(reference)} erlaubt`,
-        [EntryValidation.ExtensionSlashNotAllowed]: () => '"/" nicht erlaubt',
         [EntryValidation.ExtensionSeparatorPosition]: () => 'Trennzeichen darf nicht an erster Stelle stehen',
         [EntryValidation.ExtensionPeriod]: (reference) =>
             `Root und ${this.patientReferenceToLabelPipe.transform(reference)} dürfen nicht aus "." oder ".." bestehen`,
