@@ -30,8 +30,9 @@ export class Patient extends BaseModel {
 
 
     constructor(obj?: any) {
-        super(obj);
-        Object.assign(this, obj);
+        super();
+        const {id: _externalId, ...patientFields} = obj ?? {};
+        Object.assign(this, patientFields);
     }
 
     public get lastEncounter(): EncounterPeriod {
@@ -48,5 +49,4 @@ export class Patient extends BaseModel {
     }
 
 }
-
 

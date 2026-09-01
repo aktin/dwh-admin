@@ -212,7 +212,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
          * using a bulk call avoids possible tens or hundreds of single calls (1 per patient)
          */
         this.patientValidationService.validationData$
-            .pipe(map(patients => patients?.filter(e => !e.validationResults.includes(EntryValidation.NoEncountersFound))),
+            .pipe(map(patients => patients?.filter(e => !e.validationResults?.includes(EntryValidation.NoEncountersFound))),
                 filter(patients => !!patients?.length),
                 switchMap(patients => this.studyManagerService.getEncounters(this.reference, patients.map(p => p.extension))),
                 takeUntilDestroyed(this.destroyRef),)
@@ -223,7 +223,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
             });
 
         this.patientValidationService.validationData$
-            .pipe(map(patients => patients?.filter(e => !e.validationResults.includes(EntryValidation.NoMasterdataFound))),
+            .pipe(map(patients => patients?.filter(e => !e.validationResults?.includes(EntryValidation.NoMasterdataFound))),
                 filter(patients => !!patients?.length),
                 switchMap(patients => this.studyManagerService.getMasterData(this.reference, patients.map(p => p.extension))),
                 takeUntilDestroyed(this.destroyRef),)
@@ -238,13 +238,8 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     public onPaste(event: ClipboardEvent): void {
         //prevent dataloss when user wants to paste text into a single cell or input element
         if (!(document.activeElement instanceof HTMLInputElement)) {
-            const clipboardData = event.clipboardData;
-            const pastedText = clipboardData.getData('text');
-            const data = this.parseExcelData(pastedText, true);
-            if(!!data) {
-                this.updateRowData(data, true);
-                this.onChange(this.rowData);
-            }
+            const pastedText = event.clipboardData?.getData('text') ?? '';
+            this.applyPastedData(pastedText, true);
         }
     }
 
@@ -287,8 +282,9 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
             return of(null);
         }
 
-        return this.patientValidationService.validatePatients$(this.studyId, this.rowData)
-            .pipe(map(result => this.applyValidationResults(result)),
+        const requestedEntries = [...(this.rowData ?? [])];
+        return this.patientValidationService.validatePatients$(this.studyId, requestedEntries)
+            .pipe(map(result => this.applyValidationResults(result, requestedEntries)),
                 map(result => (result?.flatMap(r => r.validationResults).every(r => [EntryValidation.NoMasterdataFound,
                     EntryValidation.NoEncountersFound].includes(r))
                     ? null
@@ -302,11 +298,12 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
      * observes updated validation results through its single ngModel value, without treating the
      * validation response as another user edit and starting a new validation cycle.
      */
-    private applyValidationResults(validatedPatients: Patient[]): Patient[] {
+    private applyValidationResults(validatedPatients: Patient[], requestedEntries: Patient[]): Patient[] {
         const entries = this.rowData ?? [];
 
-        validatedPatients.forEach((validatedPatient, index) => {
-            const entry = entries[index];
+        validatedPatients?.forEach((validatedPatient, index) => {
+            const requestedEntry = requestedEntries[index];
+            const entry = requestedEntry && entries.find(candidate => candidate.id === requestedEntry.id);
             if (!entry) {
                 return;
             }
@@ -341,10 +338,18 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     }
 
     protected async pasteRowData(withHeader: boolean): Promise<void> {
-        const cbText = await navigator.clipboard.readText();
-        const data = this.parseExcelData(cbText, withHeader);
-        if(!!data) {
-            this.updateRowData(data, true);
+        try {
+            const cbText = await navigator.clipboard.readText();
+            this.applyPastedData(cbText, withHeader);
+        } catch {
+            this.notificationService.showError('Auf die Zwischenablage konnte nicht zugegriffen werden.');
+        }
+    }
+
+    private applyPastedData(data: string, withHeader: boolean): void {
+        const patients = this.parseExcelData(data, withHeader);
+        if (patients) {
+            this.updateRowData(patients, true);
             this.onChange(this.rowData);
         }
     }
@@ -356,20 +361,32 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
      * @return {Patient[]} An array of Patient objects created by processing each row of the input data.
      */
     private parseExcelData(data: string, withHeader: boolean): Patient[] {
-        const workbook = read(data, {type: 'string', raw: true});
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const rows = utils.sheet_to_json<string[]>(sheet, {header: 1})
-            .slice(withHeader ? 1 : 0)
-            .filter(arr => !!arr?.length);
+        try {
+            // Clipboard spreadsheets are tab-separated. Forcing the separator keeps commas and
+            // semicolons inside patient references instead of treating them as CSV delimiters.
+            const workbook = read(data, {type: 'string', raw: true, FS: '\t'});
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rows = utils.sheet_to_json<string[]>(sheet, {header: 1})
+                .slice(withHeader ? 1 : 0)
+                .filter(arr => !!arr?.length);
 
-        if(this.generateSic && rows.some(r => r.length > 1)) {
-            this.notificationService.showError("Eingefügte Daten enthalten mehr als eine Spalte")
-            return null;
-        } else if (!this.generateSic && rows.some(r => r.length > 2)) {
-            this.notificationService.showError("Eingefügte Daten enthalten mehr als zwei Spalten")
+            if (!rows.length) {
+                this.notificationService.showError('Die Zwischenablage enthält keine Patientendaten.');
+                return null;
+            }
+
+            if(this.generateSic && rows.some(r => r.length > 1)) {
+                this.notificationService.showError("Eingefügte Daten enthalten mehr als eine Spalte")
+                return null;
+            } else if (!this.generateSic && rows.some(r => r.length > 2)) {
+                this.notificationService.showError("Eingefügte Daten enthalten mehr als zwei Spalten")
+                return null;
+            }
+            return this.excelRowsToPatients(rows);
+        } catch {
+            this.notificationService.showError('Die Daten aus der Zwischenablage konnten nicht gelesen werden.');
             return null;
         }
-        return this.excelRowsToPatients(rows);
     }
 
     private excelRowsToPatients(rows: string[][]): Patient[] {
