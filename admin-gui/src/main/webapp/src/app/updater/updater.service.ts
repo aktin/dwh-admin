@@ -114,7 +114,7 @@ export class UpdaterService {
      */
     getUpdateLog(): void {
         if (this.checkBackendRequirements) {
-            this._http.get<string>(this._url.parse('getUpdateLog'))
+            this._http.get(this._url.parse('getUpdateLog'), {responseType: 'text'})
                 .pipe(catchError(err => { return this._http.handleError(err); }))
                 .subscribe(event => {
                     if (event)
