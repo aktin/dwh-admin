@@ -1,14 +1,7 @@
-import {
-    AfterViewInit,
-    Component,
-    ContentChildren,
-    ElementRef,
-    Input,
-    QueryList,
-    ViewChild
-} from '@angular/core';
+import {AfterViewInit, Component, ContentChildren, ElementRef, Input, QueryList} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {DropDownOptionComponent} from "./drop-down-option/drop-down-option.component";
+import {DropDownDirective} from "./drop-down.directive";
 
 declare var $: any;
 
@@ -18,19 +11,24 @@ declare var $: any;
     templateUrl: './drop-down.component.html',
     styleUrl: './drop-down.component.css',
     providers: [{provide: NG_VALUE_ACCESSOR, useExisting: DropDownComponent, multi: true}],
-})
+    hostDirectives: [{directive: DropDownDirective}],
+    host: {
+        class: 'fluid search selection',
+    }})
 export class DropDownComponent<T> implements ControlValueAccessor, AfterViewInit {
     public selected: T = null;
     public isDisabled: boolean = false;
 
-    @ViewChild('dropdown')
-    private dropdown: ElementRef<HTMLDivElement>;
+
 
     @ContentChildren(DropDownOptionComponent)
     private options: QueryList<DropDownOptionComponent>;
 
     @Input()
     public compare: (a: T, b: T) => boolean = (a, b) => a === b;
+
+    constructor(private elementRef: ElementRef<HTMLElement>) {
+    }
 
     ngAfterViewInit(): void {
         this.options.changes.subscribe(o => this.setOption(this.selected))
@@ -72,6 +70,6 @@ export class DropDownComponent<T> implements ControlValueAccessor, AfterViewInit
         const i = this.options?.find(o => this.compare(o.value, value))?.i;
         // need to set the initial selection explicitly in a timeout,
         // otherwise the dropdown menu will not notice that a value has changed
-        setTimeout(() => $(this.dropdown.nativeElement).dropdown('set selected', i), 100);
+        setTimeout(() => $(this.elementRef.nativeElement).dropdown('set selected', i), 100);
     }
 }
