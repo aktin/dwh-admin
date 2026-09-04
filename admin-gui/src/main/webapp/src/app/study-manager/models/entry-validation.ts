@@ -31,7 +31,8 @@ export const EXTENSION_ERROR_TO_ENTRY_VALIDATION: Record<string, EntryValidation
     whitespace: EntryValidation.ExtensionWhitespace,
 };
 
-export type Severity = 'success' | 'warn' | 'error' | 'pending';
+export const severities = ['success', 'warn', 'error', 'pending'] as const;
+export type Severity = typeof severities[number];
 
 const severityRank: Record<Severity, number> = {
     pending: 0,

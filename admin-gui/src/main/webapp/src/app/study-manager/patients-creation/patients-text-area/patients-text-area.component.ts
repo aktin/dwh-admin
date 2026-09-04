@@ -13,6 +13,7 @@ import {
     determineSeverity,
     EntryValidation,
     EXTENSION_ERROR_TO_ENTRY_VALIDATION,
+    severities,
     Severity
 } from '../../models/entry-validation';
 import {validateExtension} from '../../helpers/extension-validation';
@@ -135,10 +136,11 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         this._rowData = rowData;
         this.rowData?.forEach(r => r.reference = this.reference);
 
-        if(resetStatusFilter) {
+        if (resetStatusFilter) {
             this.selectedSeverity = null;
         }
 
+        this.mapEntriesToSeverity();
         this.filterRowData(this.selectedSeverity)
     }
 
@@ -171,7 +173,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     }
 
     public get validEntries(): Patient[] {
-        return this.entriesBySeverity('success');
+        return this.getEntriesBySeverity('success');
     }
 
     public get validEntriesCount(): number {
@@ -179,7 +181,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     }
 
     public get warnEntries(): Patient[] {
-        return this.entriesBySeverity('warn');
+        return this.getEntriesBySeverity('warn');
     }
 
     public get warnEntriesCount(): number {
@@ -187,7 +189,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     }
 
     public get errorEntries(): Patient[] {
-        return this.entriesBySeverity('error');
+        return this.getEntriesBySeverity('error');
     }
 
     public get errorEntriesCount(): number {
@@ -195,7 +197,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     }
 
     public get pendingEntries(): Patient[] {
-        return this.entriesBySeverity('pending');
+        return this.getEntriesBySeverity('pending');
     }
 
     public get pendingEntriesCount(): number {
@@ -295,7 +297,6 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
                     EntryValidation.NoEncountersFound].includes(r))
                     ? null
                     : {entries: result}))
-
             );
     }
 
@@ -340,7 +341,10 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
             this._rowData = [];
         }
         //add new row this way instead of Array.push to trigger the ag grid update
-        this.updateRowData([...this.rowData, new Patient({extension: '', validationResults: [EntryValidation.Pending]})], true);
+        this.updateRowData([...this.rowData, new Patient({
+            extension: '',
+            validationResults: [EntryValidation.Pending]
+        })], true);
     }
 
     protected async pasteRowData(withHeader: boolean): Promise<void> {
@@ -381,7 +385,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
                 return null;
             }
 
-            if(this.generateSic && rows.some(r => r.length > 1)) {
+            if (this.generateSic && rows.some(r => r.length > 1)) {
                 this.notificationService.showError("Eingefügte Daten enthalten mehr als eine Spalte")
                 return null;
             } else if (!this.generateSic && rows.some(r => r.length > 2)) {
@@ -442,6 +446,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     };
 
     protected filterRowData(severity: Severity) {
+
         switch (severity) {
             case "success":
                 this.updateGridView(this.validEntries);
@@ -460,8 +465,22 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         }
     }
 
-    private entriesBySeverity(severity: Severity): Patient[] {
-        return this.rowData?.filter(row => determineSeverity(row.validationResults) === severity) ?? [];
+    private entriesBySeverity: Map<Severity, Patient[]>;
+
+    private getEntriesBySeverity(severity: Severity): Patient[] {
+        return this.entriesBySeverity?.get(severity) ?? [];
+    }
+
+    private mapEntriesToSeverity(): void {
+        const entriesBySeverity = new Map<Severity, Patient[]>(
+            severities.map(severity => [severity, []]),
+        );
+
+        for (const row of this.rowData ?? []) {
+            entriesBySeverity.get(determineSeverity(row.validationResults))!.push(row);
+        }
+
+        this.entriesBySeverity = entriesBySeverity;
     }
 
 }
