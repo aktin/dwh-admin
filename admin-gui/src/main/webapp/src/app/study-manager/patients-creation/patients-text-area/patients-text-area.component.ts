@@ -239,7 +239,8 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     @HostListener('document:paste', ['$event'])
     public onPaste(event: ClipboardEvent): void {
         //prevent dataloss when user wants to paste text into a single cell or input element
-        if (!(document.activeElement instanceof HTMLInputElement)) {
+        if (!(document.activeElement instanceof HTMLInputElement
+                || document.activeElement instanceof HTMLTextAreaElement)) {
             const pastedText = event.clipboardData?.getData('text') ?? '';
             if (pastedText.trim()) {
                 this.notificationService.showWarning(
