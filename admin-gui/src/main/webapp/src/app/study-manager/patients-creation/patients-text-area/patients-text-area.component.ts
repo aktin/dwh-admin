@@ -239,6 +239,12 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         //prevent dataloss when user wants to paste text into a single cell or input element
         if (!(document.activeElement instanceof HTMLInputElement)) {
             const pastedText = event.clipboardData?.getData('text') ?? '';
+            if (pastedText.trim()) {
+                this.notificationService.showWarning(
+                    'Strg+V behandelt die erste Zeile als Kopfzeile. ' +
+                    'Enthält sie Patientendaten, verwenden Sie „Ohne Kopfzeile“.'
+                );
+            }
             this.applyPastedData(pastedText, true);
         }
     }
