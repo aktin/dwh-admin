@@ -1,4 +1,7 @@
 <ng-content></ng-content>
 <div>
     <ng-content select="[error-message]"></ng-content>
+    @if (!hasError) {
+        <ng-content select="[help-text]"></ng-content>
+    }
 </div>

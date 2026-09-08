@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, Inject, LOCALE_ID, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {compareStudies, Study} from '../models/study';
 import {Patient} from '../models/patient';
 import {MomentDatePipe, MY_CALENDAR_RANGE_OPTIONS, TableColumns} from '../../helpers';
@@ -14,8 +14,6 @@ import {PatientViewComponent} from '../patient-view/patient-view.component';
 import {PatientValidationService} from '../services/patient-validation.service';
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
 import {StudyManagerErrorInterceptor} from "../helpers/study-manager-error.interceptor";
-
-declare var $: any;
 
 @Component({
     selector: 'patient-list',
@@ -61,8 +59,6 @@ export class PatientListComponent implements OnInit, AfterViewInit {
     protected search: string = '';
     @ViewChild(AngularMyDatePickerDirective)
     private datePicker: AngularMyDatePickerDirective;
-    @ViewChild('batchAddDropdown')
-    private batchAddDropdown: ElementRef<HTMLDivElement>;
 
     constructor(private studyManagerService: StudyManagerService,
                 private patientReferenceToLabelPipe: PatientReferenceToLabelPipe,
@@ -84,7 +80,6 @@ export class PatientListComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-        $(this.batchAddDropdown.nativeElement).dropdown();
         this.resetFilter();
     }
 

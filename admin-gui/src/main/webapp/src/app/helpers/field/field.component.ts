@@ -1,16 +1,5 @@
-import {
-    Component,
-    ContentChild,
-    ContentChildren,
-    Directive,
-    ElementRef,
-    HostBinding,
-    OnChanges,
-    QueryList,
-    SimpleChanges, ViewEncapsulation
-} from '@angular/core';
+import {Component, ContentChildren, ElementRef, HostBinding, QueryList, ViewEncapsulation} from '@angular/core';
 import {ErrorMessageComponent} from './error-message.component';
-import {NgModel} from '@angular/forms';
 
 @Component({
     selector: '.field',
@@ -23,7 +12,7 @@ export class FieldComponent {
     private errorMessageComponents: QueryList<ElementRef>;
 
     @HostBinding('class.error')
-    private get hasError(): boolean {
+    protected get hasError(): boolean {
         return !!this.errorMessageComponents?.length;
     }
 }
