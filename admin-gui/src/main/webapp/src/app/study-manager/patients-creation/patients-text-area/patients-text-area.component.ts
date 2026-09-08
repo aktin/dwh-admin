@@ -419,6 +419,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     private removeRow(event: ICellRendererParams) {
         // update row data without triggering validation, which would cause the status filter to reset
         this._rowData = this.rowData.filter(r => r.id !== event.data?.id);
+        this.mapEntriesToSeverity();
         this.filterRowData(this.selectedSeverity);
         this.onChange(this.rowData);
     }
