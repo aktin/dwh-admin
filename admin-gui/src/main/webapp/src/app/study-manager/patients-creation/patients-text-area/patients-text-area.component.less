@@ -1,11 +1,12 @@
 @import "semantic/src/site/globals/site.variables";
 
 
-.ag-cell {
+patients-text-area .ag-cell {
   background-color: @white;
 
   &.error {
     border-color: @red;
+
     &.static-cell {
       background: @red;
       color: @white;
@@ -14,6 +15,7 @@
 
   &.warn {
     border-color: @orange;
+
     &.static-cell {
       background: @orange;
       color: @white;
@@ -22,8 +24,18 @@
 
   &.success {
     border-color: @green;
+
     &.static-cell {
       background: @green;
+      color: @white;
+    }
+  }
+
+  &.pending {
+    border-color: @grey;
+
+    &.static-cell {
+      background: @grey;
       color: @white;
     }
   }
@@ -35,4 +47,51 @@
   &:not(.static-cell) {
     cursor: pointer;
   }
+}
+
+patients-text-area .summary {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  .error {
+    color: @red;
+  }
+
+  .warn {
+    color: @orange;
+  }
+
+  .success {
+    color: @green;
+  }
+
+  .pending {
+    color: @grey;
+  }
+}
+
+patients-text-area drop-down-option {
+  .error {
+    color: @red;
+  }
+
+  .warn {
+    color: @orange;
+  }
+
+  .success {
+    color: @green;
+  }
+
+  .pending {
+    color: @grey;
+  }
+}
+
+patients-text-area .button-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }

@@ -7,6 +7,8 @@ import {EncounterPeriod} from './encounter-period';
 import {MasterData} from './master-data';
 
 export class Patient extends BaseModel {
+    private static lastId = 0;
+
     public comment: string = '';
     public participation: Participation;
     public extension: string;
@@ -23,9 +25,14 @@ export class Patient extends BaseModel {
     public encounters: EncounterPeriod[];
     public masterData: MasterData;
 
+    // used to identify the patient in the UI
+    public readonly id: number = Patient.lastId++;
+
+
     constructor(obj?: any) {
-        super(obj);
-        Object.assign(this, obj);
+        super();
+        const {id: _externalId, ...patientFields} = obj ?? {};
+        Object.assign(this, patientFields);
     }
 
     public get lastEncounter(): EncounterPeriod {
@@ -42,5 +49,4 @@ export class Patient extends BaseModel {
     }
 
 }
-
 
