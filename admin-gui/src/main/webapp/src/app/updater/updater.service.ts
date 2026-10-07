@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {AuthService, Permission} from '../users';
 import {HttpService, UrlService} from '../helpers';
-import {catchError, finalize} from "rxjs/operators";
+import {catchError, finalize, retry} from "rxjs/operators";
 
 /**
  * Service responsible for managing DWH (Data Warehouse) updates and update-related operations.
@@ -90,11 +90,17 @@ export class UpdaterService {
      * Retrieves the current update status from the backend.
      * Updates version information and status flags based on the response.
      * Only executes if the update agent is installed.
+     *
+     * @param maxAttempts - Number of attempts before giving up. Default is 1 (no retry).
+     * @param intervalMs - Delay in milliseconds between retry attempts. Default is 0.
      */
-    getUpdateStatus(): void {
+    getUpdateStatus(maxAttempts: number = 1, intervalMs: number = 0): void {
         if (this.checkBackendRequirements) {
             this._http.get<any>(this._url.parse('updateDWH'))
-                .pipe(catchError(err => this._http.handleError(err)))
+                .pipe(
+                    retry({count: maxAttempts - 1, delay: intervalMs}),
+                    catchError(err => this._http.handleError(err))
+                )
                 .subscribe(event => {
                     if (event) {
                         this.installedVersion = event.installedVersion;
@@ -145,7 +151,7 @@ export class UpdaterService {
                     window.location.href = "/aktin/admin/plain/update.html";
                 }, (error: any) => {
                     console.log(error);
-                    this.showDwhUpdateError = true;
+                    this.showDwhUpdateError = this.checkPermission();
                 });
         }
     }
@@ -164,7 +170,7 @@ export class UpdaterService {
             this._http.post(this._url.parse('reloadAptPackages'), null)
             .pipe(
                 catchError(err => this._http.handleError(err)),
-                finalize(() => this.getUpdateStatus())
+                finalize(() => this.getUpdateStatus(5, 1000))
             )
             .subscribe(event => {
                 if (showFeedback) {
@@ -173,7 +179,7 @@ export class UpdaterService {
                 }
             }, error => {
                 console.log(error);
-                this.showAptUpdateError = true;
+                this.showAptUpdateError = this.checkPermission();
             });
         }
     }
