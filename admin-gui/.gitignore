@@ -6,8 +6,6 @@ target/
 
 node_modules
 local-node/
-package-lock.json
-CLAUDE.md
 .idea
 .editorconfig
 
