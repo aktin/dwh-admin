@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {AuthService, Permission} from '../users';
 import {HttpService, UrlService} from '../helpers';
-import {catchError, finalize, retry} from "rxjs/operators";
+import {catchError, finalize, retry, tap} from "rxjs/operators";
 
 /**
  * Service responsible for managing DWH (Data Warehouse) updates and update-related operations.
@@ -26,6 +26,8 @@ export class UpdaterService {
     public wasUpdateSuccessful: boolean = false;
     /** Content of the update operation log */
     public updateLog: string;
+    /** Timestamp of the last version check, used to detect a stale status after an apt reload */
+    private lastCheckTime: string;
 
     /** Flag indicating if the service is currently checking for updates */
     public isCheckingForUpdates: boolean = false;
@@ -90,14 +92,20 @@ export class UpdaterService {
      * Retrieves the current update status from the backend.
      * Updates version information and status flags based on the response.
      * Only executes if the update agent is installed.
+     * With more than one attempt, an unchanged last check time is treated as stale and retried.
      *
      * @param maxAttempts - Number of attempts before giving up. Default is 1 (no retry).
      * @param intervalMs - Delay in milliseconds between retry attempts. Default is 0.
      */
     getUpdateStatus(maxAttempts: number = 1, intervalMs: number = 0): void {
         if (this.checkBackendRequirements) {
+            const previousCheckTime = this.lastCheckTime;
             this._http.get<any>(this._url.parse('updateDWH'))
                 .pipe(
+                    tap(event => {
+                        if (maxAttempts > 1 && event?.lastCheckTime === previousCheckTime)
+                            throw new Error('update status not refreshed yet');
+                    }),
                     retry({count: maxAttempts - 1, delay: intervalMs}),
                     catchError(err => this._http.handleError(err))
                 )
@@ -106,6 +114,7 @@ export class UpdaterService {
                         this.installedVersion = event.installedVersion;
                         this.candidateVersion = event.candidateVersion;
                         this.wasUpdateSuccessful = event.success;
+                        this.lastCheckTime = event.lastCheckTime;
                         this.isNewUpdateAvailable = this.installedVersion !== this.candidateVersion;
                     }
                 }, error => {
@@ -170,7 +179,7 @@ export class UpdaterService {
             this._http.post(this._url.parse('reloadAptPackages'), null)
             .pipe(
                 catchError(err => this._http.handleError(err)),
-                finalize(() => this.getUpdateStatus(5, 1000))
+                finalize(() => this.getUpdateStatus(15, 1000))
             )
             .subscribe(event => {
                 if (showFeedback) {
