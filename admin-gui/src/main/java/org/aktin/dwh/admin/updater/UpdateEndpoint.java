@@ -33,23 +33,6 @@ public class UpdateEndpoint {
     @Context
     private SecurityContext security;
 
-
-    /**
-     * Checks if an update manager could be found.
-     * @return  - 200 OK: a update manager is available to execute the update
-     *          - 503 SERVICE UNAVAILABLE: no suitable update manager was found
-     */
-    @Path("manager/available")
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public Response isUpdateManagerAvailable() {
-        Updater updater = getUpdateManager();
-        if (updater == null) {
-            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
-        }
-        return Response.ok().build();
-    }
-
     /**
      * Checks if the update agent is installed in the system.
      *

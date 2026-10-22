@@ -13,8 +13,6 @@ export class UpdaterService {
 
     /** Flag indicating if the backend update agent is installed and available */
     public isUpdateAgentInstalled: boolean = false;
-    /** Flag indicating if the backend found a suitable update manager */
-    public isUpdateManagerAvailable: boolean = false;
     /** Currently installed DWH version */
     public installedVersion: string;
     /** Available update version (if any) */
@@ -63,7 +61,7 @@ export class UpdaterService {
     }
 
     checkBackendRequirements(): boolean {
-        return this.isUpdateAgentInstalled && this.isUpdateManagerAvailable;
+        return this.isUpdateAgentInstalled;
     }
 
     checkUpdateAgentInstallation(): void {
