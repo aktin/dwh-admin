@@ -77,17 +77,6 @@ export class UpdaterService {
             });
     }
 
-    checkUpdateManagerAvailable(): void {
-        this._http.get<string>(this._url.parse('updateManagerAvailable'))
-            .pipe(catchError(err => { return this._http.handleError(err); }))
-            .subscribe(event => {
-                if (event)
-                    this.isUpdateManagerAvailable = JSON.parse(event);
-            }, (error: any) => {
-                console.log(error);
-            });
-    }
-
     /**
      * Retrieves the current update status from the backend.
      * Updates version information and status flags based on the response.
@@ -98,7 +87,7 @@ export class UpdaterService {
      * @param intervalMs - Delay in milliseconds between retry attempts. Default is 0.
      */
     getUpdateStatus(maxAttempts: number = 1, intervalMs: number = 0): void {
-        if (this.checkBackendRequirements) {
+        if (this.checkBackendRequirements()) {
             const previousCheckTime = this.lastCheckTime;
             this._http.get<any>(this._url.parse('updateDWH'))
                 .pipe(
@@ -128,7 +117,7 @@ export class UpdaterService {
      * Only executes if the update agent is installed.
      */
     getUpdateLog(): void {
-        if (this.checkBackendRequirements) {
+        if (this.checkBackendRequirements()) {
             this._http.get(this._url.parse('getUpdateLog'), {responseType: 'text'})
                 .pipe(catchError(err => { return this._http.handleError(err); }))
                 .subscribe(event => {
@@ -147,7 +136,7 @@ export class UpdaterService {
      * Updates package information and log after completion.
      */
     executeUpdate(): void {
-        if (this.checkPermission() && this.checkBackendRequirements) {
+        if (this.checkPermission() && this.checkBackendRequirements()) {
             this._http.post(this._url.parse('updateDWH'), null)
                 .pipe(catchError(err => { return this._http.handleError(err); }),
                     finalize(() => {
@@ -174,7 +163,7 @@ export class UpdaterService {
      *                       Default is true. Set to false for background updates.
      */
     reloadAptPackages(showFeedback: boolean = true): void {
-        if (this.checkPermission() && this.checkBackendRequirements) {
+        if (this.checkPermission() && this.checkBackendRequirements()) {
             this.showAptUpdateError = false;    // hide error banner when attempting package reload
             this._http.post(this._url.parse('reloadAptPackages'), null)
             .pipe(
