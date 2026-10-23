@@ -24,7 +24,11 @@ import javax.ws.rs.core.SecurityContext;
 public class UpdateEndpoint {
 
     @Inject
-    UpdateManager updateManager;
+    UpdaterManager updaterManager;
+
+    private Updater getUpdateManager() {
+        return updaterManager.getMainUpdater();
+    }
 
     @Context
     private SecurityContext security;
@@ -38,7 +42,11 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response isUpdateAgentInstalled() {
-        return Response.ok(updateManager.isUpdateAgentInstalled()).build();
+        Updater updater = getUpdateManager();
+        if (updater == null) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
+        return Response.ok(updater.isUpdateAgentInstalled()).build();
     }
 
     /**
@@ -52,13 +60,17 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUpdateStatus() {
-        if (!updateManager.isUpdateAgentInstalled()) {
+        Updater updater = getUpdateManager();
+        if (updater == null) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
-        UpdateStatus status = updateManager.getUpdateStatus();
+        if (!updater.isUpdateAgentInstalled()) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
+        UpdateStatus status = updater.getUpdateStatus();
         return status != null ?
-            Response.ok(status).build() :
-            Response.status(Response.Status.NOT_FOUND).build();
+                Response.ok(status).build() :
+                Response.status(Response.Status.NOT_FOUND).build();
     }
 
     /**
@@ -73,10 +85,14 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response getUpdateLog() {
-        if (!updateManager.isUpdateAgentInstalled()) {
+        Updater updater = getUpdateManager();
+        if (updater == null) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
-        String log = updateManager.getUpdateLog();
+        if (!updater.isUpdateAgentInstalled()) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
+        String log = updater.getUpdateLog();
         return log != null ?
             Response.ok(log).build() :
             Response.status(Response.Status.NOT_FOUND).build();
@@ -94,10 +110,14 @@ public class UpdateEndpoint {
     @POST
     @Secured
     public Response reloadAptPackageLists() {
-        if (!updateManager.isUpdateAgentInstalled()) {
+        Updater updater = getUpdateManager();
+        if (updater == null) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
-        boolean success = updateManager.reloadAptPackageLists();
+        if (!updater.isUpdateAgentInstalled()) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
+        boolean success = updater.refreshUpdateStatus();
         return success ?
             Response.accepted().build() :
             Response.serverError().build();
@@ -115,13 +135,17 @@ public class UpdateEndpoint {
     @POST
     @Secured
     public Response executeDwhUpdate() {
-        if (!updateManager.isUpdateAgentInstalled()) {
+        Updater updater = getUpdateManager();
+        if (updater == null) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
-        if (updateManager.isUpdateInProgress()) {
+        if (!updater.isUpdateAgentInstalled()) {
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+        }
+        if (updater.isUpdateInProgress()) {
             return Response.status(Response.Status.CONFLICT).build();
         }
-        boolean success = updateManager.executeDwhUpdate();
+        boolean success = updater.executeDwhUpdate();
         return success ?
             Response.accepted().build() :
             Response.serverError().build();

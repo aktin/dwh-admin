@@ -46,38 +46,41 @@
     </div>
   </div>
 
-  <script language="Javascript">
 
-    // first call on 25secs after page-load
+  <script language="Javascript">
+    const INITIAL_DELAY_MS = 25 * 1000;
+    const CHECK_DELAY_MS = 10 * 1000;   // delay until next check, after a check has failed. Keep reasonably high to avoid call overload
+    // Relative, so it resolves against the origin (and port) of the DWH that opened this page
+    const DWH_HOME_URL = "/aktin/admin/#/home";
+
+    // First check happens 25s after page load, giving the update process time to restart services
     document.addEventListener("DOMContentLoaded", function () {
-      setTimeout(function () {
-        call_dwh(this);
-      }, 25 * 1000);
+        setTimeout(checkDwhAvailability, INITIAL_DELAY_MS);
     });
 
-    // check if aktin homepage is up
-    // redirect if true, else check again in 5 min
-    // no-cache headers to avoid false positive
-    function call_dwh(el) {
-      $.ajax({
-        type: "HEAD",
-        beforeSend: function (request) {
-          request.setRequestHeader("pragma", "no-cache");
-          request.setRequestHeader("cache-control", "no-cache");
-        },
-        url: "/aktin/admin/#/home",
-        data: "",
-        success: function (data, status, xhr) {
-          window.location = this.url;
-        },
-        error: function (xhr, status, error) {
-          console.log(error)
-          setTimeout(function () {
-            call_dwh(this);
-          }, 5 * 60 * 1000);
-        },
-        dataType: "text"
-      });
+    /*
+     * Polls the data warehouse's admin page after an update.
+     * Retries on failure (DWH still restarting) and redirects to the
+     * landing page as soon as it responds successfully.
+     */
+    function checkDwhAvailability() {
+        $.ajax({
+            type: "HEAD",
+            url: DWH_HOME_URL,
+            dataType: "text",
+            beforeSend: function (request) {
+                // no-cache headers to avoid a false positive from a cached response
+                request.setRequestHeader("pragma", "no-cache");
+                request.setRequestHeader("cache-control", "no-cache");
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+                setTimeout(checkDwhAvailability, CHECK_DELAY_MS);
+            },
+            success: function () {
+                window.location = DWH_HOME_URL;
+            }
+        });
     }
   </script>
 </body>
