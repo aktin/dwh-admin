@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {AuthService, Permission} from '../users';
 import {HttpService, UrlService} from '../helpers';
 import {catchError, finalize, retry, tap} from "rxjs/operators";
+import {Observable} from "rxjs";
 
 /**
  * Service responsible for managing DWH (Data Warehouse) updates and update-related operations.
@@ -48,12 +49,13 @@ export class UpdaterService {
         private _http: HttpService,
         private _url: UrlService
     ) {
-        this.checkUpdateAgentInstallation();
-        this.reloadAptPackages(false);
-        setTimeout(() => {
+        this.checkUpdateAgentInstallation().subscribe(() => {
             this.getUpdateStatus();
             this.getUpdateLog();
-        }, 2000);
+            this.reloadAptPackages(false);
+        }, (error: any) => {
+            console.log(error);
+        });
     }
 
     checkPermission(): boolean {
@@ -64,15 +66,16 @@ export class UpdaterService {
         return this.isUpdateAgentInstalled;
     }
 
-    checkUpdateAgentInstallation(): void {
-        this._http.get<string>(this._url.parse('updateAgentInstalled'))
-            .pipe(catchError(err => { return this._http.handleError(err); }))
-            .subscribe(event => {
-                if (event)
-                    this.isUpdateAgentInstalled = JSON.parse(event);
-            }, (error: any) => {
-                console.log(error);
-            });
+    /** Checks if the backend update agent is installed and stores the result in isUpdateAgentInstalled. */
+    checkUpdateAgentInstallation(): Observable<string> {
+        return this._http.get<string>(this._url.parse('updateAgentInstalled'))
+            .pipe(
+                catchError(err => { return this._http.handleError(err); }),
+                tap(event => {
+                    if (event)
+                        this.isUpdateAgentInstalled = JSON.parse(event);
+                })
+            );
     }
 
     /**
