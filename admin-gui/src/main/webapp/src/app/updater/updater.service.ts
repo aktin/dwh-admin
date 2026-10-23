@@ -154,7 +154,7 @@ export class UpdaterService {
     /**
      * Reloads APT package information from the backend.
      * Requires UPDATE permission and installed update agent.
-     * Updates status information after completion.
+     * Updates status information after a successful reload.
      *
      * @param showFeedback - If true, shows a loading indicator for 15 seconds.
      *                       Default is true. Set to false for background updates.
@@ -163,15 +163,13 @@ export class UpdaterService {
         if (this.checkPermission() && this.checkBackendRequirements()) {
             this.showAptUpdateError = false;    // hide error banner when attempting package reload
             this._http.post(this._url.parse('reloadAptPackages'), null)
-            .pipe(
-                catchError(err => this._http.handleError(err)),
-                finalize(() => this.getUpdateStatus(15, 1000))
-            )
+            .pipe(catchError(err => this._http.handleError(err)))
             .subscribe(event => {
                 if (showFeedback) {
                     this.isCheckingForUpdates = true;
                     setTimeout(() => { this.isCheckingForUpdates = false; }, 15000);
                 }
+                this.getUpdateStatus(15, 1000);
             }, error => {
                 console.log(error);
                 this.showAptUpdateError = this.checkPermission();
