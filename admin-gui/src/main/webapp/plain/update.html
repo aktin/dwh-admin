@@ -53,7 +53,7 @@
     const DWH_HOME_URL = "/aktin/admin/#/home";
     const IMPORT_SUMMARY_URL = "/aktin/admin/rest/import-summary";
     // server start time before the update, a different value means the DWH has restarted
-    const PRE_UPDATE_START = new URLSearchParams(window.location.search).get("start");
+    const PRE_UPDATE_START = new URLSearchParams(window.location.search).get("since");
 
     document.addEventListener("DOMContentLoaded", checkDwhRestarted);
 
