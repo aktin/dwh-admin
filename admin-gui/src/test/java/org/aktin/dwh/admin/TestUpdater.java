@@ -2,8 +2,8 @@ package org.aktin.dwh.admin;
 
 import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
-import org.aktin.dwh.admin.updater.DebianUpdater;
 import org.aktin.dwh.admin.updater.UpdateStatus;
+import org.aktin.dwh.admin.updater.Updater;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,13 +18,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.nio.file.Paths;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TestDebianUpdater {
+public class TestUpdater {
 
     @Mock
     Preferences preferences;
 
     @InjectMocks
-    DebianUpdater debianUpdateManager;
+    Updater updater;
 
     private AutoCloseable closeable;
 
@@ -42,18 +42,18 @@ public class TestDebianUpdater {
 
     @Test
     public void checkDwhUpdateResult() {
-        UpdateStatus updateStatus = debianUpdateManager.getUpdateStatus();
+        UpdateStatus updateStatus = updater.getUpdateStatus();
         Assert.assertTrue(updateStatus.isSuccess());
     }
 
     @Test
     public void getDwhUpdateLog() {
-        Assert.assertNotNull(debianUpdateManager.getUpdateLog());
+        Assert.assertNotNull(updater.getUpdateLog());
     }
 
     @Test
     public void getDwhUpdateInfo() {
-        UpdateStatus updateStatus = debianUpdateManager.getUpdateStatus();
+        UpdateStatus updateStatus = updater.getUpdateStatus();
         String installedVersion = updateStatus.getInstalledVersion();
         String candidateVersion = updateStatus.getCandidateVersion();
         Assert.assertEquals("V1.0", installedVersion);
@@ -62,6 +62,6 @@ public class TestDebianUpdater {
 
     @Test
     public void isUpdateAgentInstalled() {
-        Assert.assertTrue(debianUpdateManager.isUpdateAgentInstalled());
+        Assert.assertTrue(updater.isUpdateAgentInstalled());
     }
 }
