@@ -19,12 +19,12 @@ public class UpdaterManager {
     private final Updater selected;
 
     /**
-     * "Jakarta CDI inject" searches {@link Updater} beans annotated with {@link EnvironmentSpecific} and
+     * "Jakarta CDI inject" searches all {@link Updater} beans and
      * selects the first bean fulfilling its run requirements.
      * @param managers
      */
     @Inject
-    public UpdaterManager(@EnvironmentSpecific Instance<Updater> managers) {
+    public UpdaterManager(Instance<Updater> managers) {
         this.updaters = this.getUpdatersFromInstance(managers);
         this.selected = this.getFirstApplicableUpdater();
 
