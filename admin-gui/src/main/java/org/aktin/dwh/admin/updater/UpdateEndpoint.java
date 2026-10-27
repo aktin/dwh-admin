@@ -16,7 +16,6 @@ import javax.ws.rs.core.SecurityContext;
  * REST endpoint for managing DWH (Data Warehouse) update operations.
  * Provides endpoints for checking update agent installation status,
  * retrieving update status, managing update logs, and executing updates.
- *
  * All update-related operations will fail with  SERVICE_UNAVAILABLE if
  * the debian update agent package is not installed.
  */
@@ -24,7 +23,7 @@ import javax.ws.rs.core.SecurityContext;
 public class UpdateEndpoint {
 
     @Inject
-    UpdateManager updateManager;
+    private Updater updater;
 
     @Context
     private SecurityContext security;
@@ -38,7 +37,7 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response isUpdateAgentInstalled() {
-        return Response.ok(updateManager.isUpdateAgentInstalled()).build();
+        return Response.ok(updater.isUpdateAgentInstalled()).build();
     }
 
     /**
@@ -52,13 +51,13 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUpdateStatus() {
-        if (!updateManager.isUpdateAgentInstalled()) {
+        if (!updater.isUpdateAgentInstalled()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
-        UpdateStatus status = updateManager.getUpdateStatus();
+        UpdateStatus status = updater.getUpdateStatus();
         return status != null ?
-            Response.ok(status).build() :
-            Response.status(Response.Status.NOT_FOUND).build();
+                Response.ok(status).build() :
+                Response.status(Response.Status.NOT_FOUND).build();
     }
 
     /**
@@ -73,10 +72,10 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response getUpdateLog() {
-        if (!updateManager.isUpdateAgentInstalled()) {
+        if (!updater.isUpdateAgentInstalled()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
-        String log = updateManager.getUpdateLog();
+        String log = updater.getUpdateLog();
         return log != null ?
             Response.ok(log).build() :
             Response.status(Response.Status.NOT_FOUND).build();
@@ -94,10 +93,10 @@ public class UpdateEndpoint {
     @POST
     @Secured
     public Response reloadAptPackageLists() {
-        if (!updateManager.isUpdateAgentInstalled()) {
+        if (!updater.isUpdateAgentInstalled()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
-        boolean success = updateManager.reloadAptPackageLists();
+        boolean success = updater.refreshUpdateStatus();
         return success ?
             Response.accepted().build() :
             Response.serverError().build();
@@ -115,13 +114,13 @@ public class UpdateEndpoint {
     @POST
     @Secured
     public Response executeDwhUpdate() {
-        if (!updateManager.isUpdateAgentInstalled()) {
+        if (!updater.isUpdateAgentInstalled()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
-        if (updateManager.isUpdateInProgress()) {
+        if (updater.isUpdateInProgress()) {
             return Response.status(Response.Status.CONFLICT).build();
         }
-        boolean success = updateManager.executeDwhUpdate();
+        boolean success = updater.executeDwhUpdate();
         return success ?
             Response.accepted().build() :
             Response.serverError().build();

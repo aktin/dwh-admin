@@ -1,7 +1,9 @@
 import {Injectable} from '@angular/core';
 import {AuthService, Permission} from '../users';
 import {HttpService, UrlService} from '../helpers';
-import {catchError, finalize} from "rxjs/operators";
+import {StatusService} from '../status';
+import {catchError, finalize, map, retry, switchMap, tap} from "rxjs/operators";
+import {EMPTY, Observable, of, throwError, timer} from "rxjs";
 
 /**
  * Service responsible for managing DWH (Data Warehouse) updates and update-related operations.
@@ -24,6 +26,8 @@ export class UpdaterService {
     public wasUpdateSuccessful: boolean = false;
     /** Content of the update operation log */
     public updateLog: string;
+    /** Timestamp of the last version check, used to detect a stale status after an apt reload */
+    private lastCheckTime: string;
 
     /** Flag indicating if the service is currently checking for updates */
     public isCheckingForUpdates: boolean = false;
@@ -40,56 +44,78 @@ export class UpdaterService {
      * @param _auth - Service for authentication and permission checking
      * @param _http - Service for making HTTP requests
      * @param _url - Service for URL management
+     * @param _status - Service for the import summary, provides the server start time
      */
     constructor(
         private _auth: AuthService,
         private _http: HttpService,
-        private _url: UrlService
+        private _url: UrlService,
+        private _status: StatusService
     ) {
-        this.checkUpdateAgentInstallation();
-        this.reloadAptPackages(false);
-        setTimeout(() => {
-            this.getUpdateStatus();
+        this.checkUpdateAgentInstallation().subscribe(() => {
             this.getUpdateLog();
-        }, 2000);
+            this.getUpdateStatus()
+                .pipe(finalize(() => this.reloadAptPackages(false)))
+                .subscribe({error: error => console.error(error)});
+        }, (error: any) => {
+            console.log(error);
+        });
     }
 
     checkPermission(): boolean {
         return this._auth.userLocalCheckPermissions([Permission.UPDATE]);
     }
 
-    checkUpdateAgentInstallation(): void {
-        this._http.get<string>(this._url.parse('updateAgentInstalled'))
-            .pipe(catchError(err => { return this._http.handleError(err); }))
-            .subscribe(event => {
-                if (event)
-                    this.isUpdateAgentInstalled = JSON.parse(event);
-            }, (error: any) => {
-                console.log(error);
-            });
+    /** Checks if the backend update agent is installed and stores the result in isUpdateAgentInstalled. */
+    checkUpdateAgentInstallation(): Observable<string> {
+        return this._http.get<string>(this._url.parse('updateAgentInstalled'))
+            .pipe(
+                catchError(err => { return this._http.handleError(err); }),
+                tap(event => {
+                    if (event)
+                        this.isUpdateAgentInstalled = JSON.parse(event);
+                })
+            );
     }
 
     /**
      * Retrieves the current update status from the backend.
-     * Updates version information and status flags based on the response.
-     * Only executes if the update agent is installed.
+     * Updates version information and status based on the response.
+     * An unchanged last check time is treated as stale and retried.
+     * HTTP errors are not retried, except a 404 while no previous status exists.
+     *
+     * @param maxAttempts - Number of attempts before giving up. Default is 1 (no retry).
+     * @param intervalMs - Delay in milliseconds between retry attempts. Default is 0.
+     * @returns Observable that stores the status when subscribed
      */
-    getUpdateStatus(): void {
-        if (this.isUpdateAgentInstalled) {
-            this._http.get<string>(this._url.parse('updateDWH'))
-            .pipe(catchError(err => this._http.handleError(err)))
-            .subscribe(event => {
-                if (event) {
-                    let json_info = JSON.parse(event);
-                    this.installedVersion = json_info['installedVersion'];
-                    this.candidateVersion = json_info['candidateVersion'];
-                    this.wasUpdateSuccessful = json_info['success'];
-                    this.isNewUpdateAvailable = this.installedVersion !== this.candidateVersion;
-                }
-            }, error => {
-                console.error(error);
-            });
+    getUpdateStatus(maxAttempts: number = 1, intervalMs: number = 0): Observable<any> {
+        if (!this.isUpdateAgentInstalled) {
+            return EMPTY;
         }
+        const previousCheckTime = this.lastCheckTime;
+        const stale = new Error('update status not refreshed yet');
+        let lastEvent: any;
+        // without a previous status, a 404 means the agent has not written its status files yet
+        const isRetryable = (err: any) => err === stale || (previousCheckTime === undefined && err?.status === 404);
+        return this._http.get<any>(this._url.parse('updateDWH'))
+            .pipe(
+                tap(event => {
+                    lastEvent = event;
+                    if (maxAttempts > 1 && event?.lastCheckTime === previousCheckTime)
+                        throw stale;
+                }),
+                retry({count: maxAttempts - 1, delay: err => isRetryable(err) ? timer(intervalMs) : throwError(() => err)}),
+                catchError(err => err === stale ? of(lastEvent) : this._http.handleError(err)),
+                tap(event => {
+                    if (event) {
+                        this.installedVersion = event.installedVersion;
+                        this.candidateVersion = event.candidateVersion;
+                        this.wasUpdateSuccessful = event.success;
+                        this.lastCheckTime = event.lastCheckTime;
+                        this.isNewUpdateAvailable = this.installedVersion !== this.candidateVersion;
+                    }
+                })
+            );
     }
 
     /**
@@ -98,7 +124,7 @@ export class UpdaterService {
      */
     getUpdateLog(): void {
         if (this.isUpdateAgentInstalled) {
-            this._http.get<string>(this._url.parse('getUpdateLog'))
+            this._http.get(this._url.parse('getUpdateLog'), {responseType: 'text'})
                 .pipe(catchError(err => { return this._http.handleError(err); }))
                 .subscribe(event => {
                     if (event)
@@ -112,23 +138,23 @@ export class UpdaterService {
     /**
      * Executes a DWH update operation.
      * Requires UPDATE permission and installed update agent.
-     * Sets a cookie to show update summary and redirects to update page on success.
-     * Updates package information and log after completion.
+     * Sets a cookie to show update summary and redirects to update page on success,
+     * passing the pre-update server start time so the page can detect the restart.
+     * Updates the log after completion.
      */
     executeUpdate(): void {
         if (this.checkPermission() && this.isUpdateAgentInstalled) {
-            this._http.post(this._url.parse('updateDWH'), null)
-                .pipe(catchError(err => { return this._http.handleError(err); }),
-                    finalize(() => {
-                            this.reloadAptPackages();
-                            this.getUpdateLog();
-                        }))
-                .subscribe(event => {
+            this._status.getImportStatus()
+                .pipe(switchMap(status => this._http.post(this._url.parse('updateDWH'), null)
+                        .pipe(map(() => status.start.getTime()))),
+                    catchError(err => { return this._http.handleError(err); }),
+                    finalize(() => this.getUpdateLog()))
+                .subscribe(start => {
                     this.setCookie('AKTIN.showUpdateSummary', 'true');
-                    window.location.href = "/aktin/admin/plain/update.html";
+                    window.location.href = "/aktin/admin/plain/update.html?since=" + start;
                 }, (error: any) => {
                     console.log(error);
-                    this.showDwhUpdateError = true;
+                    this.showDwhUpdateError = this.checkPermission();
                 });
         }
     }
@@ -136,24 +162,25 @@ export class UpdaterService {
     /**
      * Reloads APT package information from the backend.
      * Requires UPDATE permission and installed update agent.
-     * Updates status information after completion.
+     * Updates status information after a successful reload.
      *
      * @param showFeedback - If true, shows a loading indicator for 15 seconds.
      *                       Default is true. Set to false for background updates.
      */
     reloadAptPackages(showFeedback: boolean = true): void {
         if (this.checkPermission() && this.isUpdateAgentInstalled) {
+            this.showAptUpdateError = false;    // hide error banner when attempting package reload
             this._http.post(this._url.parse('reloadAptPackages'), null)
-            .pipe(catchError(err => this._http.handleError(err)),
-                    finalize(() => this.getUpdateStatus()))
+            .pipe(catchError(err => this._http.handleError(err)))
             .subscribe(event => {
                 if (showFeedback) {
                     this.isCheckingForUpdates = true;
                     setTimeout(() => { this.isCheckingForUpdates = false; }, 15000);
                 }
+                this.getUpdateStatus(15, 1000).subscribe({error: error => console.error(error)});
             }, error => {
                 console.log(error);
-                this.showAptUpdateError = true;
+                this.showAptUpdateError = this.checkPermission();
             });
         }
     }

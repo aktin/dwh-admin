@@ -46,38 +46,44 @@
     </div>
   </div>
 
+
   <script language="Javascript">
+    const CHECK_DELAY_MS = 10 * 1000;   // delay until next check. Keep reasonably high to avoid call overload
+    // Relative, so it resolves against the origin (and port) of the DWH that opened this page
+    const DWH_HOME_URL = "/aktin/admin/#/home";
+    const IMPORT_SUMMARY_URL = "/aktin/admin/rest/import-summary";
+    // server start time before the update, a different value means the DWH has restarted
+    const PRE_UPDATE_START = new URLSearchParams(window.location.search).get("since");
 
-    // first call on 25secs after page-load
-    document.addEventListener("DOMContentLoaded", function () {
-      setTimeout(function () {
-        call_dwh(this);
-      }, 25 * 1000);
-    });
+    document.addEventListener("DOMContentLoaded", checkDwhRestarted);
 
-    // check if aktin homepage is up
-    // redirect if true, else check again in 5 min
-    // no-cache headers to avoid false positive
-    function call_dwh(el) {
-      $.ajax({
-        type: "HEAD",
-        beforeSend: function (request) {
-          request.setRequestHeader("pragma", "no-cache");
-          request.setRequestHeader("cache-control", "no-cache");
-        },
-        url: "/aktin/admin/#/home",
-        data: "",
-        success: function (data, status, xhr) {
-          window.location = this.url;
-        },
-        error: function (xhr, status, error) {
-          console.log(error)
-          setTimeout(function () {
-            call_dwh(this);
-          }, 5 * 60 * 1000);
-        },
-        dataType: "text"
-      });
+    /*
+     * Polls the import summary after an update.
+     * Retries while the DWH is unreachable or still reports the pre-update
+     * start time, and redirects to the landing page once it has restarted.
+     */
+    function checkDwhRestarted() {
+        $.ajax({
+            type: "GET",
+            url: IMPORT_SUMMARY_URL,
+            dataType: "xml",
+            cache: false,
+            error: function (xhr, status, error) {
+                console.log(error);
+                setTimeout(checkDwhRestarted, CHECK_DELAY_MS);
+            },
+            success: function (xml) {
+                const start = String(new Date($(xml).find("start").text()).getTime());
+                if (start !== PRE_UPDATE_START) {
+                    // the update agent writes its result a few seconds after the DWH is up again
+                    setTimeout(function () {
+                        window.location = DWH_HOME_URL;
+                    }, CHECK_DELAY_MS);
+                } else {
+                    setTimeout(checkDwhRestarted, CHECK_DELAY_MS);
+                }
+            }
+        });
     }
   </script>
 </body>
