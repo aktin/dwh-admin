@@ -21,7 +21,6 @@ import javax.inject.Singleton;
  * this class and {@link DebianUpdater}.</p>
  */
 @Singleton
-@EnvironmentSpecific
 public class DockerUpdater extends AbstractUpdater {
 
     private static final String HOST = "host.docker.internal";

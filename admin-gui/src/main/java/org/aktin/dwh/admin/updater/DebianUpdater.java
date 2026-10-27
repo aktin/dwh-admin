@@ -24,7 +24,6 @@ import javax.inject.Singleton;
  * directory structure and services will not be present.
  */
 @Singleton
-@EnvironmentSpecific
 public class DebianUpdater extends AbstractUpdater {
 
     private static final String HOST = "localhost";
