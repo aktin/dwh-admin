@@ -20,7 +20,7 @@ import org.aktin.dwh.PreferenceKey;
 /**
  * Triggers and monitors DWH updates through the socket services of the AKTIN 'updateagent' Debian package.
  *
- * <p>The updateagent listens on two ports, one for executing 'apt-get update' and one for 'apt-get install &lt;this dwh&gt;'.
+ * <p>The updateagent listens on two ports, one for reading the installed and candidate version via 'apt-cache policy' and one for 'apt-get install &lt;this dwh&gt;'.
  * Inside a Docker container it is reached via {@code host.docker.internal} on ports 1004/1005, otherwise via {@code localhost}
  * on ports 1002/1003. Without the updateagent, all update operations fail.</p>
  */
