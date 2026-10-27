@@ -1,6 +1,8 @@
 package org.aktin.dwh.admin.updater;
 
 import java.io.*;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,26 +14,48 @@ import java.util.logging.Logger;
 import javax.inject.Inject;
 import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
-import org.aktin.dwh.admin.helper.TcpHelper;
 
 /**
  * Shared update manager implementation for environment-specific update agents.
  *
- * <p>Concrete implementations only need to provide the target host and ports
- * for the socket-based update agent communication as well as the environment
- * detection used by {@link UpdaterManager}.</p>
+ * <p>Concrete implementations only need to pass the target host and ports
+ * for the socket-based update agent communication to the constructor and
+ * provide the environment detection used by {@link UpdaterManager}.</p>
  */
 public abstract class AbstractUpdater implements Updater {
 
     private static final Logger LOGGER = Logger.getLogger(AbstractUpdater.class.getName());
 
-    private final AtomicBoolean statusReadErrorLogged = new AtomicBoolean(false);
-
     private final AtomicBoolean isUpdateInProgress = new AtomicBoolean(false);
+
+    private final String host;
+
+    private final int aptUpdatePort;
+
+    private final int dwhUpdatePort;
 
     @Inject
     Preferences preferences;
 
+    /**
+     * @param host          update agent's network address
+     * @param aptUpdatePort port of the apt-list-reload service
+     * @param dwhUpdatePort port of the dwh-update service
+     */
+    protected AbstractUpdater(String host, int aptUpdatePort, int dwhUpdatePort) {
+        this.host = host;
+        this.aptUpdatePort = aptUpdatePort;
+        this.dwhUpdatePort = dwhUpdatePort;
+    }
+
+    /**
+     * Triggers an initial APT package list reload.
+     */
+    @Override
+    public void initialize() {
+        LOGGER.log(Level.INFO, "Initializing " + getClass().getSimpleName() + " and triggering APT package list reload...");
+        refreshUpdateStatus();
+    }
 
     /**
      * Check if update agent is installed by attempting a connection to the socket and validating if a
@@ -43,8 +67,8 @@ public abstract class AbstractUpdater implements Updater {
         boolean isInstalled = false;
 
         // connect to socket, remember success status
-        boolean socketReached = TcpHelper.touch(getHost(), getAptUpdatePort());
-        LOGGER.log(Level.INFO, "Update agent connection on port "+getAptUpdatePort()+" returned: "+socketReached);
+        boolean socketReached = touch(host, aptUpdatePort);
+        LOGGER.log(Level.INFO, "Update agent connection on port "+aptUpdatePort+" returned: "+socketReached);
 
         // check if a update path exist. Update agent always creates the path under "/var/lib/aktin/update", so
         // todo: PreferenceKey.updateDataPath should not be allowed to have another value.
@@ -80,18 +104,13 @@ public abstract class AbstractUpdater implements Updater {
                 hasData = true;
             }
         } catch (Exception e) {
-            if (statusReadErrorLogged.compareAndSet(false, true)) {
-                LOGGER.log(Level.WARNING, "Error reading update status files", e);
-            }
+            LOGGER.log(Level.WARNING, "Error reading update status files", e);
         }
         return hasData ? status : null;
     }
 
     private Properties readPropertiesFileFromPath(Path path) throws IOException {
         Properties properties = new Properties();
-        if (!Files.exists(path)) {
-            throw new FileNotFoundException("Properties file not found: " + path);
-        }
         try (Reader input = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             properties.load(input);
         }
@@ -129,7 +148,7 @@ public abstract class AbstractUpdater implements Updater {
             return false;
         }
         LOGGER.log(Level.INFO, "Started apt-reload service");
-        return TcpHelper.touch(getHost(), getAptUpdatePort());
+        return touch(host, aptUpdatePort);
     }
 
     /**
@@ -144,21 +163,32 @@ public abstract class AbstractUpdater implements Updater {
             return false;
         }
         LOGGER.log(Level.INFO, "Started dwh-update service");
-        boolean success = TcpHelper.touch(getHost(), getDwhUpdatePort());
+        boolean success = touch(host, dwhUpdatePort);
         this.isUpdateInProgress.set(success);
         return success;
+    }
+
+    /**
+     * Opens and immediately closes a TCP connection to signal the target, without sending content.
+     * @param host target's network address
+     * @param port target's port to connect to
+     * @return - {@code true} if the connection was established,
+     *         - {@code false} if the host is unknown, the connection was refused or timed out
+     */
+    public static boolean touch(String host, int port) {
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(host, port), 5000);
+            LOGGER.log(Level.INFO, "Socket operation completed on {0}:{1}", new Object[]{host, port});
+            return true;
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "I/O error during socket operation on " + host + ":" + port, e);
+            return false;
+        }
     }
 
     @Override
     public boolean isUpdateInProgress() {
         return this.isUpdateInProgress.get();
     }
-
-    protected abstract String getHost();
-
-    protected abstract int getAptUpdatePort();
-
-    protected abstract int getDwhUpdatePort();
-
 
 }
