@@ -1,6 +1,8 @@
 package org.aktin.dwh.admin.updater;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Represents the status of a DWH update operation, containing information about versions, success status, and timestamps from both result and info
@@ -15,7 +17,8 @@ import lombok.Data;
  *   <li>Timestamp of version information</li>
  * </ul>
  */
-@Data
+@Getter
+@Setter
 public class UpdateStatus {
 
     private boolean success;
