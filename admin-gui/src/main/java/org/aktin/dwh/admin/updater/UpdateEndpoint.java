@@ -22,15 +22,11 @@ import javax.ws.rs.core.SecurityContext;
 @Path("update")
 public class UpdateEndpoint {
 
-    private final Updater updater;
+    @Inject
+    private Updater updater;
 
     @Context
     private SecurityContext security;
-
-    @Inject
-    public UpdateEndpoint(Updater updater) {
-        this.updater = updater;
-    }
 
     /**
      * Checks if the update agent is installed in the system.
