@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {AuthService, Permission} from '../users';
 import {HttpService, UrlService} from '../helpers';
-import {catchError, finalize, retry, tap} from "rxjs/operators";
+import {StatusService} from '../status';
+import {catchError, finalize, map, retry, switchMap, tap} from "rxjs/operators";
 import {Observable} from "rxjs";
 
 /**
@@ -43,11 +44,13 @@ export class UpdaterService {
      * @param _auth - Service for authentication and permission checking
      * @param _http - Service for making HTTP requests
      * @param _url - Service for URL management
+     * @param _status - Service for the import summary, provides the server start time
      */
     constructor(
         private _auth: AuthService,
         private _http: HttpService,
-        private _url: UrlService
+        private _url: UrlService,
+        private _status: StatusService
     ) {
         this.checkUpdateAgentInstallation().subscribe(() => {
             this.getUpdateStatus();
@@ -133,20 +136,23 @@ export class UpdaterService {
     /**
      * Executes a DWH update operation.
      * Requires UPDATE permission and installed update agent.
-     * Sets a cookie to show update summary and redirects to update page on success.
+     * Sets a cookie to show update summary and redirects to update page on success,
+     * passing the pre-update server start time so the page can detect the restart.
      * Updates package information and log after completion.
      */
     executeUpdate(): void {
         if (this.checkPermission() && this.checkBackendRequirements()) {
-            this._http.post(this._url.parse('updateDWH'), null)
-                .pipe(catchError(err => { return this._http.handleError(err); }),
+            this._status.getImportStatus()
+                .pipe(switchMap(status => this._http.post(this._url.parse('updateDWH'), null)
+                        .pipe(map(() => status.start.getTime()))),
+                    catchError(err => { return this._http.handleError(err); }),
                     finalize(() => {
                             this.reloadAptPackages();
                             this.getUpdateLog();
                         }))
-                .subscribe(event => {
+                .subscribe(start => {
                     this.setCookie('AKTIN.showUpdateSummary', 'true');
-                    window.location.href = "/aktin/admin/plain/update.html";
+                    window.location.href = "/aktin/admin/plain/update.html?start=" + start;
                 }, (error: any) => {
                     console.log(error);
                     this.showDwhUpdateError = this.checkPermission();

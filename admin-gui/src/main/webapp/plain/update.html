@@ -48,37 +48,40 @@
 
 
   <script language="Javascript">
-    const INITIAL_DELAY_MS = 25 * 1000;
-    const CHECK_DELAY_MS = 10 * 1000;   // delay until next check, after a check has failed. Keep reasonably high to avoid call overload
+    const CHECK_DELAY_MS = 10 * 1000;   // delay until next check. Keep reasonably high to avoid call overload
     // Relative, so it resolves against the origin (and port) of the DWH that opened this page
     const DWH_HOME_URL = "/aktin/admin/#/home";
+    const IMPORT_SUMMARY_URL = "/aktin/admin/rest/import-summary";
+    // server start time before the update, a different value means the DWH has restarted
+    const PRE_UPDATE_START = new URLSearchParams(window.location.search).get("start");
 
-    // First check happens 25s after page load, giving the update process time to restart services
-    document.addEventListener("DOMContentLoaded", function () {
-        setTimeout(checkDwhAvailability, INITIAL_DELAY_MS);
-    });
+    document.addEventListener("DOMContentLoaded", checkDwhRestarted);
 
     /*
-     * Polls the data warehouse's admin page after an update.
-     * Retries on failure (DWH still restarting) and redirects to the
-     * landing page as soon as it responds successfully.
+     * Polls the import summary after an update.
+     * Retries while the DWH is unreachable or still reports the pre-update
+     * start time, and redirects to the landing page once it has restarted.
      */
-    function checkDwhAvailability() {
+    function checkDwhRestarted() {
         $.ajax({
-            type: "HEAD",
-            url: DWH_HOME_URL,
-            dataType: "text",
-            beforeSend: function (request) {
-                // no-cache headers to avoid a false positive from a cached response
-                request.setRequestHeader("pragma", "no-cache");
-                request.setRequestHeader("cache-control", "no-cache");
-            },
+            type: "GET",
+            url: IMPORT_SUMMARY_URL,
+            dataType: "xml",
+            cache: false,
             error: function (xhr, status, error) {
                 console.log(error);
-                setTimeout(checkDwhAvailability, CHECK_DELAY_MS);
+                setTimeout(checkDwhRestarted, CHECK_DELAY_MS);
             },
-            success: function () {
-                window.location = DWH_HOME_URL;
+            success: function (xml) {
+                const start = String(new Date($(xml).find("start").text()).getTime());
+                if (start !== PRE_UPDATE_START) {
+                    // the update agent writes its result a few seconds after the DWH is up again
+                    setTimeout(function () {
+                        window.location = DWH_HOME_URL;
+                    }, CHECK_DELAY_MS);
+                } else {
+                    setTimeout(checkDwhRestarted, CHECK_DELAY_MS);
+                }
             }
         });
     }

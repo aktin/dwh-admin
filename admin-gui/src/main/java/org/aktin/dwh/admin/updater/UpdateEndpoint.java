@@ -16,7 +16,6 @@ import javax.ws.rs.core.SecurityContext;
  * REST endpoint for managing DWH (Data Warehouse) update operations.
  * Provides endpoints for checking update agent installation status,
  * retrieving update status, managing update logs, and executing updates.
- *
  * All update-related operations will fail with  SERVICE_UNAVAILABLE if
  * the debian update agent package is not installed.
  */

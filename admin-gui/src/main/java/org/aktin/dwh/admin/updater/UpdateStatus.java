@@ -1,6 +1,5 @@
 package org.aktin.dwh.admin.updater;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
