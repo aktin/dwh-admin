@@ -77,7 +77,7 @@ export class UrlService {
         updateAgentInstalled: 'update/agent/installed',
         updateDWH: 'update',
         getUpdateLog: 'update/log',
-        reloadAptPackages: 'update/agent/reload',
+        refreshUpdateStatus: 'update/agent/reload',
 
         // ImportScriptStatsEndpoint
         getStats: 'script/stats/p21',

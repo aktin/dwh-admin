@@ -82,17 +82,17 @@ public class UpdateEndpoint {
     }
 
     /**
-     * Triggers a reload of debian apt package lists.
+     * Triggers a refresh of the installed and candidate DWH version via apt-cache policy.
      *
      * @return Response with status:
-     *         - 202 ACCEPTED if reload was initiated successfully
-     *         - 500 SERVER_ERROR if reload failed
+     *         - 202 ACCEPTED if refresh was initiated successfully
+     *         - 500 SERVER_ERROR if refresh failed
      *         - 503 SERVICE_UNAVAILABLE if update agent is not installed
      */
     @Path("agent/reload")
     @POST
     @Secured
-    public Response reloadAptPackageLists() {
+    public Response refreshUpdateStatus() {
         if (!updater.isUpdateAgentInstalled()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }

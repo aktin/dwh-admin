@@ -7,8 +7,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -23,64 +23,65 @@ import org.aktin.dwh.PreferenceKey;
  * <p>The updateagent listens on two ports, one for reading the installed and candidate version via 'apt-cache policy' and one for 'apt-get install &lt;this dwh&gt;'.
  * Inside a Docker container it is reached via {@code host.docker.internal} on ports 1004/1005, otherwise via {@code localhost}
  * on ports 1002/1003. Without the updateagent, all update operations fail.</p>
+ *
+ * <p>Docker deployments must meet all of the following, otherwise the GUI silently reports the agent as not installed:</p>
+ * <ul>
+ *     <li>{@code /.dockerenv} is only created by Docker Engine, other runtimes (e.g. Podman) are detected as non-Docker.</li>
+ *     <li>On Linux, {@code host.docker.internal} only resolves with
+ *     {@code extra_hosts: ["host.docker.internal:host-gateway"]} in the compose file.</li>
+ *     <li>{@link PreferenceKey#updateDataPath} must be bind mounted from the host into the container.</li>
+ * </ul>
  */
 @Singleton
 public class Updater {
 
     private static final Logger LOGGER = Logger.getLogger(Updater.class.getName());
 
-    // never reset after a successful update, the package reinstall restarts the app
-    private final AtomicBoolean isUpdateInProgress = new AtomicBoolean(false);
+    // reset once the agent rewrites the result file
+    private boolean isUpdateInProgress = false;
 
-    private final String host;
+    // lastUpdateTime of the result file before the running update was triggered
+    private String lastUpdateTimeBeforeUpdate;
 
-    private final int aptUpdatePort;
+    private static final boolean DOCKER = Files.exists(Paths.get("/.dockerenv"));
 
-    private final int dwhUpdatePort;
+    private static final String HOST = DOCKER ? "host.docker.internal" : "localhost";
+
+    private static final int APT_UPDATE_PORT = DOCKER ? 1004 : 1002;
+
+    private static final int DWH_UPDATE_PORT = DOCKER ? 1005 : 1003;
 
     @Inject
     Preferences preferences;
 
     /**
-     * Selects the updateagent host and ports for the current environment.
-     */
-    public Updater() {
-        boolean docker = Files.exists(Paths.get("/.dockerenv"));
-        this.host = docker ? "host.docker.internal" : "localhost";
-        this.aptUpdatePort = docker ? 1004 : 1002;
-        this.dwhUpdatePort = docker ? 1005 : 1003;
-    }
-
-    /**
-     * Triggers an initial APT package list reload.
+     * Triggers an initial update status refresh.
      */
     @PostConstruct
     void initialize() {
-        LOGGER.log(Level.INFO, "Initializing updater for " + host + " and triggering APT package list reload...");
+        LOGGER.log(Level.INFO, "Initializing updater for " + HOST + " and triggering update status refresh...");
         refreshUpdateStatus();
     }
 
     /**
-     * Check if update agent is installed by attempting a connection to the socket and validating if a
-     * update directory has been created/exists.
-     * @return {@code true} if the update agent is present and operational
+     * Checks if the update agent is installed via the existence of the update directory.
+     * Only while the directory is missing, the agent is touched once, as it creates the directory on its first connect.
+     * @return {@code true} if the update directory exists
      */
     public boolean isUpdateAgentInstalled() {
-        boolean isInstalled = false;
-
-        // connect to socket, remember success status
-        boolean socketReached = touch(host, aptUpdatePort);
-        LOGGER.log(Level.INFO, "Update agent connection on port "+aptUpdatePort+" returned: "+socketReached);
-
         // check if a update path exist. Update agent always creates the path under "/var/lib/aktin/update"
         Path updatePath = Paths.get(preferences.get(PreferenceKey.updateDataPath));
         boolean updatePathExists = Files.exists(updatePath);
-        LOGGER.log(Level.INFO, "Update path validation returned: "+updatePathExists);
+        LOGGER.log(Level.FINE, "Update path validation returned: "+updatePathExists);
 
-        if (socketReached && updatePathExists) {
-            isInstalled = true;
+        if (!updatePathExists) {
+            boolean socketReached = touch(HOST, APT_UPDATE_PORT);   // let updateagent create the update directory
+            LOGGER.log(Level.FINE, "Update agent connection on port "+APT_UPDATE_PORT+" returned: "+socketReached);
+            updatePathExists = Files.exists(updatePath);
+            LOGGER.log(Level.FINE, "Update path validation returned: "+updatePathExists);
         }
-        return isInstalled;
+
+        return updatePathExists;
     }
 
     /**
@@ -154,11 +155,8 @@ public class Updater {
      *         - {@code false}: request could not be sent, update agent is not installed
      */
     public boolean refreshUpdateStatus() {
-        if (!isUpdateAgentInstalled()) {
-            return false;
-        }
-        LOGGER.log(Level.INFO, "Started apt-reload service");
-        return touch(host, aptUpdatePort);
+        LOGGER.log(Level.INFO, "Started apt-cache policy service");
+        return touch(HOST, APT_UPDATE_PORT);
     }
 
     /**
@@ -167,17 +165,14 @@ public class Updater {
      * @return - true:  update request was sent (does not mean update is finished or was successful)
      *         - false: update request could not be sent, update agent is not installed or an update is already in progress
      */
-    public boolean executeDwhUpdate() {
-        // claim the flag atomically so concurrent requests cannot trigger the update twice
-        if (!isUpdateAgentInstalled() || !isUpdateInProgress.compareAndSet(false, true)) {
+    public synchronized boolean executeDwhUpdate() {
+        if (!isUpdateAgentInstalled() || isUpdateInProgress()) {
             return false;
         }
+        lastUpdateTimeBeforeUpdate = getLastUpdateTime();
         LOGGER.log(Level.INFO, "Started dwh-update service");
-        boolean success = touch(host, dwhUpdatePort);
-        if (!success) {
-            isUpdateInProgress.set(false);
-        }
-        return success;
+        isUpdateInProgress = touch(HOST, DWH_UPDATE_PORT);
+        return isUpdateInProgress;
     }
 
     /**
@@ -187,24 +182,33 @@ public class Updater {
      * @return - {@code true} if the connection was established,
      *         - {@code false} if the host is unknown, the connection was refused or timed out
      */
-    public static boolean touch(String host, int port) {
+    public boolean touch(String host, int port) {
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(host, port), 5000);
             LOGGER.log(Level.INFO, "Socket operation completed on {0}:{1}", new Object[]{host, port});
             return true;
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "I/O error during socket operation on " + host + ":" + port, e);
+            LOGGER.log(Level.FINE, "Could not connect to " + host + ":" + port + ": " + e.getMessage());
             return false;
         }
     }
 
     /**
-     * Returns whether an update operation is currently running.
+     * Returns whether an update operation is currently running. The update counts as finished once the
+     * lastUpdateTime of the result file changed, as the agent rewrites it on success and on failure.
      *
      * @return {@code true} if an update is in progress
      */
-    public boolean isUpdateInProgress() {
-        return this.isUpdateInProgress.get();
+    public synchronized boolean isUpdateInProgress() {
+        if (isUpdateInProgress && !Objects.equals(getLastUpdateTime(), lastUpdateTimeBeforeUpdate)) {
+            isUpdateInProgress = false;
+        }
+        return isUpdateInProgress;
+    }
+
+    private String getLastUpdateTime() {
+        UpdateStatus status = getUpdateStatus();
+        return status != null ? status.getLastUpdateTime() : null;
     }
 
 }

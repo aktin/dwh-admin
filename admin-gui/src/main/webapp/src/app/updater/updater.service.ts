@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {AuthService, Permission} from '../users';
 import {HttpService, UrlService} from '../helpers';
 import {StatusService} from '../status';
-import {catchError, finalize, map, retry, switchMap, tap} from "rxjs/operators";
-import {EMPTY, Observable, of, throwError, timer} from "rxjs";
+import {catchError, concatMap, finalize, map, switchMap, take, takeWhile, tap} from "rxjs/operators";
+import {EMPTY, Observable, timer} from "rxjs";
 
 /**
  * Service responsible for managing DWH (Data Warehouse) updates and update-related operations.
@@ -26,7 +26,7 @@ export class UpdaterService {
     public wasUpdateSuccessful: boolean = false;
     /** Content of the update operation log */
     public updateLog: string;
-    /** Timestamp of the last version check, used to detect a stale status after an apt reload */
+    /** Timestamp of the last version check, used to detect a stale status after an update status refresh */
     private lastCheckTime: string;
 
     /** Flag indicating if the service is currently checking for updates */
@@ -39,7 +39,7 @@ export class UpdaterService {
     /**
      * Creates an instance of UpdaterService.
      * Initializes the service by checking update agent installation,
-     * reloading package information, and fetching initial status.
+     * refreshing the update status, and fetching initial status.
      *
      * @param _auth - Service for authentication and permission checking
      * @param _http - Service for making HTTP requests
@@ -55,7 +55,7 @@ export class UpdaterService {
         this.checkUpdateAgentInstallation().subscribe(() => {
             this.getUpdateLog();
             this.getUpdateStatus()
-                .pipe(finalize(() => this.reloadAptPackages(false)))
+                .pipe(finalize(() => this.refreshUpdateStatus(false)))
                 .subscribe({error: error => console.error(error)});
         }, (error: any) => {
             console.log(error);
@@ -81,33 +81,17 @@ export class UpdaterService {
     /**
      * Retrieves the current update status from the backend.
      * Updates version information and status based on the response.
-     * An unchanged last check time is treated as stale and retried.
-     * HTTP errors are not retried, except a 404 while no previous status exists.
      *
-     * @param maxAttempts - Number of attempts before giving up. Default is 1 (no retry).
-     * @param intervalMs - Delay in milliseconds between retry attempts. Default is 0.
      * @returns Observable that stores the status when subscribed
      */
-    getUpdateStatus(maxAttempts: number = 1, intervalMs: number = 0): Observable<any> {
+    getUpdateStatus(): Observable<any> {
         if (!this.isUpdateAgentInstalled) {
             return EMPTY;
         }
-        const previousCheckTime = this.lastCheckTime;
-        const stale = new Error('update status not refreshed yet');
-        let lastEvent: any;
-        // without a previous status, a 404 means the agent has not written its status files yet
-        const isRetryable = (err: any) => err === stale || (previousCheckTime === undefined && err?.status === 404);
         return this._http.get<any>(this._url.parse('updateDWH'))
             .pipe(
-                tap(event => {
-                    lastEvent = event;
-                    if (maxAttempts > 1 && event?.lastCheckTime === previousCheckTime)
-                        throw stale;
-                }),
-                retry({count: maxAttempts - 1, delay: err => isRetryable(err) ? timer(intervalMs) : throwError(() => err)}),
-                catchError(err => err === stale ? of(lastEvent) : this._http.handleError(err)),
-                tap(event => {
-                    if (event) {
+                catchError(err => this._http.handleError(err)),
+                tap(event => {if (event) {
                         this.installedVersion = event.installedVersion;
                         this.candidateVersion = event.candidateVersion;
                         this.wasUpdateSuccessful = event.success;
@@ -160,24 +144,30 @@ export class UpdaterService {
     }
 
     /**
-     * Reloads APT package information from the backend.
+     * Triggers an update status refresh in the backend.
      * Requires UPDATE permission and installed update agent.
-     * Updates status information after a successful reload.
+     * Updates status information after a successful refresh.
      *
-     * @param showFeedback - If true, shows a loading indicator for 15 seconds.
+     * @param showFeedback - If true, shows a loading indicator while polling for the refreshed status.
      *                       Default is true. Set to false for background updates.
      */
-    reloadAptPackages(showFeedback: boolean = true): void {
+    refreshUpdateStatus(showFeedback: boolean = true): void {
         if (this.checkPermission() && this.isUpdateAgentInstalled) {
-            this.showAptUpdateError = false;    // hide error banner when attempting package reload
-            this._http.post(this._url.parse('reloadAptPackages'), null)
+            this.showAptUpdateError = false;    // hide error banner when attempting status refresh
+            this._http.post(this._url.parse('refreshUpdateStatus'), null)
             .pipe(catchError(err => this._http.handleError(err)))
             .subscribe(event => {
                 if (showFeedback) {
                     this.isCheckingForUpdates = true;
-                    setTimeout(() => { this.isCheckingForUpdates = false; }, 15000);
                 }
-                this.getUpdateStatus(15, 1000).subscribe({error: error => console.error(error)});
+                const previousCheckTime = this.lastCheckTime;
+                // the agent writes the refreshed status asynchronously, poll every second until it changes
+                timer(0, 1000).pipe(
+                    take(15),
+                    concatMap(() => this.getUpdateStatus()),
+                    takeWhile(status => status?.lastCheckTime === previousCheckTime),
+                    finalize(() => this.isCheckingForUpdates = false)
+                ).subscribe({error: error => console.error(error)});
             }, error => {
                 console.log(error);
                 this.showAptUpdateError = this.checkPermission();
