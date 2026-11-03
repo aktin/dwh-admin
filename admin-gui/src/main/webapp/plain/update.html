@@ -49,13 +49,17 @@
 
   <script language="Javascript">
     const CHECK_DELAY_MS = 10 * 1000;   // delay until next check. Keep reasonably high to avoid call overload
-    // Relative, so it resolves against the origin (and port) of the DWH that opened this page
+    const CHECK_TIMEOUT_MS = 30 * 60 * 1000;    // timeout for checking if dwh has started
     const DWH_HOME_URL = "/aktin/admin/#/home";
     const IMPORT_SUMMARY_URL = "/aktin/admin/rest/import-summary";
-    // server start time before the update, a different value means the DWH has restarted
-    const PRE_UPDATE_START = new URLSearchParams(window.location.search).get("since");
+    const PRE_UPDATE_START = new URLSearchParams(window.location.search).get("since");  // server start time before the update
 
-    document.addEventListener("DOMContentLoaded", checkDwhRestarted);
+    document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(function () {
+            window.location = DWH_HOME_URL;
+        }, CHECK_TIMEOUT_MS);
+        checkDwhRestarted();
+    });
 
     /*
      * Polls the import summary after an update.
