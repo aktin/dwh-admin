@@ -1,15 +1,14 @@
 package org.aktin.dwh.admin.updater;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -19,73 +18,78 @@ import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
 
 /**
- * Manages DWH (Data Warehouse) update operations and status tracking.
- * This singleton class handles update agent verification, status checks,
- * and execution of update operations through socket communication.
+ * Triggers and monitors DWH updates through the socket services of the AKTIN 'updateagent' Debian package.
  *
- * Update operations are performed asynchronously and their status is tracked
- * through property files in a configured update directory.
+ * <p>The updateagent listens on two ports, one for reading the installed and candidate version via 'apt-cache policy' and one for 'apt-get install &lt;this dwh&gt;'.
+ * Inside a Docker container it is reached via {@code host.docker.internal} on ports 1004/1005, otherwise via {@code localhost}
+ * on ports 1002/1003. Without the updateagent, all update operations fail.</p>
  *
- * <p><b>Implementation Note:</b>
- * This manager relies on the 'updateagent' Debian package being installed on the system.
- * The updateagent package:
+ * <p>Docker deployments must meet all of the following, otherwise the GUI silently reports the agent as not installed:</p>
  * <ul>
- *   <li>Creates the required update directory structure</li>
- *   <li>Installs a service listening on port 1002 for executing 'apt-get update'</li>
- *   <li>Installs a service listening on port 1003 for executing 'apt-get install &lt;this dwh&gt;'</li>
+ *     <li>{@code /.dockerenv} is only created by Docker Engine, other runtimes (e.g. Podman) are detected as non-Docker.</li>
+ *     <li>On Linux, {@code host.docker.internal} only resolves with
+ *     {@code extra_hosts: ["host.docker.internal:host-gateway"]} in the compose file.</li>
+ *     <li>{@link PreferenceKey#updateDataPath} must be bind mounted from the host into the container.</li>
  * </ul>
- * Without this package installed, all update operations will fail as the required
- * directory structure and services will not be present.
  */
 @Singleton
 public class UpdateManager {
 
     private static final Logger LOGGER = Logger.getLogger(UpdateManager.class.getName());
-    /**
-     * Port used by the updateagent service for APT package list updates (apt-get update)
-     */
-    private static final int APT_UPDATE_PORT = 1002;
-    /**
-     * Port used by the updateagent service for DWH package updates (apt-get install)
-     */
-    private static final int DWH_UPDATE_PORT = 1003;
-    private static final int SOCKET_TIMEOUT = 5000;
+
+    // reset once the agent rewrites the result file
+    private boolean isUpdateInProgress = false;
+
+    // lastUpdateTime of the result file before the running update was triggered
+    private String lastUpdateTimeBeforeUpdate;
+
+    private static final boolean DOCKER = Files.exists(Paths.get("/.dockerenv"));
+
+    private static final String HOST = DOCKER ? "host.docker.internal" : "localhost";
+
+    private static final int APT_UPDATE_PORT = DOCKER ? 1004 : 1002;
+
+    private static final int DWH_UPDATE_PORT = DOCKER ? 1005 : 1003;
 
     @Inject
     Preferences preferences;
 
-    private CompletableFuture<Boolean> currentUpdate;
-
+    /**
+     * Triggers an initial update status refresh.
+     */
     @PostConstruct
-    private void initialize() {
-        LOGGER.log(Level.INFO, "Initializing UpdateManager and triggering APT package list reload...");
-        reloadAptPackageLists();
+    void initialize() {
+        LOGGER.log(Level.INFO, "Initializing updater for " + HOST + " and triggering update status refresh...");
+        refreshUpdateStatus();
     }
 
     /**
-     * Checks if the update agent is installed by verifying the existence
-     * of the update directory specified in preferences.
-     *
-     * This directory should be created by the updateagent Debian package
-     * during installation. If the directory doesn't exist, it indicates
-     * that the updateagent package is not installed.
-     *
-     * @return true if the update agent is installed, false otherwise
+     * Checks if the update agent is installed via the existence of the update directory.
+     * Only while the directory is missing, the agent is touched once, as it creates the directory on its first connect.
+     * @return {@code true} if the update directory exists
      */
     public boolean isUpdateAgentInstalled() {
+        // check if a update path exist. Update agent always creates the path under "/var/lib/aktin/update"
         Path updatePath = Paths.get(preferences.get(PreferenceKey.updateDataPath));
-        return Files.exists(updatePath);
+        boolean updatePathExists = Files.exists(updatePath);
+        LOGGER.log(Level.FINE, "Update path validation returned: "+updatePathExists);
+
+        if (!updatePathExists) {
+            boolean socketReached = touch(HOST, APT_UPDATE_PORT);   // let updateagent create the update directory
+            LOGGER.log(Level.FINE, "Update agent connection on port "+APT_UPDATE_PORT+" returned: "+socketReached);
+            updatePathExists = Files.exists(updatePath);
+            LOGGER.log(Level.FINE, "Update path validation returned: "+updatePathExists);
+        }
+
+        return updatePathExists;
     }
 
     /**
-     * Retrieves the current update status by reading and combining information
-     * from both result and info property files.
+     * Retrieves the current update status, composed of version information and
+     * the result of the last update attempt.
      *
-     * These files are managed by the updateagent package services and contain
-     * information about current and available versions, as well as update results.
-     *
-     * @return UpdateStatus object containing version and status information,
-     *         or null if no status information is available
+     * @return an {@link UpdateStatus} object, or {@code null} if no status
+     *         information is available yet
      */
     public UpdateStatus getUpdateStatus() {
         UpdateStatus status = new UpdateStatus();
@@ -113,19 +117,8 @@ public class UpdateManager {
         return hasData ? status : null;
     }
 
-    /**
-     * Reads a properties file from the specified path.
-     *
-     * @param path Path to the properties file
-     * @return Properties object containing the file contents
-     * @throws IOException if the file cannot be read
-     * @throws FileNotFoundException if the file does not exist
-     */
     private Properties readPropertiesFileFromPath(Path path) throws IOException {
         Properties properties = new Properties();
-        if (!Files.exists(path)) {
-            throw new FileNotFoundException("Properties file not found: " + path);
-        }
         try (Reader input = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             properties.load(input);
         }
@@ -141,81 +134,81 @@ public class UpdateManager {
     }
 
     /**
-     * Retrieves the update operation log content.
+     * Retrieves the textual content of the update operation log.
      *
-     * @return String containing the log content, or null if no log exists or cannot be read
+     * @return the log as a {@link String}, or {@code null} if no log exists
      */
     public String getUpdateLog() {
         try {
             Path path = Paths.get(preferences.get(PreferenceKey.updateDataPath), "log");
             return Files.exists(path) ? String.join("\n", Files.readAllLines(path)) : null;
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "Could not read update service log");
+            LOGGER.log(Level.WARNING, "Could not read update service log", e);
             return null;
         }
     }
 
     /**
-     * Initiates an APT package list reload operation by connecting to the
-     * updateagent service on port 1002. This triggers an 'apt-get update'
-     * command to refresh the system's package lists.
-     *
-     * @return true if the reload operation was initiated successfully, false otherwise
+     * This method connects to the AKTIN update agent socket responsible for writing the installed
+     * data warehouse version and the latest available candidate version into a data directory.
+     * @return - {@code true}: request was sent
+     *         - {@code false}: request could not be sent, update agent is not installed
      */
-    public boolean reloadAptPackageLists() {
-        if (!isUpdateAgentInstalled()) {
-            return false;
-        }
-        LOGGER.log(Level.INFO, "Started apt-reload service");
-        return executeSocketOperation(APT_UPDATE_PORT);
+    public boolean refreshUpdateStatus() {
+        LOGGER.log(Level.INFO, "Started apt-cache policy service");
+        return touch(HOST, APT_UPDATE_PORT);
     }
 
     /**
-     * Initiates a DWH update operation if no update is currently in progress.
-     * Connects to the updateagent service on port 1003 to trigger an
-     * 'apt-get install' command for the DWH package. The update is executed
-     * asynchronously.
-     *
-     * @return true if the update operation was initiated successfully, false otherwise
+     * This method connects to the AKTIN update agent socket responsible for executing
+     * the update process for a data warehouse.
+     * @return - true:  update request was sent (does not mean update is finished or was successful)
+     *         - false: update request could not be sent, update agent is not installed or an update is already in progress
      */
-    public boolean executeDwhUpdate() {
+    public synchronized boolean executeDwhUpdate() {
         if (!isUpdateAgentInstalled() || isUpdateInProgress()) {
             return false;
         }
+        lastUpdateTimeBeforeUpdate = getLastUpdateTime();
         LOGGER.log(Level.INFO, "Started dwh-update service");
-        try {
-            currentUpdate = CompletableFuture.supplyAsync(() -> executeSocketOperation(DWH_UPDATE_PORT));
-            return true;
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Failed to start update process", e);
-            return false;
-        }
-    }
-
-    public boolean isUpdateInProgress() {
-        return currentUpdate != null && !currentUpdate.isDone();
+        isUpdateInProgress = touch(HOST, DWH_UPDATE_PORT);
+        return isUpdateInProgress;
     }
 
     /**
-     * Executes a socket operation on the specified port.
-     * Used internally for both APT updates and DWH updates.
-     *
-     * @param port The port number to connect to
-     * @return true if the operation was successful, false otherwise
+     * Opens and immediately closes a TCP connection to signal the target, without sending content.
+     * @param host target's network address
+     * @param port target's port to connect to
+     * @return - {@code true} if the connection was established,
+     *         - {@code false} if the host is unknown, the connection was refused or timed out
      */
-    private boolean executeSocketOperation(int port) {
-        try (Socket socket = new Socket("localhost", port)) {
-            socket.setSoTimeout(SOCKET_TIMEOUT);
-            Thread.sleep(1000);
-            LOGGER.log(Level.INFO, "Socket operation completed on port: " + port);
+    public boolean touch(String host, int port) {
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(host, port), 5000);
+            LOGGER.log(Level.INFO, "Socket operation completed on {0}:{1}", new Object[]{host, port});
             return true;
-        } catch (InterruptedException e) {
-            LOGGER.log(Level.WARNING, "Thread interrupted during socket operation on port: " + port, e);
-            Thread.currentThread().interrupt();
-            return false;
         } catch (IOException e) {
-            LOGGER.log(Level.WARNING, "I/O error during socket operation on port: " + port, e);
+            LOGGER.log(Level.FINE, "Could not connect to " + host + ":" + port + ": " + e.getMessage());
             return false;
         }
     }
+
+    /**
+     * Returns whether an update operation is currently running. The update counts as finished once the
+     * lastUpdateTime of the result file changed, as the agent rewrites it on success and on failure.
+     *
+     * @return {@code true} if an update is in progress
+     */
+    public synchronized boolean isUpdateInProgress() {
+        if (isUpdateInProgress && !Objects.equals(getLastUpdateTime(), lastUpdateTimeBeforeUpdate)) {
+            isUpdateInProgress = false;
+        }
+        return isUpdateInProgress;
+    }
+
+    private String getLastUpdateTime() {
+        UpdateStatus status = getUpdateStatus();
+        return status != null ? status.getLastUpdateTime() : null;
+    }
+
 }

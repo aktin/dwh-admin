@@ -1,19 +1,25 @@
 import {Component, DestroyRef, HostListener, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {
     AbstractControl,
-    AsyncValidator,
     ControlValueAccessor,
     NG_ASYNC_VALIDATORS,
     NG_VALUE_ACCESSOR,
     ValidationErrors
 } from '@angular/forms';
 import {ColDef, GridApi, GridReadyEvent, ICellRendererParams} from 'ag-grid-community';
-import {Observable, of, switchMap, tap} from 'rxjs';
+import {Observable, of, switchMap} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
-import {determineSeverity, EntryValidation} from '../../models/entry-validation';
+import {
+    determineSeverity,
+    EntryValidation,
+    EXTENSION_ERROR_TO_ENTRY_VALIDATION,
+    severities,
+    Severity
+} from '../../models/entry-validation';
+import {validateExtension} from '../../helpers/extension-validation';
 import {PatientReference} from '../../models/patient-reference';
 import {RemoveRowButtonComponent} from './remove-row-button.component';
-import {DateFormat, MomentDatePipe} from '../../../helpers';
+import {DateFormat, MomentDatePipe, NotificationService} from '../../../helpers';
 import {ReadableEntryValidationPipe} from './readable-entry-validation.pipe';
 import {NoRowsOverlayComponent} from './no-rows-overlay.component';
 import {PatientReferenceToLabelPipe} from '../../helpers/patient-reference-to-label.pipe';
@@ -25,6 +31,7 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
 import {StudyManagerErrorInterceptor} from "../../helpers/study-manager-error.interceptor";
 import {ExternalTriggeredAsyncValidatorBase} from "../../helpers/external-triggered-async-validator-base";
+import {read, utils} from "xlsx";
 
 /**
  * Represents a text area component designed to manage and edit patient data in a tabular format.
@@ -94,7 +101,8 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
                 private readableEntryValidationPipe: ReadableEntryValidationPipe,
                 private studyManagerService: StudyManagerService,
                 private momentDatePipe: MomentDatePipe,
-                private destroyRef: DestroyRef) {
+                private destroyRef: DestroyRef,
+                private notificationService: NotificationService,) {
         super();
     }
 
@@ -118,16 +126,29 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         this.patientValidationService.requestRevalidation();
     }
 
-    private _rowData: Patient[] = [];
+    private _rowData: Patient[];
 
     public get rowData(): Patient[] {
         return this._rowData;
+    };
+
+    public updateRowData(rowData: Patient[], resetStatusFilter: boolean = false) {
+        this._rowData = rowData;
+        this.rowData?.forEach(r => r.reference = this.reference);
+
+        if (resetStatusFilter) {
+            this.selectedSeverity = null;
+        }
+
+        this.mapEntriesToSeverity();
+        this.filterRowData(this.selectedSeverity)
     }
 
-    public set rowData(value: Patient[]) {
-        this._rowData = value;
-        this.rowData?.forEach>(r => r.reference = this.reference);
-
+    private updateGridView(value: Patient[]): void {
+        this.gridApi?.setGridOption('noRowsOverlayComponentParams', {
+            reference: this.reference,
+            filtered: this.selectedSeverity !== null,
+        });
         this.gridApi?.setGridOption('rowData', value);
         this.gridApi?.autoSizeAllColumns();
     }
@@ -143,9 +164,47 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
         this._generateSic = value;
 
         this.gridApi?.applyColumnState({state: [{colId: 'sic', hide: value}]});
-        this.rowData = [];
+        this.updateRowData([], true);
         this.onChange(this.rowData);
     }
+
+    public get allEntriesCount(): number {
+        return this.rowData?.length ?? 0;
+    }
+
+    public get validEntries(): Patient[] {
+        return this.getEntriesBySeverity('success');
+    }
+
+    public get validEntriesCount(): number {
+        return this.validEntries?.length ?? 0;
+    }
+
+    public get warnEntries(): Patient[] {
+        return this.getEntriesBySeverity('warn');
+    }
+
+    public get warnEntriesCount(): number {
+        return this.warnEntries?.length ?? 0;
+    }
+
+    public get errorEntries(): Patient[] {
+        return this.getEntriesBySeverity('error');
+    }
+
+    public get errorEntriesCount(): number {
+        return this.errorEntries?.length ?? 0;
+    }
+
+    public get pendingEntries(): Patient[] {
+        return this.getEntriesBySeverity('pending');
+    }
+
+    public get pendingEntriesCount(): number {
+        return this.pendingEntries.length;
+    }
+
+    public selectedSeverity: Severity | null = null;
 
     ngOnInit(): void {
         this.reactToExternalChanges(this.patientValidationService.revalidate$);
@@ -155,7 +214,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
          * using a bulk call avoids possible tens or hundreds of single calls (1 per patient)
          */
         this.patientValidationService.validationData$
-            .pipe(map(patients => patients?.filter(e => !e.validationResults.includes(EntryValidation.NoEncountersFound))),
+            .pipe(map(patients => patients?.filter(e => !e.validationResults?.includes(EntryValidation.NoEncountersFound))),
                 filter(patients => !!patients?.length),
                 switchMap(patients => this.studyManagerService.getEncounters(this.reference, patients.map(p => p.extension))),
                 takeUntilDestroyed(this.destroyRef),)
@@ -166,7 +225,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
             });
 
         this.patientValidationService.validationData$
-            .pipe(map(patients => patients?.filter(e => !e.validationResults.includes(EntryValidation.NoMasterdataFound))),
+            .pipe(map(patients => patients?.filter(e => !e.validationResults?.includes(EntryValidation.NoMasterdataFound))),
                 filter(patients => !!patients?.length),
                 switchMap(patients => this.studyManagerService.getMasterData(this.reference, patients.map(p => p.extension))),
                 takeUntilDestroyed(this.destroyRef),)
@@ -180,11 +239,16 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     @HostListener('document:paste', ['$event'])
     public onPaste(event: ClipboardEvent): void {
         //prevent dataloss when user wants to paste text into a single cell or input element
-        if (!(document.activeElement instanceof HTMLInputElement)) {
-            const clipboardData = event.clipboardData;
-            const pastedText = clipboardData.getData('text');
-            this.rowData = this.parseExcelData(pastedText);
-            this.onChange(this.rowData);
+        if (!(document.activeElement instanceof HTMLInputElement
+                || document.activeElement instanceof HTMLTextAreaElement)) {
+            const pastedText = event.clipboardData?.getData('text') ?? '';
+            if (pastedText.trim()) {
+                this.notificationService.showWarning(
+                    'Strg+V behandelt die erste Zeile als Kopfzeile. ' +
+                    'Enthält sie Patientendaten, verwenden Sie „Ohne Kopfzeile“.'
+                );
+            }
+            this.applyPastedData(pastedText, true);
         }
     }
 
@@ -200,7 +264,7 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     }
 
     writeValue(value: Patient[]): void {
-        this._rowData = value;
+        this.updateRowData(value);
     }
 
     registerOnChange(fn: (value: Patient[]) => void): void {
@@ -227,21 +291,40 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
             return of(null);
         }
 
-        return this.patientValidationService.validatePatients$(this.studyId, this.rowData)
-            .pipe(map(result => result.map(r => {
-                    if (r.extension) return r;
-
-                    r.validationResults = [EntryValidation.PatientReferenceMissing];
-
-                    return r;
-                })),
-                tap(v => this.rowData = v ?? this.rowData),
+        const requestedEntries = [...(this.rowData ?? [])];
+        return this.patientValidationService.validatePatients$(this.studyId, requestedEntries)
+            .pipe(map(result => this.applyValidationResults(result, requestedEntries)),
                 map(result => (result?.flatMap(r => r.validationResults).every(r => [EntryValidation.NoMasterdataFound,
                     EntryValidation.NoEncountersFound].includes(r))
                     ? null
                     : {entries: result}))
-
             );
+    }
+
+    /**
+     * Merges validation data into the existing form-value instances. The parent form therefore
+     * observes updated validation results through its single ngModel value, without treating the
+     * validation response as another user edit and starting a new validation cycle.
+     */
+    private applyValidationResults(validatedPatients: Patient[], requestedEntries: Patient[]): Patient[] {
+        const entries = this.rowData ?? [];
+
+        validatedPatients?.forEach((validatedPatient, index) => {
+            const requestedEntry = requestedEntries[index];
+            const entry = requestedEntry && entries.find(candidate => candidate.id === requestedEntry.id);
+            if (!entry) {
+                return;
+            }
+
+            // `id` is a client-side UI identity and must stay stable for ag-Grid.
+            const {id: _serverId, ...validatedFields} = validatedPatient;
+            Object.assign(entry, validatedFields);
+            this.applyExtensionFormatValidation(entry);
+        });
+
+        // Use a fresh array for ag-Grid while retaining the Patient instances shared with ngModel.
+        this.updateRowData([...entries]);
+        return entries;
     }
 
     public invokeValidation(): void {
@@ -250,16 +333,36 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
     }
 
     public clearEntries(): void {
-        this.rowData = [];
+        this.updateRowData([], true)
         this.onChange(this.rowData);
     }
 
     public addRow(): void {
         if (!this.rowData) {
-            this.rowData = [];
+            this._rowData = [];
         }
         //add new row this way instead of Array.push to trigger the ag grid update
-        this.rowData = [...this.rowData, new Patient({extension: '', validationResults: [EntryValidation.Pending]})];
+        this.updateRowData([...this.rowData, new Patient({
+            extension: '',
+            validationResults: [EntryValidation.Pending]
+        })], true);
+    }
+
+    protected async pasteRowData(withHeader: boolean): Promise<void> {
+        try {
+            const cbText = await navigator.clipboard.readText();
+            this.applyPastedData(cbText, withHeader);
+        } catch {
+            this.notificationService.showError('Auf die Zwischenablage konnte nicht zugegriffen werden.');
+        }
+    }
+
+    private applyPastedData(data: string, withHeader: boolean): void {
+        const patients = this.parseExcelData(data, withHeader);
+        if (patients) {
+            this.updateRowData(patients, true);
+            this.onChange(this.rowData);
+        }
     }
 
     /**
@@ -268,27 +371,74 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
      * @param {string} data - The input Excel data as a tab-separated string. Each row is expected to be separated by a newline.
      * @return {Patient[]} An array of Patient objects created by processing each row of the input data.
      */
-    private parseExcelData(data: string): Patient[] {
-        const rows = data.split('\n')
-            .filter(r => !!r?.length);//omit empty rows
+    private parseExcelData(data: string, withHeader: boolean): Patient[] {
+        try {
+            // Clipboard spreadsheets are tab-separated. Forcing the separator keeps commas and
+            // semicolons inside patient references instead of treating them as CSV delimiters.
+            const workbook = read(data, {type: 'string', raw: true, FS: '\t'});
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rows = utils.sheet_to_json<string[]>(sheet, {header: 1})
+                .slice(withHeader ? 1 : 0)
+                .filter(arr => !!arr?.length);
 
-        let mapFunc: (r: string) => Patient;
+            if (!rows.length) {
+                this.notificationService.showError('Die Zwischenablage enthält keine Patientendaten.');
+                return null;
+            }
+
+            if (this.generateSic && rows.some(r => r.length > 1)) {
+                this.notificationService.showError("Eingefügte Daten enthalten mehr als eine Spalte")
+                return null;
+            } else if (!this.generateSic && rows.some(r => r.length > 2)) {
+                this.notificationService.showError("Eingefügte Daten enthalten mehr als zwei Spalten")
+                return null;
+            }
+            return this.excelRowsToPatients(rows);
+        } catch {
+            this.notificationService.showError('Die Daten aus der Zwischenablage konnten nicht gelesen werden.');
+            return null;
+        }
+    }
+
+    private excelRowsToPatients(rows: string[][]): Patient[] {
+        let mapFunc: (cells: string[]) => Patient;
         // if sic won't be generated, add a row for optionally entering a sic
         if (!this.generateSic) {
-            mapFunc = row => {
-                const cells = row.split('\t');
-                return new Patient({extension: cells[0], sic: cells[1], validationResults: [EntryValidation.Pending]});
-            };
+            mapFunc = cells => new Patient({
+                extension: cells[0],
+                sic: cells[1],
+                validationResults: [EntryValidation.Pending]
+            });
         } else {
-            mapFunc = row => new Patient({extension: row, validationResults: [EntryValidation.Pending]});
+            mapFunc = cells => new Patient({extension: cells[0], validationResults: [EntryValidation.Pending]});
         }
 
         return rows.map(mapFunc);
     }
 
     private removeRow(event: ICellRendererParams) {
-        this.rowData = this.rowData.filter((_, i) => i !== event.node.rowIndex);
+        // update row data without triggering validation, which would cause the status filter to reset
+        this._rowData = this.rowData.filter(r => r.id !== event.data?.id);
+        this.mapEntriesToSeverity();
+        this.filterRowData(this.selectedSeverity);
         this.onChange(this.rowData);
+    }
+
+    /**
+     * Adds shared client-side extension format violations to the server validation result.
+     * The grid keeps a single validationResults pipeline, so its existing severity, filter,
+     * and status rendering continue to work for both server and client-side validation.
+     */
+    private applyExtensionFormatValidation(patient: Patient): Patient {
+        const serverValidationResults = patient.extension
+            ? patient.validationResults ?? []
+            : [EntryValidation.PatientReferenceMissing];
+        const extensionValidationResults = validateExtension(patient.extension)
+            .map(key => EXTENSION_ERROR_TO_ENTRY_VALIDATION[key])
+            .filter((validation): validation is EntryValidation => !!validation);
+
+        patient.validationResults = [...new Set([...serverValidationResults, ...extensionValidationResults])];
+        return patient;
     }
 
     private onChange: (value: Patient[]) => void = () => {
@@ -296,4 +446,43 @@ export class PatientsTextAreaComponent extends ExternalTriggeredAsyncValidatorBa
 
     private onTouched: () => void = () => {
     };
+
+    protected filterRowData(severity: Severity) {
+
+        switch (severity) {
+            case "success":
+                this.updateGridView(this.validEntries);
+                break;
+            case 'error':
+                this.updateGridView(this.errorEntries);
+                break;
+            case 'warn':
+                this.updateGridView(this.warnEntries);
+                break;
+            case 'pending':
+                this.updateGridView(this.pendingEntries);
+                break;
+            default:
+                this.updateGridView(this.rowData);
+        }
+    }
+
+    private entriesBySeverity: Map<Severity, Patient[]>;
+
+    private getEntriesBySeverity(severity: Severity): Patient[] {
+        return this.entriesBySeverity?.get(severity) ?? [];
+    }
+
+    private mapEntriesToSeverity(): void {
+        const entriesBySeverity = new Map<Severity, Patient[]>(
+            severities.map(severity => [severity, []]),
+        );
+
+        for (const row of this.rowData ?? []) {
+            entriesBySeverity.get(determineSeverity(row.validationResults))!.push(row);
+        }
+
+        this.entriesBySeverity = entriesBySeverity;
+    }
+
 }

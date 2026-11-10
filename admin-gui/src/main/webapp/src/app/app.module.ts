@@ -26,7 +26,9 @@ import {
     LoadingComponent,
     MomentDatePipe,
     MY_CALENDAR_DEFAULT_OPTIONS,
-    MY_CALENDAR_OPTIONS, MY_CALENDAR_RANGE_DEFAULT_OPTIONS, MY_CALENDAR_RANGE_OPTIONS,
+    MY_CALENDAR_OPTIONS,
+    MY_CALENDAR_RANGE_DEFAULT_OPTIONS,
+    MY_CALENDAR_RANGE_OPTIONS,
     NotificationService,
     OrderByPipe,
     PopUpMessageComponent,
@@ -105,8 +107,8 @@ import {ModalRef} from './helpers/modal/modal-ref.component';
 import {ModalComponent} from './helpers/modal/modal.component';
 import {AngularMyDatePickerModule} from 'gramli-angular-mydatepicker';
 import {StatsTableComponent} from './status/stats-table.component';
-import {StudyManagerErrorInterceptor} from './study-manager/helpers/study-manager-error.interceptor';
 import {AccordionDirective} from './helpers/accordion/accordion.directive';
+import {DropDownDirective} from "./helpers/drop-down/drop-down.directive";
 
 registerLocaleData(localeDe, 'de-DE', localeDeExtra);
 
@@ -180,6 +182,7 @@ registerLocaleData(localeDe, 'de-DE', localeDeExtra);
         RevoGrid,
         AgGridAngular,
         TemplateVarDirective,
+        DropDownDirective,
     ],
     exports: [
         SafeUrlPipe,

@@ -1,33 +1,83 @@
-<ag-grid-angular
-        (cellValueChanged)="invokeValidation()"
-        (gridReady)="onGridReady($event)"
-        [columnDefs]="columnDefs"
-        [defaultColDef]="defaultColDef"
-        [loading]="false"
-        [noRowsOverlayComponentParams]="{reference: reference}"
-        [noRowsOverlayComponent]="NoRowsOverlayComponent"
-        class="ag-theme-alpine"
-        style="width: 100%; height: 500px;">
-</ag-grid-angular>
-<button (click)="clearEntries()"
-        aria-label="Zurücksetzen"
-        class="ui icon button"
-        title="Zurücksetzen">
-    <i class="trash icon"></i>
-</button>
-<button (click)="addRow()"
-        aria-label="Zeile hinzufügen"
-        class="ui icon button"
-        title="Zeile hinzufügen">
-    <i class="plus icon"></i>
-</button>
-<button (click)="resizeGrid()"
-        class="ui labeled icon button">
-    <i class="arrows alternate horizontal icon"></i>
-    Spaltenbreite anpassen
-</button>
-<button (click)="invokeValidation()"
-        class="ui labeled icon button">
-    <i class="search icon"></i>
-    Fälle anzeigen
-</button>
+<div class="ui form">
+    <div class="field">
+        <label>Nach Status filtern</label>
+        <drop-down [(ngModel)]="selectedSeverity"
+                   [ngModelOptions]="{standalone: true}"
+                   (ngModelChange)="filterRowData($event)">
+            <drop-down-option [value]="null">Alle</drop-down-option>
+            <drop-down-option labelClass="success" [value]="'success'">OK</drop-down-option>
+            <drop-down-option labelClass="warn" [value]="'warn'">Warnung</drop-down-option>
+            <drop-down-option labelClass="error" [value]="'error'">Fehler</drop-down-option>
+            <drop-down-option labelClass="pending" [value]="'pending'">Ausstehend</drop-down-option>
+        </drop-down>
+    </div>
+    <div class="summary">
+        <span>Gesamt {{ allEntriesCount }}</span>
+        <span class="success">OK {{ validEntriesCount }}</span>
+        <span class="warn">Warnung {{ warnEntriesCount }}</span>
+        <span class="error">Fehler {{ errorEntriesCount }}</span>
+        <span class="pending">Ausstehend {{ pendingEntriesCount }}</span>
+    </div>
+
+    <ag-grid-angular
+            (cellValueChanged)="invokeValidation()"
+            (gridReady)="onGridReady($event)"
+            [columnDefs]="columnDefs"
+            [defaultColDef]="defaultColDef"
+            [loading]="false"
+            [noRowsOverlayComponentParams]="{reference: reference, filtered: selectedSeverity !== null}"
+            [noRowsOverlayComponent]="NoRowsOverlayComponent"
+            class="ag-theme-alpine"
+            style="width: 100%; height: 500px;">
+    </ag-grid-angular>
+    <div class="button-group">
+        <div class="ui icon buttons">
+            <button (click)="clearEntries()"
+                    aria-label="Zurücksetzen"
+                    class="ui icon button"
+                    title="Zurücksetzen">
+                <i class="trash icon"></i>
+            </button>
+            <button (click)="addRow()"
+                    aria-label="Zeile hinzufügen"
+                    class="ui icon button"
+                    title="Zeile hinzufügen">
+                <i class="plus icon"></i>
+            </button>
+        </div>
+        <div>
+            <button aria-label="Aus Zwischenspeicher mit Kopfzeile einfügen"
+                    class="ui labeled icon button"
+                    title="Aus Zwischenspeicher mit Kopfzeile einfügen"
+                    (click)="pasteRowData(true)">
+                <i class="paste icon"></i>
+                Mit Kopfzeile
+            </button>
+
+            <div class="ui right floated buttons">
+                <button aria-label="Aus Zwischenspeicher ohne Kopfzeile einfügen"
+                        class="ui labeled icon button"
+                        title="Aus Zwischenspeicher ohne Kopfzeile einfügen"
+                        (click)="pasteRowData(false)">
+                    <i class="paste icon"></i>
+                    Ohne Kopfzeile
+                </button>
+                <div drop-down class="ui floating dropdown icon button">
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <button (click)="invokeValidation()"
+                                class="ui labeled icon button item">
+                            <i class="search icon"></i>
+                            Fälle anzeigen
+                        </button>
+                        <button (click)="resizeGrid()"
+                                class="ui labeled icon button item">
+                            <i class="arrows alternate horizontal icon"></i>
+                            Spaltenbreite anpassen
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

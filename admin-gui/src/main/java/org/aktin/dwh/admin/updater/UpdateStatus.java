@@ -1,5 +1,8 @@
 package org.aktin.dwh.admin.updater;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Represents the status of a DWH update operation, containing information about versions, success status, and timestamps from both result and info
  * property files.
@@ -13,51 +16,14 @@ package org.aktin.dwh.admin.updater;
  *   <li>Timestamp of version information</li>
  * </ul>
  */
+@Getter
+@Setter
 public class UpdateStatus {
 
-  private boolean success;
-  private String lastUpdateTime;
-  private String installedVersion;
-  private String candidateVersion;
-  private String lastCheckTime;
+    private boolean success;
+    private String lastUpdateTime;
+    private String installedVersion;
+    private String candidateVersion;
+    private String lastCheckTime;
 
-  public void setSuccess(boolean success) {
-    this.success = success;
-  }
-
-  public boolean isSuccess() {
-    return success;
-  }
-
-  public void setLastUpdateTime(String lastUpdateTime) {
-    this.lastUpdateTime = lastUpdateTime;
-  }
-
-  public String getLastUpdateTime() {
-    return lastUpdateTime;
-  }
-
-  public void setInstalledVersion(String installedVersion) {
-    this.installedVersion = installedVersion;
-  }
-
-  public String getInstalledVersion() {
-    return installedVersion;
-  }
-
-  public void setCandidateVersion(String candidateVersion) {
-    this.candidateVersion = candidateVersion;
-  }
-
-  public String getCandidateVersion() {
-    return candidateVersion;
-  }
-
-  public void setLastCheckTime(String lastCheckTime) {
-    this.lastCheckTime = lastCheckTime;
-  }
-
-  public String getLastCheckTime() {
-    return lastCheckTime;
-  }
 }
