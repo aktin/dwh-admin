@@ -20,7 +20,7 @@
 <div *ngIf="_updaterService.checkPermission()"
      class="header-version"
      style="text-align: center;">
-    <button (click)="_updaterService.reloadAptPackages()"
+    <button (click)="_updaterService.refreshUpdateStatus()"
             *ngIf="!_updaterService.isNewUpdateAvailable"
             [disabled]="!_updaterService.isUpdateAgentInstalled"
             class="ui basic icon button"

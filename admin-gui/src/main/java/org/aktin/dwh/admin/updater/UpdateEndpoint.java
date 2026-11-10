@@ -16,7 +16,6 @@ import javax.ws.rs.core.SecurityContext;
  * REST endpoint for managing DWH (Data Warehouse) update operations.
  * Provides endpoints for checking update agent installation status,
  * retrieving update status, managing update logs, and executing updates.
- *
  * All update-related operations will fail with  SERVICE_UNAVAILABLE if
  * the debian update agent package is not installed.
  */
@@ -24,7 +23,7 @@ import javax.ws.rs.core.SecurityContext;
 public class UpdateEndpoint {
 
     @Inject
-    UpdateManager updateManager;
+    private UpdateManager updateManager;
 
     @Context
     private SecurityContext security;
@@ -57,8 +56,8 @@ public class UpdateEndpoint {
         }
         UpdateStatus status = updateManager.getUpdateStatus();
         return status != null ?
-            Response.ok(status).build() :
-            Response.status(Response.Status.NOT_FOUND).build();
+                Response.ok(status).build() :
+                Response.status(Response.Status.NOT_FOUND).build();
     }
 
     /**
@@ -83,21 +82,21 @@ public class UpdateEndpoint {
     }
 
     /**
-     * Triggers a reload of debian apt package lists.
+     * Triggers a refresh of the installed and candidate DWH version via apt-cache policy.
      *
      * @return Response with status:
-     *         - 202 ACCEPTED if reload was initiated successfully
-     *         - 500 SERVER_ERROR if reload failed
+     *         - 202 ACCEPTED if refresh was initiated successfully
+     *         - 500 SERVER_ERROR if refresh failed
      *         - 503 SERVICE_UNAVAILABLE if update agent is not installed
      */
     @Path("agent/reload")
     @POST
     @Secured
-    public Response reloadAptPackageLists() {
+    public Response refreshUpdateStatus() {
         if (!updateManager.isUpdateAgentInstalled()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
-        boolean success = updateManager.reloadAptPackageLists();
+        boolean success = updateManager.refreshUpdateStatus();
         return success ?
             Response.accepted().build() :
             Response.serverError().build();

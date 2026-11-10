@@ -2,9 +2,8 @@ package org.aktin.dwh.admin;
 
 import org.aktin.Preferences;
 import org.aktin.dwh.PreferenceKey;
-import org.aktin.dwh.admin.updater.UpdateManager;
 import org.aktin.dwh.admin.updater.UpdateStatus;
-import org.junit.After;
+import org.aktin.dwh.admin.updater.UpdateManager;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.nio.file.Paths;
@@ -23,21 +22,14 @@ public class TestUpdateManager {
     @Mock
     Preferences preferences;
 
+    @Spy
     @InjectMocks
     UpdateManager updateManager;
 
-    private AutoCloseable closeable;
-
     @Before
     public void openMocks() {
-        closeable = MockitoAnnotations.openMocks(this);
         String path_resourceDir = Paths.get("src", "test", "resources").toString();
         Mockito.when(preferences.get(PreferenceKey.updateDataPath)).thenReturn(path_resourceDir);
-    }
-
-    @After
-    public void releaseMocks() throws Exception {
-        closeable.close();
     }
 
     @Test
@@ -61,7 +53,9 @@ public class TestUpdateManager {
     }
 
     @Test
-    public void isUpdateAgentInstalled() {
-        Assert.assertTrue(updateManager.isUpdateAgentInstalled());
+    public void executeDwhUpdateTwice() {
+        Mockito.doReturn(true).when(updateManager).touch(Mockito.anyString(), Mockito.anyInt());
+        Assert.assertTrue(updateManager.executeDwhUpdate());
+        Assert.assertFalse(updateManager.executeDwhUpdate());
     }
 }
