@@ -23,7 +23,7 @@ import javax.ws.rs.core.SecurityContext;
 public class UpdateEndpoint {
 
     @Inject
-    private Updater updater;
+    private UpdateManager updateManager;
 
     @Context
     private SecurityContext security;
@@ -37,7 +37,7 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response isUpdateAgentInstalled() {
-        return Response.ok(updater.isUpdateAgentInstalled()).build();
+        return Response.ok(updateManager.isUpdateAgentInstalled()).build();
     }
 
     /**
@@ -51,10 +51,10 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUpdateStatus() {
-        if (!updater.isUpdateAgentInstalled()) {
+        if (!updateManager.isUpdateAgentInstalled()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
-        UpdateStatus status = updater.getUpdateStatus();
+        UpdateStatus status = updateManager.getUpdateStatus();
         return status != null ?
                 Response.ok(status).build() :
                 Response.status(Response.Status.NOT_FOUND).build();
@@ -72,10 +72,10 @@ public class UpdateEndpoint {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public Response getUpdateLog() {
-        if (!updater.isUpdateAgentInstalled()) {
+        if (!updateManager.isUpdateAgentInstalled()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
-        String log = updater.getUpdateLog();
+        String log = updateManager.getUpdateLog();
         return log != null ?
             Response.ok(log).build() :
             Response.status(Response.Status.NOT_FOUND).build();
@@ -93,10 +93,10 @@ public class UpdateEndpoint {
     @POST
     @Secured
     public Response refreshUpdateStatus() {
-        if (!updater.isUpdateAgentInstalled()) {
+        if (!updateManager.isUpdateAgentInstalled()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
-        boolean success = updater.refreshUpdateStatus();
+        boolean success = updateManager.refreshUpdateStatus();
         return success ?
             Response.accepted().build() :
             Response.serverError().build();
@@ -114,13 +114,13 @@ public class UpdateEndpoint {
     @POST
     @Secured
     public Response executeDwhUpdate() {
-        if (!updater.isUpdateAgentInstalled()) {
+        if (!updateManager.isUpdateAgentInstalled()) {
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
         }
-        if (updater.isUpdateInProgress()) {
+        if (updateManager.isUpdateInProgress()) {
             return Response.status(Response.Status.CONFLICT).build();
         }
-        boolean success = updater.executeDwhUpdate();
+        boolean success = updateManager.executeDwhUpdate();
         return success ?
             Response.accepted().build() :
             Response.serverError().build();

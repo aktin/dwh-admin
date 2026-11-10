@@ -33,9 +33,9 @@ import org.aktin.dwh.PreferenceKey;
  * </ul>
  */
 @Singleton
-public class Updater {
+public class UpdateManager {
 
-    private static final Logger LOGGER = Logger.getLogger(Updater.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(UpdateManager.class.getName());
 
     // reset once the agent rewrites the result file
     private boolean isUpdateInProgress = false;
