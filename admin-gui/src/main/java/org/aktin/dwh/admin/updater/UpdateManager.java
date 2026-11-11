@@ -7,6 +7,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -51,6 +54,9 @@ public class UpdateManager {
 
     private static final int DWH_UPDATE_PORT = DOCKER ? 1005 : 1003;
 
+    // 'date' output of the updateagent, e.g. "Wed Nov 11 02:04:04 PM UTC 2026"
+    private static final DateTimeFormatter AGENT_TIME_FORMAT = DateTimeFormatter.ofPattern("EEE MMM d hh:mm:ss a zzz yyyy", Locale.US);
+
     @Inject
     Preferences preferences;
 
@@ -86,7 +92,8 @@ public class UpdateManager {
 
     /**
      * Retrieves the current update status, composed of version information and
-     * the result of the last update attempt.
+     * the result of the last update attempt. Version information from a check
+     * that does not postdate the last update is ignored as outdated.
      *
      * @return an {@link UpdateStatus} object, or {@code null} if no status
      *         information is available yet
@@ -106,15 +113,40 @@ public class UpdateManager {
             }
             if (Files.exists(infoPath)) {
                 Properties infoProps = readPropertiesFileFromPath(infoPath);
-                status.setInstalledVersion(infoProps.getProperty(UpdateServiceFileKey.INSTALLED.toString()));
-                status.setCandidateVersion(infoProps.getProperty(UpdateServiceFileKey.CANDIDATE.toString()));
-                status.setLastCheckTime(infoProps.getProperty(UpdateServiceFileKey.LAST_CHECK.toString()));
-                hasData = true;
+                String lastCheckTime = infoProps.getProperty(UpdateServiceFileKey.LAST_CHECK.toString());
+                if (isCheckedAfterUpdate(lastCheckTime, status.getLastUpdateTime())) {
+                    status.setInstalledVersion(infoProps.getProperty(UpdateServiceFileKey.INSTALLED.toString()));
+                    status.setCandidateVersion(infoProps.getProperty(UpdateServiceFileKey.CANDIDATE.toString()));
+                    status.setLastCheckTime(lastCheckTime);
+                    hasData = true;
+                } else {
+                    LOGGER.log(Level.FINE, "Ignoring info file, its version check predates the last update");
+                }
             }
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error reading update status files", e);
         }
         return hasData ? status : null;
+    }
+
+    /**
+     * Checks if the version check happened after the last update, otherwise its versions are outdated.
+     * @param lastCheckTime version check time of the info file
+     * @param lastUpdateTime update time of the result file, {@code null} if no update happened yet
+     * @return {@code true} if the info file can be used
+     */
+    private boolean isCheckedAfterUpdate(String lastCheckTime, String lastUpdateTime) {
+        if (lastUpdateTime == null) {
+            return true;
+        }
+        return lastCheckTime != null && parseAgentTime(lastCheckTime).isAfter(parseAgentTime(lastUpdateTime));
+    }
+
+    /**
+     * Parses a timestamp written by the updateagent, collapsing the space padding of single digit days.
+     */
+    private ZonedDateTime parseAgentTime(String time) {
+        return ZonedDateTime.parse(time.trim().replaceAll("\\s+", " "), AGENT_TIME_FORMAT);
     }
 
     private Properties readPropertiesFileFromPath(Path path) throws IOException {

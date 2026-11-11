@@ -167,7 +167,7 @@ export class AppComponent implements OnInit {
 
     openUpdateSuccessPopup() {
         this.popUpUpdateSummary.onTop = true;
-        this.popUpUpdateSummary.setData(true, 'Update erfolgreich', 'Das DWH wurde auf Version ' + this._updaterService.installedVersion + ' aktualisiert.', 'green');
+        this.popUpUpdateSummary.setData(true, 'Update erfolgreich', 'Das DWH wurde auf Version ' + this.version + ' aktualisiert.', 'green');
     }
 
 }
